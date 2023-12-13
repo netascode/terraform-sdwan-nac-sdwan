@@ -1,0 +1,48 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # Terraform Network-as-Code Cisco SD-WAN Module
+
+  A Terraform module to configure Cisco SD-WAN.
+
+  ## Usage
+
+  This module supports an inventory driven approach, where a complete SD-WAN configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
+
+  ## Examples
+
+  Configuring a Banner Feature Template using YAML:
+
+  #### `banner_feature_template.yaml`
+
+  ```yaml
+  {{ include "./examples/banner_feature_template/banner_feature_template.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/banner_feature_template/main.tf" }}
+  ```
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+  {{ .Providers }}
+
+  {{ .Resources }}
+
+  {{ .Modules }}
+
+output:
+  file: README.md
+  mode: replace
+
+sort:
+  enabled: true
+  by: required

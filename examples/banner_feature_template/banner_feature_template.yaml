@@ -1,0 +1,8 @@
+sdwan:
+  cedge_feature_templates:
+    cisco_banner:
+      - name: FT-CEDGE-BANNER-01
+        description: Base banner template; support carrier returns
+        parameters:
+          login: "login banner: new\n"
+          motd: "motd banner:\r\nNo message today\n"

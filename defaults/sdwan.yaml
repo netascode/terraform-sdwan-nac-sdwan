@@ -1,0 +1,242 @@
+---
+defaults:
+  sdwan:
+    cedge_feature_templates:
+      cedge_aaa:
+        parameters:
+          server-auth-order: local
+          radius:
+            server:
+              acct-port: 1813
+              auth-port: 1812
+              retransmit: 3
+              timeout: 5
+          tacacs:
+            server:
+              port: 49
+              timeout: 5
+      cedge_global:
+        parameters:
+          http-global:
+            http-authentication: local
+          nat64-global:
+            nat64-timeout:
+              tcp-timeout: 3600
+              udp-timeout: 300
+          services-global:
+            services-ip:
+              arp-proxy: "false"
+              cdp: "true"
+              domain-lookup: "false"
+              ftp-passive: "false"
+              http-server: "false"
+              https-server: "false"
+              line-vty: "false"
+              lldp: "true"
+              rcmd: "false"
+            services-other:
+              bootp: "true"
+              console-logging: "true"
+              snmp-ifindex-persist: "true"
+              source-route: "false"
+              tcp-keepalives-in: "true"
+              tcp-keepalives-out: "true"
+              tcp-small-servers: "false"
+              udp-small-servers: "false"
+              vty-logging: "false"
+          ssh:
+            version: 2
+      cisco_bfd:
+        parameters:
+          app-route:
+            multiplier: 6
+            poll-interval: 120000
+          default-dscp: 48
+          color:
+            dscp: 48
+            hello-interval: 1000
+            multiplier: 7
+            pmtu-discovery: "true"
+      cisco_bgp:
+        parameters:
+          bgp:
+            address-family:
+              default-information:
+                originate: "false"
+              family-type: ipv4-unicast
+              maximum-paths:
+                paths: 32
+            best-path:
+              as-path:
+                multipath-relax: "false"
+              compare-router-id: "false"
+              med:
+                always-compare: "false"
+                deterministic: "false"
+                missing-as-worst: "false"
+            distance:
+              external: 20
+              internal: 200
+              local: 20
+            neighbor:
+              address-family:
+                family-type: ipv4-unicast
+                maximum-prefixes:
+                  prefix-num: 1000
+              ebgp-multihop: 1
+              next-hop-self: "false"
+              send-community: "true"
+              send-ext-community: "true"
+              shutdown: "false"
+              timers:
+                holdtime: 3
+                keepalive: 1
+              optional: true
+            propagate-aspath: "true"
+            propagate-community: "true"
+            shutdown: "false"
+            timers:
+              holdtime: 3
+              keepalive: 1
+      cisco_logging:
+        parameters:
+          disk:
+            enable: "true"
+            file:
+              rotate: 10
+              size: 10
+      cisco_ntp:
+        parameters:
+          server:
+            version: 4
+            vpn: 0
+      cisco_omp:
+        parameters:
+          ecmp-limit: 16
+          graceful-restart: "true"
+          omp-admin-distance-ipv4: 251
+          omp-admin-distance-ipv6: 251
+          overlay-as: 1
+          send-path-limit: 16
+          shutdown: "false"
+          timers:
+            advertisement-interval: 1
+            eor-timer: 300
+            graceful-restart-timer: 43200
+            holdtime: 60
+      cisco_secure_internet_gateway:
+        parameters:
+          interface:
+            application: sig
+            auto: "true"
+            dead-peer-detection:
+              dpd-interval: 10
+              dpd-retries: 3
+            ike:
+              authentication-type:
+                pre-shared-key-dynamic: "true"
+              ike-ciphersuite: aes256-cbc-sha1
+              ike-group: "14"
+              ike-rekey-interval: 14400
+              ike-version: 2
+            ip:
+              unnumbered: "true"
+            ipsec:
+              ipsec-ciphersuite: aes256-cbc-sha1
+              ipsec-rekey-interval: 28800
+              ipsec-replay-window: 512
+              perfect-forward-secrecy: none
+            mtu: 1400
+            shutdown: "false"
+            tcp-mss-adjust: 1360
+            track-enable: "true"
+            tunnel-destination: dynamic
+            tunnel-set: secure-internet-gateway-umbrella
+          service:
+            svc-type: sig
+          vpn-id: 0
+      cisco_security:
+        parameters:
+          ipsec:
+            authentication-type: [sha1-hmac, ah-sha1-hmac]
+            extended-ar-window: 256
+            integrity-type: [esp, ip-udp-esp]
+            rekey: 86400
+            replay-window: "2048"
+      cisco_snmp:
+        parameters:
+          shutdown: "false"
+      cisco_system:
+        parameters:
+          admin-tech-on-failure: "true"
+          clock:
+            timezone: UTC
+          console-baud-rate: "9600"
+          control-session-pps: 300
+          idle-timeout: 300
+          on-demand:
+            enable: "false"
+            idle-timeout: 10
+          overlay-id: 1
+          port-hop: "true"
+          port-offset: 0
+          track-default-gateway: "true"
+          track-transport: "true"
+      cisco_vpn:
+        parameters:
+          ecmp-hash-key:
+            layer4: "false"
+          ip:
+            route:
+              next-hop:
+                distance: 1
+              distance: 1
+      cisco_vpn_interface:
+        parameters:
+          arp-timeout: 1200
+          ip:
+            dhcp-distance: 1
+          mtu: 1500
+          nat:
+            tcp-timeout: 60
+            udp-timeout: 1
+          shutdown: "false"
+          tunnel-interface:
+            allow-service:
+              all: "false"
+              bgp: "false"
+              dhcp: "true"
+              dns: "true"
+              https: "false"
+              icmp: "true"
+              netconf: "false"
+              ntp: "false"
+              ospf: "false"
+              snmp: "false"
+              sshd: "false"
+              stun: "false"
+            clear-dont-fragment: "false"
+            encapsulation:
+              encap: ipsec
+            hello-interval: 1000
+            hello-tolerance: 12
+            vmanage-connection-preference: 5
+      cisco_vpn_interface_ipsec:
+        parameters:
+          dead-peer-detection:
+            dpd-interval: 10
+            dpd-retries: 3
+          ike:
+            ike-ciphersuite: aes256-cbc-sha1
+            ike-group: "16"
+            ike-rekey-interval: 14400
+            ike-version: 2
+          ipsec:
+            ipsec-ciphersuite: aes256-gcm
+            ipsec-rekey-interval: 3600
+            ipsec-replay-window: 512
+            perfect-forward-secrecy: none
+          mtu: 1400
+          shutdown: "false"
+      cli-template:
+        parameters:

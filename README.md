@@ -104,6 +104,10 @@ module "sdwan" {
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
 | [sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv4_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv6_prefix_list_policy_object) | resource |
+<<<<<<< HEAD
+=======
+| [sdwan_device_acl_policy_definition.device_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/device_acl_policy_definition) | resource |
+>>>>>>> main
 | [sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/expanded_community_list_policy_object) | resource |
 | [sdwan_extended_community_list_policy_object.extended_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/extended_community_list_policy_object) | resource |
 | [sdwan_feature_device_template.feature_device_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/feature_device_template) | resource |
@@ -111,8 +115,11 @@ module "sdwan" {
 | [sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_acl_policy_definition) | resource |
 | [sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_device_acl_policy_definition) | resource |
 | [sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_prefix_list_policy_object) | resource |
+<<<<<<< HEAD
 | [sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_acl_policy_definition) | resource |
 | [sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_device_acl_policy_definition) | resource |
+=======
+>>>>>>> main
 | [sdwan_ipv6_prefix_list_policy_object.ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_prefix_list_policy_object) | resource |
 | [sdwan_localized_policy.localized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/localized_policy) | resource |
 | [sdwan_mesh_topology_policy_definition.mesh_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mesh_topology_policy_definition) | resource |

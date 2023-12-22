@@ -38,83 +38,83 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
     base_action = s.base_action
     match_entries = flatten([
       try(s.match_criterias.class, null) == null ? [] : [{
-        type = "class"
-        class_map_id = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
+        type              = "class"
+        class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
         class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].version
       }],
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
-        type = "destinationDataPrefixList"
-        destination_data_ipv4_prefix_list_id = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
+        type                                      = "destinationDataPrefixList"
+        destination_data_ipv4_prefix_list_id      = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
         destination_data_ipv4_prefix_list_version = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].version
       }],
       try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
-        type = "destinationIp"
+        type           = "destinationIp"
         destination_ip = s.match_criterias.destination_ip_prefix
       }],
       try(s.match_criterias.destination_ports, null) == null && try(s.match_criterias.destination_port_ranges, null) == null ? [] : [{
-        type = "destinationPort"
-        destination_port = join(" ", concat([for p in try(s.match_criterias.destination_ports, []) : p], [for r in try(s.match_criterias.destination_port_ranges, []) : "${r.from}-${r.to}"]))
+        type              = "destinationPort"
+        destination_ports = join(" ", concat([for p in try(s.match_criterias.destination_ports, []) : p], [for r in try(s.match_criterias.destination_port_ranges, []) : "${r.from}-${r.to}"]))
       }],
       try(s.match_criterias.dscp, null) == null ? [] : [{
         type = "dscp"
         dscp = s.match_criterias.dscp
       }],
       try(s.match_criterias.packet_length, null) == null ? [] : [{
-        type = "packetLength"
+        type          = "packetLength"
         packet_length = s.match_criterias.packet_length
       }],
       try(s.match_criterias.priority, null) == null ? [] : [{
-        type = "plp"
+        type     = "plp"
         priority = s.match_criterias.priority
       }],
       try(s.match_criterias.protocols, null) == null ? [] : [{
-        type = "protocol"
+        type     = "protocol"
         protocol = join(" ", [for p in s.match_criterias.protocols : p])
       }],
       try(s.match_criterias.source_data_prefix_list, null) == null ? [] : [{
-        type = "sourceDataPrefixList"
-        source_data_ipv4_prefix_list_id = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
+        type                                 = "sourceDataPrefixList"
+        source_data_ipv4_prefix_list_id      = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
         source_data_ipv4_prefix_list_version = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].version
       }],
       try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
-        type = "sourceIp"
+        type      = "sourceIp"
         source_ip = s.match_criterias.source_ip_prefix
       }],
       try(s.match_criterias.source_ports, null) == null && try(s.match_criterias.source_port_ranges, null) == null ? [] : [{
-        type = "sourcePort"
-        source_port = join(" ", concat([for p in try(s.match_criterias.source_ports, []) : p], [for r in try(s.match_criterias.source_port_ranges, []) : "${r.from}-${r.to}"]))
+        type         = "sourcePort"
+        source_ports = join(" ", concat([for p in try(s.match_criterias.source_ports, []) : p], [for r in try(s.match_criterias.source_port_ranges, []) : "${r.from}-${r.to}"]))
       }],
       try(s.match_criterias.tcp, null) == null ? [] : [{
         type = "tcp"
-        tcp = s.match_criterias.tcp
+        tcp  = s.match_criterias.tcp
       }]
     ])
 
     action_entries = flatten([
       try(s.actions.counter_name, null) == null ? [] : [{
-        type = "count"
+        type         = "count"
         counter_name = s.actions.counter_name
       }],
       try(s.actions.class, null) == null ? [] : [{
-        type = "class"
-        class_map_id = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].id
+        type              = "class"
+        class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].id
         class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].version
       }],
       try(s.actions.log, null) == null ? [] : [{
         type = "log"
-        log = s.actions.log
+        log  = s.actions.log
       }],
       try(s.actions.mirror_list, null) == null ? [] : [{
-        type = "mirror"
-        mirror_id = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].id
+        type           = "mirror"
+        mirror_id      = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].id
         mirror_version = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].version
       }],
       try(s.actions.policer, null) == null ? [] : [{
-        type = "policer"
-        policer_id = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].id
+        type            = "policer"
+        policer_id      = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].id
         policer_version = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].version
       }],
-      try(s.actions.next_hop, null) == null && try(s.actions.dscp, null) == null ?  [] : [{
+      try(s.actions.next_hop, null) == null && try(s.actions.dscp, null) == null ? [] : [{
         type = "set"
         set_parameters = flatten([
           try(s.actions.dscp, null) == null ? [] : [{
@@ -122,7 +122,7 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
             dscp = s.actions.dscp
           }],
           try(s.actions.next_hop, null) == null ? [] : [{
-            type = "nextHop"
+            type     = "nextHop"
             next_hop = s.actions.next_hop
           }]
         ])
@@ -142,91 +142,91 @@ resource "sdwan_ipv6_acl_policy_definition" "ipv6_acl_policy_definition" {
     base_action = s.base_action
     match_entries = flatten([
       try(s.match_criterias.class, null) == null ? [] : [{
-        type = "class"
-        class_map_id = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
+        type              = "class"
+        class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
         class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].version
       }],
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
-        type = "destinationDataIpv6PrefixList"
-        destination_data_ipv6_prefix_list_id = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
+        type                                      = "destinationDataIpv6PrefixList"
+        destination_data_ipv6_prefix_list_id      = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
         destination_data_ipv6_prefix_list_version = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].version
       }],
       try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
-        type = "destinationIpv6"
+        type           = "destinationIpv6"
         destination_ip = s.match_criterias.destination_ip_prefix
       }],
-      try(s.match_criterias.destination_ports, null) == null && try(s.match_criterias.destination_port_ranges, null) == null ? [] : [{
-        type = "destinationPort"
-        destination_port = join(" ", concat([for p in try(s.match_criterias.destination_ports, []) : p], [for r in try(s.match_criterias.destination_port_ranges, []) : "${r.from}-${r.to}"]))
+      try(s.match_criterias.destination_port, null) == null ? [] : [{
+        type              = "destinationPort"
+        destination_ports = s.match_criterias.destination_port
       }],
       try(s.match_criterias.next_header, null) == null ? [] : [{
-        type = "nextHeader"
+        type        = "nextHeader"
         next_header = s.match_criterias.next_header
       }],
       try(s.match_criterias.packet_length, null) == null ? [] : [{
-        type = "packetLength"
+        type          = "packetLength"
         packet_length = s.match_criterias.packet_length
       }],
       try(s.match_criterias.priority, null) == null ? [] : [{
-        type = "plp"
+        type     = "plp"
         priority = s.match_criterias.priority
       }],
       try(s.match_criterias.source_data_prefix_list, null) == null ? [] : [{
-        type = "sourceDataIpv6PrefixList"
-        source_data_ipv6_prefix_list_id = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
+        type                                 = "sourceDataIpv6PrefixList"
+        source_data_ipv6_prefix_list_id      = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
         source_data_ipv6_prefix_list_version = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].version
       }],
       try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
-        type = "sourceIpv6"
+        type      = "sourceIpv6"
         source_ip = s.match_criterias.source_ip_prefix
       }],
       try(s.match_criterias.source_ports, null) == null && try(s.match_criterias.source_port_ranges, null) == null ? [] : [{
-        type = "sourcePort"
-        source_port = join(" ", concat([for p in try(s.match_criterias.source_ports, []) : p], [for r in try(s.match_criterias.source_port_ranges, []) : "${r.from}-${r.to}"]))
+        type         = "sourcePort"
+        source_ports = join(" ", concat([for p in try(s.match_criterias.source_ports, []) : p], [for r in try(s.match_criterias.source_port_ranges, []) : "${r.from}-${r.to}"]))
       }],
       try(s.match_criterias.tcp, null) == null ? [] : [{
         type = "tcp"
-        tcp = s.match_criterias.tcp
+        tcp  = s.match_criterias.tcp
       }],
-      #try(s.match_criterias.traffic_class, null) == null ? [] : [{
-      #  type = "trafficClass"
-      #  traffic_class = s.match_criterias.traffic_class
-      #}]
+      try(s.match_criterias.traffic_class, null) == null ? [] : [{
+        type          = "trafficClass"
+        traffic_class = s.match_criterias.traffic_class
+      }]
     ])
 
     action_entries = flatten([
       try(s.actions.counter_name, null) == null ? [] : [{
-        type = "count"
+        type         = "count"
         counter_name = s.actions.counter_name
       }],
       try(s.actions.class, null) == null ? [] : [{
-        type = "class"
-        class_map_id = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].id
+        type              = "class"
+        class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].id
         class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.actions.class].version
       }],
       try(s.actions.log, null) == null ? [] : [{
         type = "log"
-        log = s.actions.log
+        log  = s.actions.log
       }],
       try(s.actions.mirror_list, null) == null ? [] : [{
-        type = "mirror"
-        mirror_id = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].id
+        type           = "mirror"
+        mirror_id      = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].id
         mirror_version = sdwan_mirror_policy_object.mirror_policy_object[s.actions.mirror_list].version
       }],
       try(s.actions.policer, null) == null ? [] : [{
-        type = "policer"
-        policer_id = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].id
+        type            = "policer"
+        policer_id      = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].id
         policer_version = sdwan_policer_policy_object.policer_policy_object[s.actions.policer].version
       }],
-      try(s.actions.next_hop, null) == null && try(s.actions.dscp, null) == null ?  [] : [{
+      try(s.actions.next_hop, null) == null && try(s.actions.dscp, null) == null ? [] : [{
         type = "set"
         set_parameters = flatten([
           try(s.actions.traffic_class, null) == null ? [] : [{
-            type = "trafficClass"
+            type          = "trafficClass"
             traffic_class = s.actions.traffic_class
           }],
           try(s.actions.next_hop, null) == null ? [] : [{
-            type = "nextHop"
+            type     = "nextHop"
             next_hop = s.actions.next_hop
           }]
         ])
@@ -246,30 +246,30 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
     base_action = s.base_action
     match_entries = flatten([
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
-        type = "destinationDataPrefixList"
-        destination_data_ipv4_prefix_list_id = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
+        type                                      = "destinationDataPrefixList"
+        destination_data_ipv4_prefix_list_id      = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
         destination_data_ipv4_prefix_list_version = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].version
       }],
       try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
-        type = "destinationIp"
+        type           = "destinationIp"
         destination_ip = s.match_criterias.destination_ip_prefix
       }],
       try(s.match_criterias.destination_port, null) == null ? [] : [{
-        type = "destinationPort"
+        type             = "destinationPort"
         destination_port = s.match_criterias.destination_port
       }],
       try(s.match_criterias.source_data_prefix_list, null) == null ? [] : [{
-        type = "sourceDataPrefixList"
-        source_data_ipv4_prefix_list_id = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
+        type                                 = "sourceDataPrefixList"
+        source_data_ipv4_prefix_list_id      = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
         source_data_ipv4_prefix_list_version = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].version
       }],
       try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
-        type = "sourceIp"
+        type      = "sourceIp"
         source_ip = s.match_criterias.source_ip_prefix
       }],
       try(s.match_criterias.source_ports, null) == null ? [] : [{
-        type = "sourcePort"
-        source_port = s.match_criterias.source_ports
+        type         = "sourcePort"
+        source_ports = join(" ", [for p in try(s.match_criterias.source_ports, []) : p])
       }]
     ])
     action_entries = try(s.counter_name, null) == null ? null : [{
@@ -290,30 +290,30 @@ resource "sdwan_ipv6_device_acl_policy_definition" "ipv6_device_acl_policy_defin
     base_action = s.base_action
     match_entries = flatten([
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
-        type = "destinationDataIpv6PrefixList"
-        destination_data_ipv6_prefix_list_id = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
+        type                                      = "destinationDataIpv6PrefixList"
+        destination_data_ipv6_prefix_list_id      = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
         destination_data_ipv6_prefix_list_version = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].version
       }],
       try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
-        type = "destinationIpv6"
+        type           = "destinationIpv6"
         destination_ip = s.match_criterias.destination_ip_prefix
       }],
       try(s.match_criterias.destination_port, null) == null ? [] : [{
-        type = "destinationPort"
+        type             = "destinationPort"
         destination_port = s.match_criterias.destination_port
       }],
       try(s.match_criterias.source_data_prefix_list, null) == null ? [] : [{
-        type = "sourceDataIpv6PrefixList"
-        source_data_ipv6_prefix_list_id = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
+        type                                 = "sourceDataIpv6PrefixList"
+        source_data_ipv6_prefix_list_id      = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].id
         source_data_ipv6_prefix_list_version = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.source_data_prefix_list].version
       }],
       try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
-        type = "sourceIpv6"
+        type      = "sourceIpv6"
         source_ip = s.match_criterias.source_ip_prefix
       }],
       try(s.match_criterias.source_ports, null) == null ? [] : [{
-        type = "sourcePort"
-        source_port = s.match_criterias.source_ports
+        type         = "sourcePort"
+        source_ports = join(" ", [for p in try(s.match_criterias.source_ports, []) : p])
       }]
     ])
     action_entries = try(s.counter_name, null) == null ? null : [{
@@ -335,124 +335,123 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
     base_action = s.base_action
     match_entries = flatten([
       try(s.match_criterias.prefix_list, null) == null ? [] : [{
-        type = "address"
-        prefix_list_id = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.prefix_list].id
+        type                = "address"
+        prefix_list_id      = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.prefix_list].id
         prefix_list_version = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.prefix_list].version
       }],
       try(s.match_criterias.as_path_list, null) == null ? [] : [{
-        type = "asPath"
-        as_path_list_id = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].id
+        type                 = "asPath"
+        as_path_list_id      = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].id
         as_path_list_version = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].version
       }],
       try(s.match_criterias.standard_community_lists, null) == null ? [] : [{
-        type = "advancedCommunity"
-        community_list_ids = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
-        community_list_versions = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]
+        type                      = "advancedCommunity"
+        community_list_ids        = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
+        community_list_versions   = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]
         community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
       }],
       try(s.match_criterias.expanded_community_list, null) == null ? [] : [{
-        type = "expandedCommunity"
-        expanded_community_list_id = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_lists].id
-        expanded_community_list_version = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_lists].version
+        type                            = "expandedCommunity"
+        expanded_community_list_id      = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].id
+        expanded_community_list_version = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].version
       }],
       try(s.match_criterias.extended_community_list, null) == null ? [] : [{
-        type = "extendedCommunity"
-        extended_community_list_id = sdwan_extended_community_list_policy_object.extended_community_list_policy_object[s.match_criterias.extended_community_lists].id
-        extended_community_list_version = sdwan_extended_community_list_policy_object.extended_community_list_policy_object[s.match_criterias.extended_community_lists].version
+        type                            = "extCommunity"
+        extended_community_list_id      = sdwan_extended_community_list_policy_object.extended_community_list_policy_object[s.match_criterias.extended_community_list].id
+        extended_community_list_version = sdwan_extended_community_list_policy_object.extended_community_list_policy_object[s.match_criterias.extended_community_list].version
       }],
       try(s.match_criterias.bgp_local_preference, null) == null ? [] : [{
-        type = "local_preference"
-        local_preference = try(s.match_criterias.bgp_local_preference, null)
+        type             = "localPreference"
+        local_preference = s.match_criterias.bgp_local_preference
       }],
       try(s.match_criterias.metric, null) == null ? [] : [{
-        type = "metric"
-        metric = try(s.match_criterias.metric, null)
+        type   = "metric"
+        metric = s.match_criterias.metric
       }],
       try(s.match_criterias.next_hop_prefix_list, null) == null ? [] : [{
-        type = "nextHop"
-        next_hop = try(s.match_criterias.next_hop_prefix_list, null)
+        type                         = "nextHop"
+        next_hop_prefix_list_id      = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.next_hop_prefix_list].id
+        next_hop_prefix_list_version = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.next_hop_prefix_list].version
       }],
       try(s.match_criterias.origin, null) == null ? [] : [{
-        type = "origin"
-        origin = try(s.match_criterias.origin, null)
+        type   = "origin"
+        origin = s.match_criterias.origin
       }],
       try(s.match_criterias.peer, null) == null ? [] : [{
         type = "peer"
-        peer = try(s.match_criterias.peer, null)
+        peer = s.match_criterias.peer
       }],
       try(s.match_criterias.omp_tag, null) == null ? [] : [{
-        type = "ompTag"
-        omp_tag = try(s.match_criterias.omp_tag, null)
+        type    = "ompTag"
+        omp_tag = s.match_criterias.omp_tag
       }],
       try(s.match_criterias.ospf_tag, null) == null ? [] : [{
-        type = "ospfTag"
-        ospf_tag = try(s.match_criterias.ospf_tag, null)
+        type     = "ospfTag"
+        ospf_tag = s.match_criterias.ospf_tag
       }]
     ])
+
     action_entries = flatten([
-      try(s.actions.aggregator, null) == null ? [] : [{
-        type = "aggregator"
-        aggregator = try(s.actions.aggregator, null)
-      }],
-      try(s.actions.aggregator_ip, null) == null ? [] : [{
-        type = "aggregator"
-        aggregator_ip_address = try(s.actions.aggregator_ip, null)
+      try(s.actions.aggregator_ip, null) == null || try(s.actions.aggregator, null) == null ? [] : [{
+        type                  = "aggregator"
+        aggregator            = s.actions.aggregator
+        aggregator_ip_address = s.actions.aggregator_ip
       }],
       try(s.actions.prepend_as_paths, null) == null ? [] : [{
-        type = "asPath"
+        type            = "asPath"
         as_path_prepend = join(" ", [for as in s.actions.prepend_as_paths : as])
       }],
       try(s.actions.exclude_as_paths, null) == null ? [] : [{
-        type = "asPath"
+        type            = "asPath"
         as_path_exclude = join(" ", [for as in s.actions.exclude_as_paths : as])
       }],
       try(s.actions.atomic_aggregate, null) == null ? [] : [{
-        type = "atomicAggregate"
-        atomic_aggregate = try(s.actions.atomic_aggregate, null)
+        type             = "atomicAggregate"
+        atomic_aggregate = s.actions.atomic_aggregate
       }],
       try(s.actions.communities, null) == null ? [] : [{
-        type = "community"
+        type      = "community"
         community = join(" ", [for c in s.actions.communities : c])
       }],
       try(s.actions.community_additive, null) == null ? [] : [{
-        type = "communityAdditive"
-        community_additive = try(s.actions.community_additive, null)
+        type               = "communityAdditive"
+        community_additive = s.actions.community_additive
       }],
       try(s.actions.local_preference, null) == null ? [] : [{
-        type = "localPreference"
-        local_preference = try(s.actions.local_preference, null)
+        type             = "localPreference"
+        local_preference = s.actions.local_preference
       }],
       try(s.actions.metric, null) == null ? [] : [{
-        type = "metric"
-        metric = try(s.actions.metric, null)
+        type   = "metric"
+        metric = s.actions.metric
       }],
       try(s.actions.weight, null) == null ? [] : [{
-        type = "weight"
-        weight = try(s.actions.weight, null)
+        type   = "weight"
+        weight = s.actions.weight
       }],
       try(s.actions.metric_type, null) == null ? [] : [{
-        type = "metricType"
-        metric_type = try(s.actions.metric_type, null)
+        type        = "metricType"
+        metric_type = s.actions.metric_type
       }],
       try(s.actions.next_hop, null) == null ? [] : [{
-        type = "nextHop"
-        next_hop = try(s.actions.next_hop, null)
+        type     = "nextHop"
+        next_hop = s.actions.next_hop
       }],
       try(s.actions.omp_tag, null) == null ? [] : [{
-        type = "ompTag"
-        omp_tag = try(s.actions.omp_tag, null)
+        type    = "ompTag"
+        omp_tag = s.actions.omp_tag
       }],
       try(s.actions.ospf_tag, null) == null ? [] : [{
-        type = "ospfTag"
-        ospf_tag = try(s.actions.ospf_tag, null)
+        type     = "ospfTag"
+        ospf_tag = s.actions.ospf_tag
       }],
       try(s.actions.origin, null) == null ? [] : [{
-        type = "origin"
-        origin = try(s.actions.origin, null)
+        type   = "origin"
+        origin = s.actions.origin
       }],
       try(s.actions.originator, null) == null ? [] : [{
-        type = "originator"
-        originator = try(s.actions.originator, null)
+        type       = "originator"
+        originator = s.actions.originator
       }]
     ])
   }]
@@ -471,33 +470,34 @@ resource "sdwan_localized_policy" "localized_policy" {
   ipv4_visibility_cache_entries = try(each.value.ipv4_visibility_cache_entries, null)
   ipv6_visibility_cache_entries = try(each.value.ipv6_visibility_cache_entries, null)
   definitions = flatten([
-    try(each.value.definitions.qos_maps, null) == null ? [] : [ for qosmap in each.value.definitions.qos_maps : [{
+    try(each.value.definitions.qos_maps, null) == null ? [] : [for qosmap in each.value.definitions.qos_maps : [{
       type = "qosMap"
-      id = sdwan_qos_map_policy_definition.qos_map_policy_definition[qosmap].id
+      id   = sdwan_qos_map_policy_definition.qos_map_policy_definition[qosmap].id
     }]],
-    try(each.value.definitions.rewrite_rules, null) == null ? [] : [ for rule in each.value.definitions.rewrite_rules : [{
+    try(each.value.definitions.rewrite_rules, null) == null ? [] : [for rule in each.value.definitions.rewrite_rules : [{
       type = "rewriteRule"
-      id = sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[rule].id
+      id   = sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[rule].id
     }]],
-    try(each.value.definitions.route_policies, null) == null ? [] : [ for policy in each.value.definitions.route_policies : [{
+    try(each.value.definitions.route_policies, null) == null ? [] : [for policy in each.value.definitions.route_policies : [{
       type = "vedgeRoute"
-      id = sdwan_route_policy_definition.route_policy_definition[policy].id
+      id   = sdwan_route_policy_definition.route_policy_definition[policy].id
     }]],
-    try(each.value.definitions.ipv4_access_control_lists, null) == null ? [] : [ for acl in each.value.definitions.ipv4_access_control_lists : [{
+    try(each.value.definitions.ipv4_access_control_lists, null) == null ? [] : [for acl in each.value.definitions.ipv4_access_control_lists : [{
       type = "acl"
-      id = sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition[acl].id
+      id   = sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition[acl].id
     }]],
-    try(each.value.definitions.ipv6_access_control_lists, null) == null ? [] : [ for acl in each.value.definitions.ipv6_access_control_lists : [{
+    try(each.value.definitions.ipv6_access_control_lists, null) == null ? [] : [for acl in each.value.definitions.ipv6_access_control_lists : [{
       type = "aclv6"
-      id = sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition[acl].id
+      id   = sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition[acl].id
     }]],
-    try(each.value.definitions.ipv4_device_access_policies, null) == null ? [] : [ for acl in each.value.definitions.ipv4_device_access_policies : [{
+    try(each.value.definitions.ipv4_device_access_policies, null) == null ? [] : [for acl in each.value.definitions.ipv4_device_access_policies : [{
       type = "deviceAccessPolicy"
-      id = sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition[acl].id
+      id   = sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition[acl].id
     }]],
-    try(each.value.definitions.ipv6_device_access_policies, null) == null ? [] : [ for acl in each.value.definitions.ipv6_device_access_policies :  [{
+    try(each.value.definitions.ipv6_device_access_policies, null) == null ? [] : [for acl in each.value.definitions.ipv6_device_access_policies : [{
       type = "deviceAccessPolicyv6"
-      id = sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition[acl].id
+      id   = sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition[acl].id
     }]]
   ])
 }
+

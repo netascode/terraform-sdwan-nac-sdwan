@@ -16,8 +16,12 @@ resource "sdwan_centralized_policy" "centralized_policy" {
       type    = "control"
       entries = [for h in keys(try(d.site_region, [])) : {
         direction = (
-          h == "site_lists_in" ? "all" :  // should be accepting in and out for Custom control, but not available in provider
-          h == "site_lists_out" ? "all" : // should be accepting in and out for Custom control, but not available in provider
+          h == "site_lists_in" ? "in" :
+          h == "site_lists_out" ? "out" :
+          h == "region_lists_in" ? "in" :
+          h == "region_lists_out" ? "out" :
+          h == "regions_in" ? "in" :
+          h == "regions_out" ? "out" :
           null
         )
         site_list_ids = (
@@ -30,7 +34,22 @@ resource "sdwan_centralized_policy" "centralized_policy" {
           h == "site_lists_out" ? [for x in try(d.site_region.site_lists_out, []) : sdwan_site_list_policy_object.site_list_policy_object[x].version] :
           null
         )
-        // should also be supporting region list and region for Custom control, but not documented in Provider itself
+        region_list_ids = (
+          h == "region_lists_in" ? [for x in try(d.site_region.region_lists_in, []) : sdwan_region_list_policy_object.region_list_policy_object[x].id] :
+          h == "region_lists_out" ? [for x in try(d.site_region.region_lists_out, []) : sdwan_region_list_policy_object.region_list_policy_object[x].id] :
+          null
+        )
+        region_list_versions = (
+          h == "region_lists_in" ? [for x in try(d.site_region.region_lists_in, []) : sdwan_region_list_policy_object.region_list_policy_object[x].version] :
+          h == "region_lists_out" ? [for x in try(d.site_region.region_lists_out, []) : sdwan_region_list_policy_object.region_list_policy_object[x].version] :
+          null
+        )
+        # This needs a fix on provider. regions_ids is not a list, it just accepts a single value
+        # region_ids = (
+        #   h == "regions_in" ? try([d.site_region.regions_in], []) :
+        #   h == "regions_out" ? try([d.site_region.regions_out], []) :
+        #   null
+        # )
     }] }],
     [for d in try(each.value.hub_and_spoke_topology, []) : {
       id      = sdwan_hub_and_spoke_topology_policy_definition.hub_and_spoke_topology_policy_definition[d.policy_definition].id
@@ -499,12 +518,11 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
             type = "nextHopLoose"
             next_hop_loose = try(s.actions.next_hop.when_next_hop_is_not_available, null) == "route_table_entry" ? true : null
           }],
-          # uncomment when module supports preferred_color_group_list (work in progress)
-          # try(s.actions.preferred_color_group, null) == null ? [] : [{
-          #   type = "preferredColorGroup"
-          #   preferred_color_group_list = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
-          #   preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
-          # }]
+          try(s.actions.preferred_color_group, null) == null ? [] : [{
+            type = "preferredColorGroup"
+            preferred_color_group_list = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
+            preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
+          }]
         ]),
       }],
     ])
@@ -626,14 +644,13 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
           }],
           try(s.actions.sla_class_list.preferred_colors, null) == null ? [] : [{
             type = "preferredColor"
-            preferred_color = s.actions.sla_class_list.preferred_colors
+            preferred_color = join(" ", concat([for p in try(s.actions.sla_class_list.preferred_colors, []) : p]))
           }],
-          # uncomment when module supports preferred_color_group_list (work in progress)
-          # try(s.actions.sla_class_list.preferred_color_group, null) == null ? [] : [{
-          #   type = "preferredColorGroup"
-          #   preferred_color_group_list = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
-          #   preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
-          # }]
+          try(s.actions.sla_class_list.preferred_color_group, null) == null ? [] : [{
+            type = "preferredColorGroup"
+            preferred_color_group_list = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
+            preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
+          }]
         ])
         }],
       try(s.actions.cloud_sla, null) == null ? [] : [{

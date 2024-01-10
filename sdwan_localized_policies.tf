@@ -27,7 +27,7 @@ resource "sdwan_rewrite_rule_policy_definition" "rewrite_rule_policy_definition"
   }]
 }
 
-resource "sdwan_acl_policy_definition" "acl_policy_definition" {
+resource "sdwan_ipv4_acl_policy_definition" "acl_policy_definition" {
   for_each       = { for d in try(local.localized_policies.definitions.acl, {}) : d.name => d }
   name           = each.value.name
   description    = each.value.description
@@ -46,8 +46,8 @@ resource "sdwan_acl_policy_definition" "acl_policy_definition" {
       class_map_version                    = m.field == "class" ? sdwan_class_map_policy_object.class_map_policy_object[m.ref].version : null
       packet_length                        = m.field == "packetLength" ? m.value : null
       priority                             = m.field == "plp" ? m.value : null
-      source_port                          = m.field == "sourcePort" ? m.value : null
-      destination_port                     = m.field == "destinationPort" ? m.value : null
+      source_ports                          = m.field == "sourcePort" ? m.value : null
+      destination_ports                     = m.field == "destinationPort" ? m.value : null
       source_data_prefix_list_id           = m.field == "sourceDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].id : null
       source_data_prefix_list_version      = m.field == "sourceDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].version : null
       destination_data_prefix_list_id      = m.field == "destinationDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].id : null
@@ -75,7 +75,7 @@ resource "sdwan_acl_policy_definition" "acl_policy_definition" {
   }]
 }
 
-resource "sdwan_device_acl_policy_definition" "device_acl_policy_definition" {
+resource "sdwan_ipv4_device_acl_policy_definition" "device_acl_policy_definition" {
   for_each       = { for d in try(local.localized_policies.definitions.deviceAccessPolicy, {}) : d.name => d }
   name           = each.value.name
   description    = each.value.description
@@ -89,8 +89,8 @@ resource "sdwan_device_acl_policy_definition" "device_acl_policy_definition" {
       type                                 = m.field
       source_ip                            = m.field == "sourceIp" ? m.value : null
       destination_ip                       = m.field == "destinationIp" ? m.value : null
-      source_port                          = m.field == "sourcePort" ? m.value : null
-      destination_port                     = m.field == "destinationPort" ? m.value : null
+      source_ports                          = m.field == "sourcePort" ? m.value : null
+      destination_ports                     = m.field == "destinationPort" ? m.value : null
       source_data_prefix_list_id           = m.field == "sourceDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].id : null
       source_data_prefix_list_version      = m.field == "sourceDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].version : null
       destination_data_prefix_list_id      = m.field == "destinationDataPrefixList" ? sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[m.ref].id : null
@@ -171,15 +171,15 @@ resource "sdwan_localized_policy" "localized_policy" {
   ipv6_visibility_cache_entries = try(each.value.parameters.settings.ipV6VisibilityCacheEntries, null)
   definitions = try(length(each.value.parameters.assembly) == 0, true) ? null : [for d in each.value.parameters.assembly : {
     id = (
-      d.type == "acl" ? sdwan_acl_policy_definition.acl_policy_definition[d.definitionName].id :
-      d.type == "deviceAccessPolicy" ? sdwan_device_acl_policy_definition.device_acl_policy_definition[d.definitionName].id :
+      d.type == "acl" ? sdwan_ipv4_acl_policy_definition.acl_policy_definition[d.definitionName].id :
+      d.type == "deviceAccessPolicy" ? sdwan_ipv4_device_acl_policy_definition.device_acl_policy_definition[d.definitionName].id :
       d.type == "qosMap" ? sdwan_qos_map_policy_definition.qos_map_policy_definition[d.definitionName].id :
       d.type == "rewriteRule" ? sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[d.definitionName].id :
       d.type == "vedgeRoute" ? sdwan_route_policy_definition.route_policy_definition[d.definitionName].id : null
     )
     version = (
-      d.type == "acl" ? sdwan_acl_policy_definition.acl_policy_definition[d.definitionName].version :
-      d.type == "deviceAccessPolicy" ? sdwan_device_acl_policy_definition.device_acl_policy_definition[d.definitionName].version :
+      d.type == "acl" ? sdwan_ipv4_acl_policy_definition.acl_policy_definition[d.definitionName].version :
+      d.type == "deviceAccessPolicy" ? sdwan_ipv4_device_acl_policy_definition.device_acl_policy_definition[d.definitionName].version :
       d.type == "qosMap" ? sdwan_qos_map_policy_definition.qos_map_policy_definition[d.definitionName].version :
       d.type == "rewriteRule" ? sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[d.definitionName].version :
       d.type == "vedgeRoute" ? sdwan_route_policy_definition.route_policy_definition[d.definitionName].version : null

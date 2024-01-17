@@ -1,6 +1,6 @@
 locals {
   cedge_feature_templates = try(local.model.sdwan.cedge_feature_templates, {})
-  edge_device_templates  = try(local.model.sdwan.edge_device_templates, {})
+  edge_device_templates   = try(local.model.sdwan.edge_device_templates, {})
   localized_policies      = try(local.model.sdwan.localized_policies, {})
   policy_objects          = try(local.model.sdwan.policy_objects, {})
   sites                   = try(local.model.sdwan.sites, {})

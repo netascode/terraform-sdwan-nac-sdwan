@@ -652,10 +652,10 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
           }],
           try(s.actions.sla_class_list.when_sla_not_met, null) == "strict_drop" ? [{
-            type = "strict" 
-          }] : [] ,
+            type = "strict"
+          }] : [],
           try(s.actions.sla_class_list.when_sla_not_met, null) == "fallback_to_best_path" ? [{
-            type = "fallbackToBestPath" 
+            type = "fallbackToBestPath"
           }] : []
         ])
       }],

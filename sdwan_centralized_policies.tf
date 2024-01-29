@@ -632,7 +632,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
       }],
       try(s.actions.backup_sla_preferred_colors, null) == null ? [] : [{
         type                       = "backupSlaPreferredColor"
-        backup_sla_preferred_color = s.actions.backup_sla_preferred_colors
+        backup_sla_preferred_color = join(" ", [for p in try(s.actions.backup_sla_preferred_colors, []) : p])
       }],
       try(s.actions.sla_class_list, null) == null ? [] : [{
         type = "slaClass"
@@ -650,7 +650,13 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
             type                               = "preferredColorGroup"
             preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
-          }]
+          }],
+          try(s.actions.sla_class_list.when_sla_not_met, null) == "strict_drop" ? [{
+            type = "strict" 
+          }] : [] ,
+          try(s.actions.sla_class_list.when_sla_not_met, null) == "fallback_to_best_path" ? [{
+            type = "fallbackToBestPath" 
+          }] : []
         ])
       }],
       try(s.actions.cloud_sla, null) == null ? [] : [{

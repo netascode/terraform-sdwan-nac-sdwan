@@ -39,7 +39,7 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
       key_type_variable            = try(server.key_type_variable, null)
       key                          = server.key
       secret_key                   = server.secret_key
-      #encryption_type              = 6
+      encryption_type              = 6
     }]
   }]
   radius_clients = try(length(each.value.radius_dynamic_author.clients) == 0, true) ? null : [for client in each.value.radius_dynamic_author.clients : {
@@ -535,7 +535,6 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     authentication_type_variable = try(prof.authentication_type_variable, null)
     version                      = try(prof.version, null)
     version_variable             = try(prof.version_variable, null)
-    #ciphersuite_list             = join(",", [for c in try(prof.ciphersuites, []) : c])
     ciphersuite_list          = try(prof.ciphersuites, null)
     ciphersuite_list_variable = try(prof.version_ciphersuites_variablevariable, null)
   }]
@@ -1068,7 +1067,6 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
     transport_endpoint_port_variable     = try(obj.transport_endpoint_port_variable, null)
     transport_endpoint_protocol          = try(obj.transport_endpoint_protocol, null)
     transport_endpoint_protocol_variable = try(obj.transport_endpoint_protocol_variable, null)
-    #type                                 = try(obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type)
     type          = try(obj.type, null)
     type_variable = try(obj.type_variable, null)
   }]

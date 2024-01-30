@@ -33,7 +33,6 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       ft.templateType == "cli-template" ? sdwan_cli_template_feature_template.cli_template_feature_template[ft.templateName].version : null
     )
     type = ft.templateType
-    #sub_templates = null
     sub_templates = try(length(ft.subTemplates) == 0, true) ? null : [for st in ft.subTemplates : {
       id = (
         st.templateType == "cisco_bgp" ? sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.templateName].id :

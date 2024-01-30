@@ -1,32 +1,8 @@
-locals {
-  device_types = [
-    "C8000V",
-    "C8300-1N1S-4T2X",
-    "C8300-1N1S-6T",
-    "C8300-2N2S-6T",
-    "C8300-2N2S-4T2X",
-    "C8500-12X4QC",
-    "C8500-12X",
-    "C8500-20X6C",
-    "C8500L-8S4X",
-    "C8200-1N-4T",
-    "C8200L-1N-4T"
-  ]
-  thousand_eyes_device_types = [
-    "C8300-1N1S-4T2X",
-    "C8300-1N1S-6T",
-    "C8300-2N2S-6T",
-    "C8300-2N2S-4T2X",
-    "C8200-1N-4T",
-    "C8200L-1N-4T"
-  ]
-}
-
 resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
   for_each                      = { for t in try(local.edge_feature_templates.aaa_templates, {}) : t.name => t }
   name                          = each.value.name
   description                   = each.value.description
-  device_types                  = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                  = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.aaa_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   dot1x_authentication          = try(each.value.dot1x_authentication, null)
   dot1x_authentication_variable = try(each.value.dot1x_authentication_variable, null)
   dot1x_accounting              = try(each.value.dot1x_accounting, null)
@@ -51,19 +27,19 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
     source_interface_variable = try(group.source_interface_variable, null)
     servers = !can(group.servers) ? null : [for server in group.servers : {
       address                      = server.address
-      authentication_port          = try(server.authentication_port, can(server.authentication_port_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.radius_server_groups.servers.authentication_port)
+      authentication_port          = try(server.authentication_port, null)
       authentication_port_variable = try(server.authentication_port_variable, null)
-      accounting_port              = try(server.accounting_port, can(server.accounting_port_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.radius_server_groups.servers.accounting_port)
+      accounting_port              = try(server.accounting_port, null)
       accounting_port_variable     = try(server.accounting_port_variable, null)
-      timeout                      = try(server.timeout, can(server.timeout_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.radius_server_groups.servers.timeout)
+      timeout                      = try(server.timeout, null)
       timeout_variable             = try(server.timeout_variable, null)
-      retransmit                   = try(server.retransmit_count, can(server.retransmit_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.radius_server_groups.servers.retransmit_count)
+      retransmit                   = try(server.retransmit_count, null)
       retransmit_variable          = try(server.retransmit_count_variable, null)
       key_type                     = try(server.key_type, null)
       key_type_variable            = try(server.key_type_variable, null)
       key                          = server.key
       secret_key                   = server.secret_key
-      #   encryption_type     = 6
+      encryption_type              = 6
     }]
   }]
   radius_clients = try(length(each.value.radius_dynamic_author.clients) == 0, true) ? null : [for client in each.value.radius_dynamic_author.clients : {
@@ -93,13 +69,13 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
     source_interface          = try(group.source_interface, null)
     source_interface_variable = try(group.source_interface_variable, null)
     servers = try(length(group.servers) == 0, true) ? null : [for server in group.servers : {
-      address    = server.address
-      key        = server.key
-      secret_key = server.secret_key
-      #      encryption_type = 6
-      port             = try(server.port, local.defaults.sdwan.edge_feature_templates.aaa_templates.tacacs_server_groups.servers.port)
+      address          = server.address
+      key              = server.key
+      secret_key       = server.secret_key
+      encryption_type  = 6
+      port             = try(server.port, null)
       port_variable    = try(server.port_variable, null)
-      timeout          = try(server.timeout, can(server.timeout_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.tacacs_server_groups.servers.timeout)
+      timeout          = try(server.timeout, null)
       timeout_variable = try(server.timeout_variable, null)
     }]
   }]
@@ -111,16 +87,16 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
     start_stop_variable = try(rule.start_stop_variable, null)
     groups              = join(",", rule.groups)
   }]
-  authorization_console                  = try(each.value.authorization_console, can(each.value.authorization_console_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.authorization_console)
+  authorization_console                  = try(each.value.authorization_console, null)
   authorization_console_variable         = try(each.value.authorization_console_variable, null)
-  authorization_config_commands          = try(each.value.authorization_config_commands, can(each.value.authorization_config_commands_variable) ? null : local.defaults.sdwan.edge_feature_templates.aaa_templates.authorization_config_commands)
+  authorization_config_commands          = try(each.value.authorization_config_commands, null)
   authorization_config_commands_variable = try(each.value.authorization_config_commands_variable, null)
   authorization_rules = try(length(each.value.authorization_rules) == 0, true) ? null : [for rule in each.value.authorization_rules : {
     name            = index(each.value.authorization_rules, rule)
     method          = rule.method
     privilege_level = rule.privilege_level
     groups          = join(",", rule.groups)
-    authenticated   = try(rule.authenticated, local.defaults.sdwan.edge_feature_templates.aaa_templates.authorization_rules.authenticated)
+    authenticated   = try(rule.authenticated, null)
   }]
 }
 
@@ -128,52 +104,52 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   for_each                      = { for t in try(local.edge_feature_templates.global_settings_templates, {}) : t.name => t }
   name                          = each.value.name
   description                   = each.value.description
-  device_types                  = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  arp_proxy                     = try(each.value.arp_proxy, can(each.value.arp_proxy_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.arp_proxy)
+  device_types                  = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.global_settings_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  arp_proxy                     = try(each.value.arp_proxy, null)
   arp_proxy_variable            = try(each.value.arp_proxy_variable, null)
-  bootp                         = try(each.value.ignore_bootp, can(each.value.ignore_bootp_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.ignore_bootp)
+  bootp                         = try(each.value.ignore_bootp, null)
   bootp_variable                = try(each.value.ignore_bootp_variable, null)
-  cdp                           = try(each.value.cdp, can(each.value.cdp_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.cdp)
+  cdp                           = try(each.value.cdp, null)
   cdp_variable                  = try(each.value.cdp_variable, null)
-  console_logging               = try(each.value.console_logging, can(each.value.console_logging_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.console_logging)
+  console_logging               = try(each.value.console_logging, null)
   console_logging_variable      = try(each.value.console_logging_variable, null)
-  domain_lookup                 = try(each.value.domain_lookup, can(each.value.domain_lookup_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.domain_lookup)
+  domain_lookup                 = try(each.value.domain_lookup, null)
   domain_lookup_variable        = try(each.value.domain_lookup_variable, null)
-  ftp_passive                   = try(each.value.ftp_passive, can(each.value.ftp_passive_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.ftp_passive)
+  ftp_passive                   = try(each.value.ftp_passive, null)
   ftp_passive_variable          = try(each.value.ftp_passive_variable, null)
-  http_authentication           = try(each.value.http_authentication, can(each.value.http_authentication_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.http_authentication)
+  http_authentication           = try(each.value.http_authentication, null)
   http_authentication_variable  = try(each.value.http_authentication_variable, null)
-  http_server                   = try(each.value.http_server, can(each.value.http_server_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.http_server)
+  http_server                   = try(each.value.http_server, null)
   http_server_variable          = try(each.value.http_server_variable, null)
-  https_server                  = try(each.value.https_server, can(each.value.https_server_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.https_server)
+  https_server                  = try(each.value.https_server, null)
   https_server_variable         = try(each.value.https_server_variable, null)
-  ip_source_routing             = try(each.value.ip_source_routing, can(each.value.ip_source_routing_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.ip_source_routing)
+  ip_source_routing             = try(each.value.ip_source_routing, null)
   ip_source_routing_variable    = try(each.value.ip_source_routing_variable, null)
-  line_vty                      = try(each.value.telnet_outbound, can(each.value.telnet_outbound_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.telnet_outbound)
+  line_vty                      = try(each.value.telnet_outbound, null)
   line_vty_variable             = try(each.value.telnet_outbound_variable, null)
-  lldp                          = try(each.value.lldp, can(each.value.lldp_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.lldp)
+  lldp                          = try(each.value.lldp, null)
   lldp_variable                 = try(each.value.lldp_variable, null)
-  nat64_tcp_timeout             = try(each.value.nat64_tcp_timeout, can(each.value.nat64_tcp_timeout_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.nat64_tcp_timeout)
+  nat64_tcp_timeout             = try(each.value.nat64_tcp_timeout, null)
   nat64_tcp_timeout_variable    = try(each.value.nat64_tcp_timeout_variable, null)
-  nat64_udp_timeout             = try(each.value.nat64_udp_timeout, can(each.value.nat64_udp_timeout_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.nat64_udp_timeout)
+  nat64_udp_timeout             = try(each.value.nat64_udp_timeout, null)
   nat64_udp_timeout_variable    = try(each.value.nat64_udp_timeout_variable, null)
-  rsh_rcp                       = try(each.value.rsh_rcp, can(each.value.rsh_rcp_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.rsh_rcp)
+  rsh_rcp                       = try(each.value.rsh_rcp, null)
   rsh_rcp_variable              = try(each.value.rsh_rcp_variable, null)
-  snmp_ifindex_persist          = try(each.value.snmp_ifindex_persist, can(each.value.snmp_ifindex_persist_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.snmp_ifindex_persist)
+  snmp_ifindex_persist          = try(each.value.snmp_ifindex_persist, null)
   snmp_ifindex_persist_variable = try(each.value.snmp_ifindex_persist_variable, null)
   source_interface              = try(each.value.source_interface, null)
   source_interface_variable     = try(each.value.source_interface_variable, null)
-  ssh_version                   = try(each.value.ssh_version, can(each.value.ssh_version_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.ssh_version)
+  ssh_version                   = try(each.value.ssh_version, null)
   ssh_version_variable          = try(each.value.ssh_version_variable, null)
-  tcp_keepalives_in             = try(each.value.tcp_keepalives_in, can(each.value.tcp_keepalives_in_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.tcp_keepalives_in)
+  tcp_keepalives_in             = try(each.value.tcp_keepalives_in, null)
   tcp_keepalives_in_variable    = try(each.value.tcp_keepalives_in_variable, null)
-  tcp_keepalives_out            = try(each.value.tcp_keepalives_out, can(each.value.tcp_keepalives_out_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.tcp_keepalives_out)
+  tcp_keepalives_out            = try(each.value.tcp_keepalives_out, null)
   tcp_keepalives_out_variable   = try(each.value.tcp_keepalives_out_variable, null)
-  tcp_small_servers             = try(each.value.tcp_small_servers, can(each.value.tcp_small_servers_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.tcp_small_servers)
+  tcp_small_servers             = try(each.value.tcp_small_servers, null)
   tcp_small_servers_variable    = try(each.value.tcp_small_servers_variable, null)
-  udp_small_servers             = try(each.value.udp_small_servers, can(each.value.udp_small_servers_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.udp_small_servers)
+  udp_small_servers             = try(each.value.udp_small_servers, null)
   udp_small_servers_variable    = try(each.value.udp_small_servers_variable, null)
-  vty_logging                   = try(each.value.vty_logging, can(each.value.vty_logging_variable) ? null : local.defaults.sdwan.edge_feature_templates.global_settings_templates.vty_logging)
+  vty_logging                   = try(each.value.vty_logging, null)
   vty_logging_variable          = try(each.value.vty_logging_variable, null)
 }
 
@@ -181,7 +157,7 @@ resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   for_each       = { for t in try(local.edge_feature_templates.banner_templates, {}) : t.name => t }
   name           = each.value.name
   description    = each.value.description
-  device_types   = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types   = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.banner_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   login          = try(each.value.login, null)
   login_variable = try(each.value.login_variable, null)
   motd           = try(each.value.motd, null)
@@ -192,33 +168,32 @@ resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
   for_each               = { for t in try(local.edge_feature_templates.bfd_templates, {}) : t.name => t }
   name                   = each.value.name
   description            = each.value.description
-  device_types           = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  multiplier             = try(each.value.multiplier, can(each.value.multiplier_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.multiplier)
+  device_types           = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.bfd_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  multiplier             = try(each.value.multiplier, null)
   multiplier_variable    = try(each.value.multiplier_variable, null)
-  poll_interval          = try(each.value.poll_interval, can(each.value.poll_interval_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.poll_interval)
+  poll_interval          = try(each.value.poll_interval, null)
   poll_interval_variable = try(each.value.poll_interval_variable, null)
-  default_dscp           = try(each.value.default_dscp, can(each.value.default_dscp_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.default_dscp)
+  default_dscp           = try(each.value.default_dscp, null)
   default_dscp_variable  = try(each.value.default_dscp_variable, null)
   colors = try(length(each.value.colors) == 0, true) ? null : [for color in each.value.colors : {
     color                   = try(color.color, null)
     color_variable          = try(color.color_variable, null)
-    hello_interval          = try(color.hello_interval, can(color.hello_interval_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.colors.hello_interval)
+    hello_interval          = try(color.hello_interval, null)
     hello_interval_variable = try(color.hello_interval_variable, null)
-    multiplier              = try(color.multiplier, can(color.multiplier_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.colors.multiplier)
+    multiplier              = try(color.multiplier, null)
     multiplier_variable     = try(color.multiplier_variable, null)
-    pmtu_discovery          = try(color.path_mtu_discovery, can(color.pmtu_discovery_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.colors.path_mtu_discovery)
+    pmtu_discovery          = try(color.path_mtu_discovery, null)
     pmtu_discovery_variable = try(color.pmtu_discovery_variable, null)
-    dscp                    = try(color.default_dscp, can(color.dscp_variable) ? null : local.defaults.sdwan.edge_feature_templates.bfd_templates.colors.default_dscp)
+    dscp                    = try(color.default_dscp, null)
     dscp_variable           = try(color.dscp_variable, null)
   }]
 }
-
 
 resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
   for_each                     = { for t in try(local.edge_feature_templates.bgp_templates, {}) : t.name => t }
   name                         = each.value.name
   description                  = each.value.description
-  device_types                 = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                 = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.bgp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   always_compare_med           = try(each.value.always_compare_med, null)
   always_compare_med_variable  = try(each.value.always_compare_med_variable, null)
   as_number                    = try(each.value.as_number, null)
@@ -469,94 +444,45 @@ resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
   }]
 }
 
-
-resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
-  for_each                                           = { for t in try(local.edge_feature_templates.ospf_templates, {}) : t.name => t }
-  name                                               = each.value.name
-  description                                        = each.value.description
-  device_types                                       = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  auto_cost_reference_bandwidth                      = try(each.value.auto_cost_reference_bandwidth, null)
-  auto_cost_reference_bandwidth_variable             = try(each.value.auto_cost_reference_bandwidth_variable, null)
-  compatible_rfc1583                                 = try(each.value.compatible_rfc1583, null)
-  compatible_rfc1583_variable                        = try(each.value.compatible_rfc1583_variable, null)
-  default_information_originate                      = try(each.value.default_information_originate, null)
-  default_information_originate_always               = try(each.value.default_information_originate_always, null)
-  default_information_originate_always_variable      = try(each.value.default_information_originate_always_variable, null)
-  default_information_originate_metric               = try(each.value.default_information_originate_metric, null)
-  default_information_originate_metric_variable      = try(each.value.default_information_originate_metric_variable, null)
-  default_information_originate_metric_type          = try(each.value.default_information_originate_metric_type, null)
-  default_information_originate_metric_type_variable = try(each.value.default_information_originate_metric_type_variable, null)
-  distance_inter_area                                = try(each.value.distance_inter_area, null)
-  distance_inter_area_variable                       = try(each.value.distance_inter_area_variable, null)
-  distance_intra_area                                = try(each.value.distance_intra_area, null)
-  distance_intra_area_variable                       = try(each.value.distance_intra_area_variable, null)
-  distance_external                                  = try(each.value.distance_external, null)
-  distance_external_variable                         = try(each.value.distance_external_variable, null)
-  router_id                                          = try(each.value.router_id, null)
-  router_id_variable                                 = try(each.value.router_id_variable, null)
-  timers_spf_delay                                   = try(each.value.timers_spf_delay, null)
-  timers_spf_delay_variable                          = try(each.value.timers_spf_delay_variable, null)
-  timers_spf_initial_hold                            = try(each.value.timers_spf_initial_hold, null)
-  timers_spf_initial_hold_variable                   = try(each.value.timers_spf_initial_hold_variable, null)
-  timers_spf_max_hold                                = try(each.value.timers_spf_max_hold, null)
-  timers_spf_max_hold_variable                       = try(each.value.timers_spf_max_hold_variable, null)
-  areas = try(length(each.value.areas) == 0, true) ? null : [for a in each.value.areas : {
-    area_number          = try(a.area_number, null)
-    area_number_variable = try(a.area_number_variable, null)
-    #stub                 = try(a.area_type, null) == "stub" ? true : null
-    #stub_no_summary      = try(a.area_type, null) == "stub" && try(a.no_summary, null) == true ? true : null
-    #nssa                 = try(a.area_type, null) == "nssa" ? true : null
-    #nssa_no_summary      = try(a.area_type, null) == "nssa" && try(a.no_summary, null) == true ? true : null
-    interfaces = try(length(a.interfaces) == 0, true) ? null : [for i in a.interfaces : {
-      name                                          = try(i.name, null)
-      name_variable                                 = try(i.name_variable, null)
-      authentication_message_digest_key             = try(i.authentication_message_digest_key, null)
-      authentication_message_digest_key_variable    = try(i.authentication_message_digest_key_variable, null)
-      authentication_message_digest_key_id          = try(i.authentication_message_digest_key_id, null)
-      authentication_message_digest_key_id_variable = try(i.authentication_message_digest_key_id_variable, null)
-      cost                                          = try(i.cost, null)
-      cost_variable                                 = try(i.cost_variable, null)
-      dead_interval                                 = try(i.dead_interval, null)
-      dead_interval_variable                        = try(i.dead_intervale_variable, null)
-      hello_interval                                = try(i.hello_interval, null)
-      hello_interval_variable                       = try(i.hello_interval_variable, null)
-      network                                       = try(i.network_type, null)
-      network_variable                              = try(i.network_type_variable, null)
-      passive_interface                             = try(i.passive_interface, null)
-      passive_interface_variable                    = try(i.passive_interface_variable, null)
-      priority                                      = try(i.priority, null)
-      priority_variable                             = try(i.priority_variable, null)
-      retransmit_interval                           = try(i.retransmit_interval, null)
-      retransmit_interval_variable                  = try(i.retransmit_interval_variable, null)
-    }]
-    ranges = try(length(a.ranges) == 0, true) ? null : [for r in a.ranges : {
-      address               = try(r.address, null)
-      address_variable      = try(r.address_variable, null)
-      cost                  = try(r.cost, null)
-      cost_variable         = try(r.cost_variable, null)
-      no_advertise          = try(r.no_advertise, null)
-      no_advertise_variable = try(r.no_advertise_variable, null)
-    }]
-    optional = try(a.optional, null)
+resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_template" {
+  for_each                   = { for t in try(local.edge_feature_templates.dhcp_server_templates, {}) : t.name => t }
+  name                       = each.value.name
+  description                = each.value.description
+  device_types               = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.dhcp_server_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  address_pool               = try(each.value.address_pool, null)
+  address_pool_variable      = try(each.value.address_pool_variable, null)
+  default_gateway            = try(each.value.default_gateway, null)
+  default_gateway_variable   = try(each.value.default_gateway_variable, null)
+  dns_servers                = try(each.value.dns_servers, null)
+  dns_servers_variable       = try(each.value.dns_servers_variable, null)
+  domain_name                = try(each.value.domain_name, null)
+  domain_name_variable       = try(each.value.domain_name_variable, null)
+  exclude_addresses          = try(each.value.exclude_addresses, each.value.exclude_addresses_ranges, null) == null ? null : concat(try(each.value.exclude_addresses, []), [for r in try(each.value.exclude_addresses_ranges, []) : "${r.from}-${r.to}"])
+  exclude_addresses_variable = try(each.value.exclude_addresses_variable, null)
+  interface_mtu              = try(each.value.interface_mtu, null)
+  interface_mtu_variable     = try(each.value.interface_mtu_variable, null)
+  lease_time                 = try(each.value.lease_time, null)
+  lease_time_variable        = try(each.value.lease_time_variable, null)
+  tftp_servers               = try(each.value.tftp_servers, null)
+  tftp_servers_variable      = try(each.value.tftp_servers_variable, null)
+  options = try(length(each.value.options) == 0, true) ? null : [for option in each.value.options : {
+    ascii                = try(option.ascii, null)
+    ascii_variable       = try(option.source_ip_variable, null)
+    hex                  = try(option.hex, null)
+    hex_variable         = try(option.hex_variable, null)
+    ip_address           = try(option.ip_addresses, null)
+    ip_address_variable  = try(option.ip_addresses_variable, null)
+    option_code          = try(option.option_code, null)
+    option_code_variable = try(option.option_code_variable, null)
   }]
-  max_metric_router_lsa = try(length(each.value.max_metric_router_lsas) == 0, true) ? null : [for r in each.value.max_metric_router_lsas : {
-    ad_type       = r.type
-    time          = try(r.time, null)
-    time_variable = try(r.time_variable, null)
-  }]
-  redistribute = try(length(each.value.redistributes) == 0, true) ? null : [for r in each.value.redistributes : {
-    protocol              = try(r.protocol, null)
-    protocol_variable     = try(r.protocol_variable, null)
-    route_policy          = try(r.route_policy, null)
-    route_policy_variable = try(r.route_policy_variable, null)
-    nat_dia               = try(r.nat_dia, null)
-    nat_dia_variable      = try(r.nat_dia_variable, null)
-    optional              = try(r.optional, null)
-  }]
-  route_policies = try(each.value.route_policy, null) == null ? null : [{
-    direction            = "in"
-    policy_name          = try(each.value.route_policy, null)
-    policy_name_variable = try(each.value.route_policy_variable, null)
+  static_leases = try(length(each.value.static_leases) == 0, true) ? null : [for lease in each.value.static_leases : {
+    ip_address           = try(lease.ip_address, null)
+    ip_address_variable  = try(lease.ip_address_variable, null)
+    mac_address          = try(lease.mac_address, null)
+    mac_address_variable = try(lease.mac_address_variable, null)
+    hostname             = try(lease.hostname, null)
+    hostname_variable    = try(lease.hostname_variable, null)
+    optional             = try(lease.optional, null)
   }]
 }
 
@@ -564,7 +490,7 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
   for_each               = { for t in try(local.edge_feature_templates.logging_templates, {}) : t.name => t }
   name                   = each.value.name
   description            = each.value.description
-  device_types           = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types           = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.logging_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   disk_logging           = try(each.value.disk_logging, null)
   disk_logging_variable  = try(each.value.disk_logging_variable, null)
   log_rotations          = try(each.value.log_rotations, null)
@@ -620,7 +546,7 @@ resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
   for_each                         = { for t in try(local.edge_feature_templates.ntp_templates, {}) : t.name => t }
   name                             = each.value.name
   description                      = each.value.description
-  device_types                     = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                     = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ntp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   master                           = try(each.value.master, null)
   master_variable                  = try(each.value.master_variable, null)
   master_stratum                   = try(each.value.master_stratum, null)
@@ -657,7 +583,7 @@ resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
   for_each                           = { for t in try(local.edge_feature_templates.omp_templates, {}) : t.name => t }
   name                               = each.value.name
   description                        = each.value.description
-  device_types                       = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                       = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.omp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   advertisement_interval             = try(each.value.advertisement_interval, null)
   advertisement_interval_variable    = try(each.value.advertisement_interval_variable, null)
   ecmp_limit                         = try(each.value.ecmp_limit, null)
@@ -692,11 +618,200 @@ resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
   }]
 }
 
+resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
+  for_each                                           = { for t in try(local.edge_feature_templates.ospf_templates, {}) : t.name => t }
+  name                                               = each.value.name
+  description                                        = each.value.description
+  device_types                                       = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ospf_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  auto_cost_reference_bandwidth                      = try(each.value.auto_cost_reference_bandwidth, null)
+  auto_cost_reference_bandwidth_variable             = try(each.value.auto_cost_reference_bandwidth_variable, null)
+  compatible_rfc1583                                 = try(each.value.compatible_rfc1583, null)
+  compatible_rfc1583_variable                        = try(each.value.compatible_rfc1583_variable, null)
+  default_information_originate                      = try(each.value.default_information_originate, null)
+  default_information_originate_always               = try(each.value.default_information_originate_always, null)
+  default_information_originate_always_variable      = try(each.value.default_information_originate_always_variable, null)
+  default_information_originate_metric               = try(each.value.default_information_originate_metric, null)
+  default_information_originate_metric_variable      = try(each.value.default_information_originate_metric_variable, null)
+  default_information_originate_metric_type          = try(each.value.default_information_originate_metric_type, null)
+  default_information_originate_metric_type_variable = try(each.value.default_information_originate_metric_type_variable, null)
+  distance_inter_area                                = try(each.value.distance_inter_area, null)
+  distance_inter_area_variable                       = try(each.value.distance_inter_area_variable, null)
+  distance_intra_area                                = try(each.value.distance_intra_area, null)
+  distance_intra_area_variable                       = try(each.value.distance_intra_area_variable, null)
+  distance_external                                  = try(each.value.distance_external, null)
+  distance_external_variable                         = try(each.value.distance_external_variable, null)
+  router_id                                          = try(each.value.router_id, null)
+  router_id_variable                                 = try(each.value.router_id_variable, null)
+  timers_spf_delay                                   = try(each.value.timers_spf_delay, null)
+  timers_spf_delay_variable                          = try(each.value.timers_spf_delay_variable, null)
+  timers_spf_initial_hold                            = try(each.value.timers_spf_initial_hold, null)
+  timers_spf_initial_hold_variable                   = try(each.value.timers_spf_initial_hold_variable, null)
+  timers_spf_max_hold                                = try(each.value.timers_spf_max_hold, null)
+  timers_spf_max_hold_variable                       = try(each.value.timers_spf_max_hold_variable, null)
+  areas = try(length(each.value.areas) == 0, true) ? null : [for a in each.value.areas : {
+    area_number          = try(a.area_number, null)
+    area_number_variable = try(a.area_number_variable, null)
+    stub                 = try(a.area_type, null) == "stub" ? true : null
+    stub_no_summary      = try(a.area_type, null) == "stub" && try(a.no_summary, null) == true ? true : null
+    nssa                 = try(a.area_type, null) == "nssa" ? true : null
+    nssa_no_summary      = try(a.area_type, null) == "nssa" && try(a.no_summary, null) == true ? true : null
+    interfaces = try(length(a.interfaces) == 0, true) ? null : [for i in a.interfaces : {
+      name                                          = try(i.name, null)
+      name_variable                                 = try(i.name_variable, null)
+      authentication_message_digest_key             = try(i.authentication_message_digest_key, null)
+      authentication_message_digest_key_variable    = try(i.authentication_message_digest_key_variable, null)
+      authentication_message_digest_key_id          = try(i.authentication_message_digest_key_id, null)
+      authentication_message_digest_key_id_variable = try(i.authentication_message_digest_key_id_variable, null)
+      cost                                          = try(i.cost, null)
+      cost_variable                                 = try(i.cost_variable, null)
+      dead_interval                                 = try(i.dead_interval, null)
+      dead_interval_variable                        = try(i.dead_intervale_variable, null)
+      hello_interval                                = try(i.hello_interval, null)
+      hello_interval_variable                       = try(i.hello_interval_variable, null)
+      network                                       = try(i.network_type, null)
+      network_variable                              = try(i.network_type_variable, null)
+      passive_interface                             = try(i.passive_interface, null)
+      passive_interface_variable                    = try(i.passive_interface_variable, null)
+      priority                                      = try(i.priority, null)
+      priority_variable                             = try(i.priority_variable, null)
+      retransmit_interval                           = try(i.retransmit_interval, null)
+      retransmit_interval_variable                  = try(i.retransmit_interval_variable, null)
+    }]
+    ranges = try(length(a.ranges) == 0, true) ? null : [for r in a.ranges : {
+      address               = try(r.address, null)
+      address_variable      = try(r.address_variable, null)
+      cost                  = try(r.cost, null)
+      cost_variable         = try(r.cost_variable, null)
+      no_advertise          = try(r.no_advertise, null)
+      no_advertise_variable = try(r.no_advertise_variable, null)
+    }]
+    optional = try(a.optional, null)
+  }]
+  max_metric_router_lsa = try(length(each.value.max_metric_router_lsas) == 0, true) ? null : [for r in each.value.max_metric_router_lsas : {
+    ad_type       = r.type
+    time          = try(r.time, null)
+    time_variable = try(r.time_variable, null)
+  }]
+  redistribute = try(length(each.value.redistributes) == 0, true) ? null : [for r in each.value.redistributes : {
+    protocol              = try(r.protocol, null)
+    protocol_variable     = try(r.protocol_variable, null)
+    route_policy          = try(r.route_policy, null)
+    route_policy_variable = try(r.route_policy_variable, null)
+    nat_dia               = try(r.nat_dia, null)
+    nat_dia_variable      = try(r.nat_dia_variable, null)
+    optional              = try(r.optional, null)
+  }]
+  route_policies = try(each.value.route_policy, null) == null ? null : [{
+    direction            = "in"
+    policy_name          = try(each.value.route_policy, null)
+    policy_name_variable = try(each.value.route_policy_variable, null)
+  }]
+}
+
+resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_internet_gateway_feature_template" {
+  for_each                   = { for t in try(local.edge_feature_templates.secure_internet_gateway_templates, {}) : t.name => t }
+  name                       = each.value.name
+  description                = each.value.description
+  device_types               = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  tracker_source_ip          = try(each.value.tracker_source_ip, null)
+  tracker_source_ip_variable = try(each.value.tracker_source_ip_variable, null)
+  interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for interface in try(each.value.interfaces, []) : {
+    application                            = "sig"
+    description                            = try(interface.description, null)
+    description_variable                   = try(interface.description_variable, null)
+    dead_peer_detection_interval           = try(interface.dpd_interval, null)
+    dead_peer_detection_interval_variable  = try(interface.dpd_interval_variable, null)
+    dead_peer_detection_retries            = try(interface.dpd_retries, null)
+    dead_peer_detection_retries_variable   = try(interface.dpd_retries_variable, null)
+    ike_ciphersuite                        = try(interface.ike_ciphersuite, null)
+    ike_ciphersuite_variable               = try(interface.ike_ciphersuite_variable, null)
+    ike_group                              = try(interface.ike_group, null)
+    ike_group_variable                     = try(interface.ike_group_variable, null)
+    ike_pre_shared_key                     = try(interface.ike_pre_shared_key, null)
+    ike_pre_shared_key_variable            = try(interface.ike_pre_shared_key_variable, null)
+    ike_pre_shared_key_local_id            = try(interface.ike_pre_shared_key_local_id, null)
+    ike_pre_shared_key_local_id_variable   = try(interface.ike_pre_shared_key_local_id_variable, null)
+    ike_pre_shared_key_remote_id           = try(interface.ike_pre_shared_key_remote_id, null)
+    ike_pre_shared_key_remote_id_variable  = try(interface.ike_pre_shared_key_remote_id_variable, null)
+    ike_rekey_interval                     = try(interface.ike_rekey_interval, null)
+    ike_rekey_interval_variable            = try(interface.ike_rekey_interval_variable, null)
+    ipsec_ciphersuite                      = try(interface.ipsec_ciphersuite, null)
+    ipsec_ciphersuite_variable             = try(interface.ipsec_ciphersuite_variable, null)
+    ipsec_perfect_forward_secrecy          = try(interface.ipsec_perfect_forward_secrecy, null)
+    ipsec_perfect_forward_secrecy_variable = try(interface.ipsec_perfect_forward_secrecy_variable, null)
+    ipsec_rekey_interval                   = try(interface.ipsec_rekey_interval, null)
+    ipsec_rekey_interval_variable          = try(interface.ipsec_rekey_interval_variable, null)
+    ipsec_replay_window                    = try(interface.ipsec_replay_window, null)
+    ipsec_replay_window_variable           = try(interface.ipsec_replay_window_variable, null)
+    mtu                                    = try(interface.mtu, null)
+    mtu_variable                           = try(interface.mtu_variable, null)
+    name                                   = try(interface.name, null)
+    name_variable                          = try(interface.name_variable, null)
+    shutdown                               = try(interface.shutdown, null)
+    sig_provider                           = interface.sig_provider == "umbrella" ? "secure-internet-gateway-umbrella" : interface.sig_provider == "zscaler" ? "secure-internet-gateway-zscaler" : interface.sig_provider == "other" ? "secure-internet-gateway-other" : null
+    tcp_mss                                = try(interface.tcp_mss, null)
+    tcp_mss_variable                       = try(interface.tcp_mss_variable, null)
+    track_enable                           = try(interface.track, null)
+    tunnel_dc_preference                   = try(interface.tunnel_dc_preference, null)
+    tunnel_destination                     = try(interface.tunnel_destination, null)
+    tunnel_destination_variable            = try(interface.tunnel_destination_variable, null)
+    tunnel_source_interface                = try(interface.tunnel_source_interface, null)
+    tunnel_source_interface_variable       = try(interface.tunnel_source_interface_variable, null)
+  }]
+  trackers = try(length(each.value.trackers) == 0, true) ? null : [for tracker in try(each.value.trackers, []) : {
+    tracker_type              = "SIG"
+    endpoint_api_url          = try(tracker.endpoint_api_url, null)
+    endpoint_api_url_variable = try(tracker.endpoint_api_url_variable, null)
+    multiplier                = try(tracker.multiplier, null)
+    multiplier_variable       = try(tracker.multiplier_variable, null)
+    interval                  = try(tracker.interval, null)
+    interval_variable         = try(tracker.interval_variable, null)
+    name                      = try(tracker.name, null)
+    name_variable             = try(tracker.name_variable, null)
+    threshold                 = try(tracker.threshold, null)
+    threshold_variable        = try(tracker.threshold_variable, null)
+  }]
+  services = [{
+    service_type = (
+    try(each.value.umbrella_primary_data_center, each.value.umbrella_primary_data_center_variable, each.value.umbrella_secondary_data_center, each.value.umbrella_secondary_data_center_variable, each.value.zscaler_primary_data_center, each.value.zscaler_primary_data_center_variable, each.value.zscaler_secondary_data_center, each.value.zscaler_secondary_data_center_variable, each.value.zscaler_aup_block_internet_until_accepted, each.value.zscaler_aup_enabled, each.value.zscaler_aup_force_ssl_inspection, each.value.zscaler_aup_timeout, each.value.zscaler_authentication_required, each.value.zscaler_caution_enabled, each.value.zscaler_ips_control_enabled, each.value.zscaler_firewall_enabled, each.value.zscaler_location_name_variable, each.value.zscaler_surrogate_display_time_unit, each.value.zscaler_surrogate_idle_time, each.value.zscaler_surrogate_ip, each.value.zscaler_surrogate_ip_enforce_for_known_browsers, each.value.zscaler_surrogate_refresh_time, each.value.zscaler_surrogate_refresh_time_unit, each.value.zscaler_xff_forward, null) == null ? null : "sig")
+    aup_block_internet_until_accepted               = try(each.value.zscaler_aup_block_internet_until_accepted, null)
+    aup_enabled                                     = try(each.value.zscaler_aup_enabled, null)
+    aup_force_ssl_inspection                        = try(each.value.zscaler_aup_force_ssl_inspection, null)
+    aup_timeout                                     = try(each.value.zscaler_aup_timeout, null)
+    umbrella_primary_data_center                    = try(each.value.umbrella_primary_data_center, null)
+    umbrella_primary_data_center_variable           = try(each.value.umbrella_primary_data_center_variable, null)
+    umbrella_secondary_data_center                  = try(each.value.umbrella_secondary_data_center, null)
+    umbrella_secondary_data_center_variable         = try(each.value.umbrella_secondary_data_center_variable, null)
+    zscaler_authentication_required                 = try(each.value.zscaler_authentication_required, null)
+    zscaler_caution_enabled                         = try(each.value.zscaler_caution_enabled, null)
+    zscaler_firewall_enabled                        = try(each.value.zscaler_firewall_enabled, null)
+    zscaler_ips_control_enabled                     = try(each.value.zscaler_ips_control_enabled, null)
+    zscaler_location_name_variable                  = try(each.value.zscaler_location_name_variable, null)
+    zscaler_primary_data_center                     = try(each.value.zscaler_primary_data_center, null)
+    zscaler_primary_data_center_variable            = try(each.value.zscaler_primary_data_center_variable, null)
+    zscaler_secondary_data_center                   = try(each.value.zscaler_secondary_data_center, null)
+    zscaler_secondary_data_center_variable          = try(each.value.zscaler_secondary_data_center_variable, null)
+    zscaler_surrogate_display_time_unit             = try(each.value.zscaler_surrogate_display_time_unit, null)
+    zscaler_surrogate_idle_time                     = try(each.value.zscaler_surrogate_idle_time, null)
+    zscaler_surrogate_ip                            = try(each.value.zscaler_surrogate_ip, null)
+    zscaler_surrogate_ip_enforce_for_known_browsers = try(each.value.zscaler_surrogate_ip_enforce_for_known_browsers, null)
+    zscaler_surrogate_refresh_time                  = try(each.value.zscaler_surrogate_refresh_time, null)
+    zscaler_surrogate_refresh_time_unit             = try(each.value.zscaler_surrogate_refresh_time_unit, null)
+    zscaler_xff_forward                             = try(each.value.zscaler_xff_forward, null)
+    interface_pairs = try(length(each.value.high_availability_interface_pairs) == 0, true) ? null : [for pair in try(each.value.high_availability_interface_pairs, []) : {
+      active_interface        = try(pair.active_interface, null)
+      active_interface_weight = try(pair.active_interface_weight, null)
+      backup_interface        = try(pair.backup_interface, null)
+      backup_interface_weight = try(pair.backup_interface_weight, null)
+    }]
+  }]
+}
+
 resource "sdwan_cisco_security_feature_template" "cisco_security_feature_template" {
   for_each                    = { for t in try(local.edge_feature_templates.security_templates, {}) : t.name => t }
   name                        = each.value.name
   description                 = each.value.description
-  device_types                = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.security_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   extended_ar_window          = try(each.value.extended_anti_replay_window, null)
   extended_ar_window_variable = try(each.value.extended_anti_replay_window_variable, null)
   integrity_type              = try(each.value.authentication_types, null)
@@ -774,7 +889,7 @@ resource "sdwan_cisco_snmp_feature_template" "cisco_snmp_feature_template" {
   for_each          = { for t in try(local.edge_feature_templates.snmp_templates, {}) : t.name => t }
   name              = each.value.name
   description       = each.value.description
-  device_types      = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.snmp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   contact           = try(each.value.contact, null)
   contact_variable  = try(each.value.contact_variable, null)
   location          = try(each.value.location, null)
@@ -837,7 +952,7 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   for_each                           = { for t in try(local.edge_feature_templates.system_templates, {}) : t.name => t }
   name                               = each.value.name
   description                        = each.value.description
-  device_types                       = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                       = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.system_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   admin_tech_on_failure              = try(each.value.admin_tech_on_failure, null)
   admin_tech_on_failure_variable     = try(each.value.admin_tech_on_failure_variable, null)
   affinity_group_number              = try(each.value.affinity_group_number, null)
@@ -906,7 +1021,6 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   track_transport_variable               = try(each.value.track_transport_variable, null)
   transport_gateway                      = try(each.value.transport_gateway, null)
   transport_gateway_variable             = try(each.value.transport_gateway_variable, null)
-
   object_trackers = try(length(each.value.object_trackers) == 0, true) ? null : [for obj in each.value.object_trackers : {
     object_number          = try(obj.id, null)
     object_number_variable = try(obj.id_variable, null)
@@ -960,12 +1074,41 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   }]
 }
 
+resource "sdwan_cisco_thousandeyes_feature_template" "thousandeyes_feature_template" {
+  for_each     = { for t in try(local.edge_feature_templates.thousandeyes_templates, {}) : t.name => t }
+  name         = each.value.name
+  description  = each.value.description
+  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.thousandeyes_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  virtual_applications = [{
+    application_type                = "te"
+    instance_id                     = 1
+    te_account_group_token          = try(each.value.account_group_token, null)
+    te_account_group_token_variable = try(each.value.account_group_token_variable, null)
+    te_agent_ip                     = try(each.value.ip, null)
+    te_agent_ip_variable            = try(each.value.ip_variable, null)
+    te_default_gateway              = try(each.value.default_gateway, null)
+    te_default_gateway_variable     = try(each.value.default_gateway_variable, null)
+    te_hostname                     = try(each.value.hostname, null)
+    te_hostname_variable            = try(each.value.hostname_variable, null)
+    te_name_server                  = try(each.value.name_server, null)
+    te_name_server_variable         = try(each.value.name_server_variable, null)
+    te_pac_url                      = try(each.value.proxy_pac_url, null)
+    te_pac_url_variable             = try(each.value.proxy_pac_url_variable, null)
+    te_proxy_host                   = try(each.value.proxy_host, null)
+    te_proxy_host_variable          = try(each.value.proxy_host_variable, null)
+    te_proxy_port                   = try(each.value.proxy_port, null)
+    te_proxy_port_variable          = try(each.value.proxy_port_variable, null)
+    te_vpn                          = try(each.value.vpn_id, null)
+    te_vpn_variable                 = try(each.value.vpn_id_variable, null)
+    te_web_proxy_type               = try(each.value.proxy_type, null)
+  }]
+}
 
 resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   for_each                         = { for t in try(local.edge_feature_templates.vpn_templates, {}) : t.name => t }
   name                             = each.value.name
   description                      = each.value.description
-  device_types                     = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  device_types                     = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.vpn_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   enhance_ecmp_keying              = try(each.value.enhance_ecmp_keying, null)
   enhance_ecmp_keying_variable     = try(each.value.enhance_ecmp_keying_variable, null)
   omp_admin_distance_ipv4          = try(each.value.omp_admin_distance_ipv4, null)
@@ -1196,36 +1339,32 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     translate_ip_subnet           = try(rule.translate_ip_subnet, null)
     translate_ip_subnet_variable  = try(rule.translate_ip_subnet_variable, null)
   }]
-
-
 }
 
 resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_feature_template" {
-  for_each                       = { for t in try(local.edge_feature_templates.ethernet_interface_templates, {}) : t.name => t }
-  name                           = each.value.name
-  description                    = each.value.description
-  device_types                   = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  address                        = try(each.value.ipv4_address, null)
-  address_variable               = try(each.value.ipv4_address_variable, null)
-  arp_timeout                    = try(each.value.arp_timeout, null)
-  arp_timeout_variable           = try(each.value.arp_timeout_variable, null)
-  auto_bandwidth_detect          = try(each.value.bandwidth_auto_detect, null)
-  auto_bandwidth_detect_variable = try(each.value.bandwidth_auto_detect_variable, null)
-  autonegotiate                  = try(each.value.autonegotiate, null)
-  autonegotiate_variable         = try(each.value.autonegotiate_variable, null)
-  bandwidth_downstream           = try(each.value.bandwidth_downstream, null)
-  bandwidth_downstream_variable  = try(each.value.bandwidth_downstream_variable, null)
-  bandwidth_upstream             = try(each.value.bandwidth_upstream, null)
-  bandwidth_upstream_variable    = try(each.value.bandwidth_upstream_variable, null)
-  block_non_source_ip            = try(each.value.block_non_source_ip, null)
-  block_non_source_ip_variable   = try(each.value.block_non_source_ip_variable, null)
-  core_region                    = try(each.value.tunnel_interface.core_region, null)
-  core_region_variable           = try(each.value.tunnel_interface.core_region_variable, null)
-  dhcp                           = try(each.value.ipv4_address_dhcp, null) == null ? null : true
-  dhcp_distance                  = try(each.value.dhcp_distance, null)
-  dhcp_distance_variable         = try(each.value.dhcp_distance_variable, null)
-  #dhcpv6 = ??
-  #dhcpv6_variable = ??
+  for_each                                      = { for t in try(local.edge_feature_templates.ethernet_interface_templates, {}) : t.name => t }
+  name                                          = each.value.name
+  description                                   = each.value.description
+  device_types                                  = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ethernet_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  address                                       = try(each.value.ipv4_address, null)
+  address_variable                              = try(each.value.ipv4_address_variable, null)
+  arp_timeout                                   = try(each.value.arp_timeout, null)
+  arp_timeout_variable                          = try(each.value.arp_timeout_variable, null)
+  auto_bandwidth_detect                         = try(each.value.bandwidth_auto_detect, null)
+  auto_bandwidth_detect_variable                = try(each.value.bandwidth_auto_detect_variable, null)
+  autonegotiate                                 = try(each.value.autonegotiate, null)
+  autonegotiate_variable                        = try(each.value.autonegotiate_variable, null)
+  bandwidth_downstream                          = try(each.value.bandwidth_downstream, null)
+  bandwidth_downstream_variable                 = try(each.value.bandwidth_downstream_variable, null)
+  bandwidth_upstream                            = try(each.value.bandwidth_upstream, null)
+  bandwidth_upstream_variable                   = try(each.value.bandwidth_upstream_variable, null)
+  block_non_source_ip                           = try(each.value.block_non_source_ip, null)
+  block_non_source_ip_variable                  = try(each.value.block_non_source_ip_variable, null)
+  core_region                                   = try(each.value.tunnel_interface.core_region, null)
+  core_region_variable                          = try(each.value.tunnel_interface.core_region_variable, null)
+  dhcp                                          = try(each.value.ipv4_address_dhcp, null) == null ? null : true
+  dhcp_distance                                 = try(each.value.dhcp_distance, null)
+  dhcp_distance_variable                        = try(each.value.dhcp_distance_variable, null)
   duplex                                        = try(each.value.duplex, null)
   duplex_variable                               = try(each.value.duplex_variable, null)
   enable_core_region                            = try(each.value.tunnel_interface.enable_core_region, null)
@@ -1246,8 +1385,8 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   ip_mtu_variable                               = try(each.value.mtu_variable, null)
   iperf_server                                  = try(each.value.iperf_server, null)
   iperf_server_variable                         = try(each.value.iperf_server_variable, null)
-  ipv4_dhcp_helper                              = try(each.value.ipv4_dhcp_helper, null)
-  ipv4_dhcp_helper_variable                     = try(each.value.ipv4_dhcp_helper_variable, null)
+  ipv4_dhcp_helper                              = try(each.value.ipv4_dhcp_helpers, null)
+  ipv4_dhcp_helper_variable                     = try(each.value.ipv4_dhcp_helpers_variable, null)
   ipv6_address                                  = try(each.value.ipv6_address, null)
   ipv6_address_variable                         = try(each.value.ipv6_address_variable, null)
   ipv6_nat                                      = try(each.value.ipv6_nat, null)
@@ -1417,8 +1556,9 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
       direction         = "out"
     }]
   ])
-  ipv4_secondary_addresses = try(length(each.value.ipv4_secondary_addresses) == 0, true) ? null : [for adr in each.value.ipv4_secondary_addresses : {
-    address = try(adr, null)
+  ipv4_secondary_addresses = try(length(each.value.ipv4_secondary_addresses) == 0, true) ? null : [for adr in try(each.value.ipv4_secondary_addresses, []) : {
+    address          = try(adr.address, null)
+    address_variable = try(adr.address_variable, null)
   }]
   ipv4_vrrps = try(length(each.value.ipv4_vrrp_groups) == 0, true) ? null : [for group in each.value.ipv4_vrrp_groups : {
     group_id            = try(group.id, null)
@@ -1468,7 +1608,8 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
     vpn_id_variable  = try(helper.vpn_id_variable, null)
   }]
   ipv6_secondary_addresses = try(length(each.value.ipv6_secondary_addresses) == 0, true) ? null : [for adr in each.value.ipv6_secondary_addresses : {
-    address = try(adr, null)
+    address          = try(adr.address, null)
+    address_variable = try(adr.address_variable, null)
   }]
   ipv6_vrrps = try(length(each.value.ipv6_vrrp_groups) == 0, true) ? null : [for group in each.value.ipv6_vrrp_groups : {
     group_id          = try(group.id, null)
@@ -1533,6 +1674,14 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   }]
 }
 
+resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
+  for_each     = { for t in try(local.edge_feature_templates.cli_templates, {}) : t.name => t }
+  name         = each.value.name
+  description  = each.value.description
+  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cli_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  cli_config   = each.value.cli_config
+}
+
 resource "sdwan_switchport_feature_template" "switchport_feature_template" {
   for_each              = { for t in try(local.edge_feature_templates.switchport_templates, {}) : t.name => t }
   name                  = each.value.name
@@ -1543,7 +1692,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
   module_type           = each.value.module_type
   slot                  = each.value.slot
   sub_slot              = each.value.sub_slot
-  interfaces = [for interface in try(each.value.interfaces, []) : {
+  interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for interface in try(each.value.interfaces, []) : {
     dot1x_control_direction                           = try(interface.dot1x.control_direction, null)
     dot1x_control_direction_variable                  = try(interface.dot1x.control_direction_variable, null)
     dot1x_critical_vlan                               = try(interface.dot1x.critical_vlan, null)
@@ -1588,7 +1737,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
     switchport_trunk_native_vlan                      = try(interface.trunk_native_vlan, null)
     switchport_trunk_native_vlan_variable             = try(interface.trunk_native_vlan_variable, null)
   }]
-  static_mac_addresses = [for sma in try(each.value.static_mac_addresses, []) : {
+  static_mac_addresses = try(length(each.value.static_mac_addresses) == 0, true) ? null : [for sma in try(each.value.static_mac_addresses, []) : {
     if_name              = try(sma.interface_name, null)
     if_name_variable     = try(sma.interface_name_variable, null)
     mac_address          = try(sma.mac_address, null)
@@ -1599,214 +1748,129 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
   }]
 }
 
-resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
-  for_each     = { for t in try(local.edge_feature_templates.cli_templates, {}) : t.name => t }
-  name         = each.value.name
-  description  = each.value.description
-  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cli_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  cli_config   = each.value.cli_config
-}
-
-resource "sdwan_cisco_thousandeyes_feature_template" "thousandeyes_feature_template" {
-  for_each     = { for t in try(local.edge_feature_templates.thousandeyes_templates, {}) : t.name => t }
-  name         = each.value.name
-  description  = each.value.description
-  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.thousandeyes_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  #  virtual_applications = [for virtual_applications in try(each.value.virtual_applications, []) : {
-  virtual_applications = [{
-    application_type                = "te"
-    instance_id                     = 1
-    te_account_group_token          = try(each.value.account_group_token, null)
-    te_account_group_token_variable = try(each.value.account_group_token_variable, null)
-    te_agent_ip                     = try(each.value.ip, null)
-    te_agent_ip_variable            = try(each.value.ip_variable, null)
-    te_default_gateway              = try(each.value.default_gateway, null)
-    te_default_gateway_variable     = try(each.value.default_gateway_variable, null)
-    te_hostname                     = try(each.value.hostname, null)
-    te_hostname_variable            = try(each.value.hostname_variable, null)
-    te_name_server                  = try(each.value.name_server, null)
-    te_name_server_variable         = try(each.value.name_server_variable, null)
-    te_pac_url                      = try(each.value.proxy_pac_url, null)
-    te_pac_url_variable             = try(each.value.proxy_pac_url_variable, null)
-    te_proxy_host                   = try(each.value.proxy_host, null)
-    te_proxy_host_variable          = try(each.value.proxy_host_variable, null)
-    te_proxy_port                   = try(each.value.proxy_port, null)
-    te_proxy_port_variable          = try(each.value.proxy_port_variable, null)
-    te_vpn                          = try(each.value.vpn_id, null)
-    te_vpn_variable                 = try(each.value.vpn_id_variable, null)
-    te_web_proxy_type               = try(each.value.proxy_type, null)
-  }]
-}
-/*
-resource "sdwan_cisco_thousandeyes_feature_template" "cisco_thousandeyes_feature_template" {
-  for_each     = { for t in try(local.cedge_feature_templates.cisco_thousandeyes, {}) : t.name => t }
-  name         = each.value.name
-  description  = each.value.description
-  device_types = [for d in try(each.value.deviceType, local.thousand_eyes_device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  virtual_applications = try(length(each.value.parameters.virtual-application) == 0, true) ? null : [for va in each.value.parameters.virtual-application : {
-    instance_id                     = try(va.instance-id, null)
-    application_type                = try(va.application-type, null)
-    te_account_group_token          = startswith(try(va.te.token, ""), "DEVICE_VARIABLE;") ? null : try(va.te.token, null)
-    te_account_group_token_variable = startswith(try(va.te.token, ""), "DEVICE_VARIABLE;") ? split(";", va.te.token)[1] : null
-    te_vpn                          = startswith(try(va.te.vpn, ""), "DEVICE_VARIABLE;") ? null : try(va.te.vpn, null)
-    te_vpn_variable                 = startswith(try(va.te.vpn, ""), "DEVICE_VARIABLE;") ? split(";", va.te.vpn)[1] : null
-    te_agent_ip                     = startswith(try(va.te.te-mgmt-ip, ""), "DEVICE_VARIABLE;") ? null : try(va.te.te-mgmt-ip, null)
-    te_agent_ip_variable            = startswith(try(va.te.te-mgmt-ip, ""), "DEVICE_VARIABLE;") ? split(";", va.te.te-mgmt-ip)[1] : null
-    te_default_gateway              = startswith(try(va.te.te-vpg-ip, ""), "DEVICE_VARIABLE;") ? null : try(va.te.te-vpg-ip, null)
-    te_default_gateway_variable     = startswith(try(va.te.te-vpg-ip, ""), "DEVICE_VARIABLE;") ? split(";", va.te.te-vpg-ip)[1] : null
-    te_name_server                  = startswith(try(va.te.name-server, ""), "DEVICE_VARIABLE;") ? null : try(va.te.name-server, null)
-    te_name_server_variable         = startswith(try(va.te.name-server, ""), "DEVICE_VARIABLE;") ? split(";", va.te.name-server)[1] : null
-    te_hostname                     = startswith(try(va.te.hostname, ""), "DEVICE_VARIABLE;") ? null : try(va.te.hostname, null)
-    te_hostname_variable            = startswith(try(va.te.hostname, ""), "DEVICE_VARIABLE;") ? split(";", va.te.hostname)[1] : null
-    te_web_proxy_type               = startswith(try(va.te.proxy_type, ""), "DEVICE_VARIABLE;") ? null : try(va.te.proxy_type, null)
-    te_web_proxy_type_variable      = startswith(try(va.te.proxy_type, ""), "DEVICE_VARIABLE;") ? split(";", va.te.proxy_type)[1] : null
-    te_proxy_host                   = startswith(try(va.te.proxy_static.proxy_host, ""), "DEVICE_VARIABLE;") ? null : try(va.te.proxy_static.proxy_host, null)
-    te_proxy_host_variable          = startswith(try(va.te.proxy_static.proxy_host, ""), "DEVICE_VARIABLE;") ? split(";", va.te.proxy_static.proxy_host)[1] : null
-    te_proxy_port                   = startswith(try(va.te.proxy_static.proxy_port, ""), "DEVICE_VARIABLE;") ? null : try(va.te.proxy_static.proxy_port, null)
-    te_proxy_port_variable          = startswith(try(va.te.proxy_static.proxy_port, ""), "DEVICE_VARIABLE;") ? split(";", va.te.proxy_static.proxy_port)[1] : null
-    te_pac_url                      = startswith(try(va.te.proxy_pac.pac_url, ""), "DEVICE_VARIABLE;") ? null : try(va.te.proxy_pac.pac_url, null)
-    te_pac_url_variable             = startswith(try(va.te.proxy_pac.pac_url, ""), "DEVICE_VARIABLE;") ? split(";", va.te.proxy_pac.pac_url)[1] : null
-  }]
-}
-*/
-
-resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_template" {
-  for_each                   = { for t in try(local.edge_feature_templates.dhcp_server_templates, {}) : t.name => t }
-  name                       = each.value.name
-  description                = each.value.description
-  device_types               = [for d in try(each.value.device_types, local.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  address_pool               = try(each.value.address_pool, null)
-  address_pool_variable      = try(each.value.address_pool_variable, null)
-  default_gateway            = try(each.value.default_gateway, null)
-  default_gateway_variable   = try(each.value.default_gateway_variable, null)
-  dns_servers                = try(each.value.dns_servers, null)
-  dns_servers_variable       = try(each.value.dns_servers_variable, null)
-  domain_name                = try(each.value.domain_name, null)
-  domain_name_variable       = try(each.value.domain_name_variable, null)
-  exclude_addresses          = try(each.value.exclude_addresses, each.value.exclude_addresses_ranges, null) == null ? null : concat(try(each.value.exclude_addresses, []), [for r in try(each.value.exclude_addresses_ranges, []) : "${r.from}-${r.to}"])
-  exclude_addresses_variable = try(each.value.exclude_addresses_variable, null)
-  interface_mtu              = try(each.value.interface_mtu, null)
-  interface_mtu_variable     = try(each.value.interface_mtu_variable, null)
-  lease_time                 = try(each.value.lease_time, null)
-  lease_time_variable        = try(each.value.lease_time_variable, null)
-  tftp_servers               = try(each.value.tftp_servers, null)
-  tftp_servers_variable      = try(each.value.tftp_servers_variable, null)
-  options = try(length(each.value.options) == 0, true) ? null : [for option in each.value.options : {
-    ascii                = try(option.ascii, null)
-    ascii_variable       = try(option.source_ip_variable, null)
-    hex                  = try(option.hex, null)
-    hex_variable         = try(option.hex_variable, null)
-    ip_address           = try(option.ip_addresses, null)
-    ip_address_variable  = try(option.ip_addresses_variable, null)
-    option_code          = try(option.option_code, null)
-    option_code_variable = try(option.option_code_variable, null)
-  }]
-  static_leases = try(length(each.value.static_leases) == 0, true) ? null : [for lease in each.value.static_leases : {
-    ip_address           = try(lease.ip_address, null)
-    ip_address_variable  = try(lease.ip_address_variable, null)
-    mac_address          = try(lease.mac_address, null)
-    mac_address_variable = try(lease.mac_address_variable, null)
-    hostname             = try(lease.hostname, null)
-    hostname_variable    = try(lease.hostname_variable, null)
-    optional             = try(lease.optional, null)
-  }]
-}
-
-resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_internet_gateway_feature_template" {
-  for_each                   = { for t in try(local.edge_feature_templates.secure_internet_gateway_templates, {}) : t.name => t }
-  name                       = each.value.name
-  description                = each.value.description
-  device_types               = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  tracker_source_ip          = try(each.value.tracker_source_ip, null)
-  tracker_source_ip_variable = try(each.value.tracker_source_ip_variable, null)
-  interfaces = [for interface in try(each.value.interfaces, []) : {
-    application                            = "sig"
-    description                            = try(interface.description, null)
-    description_variable                   = try(interface.description_variable, null)
-    dead_peer_detection_interval           = try(interface.dpd_interval, null)
-    dead_peer_detection_interval_variable  = try(interface.dpd_interval_variable, null)
-    dead_peer_detection_retries            = try(interface.dpd_retries, null)
-    dead_peer_detection_retries_variable   = try(interface.dpd_retries_variable, null)
-    ike_ciphersuite                        = try(interface.ike_ciphersuite, null)
-    ike_ciphersuite_variable               = try(interface.ike_ciphersuite_variable, null)
-    ike_group                              = try(interface.ike_group, null)
-    ike_group_variable                     = try(interface.ike_group_variable, null)
-    ike_pre_shared_key                     = try(interface.ike_pre_shared_key, null)
-    ike_pre_shared_key_variable            = try(interface.ike_pre_shared_key_variable, null)
-    ike_pre_shared_key_local_id            = try(interface.ike_pre_shared_key_local_id, null)
-    ike_pre_shared_key_local_id_variable   = try(interface.ike_pre_shared_key_local_id_variable, null)
-    ike_pre_shared_key_remote_id           = try(interface.ike_pre_shared_key_remote_id, null)
-    ike_pre_shared_key_remote_id_variable  = try(interface.ike_pre_shared_key_remote_id_variable, null)
-    ike_rekey_interval                     = try(interface.ike_rekey_interval, null)
-    ike_rekey_interval_variable            = try(interface.ike_rekey_interval_variable, null)
-    ipsec_ciphersuite                      = try(interface.ipsec_ciphersuite, null)
-    ipsec_ciphersuite_variable             = try(interface.ipsec_ciphersuite_variable, null)
-    ipsec_perfect_forward_secrecy          = try(interface.ipsec_perfect_forward_secrecy, null)
-    ipsec_perfect_forward_secrecy_variable = try(interface.ipsec_perfect_forward_secrecy_variable, null)
-    ipsec_rekey_interval                   = try(interface.ipsec_rekey_interval, null)
-    ipsec_rekey_interval_variable          = try(interface.ipsec_rekey_interval_variable, null)
-    ipsec_replay_window                    = try(interface.ipsec_replay_window, null)
-    ipsec_replay_window_variable           = try(interface.ipsec_replay_window_variable, null)
-    mtu                                    = try(interface.mtu, null)
-    mtu_variable                           = try(interface.mtu_variable, null)
-    name                                   = try(interface.name, null)
-    name_variable                          = try(interface.name_variable, null)
-    shutdown                               = try(interface.shutdown, null)
-    sig_provider                           = interface.sig_provider == "umbrella" ? "secure-internet-gateway-umbrella" : interface.sig_provider == "zscaler" ? "secure-internet-gateway-zscaler" : interface.sig_provider == "other" ? "secure-internet-gateway-other" : null
-    tcp_mss                                = try(interface.tcp_mss, null)
-    tcp_mss_variable                       = try(interface.tcp_mss_variable, null)
-    track_enable                           = try(interface.track, null)
-    tunnel_dc_preference                   = try(interface.tunnel_dc_preference, null)
-    tunnel_destination                     = try(interface.tunnel_destination, null)
-    tunnel_destination_variable            = try(interface.tunnel_destination_variable, null)
-    tunnel_source_interface                = try(interface.tunnel_source_interface, null)
-    tunnel_source_interface_variable       = try(interface.tunnel_source_interface_variable, null)
-  }]
-  trackers = [for tracker in try(each.value.trackers, []) : {
-    tracker_type              = "SIG"
-    endpoint_api_url          = try(tracker.endpoint_api_url, null)
-    endpoint_api_url_variable = try(tracker.endpoint_api_url_variable, null)
-    multiplier                = try(tracker.multiplier, null)
-    multiplier_variable       = try(tracker.multiplier_variable, null)
-    interval                  = try(tracker.interval, null)
-    interval_variable         = try(tracker.interval_variable, null)
-    name                      = try(tracker.name, null)
-    name_variable             = try(tracker.name_variable, null)
-    threshold                 = try(tracker.threshold, null)
-    threshold_variable        = try(tracker.threshold_variable, null)
-  }]
-  services = [{
-    service_type = (
-    try(each.value.umbrella_primary_data_center, each.value.umbrella_primary_data_center_variable, each.value.umbrella_secondary_data_center, each.value.umbrella_secondary_data_center_variable, each.value.zscaler_primary_data_center, each.value.zscaler_primary_data_center_variable, each.value.zscaler_secondary_data_center, each.value.zscaler_secondary_data_center_variable, each.value.zscaler_aup_block_internet_until_accepted, each.value.zscaler_aup_enabled, each.value.zscaler_aup_force_ssl_inspection, each.value.zscaler_aup_timeout, each.value.zscaler_authentication_required, each.value.zscaler_caution_enabled, each.value.zscaler_ips_control_enabled, each.value.zscaler_firewall_enabled, each.value.zscaler_location_name_variable, each.value.zscaler_surrogate_display_time_unit, each.value.zscaler_surrogate_idle_time, each.value.zscaler_surrogate_ip, each.value.zscaler_surrogate_ip_enforce_for_known_browsers, each.value.zscaler_surrogate_refresh_time, each.value.zscaler_surrogate_refresh_time_unit, each.value.zscaler_xff_forward, null) == null ? null : "sig")
-    aup_block_internet_until_accepted               = try(each.value.zscaler_aup_block_internet_until_accepted, null)
-    aup_enabled                                     = try(each.value.zscaler_aup_enabled, null)
-    aup_force_ssl_inspection                        = try(each.value.zscaler_aup_force_ssl_inspection, null)
-    aup_timeout                                     = try(each.value.zscaler_aup_timeout, null)
-    umbrella_primary_data_center                    = try(each.value.umbrella_primary_data_center, null)
-    umbrella_primary_data_center_variable           = try(each.value.umbrella_primary_data_center_variable, null)
-    umbrella_secondary_data_center                  = try(each.value.umbrella_secondary_data_center, null)
-    umbrella_secondary_data_center_variable         = try(each.value.umbrella_secondary_data_center_variable, null)
-    zscaler_authentication_required                 = try(each.value.zscaler_authentication_required, null)
-    zscaler_caution_enabled                         = try(each.value.zscaler_caution_enabled, null)
-    zscaler_firewall_enabled                        = try(each.value.zscaler_firewall_enabled, null)
-    zscaler_ips_control_enabled                     = try(each.value.zscaler_ips_control_enabled, null)
-    zscaler_location_name_variable                  = try(each.value.zscaler_location_name_variable, null)
-    zscaler_primary_data_center                     = try(each.value.zscaler_primary_data_center, null)
-    zscaler_primary_data_center_variable            = try(each.value.zscaler_primary_data_center_variable, null)
-    zscaler_secondary_data_center                   = try(each.value.zscaler_secondary_data_center, null)
-    zscaler_secondary_data_center_variable          = try(each.value.zscaler_secondary_data_center_variable, null)
-    zscaler_surrogate_display_time_unit             = try(each.value.zscaler_surrogate_display_time_unit, null)
-    zscaler_surrogate_idle_time                     = try(each.value.zscaler_surrogate_idle_time, null)
-    zscaler_surrogate_ip                            = try(each.value.zscaler_surrogate_ip, null)
-    zscaler_surrogate_ip_enforce_for_known_browsers = try(each.value.zscaler_surrogate_ip_enforce_for_known_browsers, null)
-    zscaler_surrogate_refresh_time                  = try(each.value.zscaler_surrogate_refresh_time, null)
-    zscaler_surrogate_refresh_time_unit             = try(each.value.zscaler_surrogate_refresh_time_unit, null)
-    zscaler_xff_forward                             = try(each.value.zscaler_xff_forward, null)
-    interface_pairs = [for pair in try(each.value.high_availability_interface_pairs, []) : {
-      active_interface        = try(pair.active_interface, null)
-      active_interface_weight = try(pair.active_interface_weight, null)
-      backup_interface        = try(pair.backup_interface, null)
-      backup_interface_weight = try(pair.backup_interface_weight, null)
+resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_template" {
+  for_each                       = { for t in try(local.edge_feature_templates.svi_interface_templates, {}) : t.name => t }
+  name                           = each.value.name
+  description                    = each.value.description
+  device_types                   = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.svi_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  arp_timeout                    = try(each.value.arp_timeout, null)
+  arp_timeout_variable           = try(each.value.arp_timeout_variable, null)
+  if_name                        = try(each.value.interface_name, null)
+  if_name_variable               = try(each.value.interface_name_variable, null)
+  interface_description          = try(each.value.interface_description, null)
+  interface_description_variable = try(each.value.interface_description_variable, null)
+  ip_directed_broadcast          = try(each.value.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable = try(each.value.ip_directed_broadcast_variable, null)
+  ip_mtu                         = try(each.value.ip_mtu, null)
+  ip_mtu_variable                = try(each.value.ip_mtu_variable, null)
+  ipv4_address                   = try(each.value.ipv4_address, null)
+  ipv4_address_variable          = try(each.value.ipv4_address_variable, null)
+  ipv4_dhcp_helper               = try(each.value.ipv4_dhcp_helpers, null)
+  ipv4_dhcp_helper_variable      = try(each.value.ipv4_dhcp_helpers_variable, null)
+  ipv6_address                   = try(each.value.ipv6_address, null)
+  ipv6_address_variable          = try(each.value.ipv6_address_variable, null)
+  mtu                            = try(each.value.mtu, null)
+  mtu_variable                   = try(each.value.mtu_variable, null)
+  shutdown                       = try(each.value.shutdown, null)
+  shutdown_variable              = try(each.value.shutdown_variable, null)
+  tcp_mss_adjust                 = try(each.value.tcp_mss, null)
+  tcp_mss_adjust_variable        = try(each.value.tcp_mss_variable, null)
+  ipv4_access_lists = try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_egress_access_list_variable, null)
+      direction         = "out"
     }]
+  ])
+  ipv6_access_lists = try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+  ipv4_secondary_addresses = try(length(each.value.ipv4_secondary_addresses) == 0, true) ? null : [for a in try(each.value.ipv4_secondary_addresses, []) : {
+    ipv4_address          = try(a.address, null)
+    ipv4_address_variable = try(a.address_variable, null)
+  }]
+  ipv6_secondary_addresses = try(length(each.value.ipv6_secondary_addresses) == 0, true) ? null : [for a in try(each.value.ipv6_secondary_addresses, []) : {
+    ipv6_address          = try(a.address, null)
+    ipv6_address_variable = try(a.address_variable, null)
+  }]
+  ipv4_vrrps = try(length(each.value.ipv4_vrrp_groups) == 0, true) ? null : [for v in try(each.value.ipv4_vrrp_groups, []) : {
+    group_id              = try(v.id, null)
+    group_id_variable     = try(v.id_variable, null)
+    ipv4_address          = try(v.address, null)
+    ipv4_address_variable = try(v.address_variable, null)
+    ipv4_secondary_addresses = try(length(v.secondary_addresses) == 0, true) ? null : [for sa in try(v.secondary_addresses, []) : {
+      ipv4_address          = try(sa.address, null)
+      ipv4_address_variable = try(sa.address_variable, null)
+    }]
+    optional                              = try(v.optional, null)
+    priority                              = try(v.priority, null)
+    priority_variable                     = try(v.priority_variable, null)
+    timer                                 = try(v.timer, null)
+    timer_variable                        = try(v.timer_variable, null)
+    tloc_preference_change                = try(v.tloc_preference_change, null)
+    tloc_preference_change_value          = try(v.tloc_preference_change_value, null)
+    tloc_preference_change_value_variable = try(v.tloc_preference_change_value_variable, null)
+    track_omp                             = try(v.track_omp, null)
+    track_omp_variable                    = try(v.track_omp_variable, null)
+    track_prefix_list                     = try(v.track_prefix_list, null)
+    track_prefix_list_variable            = try(v.track_prefix_list_variable, null)
+    tracking_objects = try(length(v.tracking_objects) == 0, true) ? null : [for t in try(v.tracking_objects, []) : {
+      name                     = try(t.id, null)
+      name_variable            = try(t.id_variable, null)
+      decrement_value          = try(t.decrement_value, null)
+      decrement_value_variable = try(t.decrement_value_variable, null)
+      track_action             = try(t.action, null)
+      track_action_variable    = try(t.action_variable, null)
+    }]
+  }]
+  ipv6_dhcp_helpers = try(length(each.value.ipv6_dhcp_helpers) == 0, true) ? null : [for h in try(each.value.ipv6_dhcp_helpers, []) : {
+    address          = try(h.address, null)
+    address_variable = try(h.address_variable, null)
+    vpn_id           = try(h.vpn_id, null)
+    vpn_id_variable  = try(h.vpn_id_variable, null)
+  }]
+  ipv6_vrrps = try(length(each.value.ipv6_vrrp_groups) == 0, true) ? null : [for v in try(each.value.ipv6_vrrp_groups, []) : {
+    group_id          = try(v.id, null)
+    group_id_variable = try(v.id_variable, null)
+    ipv6_addresses = try(v.link_local_address, v.link_local_address_variable, v.global_prefix, v.global_prefix_variable, null) == null ? null : [{
+      link_local_address          = try(v.link_local_address, null)
+      link_local_address_variable = try(v.link_local_address_variable, null)
+      prefix                      = try(v.global_prefix, null)
+      prefix_link_local_variable  = try(v.global_prefix_variable, null)
+    }]
+    ipv6_secondary_addresses = try(length(v.secondary_addresses) == 0, true) ? null : [for sa in try(v.secondary_addresses, []) : {
+      prefix          = try(sa.address, null)
+      prefix_variable = try(sa.address_variable, null)
+    }]
+    optional                   = try(v.optional, null)
+    priority                   = try(v.priority, null)
+    priority_variable          = try(v.priority_variable, null)
+    timer                      = try(v.timer, null)
+    timer_variable             = try(v.timer_variable, null)
+    track_omp                  = try(v.track_omp, null)
+    track_omp_variable         = try(v.track_omp_variable, null)
+    track_prefix_list          = try(v.track_prefix_list, null)
+    track_prefix_list_variable = try(v.track_prefix_list_variable, null)
+  }]
+  static_arp_entries = try(length(each.value.static_arps) == 0, true) ? null : [for e in try(each.value.static_arps, []) : {
+    ipv4_address          = try(e.ip_address, null)
+    ipv4_address_variable = try(e.ip_address_variable, null)
+    mac_address           = try(e.mac_address, null)
+    mac_address_variable  = try(e.mac_address_variable, null)
+    optional              = try(e.optional, null)
   }]
 }

@@ -16,20 +16,6 @@ defaults:
           - C8200-1N-4T
           - C8200L-1N-4T
         authentication_and_authorization_order: local
-        radius_server_groups:
-          servers:
-            authentication_port: 1812
-            accounting_port: 1813
-            retransmit_count: 3
-            timeout: 5
-        tacacs_server_groups:
-          servers:
-            port: 49
-            timeout: 5
-        authorization_config_commands: false
-        authorization_console: false
-        authorization_rules:
-          authenticated: false
       banner_templates:
         device_types:
           - C8000V
@@ -56,14 +42,7 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        multiplier: 6
-        poll_interval: 600000
-        default_dscp: 48
-        colors:
-          hello_interval: 1000
-          multiplier: 7
-          default_dscp: 48
-          path_mtu_discovery: true
+        poll_interval: 120000
       bgp_templates:
         device_types:
           - C8000V
@@ -78,6 +57,19 @@ defaults:
           - C8200-1N-4T
           - C8200L-1N-4T
       cli_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500-20X6C
+          - C8500L-8S4X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      dhcp_server_templates:
         device_types:
           - C8000V
           - C8300-1N1S-4T2X
@@ -116,29 +108,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        arp_proxy: false
-        cdp: true
-        console_logging: true
-        domain_lookup: false
-        ftp_passive: false
-        http_authentication: local
-        http_server: false
-        https_server: false
-        ignore_bootp: true
-        ip_source_routing: false
-        lldp: true
-        nat64_tcp_timeout: 3600
-        nat64_udp_timeout: 300
-        rsh_rcp: false
-        snmp_ifindex_persist: true
         ssh_version: 2
-        tcp_keepalives_in: true
-        tcp_keepalives_out: true
-        tcp_small_servers: false
-        telnet_outbound: false
-        udp_small_servers: false
-        vty_logging: false
-      logging_templates:
+      ipsec_interface_templates:
         device_types:
           - C8000V
           - C8300-1N1S-4T2X
@@ -151,7 +122,7 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-      ipsec_interface_templates:
+      logging_templates:
         device_types:
           - C8000V
           - C8300-1N1S-4T2X
@@ -190,6 +161,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+        ecmp_limit: 16
+        send_path_limit: 16
       ospf_templates:
         device_types:
           - C8000V
@@ -255,6 +228,24 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+      svi_interface_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      switchport_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
       system_templates:
         device_types:
           - C8000V
@@ -268,11 +259,7 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        endpoint_trackers:
-          interval: 60
-          multiplier: 3
-          threshold: 300
-          type: interface
+        console_baud_rate: 9600
       thousandeyes_templates:
         device_types:
           - C8300-1N1S-4T2X

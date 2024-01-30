@@ -863,7 +863,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
 }
 
 resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_feature_template" {
-  for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.name => t }
+  for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.sig_provider => t }
   name                              = each.value.sig_provider == "umbrella" ? "Cisco-Umbrella-Global-Credentials" : "Cisco-Zscaler-Global-Credentials" 
   description                       = each.value.sig_provider == "umbrella" ? "Global credentials for umbrella" : "Global credentials for zscaler" 
   #device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
@@ -1670,6 +1670,30 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
     optional                = try(entry.optional, null)
   }]
 }
+
+/*
+resource "sdwan_cisco_vpn_interface_ipsec_feature_template" "cisco_vpn_interface_ipsec_feature_template" {
+  for_each     = { for t in try(local.edge_feature_templates.ipsec_interface_templates, {}) : t.name => t }
+  name         = each.value.name
+  description  = each.value.description
+  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ipsec_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  application = try(each.value.application, null)
+  application_variable = try(each.value.application_variable, null)
+  clear_dont_fragment = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_variable = try(each.value.clear_dont_fragment_variable, null)
+  dead_peer_detection_interval = try(each.value.dead_peer_detection_interval, null)
+  dead_peer_detection_interval_variable = try(each.value.dead_peer_detection_interval_variable, null)
+  application = try(each.value.application, null)
+  application_variable = try(each.value.application_variable, null)
+  application = try(each.value.application, null)
+  application_variable = try(each.value.application_variable, null)
+  application = try(each.value.application, null)
+  application_variable = try(each.value.application_variable, null)
+  application = try(each.value.application, null)
+  application_variable = try(each.value.application_variable, null)
+
+}
+*/
 
 resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
   for_each     = { for t in try(local.edge_feature_templates.cli_templates, {}) : t.name => t }

@@ -8,7 +8,7 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
   dot1x_accounting              = try(each.value.dot1x_accounting, null)
   dot1x_accounting_variable     = try(each.value.dot1x_accounting_variable, null)
   server_groups_priority_order  = join(",", try(each.value.authentication_and_authorization_order, local.defaults.sdwan.edge_feature_templates.aaa_templates.authentication_and_authorization_order))
-  users = try(length(each.value.parameters.users) == 0, true) ? null : [for user in each.value.users : {
+  users = try(length(each.value.users) == 0, true) ? null : [for user in each.value.users : {
     name                     = user.name
     password                 = user.password
     secret                   = user.secret
@@ -39,13 +39,12 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
       key_type_variable            = try(server.key_type_variable, null)
       key                          = server.key
       secret_key                   = server.secret_key
-      encryption_type              = 6
+      #encryption_type              = 6
     }]
   }]
   radius_clients = try(length(each.value.radius_dynamic_author.clients) == 0, true) ? null : [for client in each.value.radius_dynamic_author.clients : {
     client_ip          = try(client.ip, null)
     client_ip_variable = try(client.ip_variable, null)
-    optional           = try(client.optional, null)
     vpn_configurations = [{
       vpn_id          = try(client.vpn_id, null)
       vpn_id_variable = try(client.vpn_id_variable, null)

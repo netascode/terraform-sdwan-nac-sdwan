@@ -863,11 +863,11 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
 }
 
 resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_feature_template" {
-  for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.sig_provider => t }
-  name                              = each.value.sig_provider == "umbrella" ? "Cisco-Umbrella-Global-Credentials" : "Cisco-Zscaler-Global-Credentials" 
-  description                       = each.value.sig_provider == "umbrella" ? "Global credentials for umbrella" : "Global credentials for zscaler" 
+  for_each    = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.sig_provider => t }
+  name        = each.value.sig_provider == "umbrella" ? "Cisco-Umbrella-Global-Credentials" : "Cisco-Zscaler-Global-Credentials"
+  description = each.value.sig_provider == "umbrella" ? "Global credentials for umbrella" : "Global credentials for zscaler"
   #device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  device_types                      = ["vedge-CSR-1000v","vedge-ISR1100-6G-XE","vedge-ISR1100X-6G-XE","vedge-IR-1101","vedge-IR-1821","vedge-IR-1831","vedge-IR-1833","vedge-IR-1835","vedge-IR-8140H","vedge-IR-8140H-P","vedge-IR-8340","vedge-ESR-6300","vedge-ESR-6300-NCP","vedge-ISR-4331","vedge-ISR-4321","vedge-ISR-4351","vedge-ISR-4221","vedge-ISR-4221X","vedge-ISR-4431","vedge-ISR-4461","vedge-ISR-4451-X","vedge-ASR-1001-HX","vedge-ASR-1002-X","vedge-ASR-1002-HX","vedge-ASR-1006-X","vedge-C1111-8P","vedge-C1121X-8P","vedge-C1111X-8P","vedge-C1111-8PLTEEA","vedge-C1121-8PLTEPW","vedge-C1111-8PLTEEAW","vedge-C1111-8PLTELA","vedge-C1117-4PLTEEA","vedge-C1126X-8PLTEP","vedge-C1127X-8PLTEP","vedge-C1127X-8PMLTEP","vedge-C1127-8PMLTEP","vedge-C1117-4PLTELA","vedge-ISRv","vedge-C8000V","vedge-ASR-1001-X","vedge-C1101-4P","vedge-C1101-4PLTEP","vedge-C1111-4P","vedge-C1111-8PW","vedge-C1111-4PLTEEA","vedge-C1131-8PW","vedge-C1131X-8PW","vedge-C1131-8PLTEPW","vedge-C1131X-8PLTEPW","vedge-C1101-4PLTEPW","vedge-C1109-4PLTE2PW","vedge-C1111-8PLTELAW","vedge-C1109-4PLTE2P","vedge-C1121X-8PLTEP","vedge-C1161X-8PLTEP","vedge-C1113-8PMLTEEA","vedge-C1111-4PLTELA","vedge-C1116-4P","vedge-C1116-4PLTEEA","vedge-C1117-4P","vedge-C1117-4PM","vedge-C1117-4PMLTEEA","vedge-C8300-1N1S-4T2X","vedge-C8300-1N1S-6T","vedge-C8300-2N2S-6T","vedge-C8300-2N2S-4T2X","vedge-C8500-12X4QC","vedge-C8500-12X","vedge-C8500-20X6C","vedge-C1161X-8P","vedge-ISR1100-4G-XE","vedge-ISR1100X-4G-XE","vedge-ISR1100-4GLTENA-XE","vedge-ISR1100-4GLTEGB-XE","vedge-C8500L-8S4X","vedge-C1161-8P","vedge-C1126-8PLTEP","vedge-C1127-8PLTEP","vedge-C1121-4P","vedge-C1121-4PLTEP","vedge-C1128-8PLTEP","vedge-C1121X-8PLTEPW","vedge-C1121-8PLTEP","vedge-C1121-8P","vedge-C1161-8PLTEP","vedge-C1113-8PLTEEA","vedge-C1113-8PLTEW","vedge-C1111-4PW","vedge-C1112-8P","vedge-C1112-8PLTEEA","vedge-C1112-8PLTEEAWE","vedge-C1112-8PWE","vedge-C1113-8P","vedge-C1113-8PLTEEAW","vedge-C1113-8PLTELA","vedge-C1113-8PLTELAWZ","vedge-C1113-8PM","vedge-C1113-8PMWE","vedge-C1113-8PW","vedge-C1116-4PLTEEAWE","vedge-C1116-4PWE","vedge-C1117-4PLTEEAW","vedge-C1117-4PLTELAWZ","vedge-C1117-4PMLTEEAWE","vedge-C1117-4PMWE","vedge-C1117-4PW","vedge-C1118-8P","vedge-C1109-2PLTEGB","vedge-C1109-2PLTEUS","vedge-C1109-2PLTEVZ","vedge-C8200-1N-4T","vedge-C8200L-1N-4T","cellular-gateway-CG418-E","cellular-gateway-CG522MW-IO-NA","cellular-gateway-CG522MW-IO-GL","cellular-gateway-CG113-4GW6A","cellular-gateway-CG113-4GW6B","cellular-gateway-CG113-4GW6E","cellular-gateway-CG113-4GW6H","cellular-gateway-CG113-4GW6Z","cellular-gateway-CG113-4GW6Q","cellular-gateway-CG113-W6A","cellular-gateway-CG113-W6B","cellular-gateway-CG113-W6E","cellular-gateway-CG113-W6H","cellular-gateway-CG113-W6Z","cellular-gateway-CG113-W6Q","cellular-gateway-CG522-E"]
+  device_types                      = ["vedge-CSR-1000v", "vedge-ISR1100-6G-XE", "vedge-ISR1100X-6G-XE", "vedge-IR-1101", "vedge-IR-1821", "vedge-IR-1831", "vedge-IR-1833", "vedge-IR-1835", "vedge-IR-8140H", "vedge-IR-8140H-P", "vedge-IR-8340", "vedge-ESR-6300", "vedge-ESR-6300-NCP", "vedge-ISR-4331", "vedge-ISR-4321", "vedge-ISR-4351", "vedge-ISR-4221", "vedge-ISR-4221X", "vedge-ISR-4431", "vedge-ISR-4461", "vedge-ISR-4451-X", "vedge-ASR-1001-HX", "vedge-ASR-1002-X", "vedge-ASR-1002-HX", "vedge-ASR-1006-X", "vedge-C1111-8P", "vedge-C1121X-8P", "vedge-C1111X-8P", "vedge-C1111-8PLTEEA", "vedge-C1121-8PLTEPW", "vedge-C1111-8PLTEEAW", "vedge-C1111-8PLTELA", "vedge-C1117-4PLTEEA", "vedge-C1126X-8PLTEP", "vedge-C1127X-8PLTEP", "vedge-C1127X-8PMLTEP", "vedge-C1127-8PMLTEP", "vedge-C1117-4PLTELA", "vedge-ISRv", "vedge-C8000V", "vedge-ASR-1001-X", "vedge-C1101-4P", "vedge-C1101-4PLTEP", "vedge-C1111-4P", "vedge-C1111-8PW", "vedge-C1111-4PLTEEA", "vedge-C1131-8PW", "vedge-C1131X-8PW", "vedge-C1131-8PLTEPW", "vedge-C1131X-8PLTEPW", "vedge-C1101-4PLTEPW", "vedge-C1109-4PLTE2PW", "vedge-C1111-8PLTELAW", "vedge-C1109-4PLTE2P", "vedge-C1121X-8PLTEP", "vedge-C1161X-8PLTEP", "vedge-C1113-8PMLTEEA", "vedge-C1111-4PLTELA", "vedge-C1116-4P", "vedge-C1116-4PLTEEA", "vedge-C1117-4P", "vedge-C1117-4PM", "vedge-C1117-4PMLTEEA", "vedge-C8300-1N1S-4T2X", "vedge-C8300-1N1S-6T", "vedge-C8300-2N2S-6T", "vedge-C8300-2N2S-4T2X", "vedge-C8500-12X4QC", "vedge-C8500-12X", "vedge-C8500-20X6C", "vedge-C1161X-8P", "vedge-ISR1100-4G-XE", "vedge-ISR1100X-4G-XE", "vedge-ISR1100-4GLTENA-XE", "vedge-ISR1100-4GLTEGB-XE", "vedge-C8500L-8S4X", "vedge-C1161-8P", "vedge-C1126-8PLTEP", "vedge-C1127-8PLTEP", "vedge-C1121-4P", "vedge-C1121-4PLTEP", "vedge-C1128-8PLTEP", "vedge-C1121X-8PLTEPW", "vedge-C1121-8PLTEP", "vedge-C1121-8P", "vedge-C1161-8PLTEP", "vedge-C1113-8PLTEEA", "vedge-C1113-8PLTEW", "vedge-C1111-4PW", "vedge-C1112-8P", "vedge-C1112-8PLTEEA", "vedge-C1112-8PLTEEAWE", "vedge-C1112-8PWE", "vedge-C1113-8P", "vedge-C1113-8PLTEEAW", "vedge-C1113-8PLTELA", "vedge-C1113-8PLTELAWZ", "vedge-C1113-8PM", "vedge-C1113-8PMWE", "vedge-C1113-8PW", "vedge-C1116-4PLTEEAWE", "vedge-C1116-4PWE", "vedge-C1117-4PLTEEAW", "vedge-C1117-4PLTELAWZ", "vedge-C1117-4PMLTEEAWE", "vedge-C1117-4PMWE", "vedge-C1117-4PW", "vedge-C1118-8P", "vedge-C1109-2PLTEGB", "vedge-C1109-2PLTEUS", "vedge-C1109-2PLTEVZ", "vedge-C8200-1N-4T", "vedge-C8200L-1N-4T", "cellular-gateway-CG418-E", "cellular-gateway-CG522MW-IO-NA", "cellular-gateway-CG522MW-IO-GL", "cellular-gateway-CG113-4GW6A", "cellular-gateway-CG113-4GW6B", "cellular-gateway-CG113-4GW6E", "cellular-gateway-CG113-4GW6H", "cellular-gateway-CG113-4GW6Z", "cellular-gateway-CG113-4GW6Q", "cellular-gateway-CG113-W6A", "cellular-gateway-CG113-W6B", "cellular-gateway-CG113-W6E", "cellular-gateway-CG113-W6H", "cellular-gateway-CG113-W6Z", "cellular-gateway-CG113-W6Q", "cellular-gateway-CG522-E"]
   umbrella_api_key                  = try(each.value.umbrella_api_key, null)
   umbrella_api_key_variable         = try(each.value.umbrella_api_key_variable, null)
   umbrella_api_secret               = try(each.value.umbrella_api_secret, null)
@@ -971,8 +971,8 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   geo_fencing                        = try(each.value.geo_fencing, null)
   geo_fencing_sms                    = try(each.value.geo_fencing_sms_phone_numbers, null) == null ? null : true
   geo_fencing_sms_phone_numbers = try(length(each.value.geo_fencing_sms_phone_numbers) == 0, true) ? null : [for obj in each.value.geo_fencing_sms_phone_numbers : {
-    number          = try(each.value.geo_fencing_sms_phone_numbers.number, null)
-    number_variable = try(each.value.geo_fencing_sms_phone_numbers.number_variable, null)
+    number          = try(obj.number, null)
+    number_variable = try(obj.number_variable, null)
   }]
   geo_fencing_range                      = try(each.value.geo_fencing_range, null)
   geo_fencing_range_variable             = try(each.value.geo_fencing_range_variable, null)
@@ -1671,29 +1671,63 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   }]
 }
 
-/*
 resource "sdwan_cisco_vpn_interface_ipsec_feature_template" "cisco_vpn_interface_ipsec_feature_template" {
-  for_each     = { for t in try(local.edge_feature_templates.ipsec_interface_templates, {}) : t.name => t }
-  name         = each.value.name
-  description  = each.value.description
-  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ipsec_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  application = try(each.value.application, null)
-  application_variable = try(each.value.application_variable, null)
-  clear_dont_fragment = try(each.value.clear_dont_fragment, null)
-  clear_dont_fragment_variable = try(each.value.clear_dont_fragment_variable, null)
-  dead_peer_detection_interval = try(each.value.dead_peer_detection_interval, null)
-  dead_peer_detection_interval_variable = try(each.value.dead_peer_detection_interval_variable, null)
-  application = try(each.value.application, null)
-  application_variable = try(each.value.application_variable, null)
-  application = try(each.value.application, null)
-  application_variable = try(each.value.application_variable, null)
-  application = try(each.value.application, null)
-  application_variable = try(each.value.application_variable, null)
-  application = try(each.value.application, null)
-  application_variable = try(each.value.application_variable, null)
-
+  for_each                               = { for t in try(local.edge_feature_templates.ipsec_interface_templates, {}) : t.name => t }
+  name                                   = each.value.name
+  description                            = each.value.description
+  device_types                           = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.ipsec_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  application                            = try(each.value.application, null)
+  application_variable                   = try(each.value.application_variable, null)
+  clear_dont_fragment                    = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_variable           = try(each.value.clear_dont_fragment_variable, null)
+  dead_peer_detection_interval           = try(each.value.dead_peer_detection_interval, null)
+  dead_peer_detection_interval_variable  = try(each.value.dead_peer_detection_interval_variable, null)
+  dead_peer_detection_retries            = try(each.value.dead_peer_detection_retries, null)
+  dead_peer_detection_retries_variable   = try(each.value.dead_peer_detection_retries_variable, null)
+  ike_ciphersuite                        = try(each.value.ike.ciphersuite, null)
+  ike_ciphersuite_variable               = try(each.value.ike.ciphersuite_variable, null)
+  ike_group                              = try(each.value.ike.group, null)
+  ike_group_variable                     = try(each.value.ike.group_variable, null)
+  ike_mode                               = try(each.value.ike.mode, null)
+  ike_mode_variable                      = try(each.value.ike.mode_variable, null)
+  ike_pre_shared_key                     = try(each.value.ike.pre_shared_key, null)
+  ike_pre_shared_key_variable            = try(each.value.ike.pre_shared_key_variable, null)
+  ike_pre_shared_key_local_id            = try(each.value.ike.pre_shared_key_local_id, null)
+  ike_pre_shared_key_local_id_variable   = try(each.value.ike.pre_shared_key_local_id_variable, null)
+  ike_pre_shared_key_remote_id           = try(each.value.ike.pre_shared_key_remote_id, null)
+  ike_pre_shared_key_remote_id_variable  = try(each.value.ike.pre_shared_key_remote_id_variable, null)
+  ike_rekey_interval                     = try(each.value.ike.rekey_interval, null)
+  ike_rekey_interval_variable            = try(each.value.ike.rekey_interval_variable, null)
+  ike_version                            = try(each.value.ike.version, null)
+  interface_description                  = try(each.value.interface_description, null)
+  interface_description_variable         = try(each.value.interface_description_variable, null)
+  interface_name                         = try(each.value.interface_name, null)
+  interface_name_variable                = try(each.value.interface_name_variable, null)
+  ip_address                             = try(each.value.ip_address, null)
+  ip_address_variable                    = try(each.value.ip_address_variable, null)
+  ipsec_ciphersuite                      = try(each.value.ipsec.ciphersuite, null)
+  ipsec_ciphersuite_variable             = try(each.value.ipsec.ciphersuite_variable, null)
+  ipsec_perfect_forward_secrecy          = try(each.value.ipsec.perfect_forward_secrecy, null)
+  ipsec_perfect_forward_secrecy_variable = try(each.value.ipsec.perfect_forward_secrecy_variable, null)
+  ipsec_rekey_interval                   = try(each.value.ipsec.rekey_interval, null)
+  ipsec_rekey_interval_variable          = try(each.value.ipsec.rekey_interval_variable, null)
+  ipsec_replay_window                    = try(each.value.ipsec.replay_window, null)
+  ipsec_replay_window_variable           = try(each.value.ipsec.replay_window_variable, null)
+  mtu                                    = try(each.value.mtu, null)
+  mtu_variable                           = try(each.value.mtu_variable, null)
+  shutdown                               = try(each.value.shutdown, null)
+  shutdown_variable                      = try(each.value.shutdown_variable, null)
+  tcp_mss_adjust                         = try(each.value.tcp_mss, null)
+  tcp_mss_adjust_variable                = try(each.value.tcp_mss_variable, null)
+  tracker                                = try([each.value.tracker], null)
+  tracker_variable                       = try(each.value.tracker_variable, null)
+  tunnel_destination                     = try(each.value.tunnel_destination, null)
+  tunnel_destination_variable            = try(each.value.tunnel_destination_variable, null)
+  tunnel_source_interface                = try(each.value.tunnel_source_interface, null)
+  tunnel_source_interface_variable       = try(each.value.tunnel_source_interface_variable, null)
+  tunnel_source                          = try(each.value.tunnel_source_ip, null)
+  tunnel_source_variable                 = try(each.value.tunnel_source_ip_variable, null)
 }
-*/
 
 resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
   for_each     = { for t in try(local.edge_feature_templates.cli_templates, {}) : t.name => t }

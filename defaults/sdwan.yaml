@@ -1,9 +1,9 @@
 ---
 defaults:
   sdwan:
-    cedge_feature_templates:
-      cedge_aaa:
-        deviceType:
+    edge_feature_templates:
+      aaa_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -15,20 +15,23 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          server-auth-order: local
-          radius:
-            server:
-              acct-port: 1813
-              auth-port: 1812
-              retransmit: 3
-              timeout: 5
-          tacacs:
-            server:
-              port: 49
-              timeout: 5
-      cedge_global:
-        deviceType:
+        authentication_and_authorization_order: local
+        radius_server_groups:
+          servers:
+            authentication_port: 1812
+            accounting_port: 1813
+            retransmit_count: 3
+            timeout: 5
+        tacacs_server_groups:
+          servers:
+            port: 49
+            timeout: 5
+        authorization_config_commands: false
+        authorization_console: false
+        authorization_rules:
+          authenticated: false
+      banner_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -40,38 +43,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          http-global:
-            http-authentication: local
-          nat64-global:
-            nat64-timeout:
-              tcp-timeout: 3600
-              udp-timeout: 300
-          services-global:
-            services-ip:
-              arp-proxy: "false"
-              cdp: "true"
-              domain-lookup: "false"
-              ftp-passive: "false"
-              http-server: "false"
-              https-server: "false"
-              line-vty: "false"
-              lldp: "true"
-              rcmd: "false"
-            services-other:
-              bootp: "true"
-              console-logging: "true"
-              snmp-ifindex-persist: "true"
-              source-route: "false"
-              tcp-keepalives-in: "true"
-              tcp-keepalives-out: "true"
-              tcp-small-servers: "false"
-              udp-small-servers: "false"
-              vty-logging: "false"
-          ssh:
-            version: 2
-      cisco_banner:
-        deviceType:
+      bfd_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -83,9 +56,16 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-      cisco_bfd:
-        deviceType:
+        multiplier: 6
+        poll_interval: 600000
+        default_dscp: 48
+        colors:
+          hello_interval: 1000
+          multiplier: 7
+          default_dscp: 48
+          path_mtu_discovery: true
+      bgp_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -97,18 +77,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          app-route:
-            multiplier: 6
-            poll-interval: 120000
-          default-dscp: 48
-          color:
-            dscp: 48
-            hello-interval: 1000
-            multiplier: 7
-            pmtu-discovery: "true"
-      cisco_bgp:
-        deviceType:
+      cli_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -120,48 +90,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          bgp:
-            address-family:
-              default-information:
-                originate: "false"
-              family-type: ipv4-unicast
-              maximum-paths:
-                paths: 32
-            best-path:
-              as-path:
-                multipath-relax: "false"
-              compare-router-id: "false"
-              med:
-                always-compare: "false"
-                deterministic: "false"
-                missing-as-worst: "false"
-            distance:
-              external: 20
-              internal: 200
-              local: 20
-            neighbor:
-              address-family:
-                family-type: ipv4-unicast
-                maximum-prefixes:
-                  prefix-num: 1000
-              ebgp-multihop: 1
-              next-hop-self: "false"
-              send-community: "true"
-              send-ext-community: "true"
-              shutdown: "false"
-              timers:
-                holdtime: 3
-                keepalive: 1
-              optional: true
-            propagate-aspath: "true"
-            propagate-community: "true"
-            shutdown: "false"
-            timers:
-              holdtime: 3
-              keepalive: 1
-      cisco_logging:
-        deviceType:
+      ethernet_interface_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -173,14 +103,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          disk:
-            enable: "true"
-            file:
-              rotate: 10
-              size: 10
-      cisco_ntp:
-        deviceType:
+      global_settings_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -192,12 +116,30 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          server:
-            version: 4
-            vpn: 0
-      cisco_omp:
-        deviceType:
+        arp_proxy: false
+        cdp: true
+        console_logging: true
+        domain_lookup: false
+        ftp_passive: false
+        http_authentication: local
+        http_server: false
+        https_server: false
+        ignore_bootp: true
+        ip_source_routing: false
+        lldp: true
+        nat64_tcp_timeout: 3600
+        nat64_udp_timeout: 300
+        rsh_rcp: false
+        snmp_ifindex_persist: true
+        ssh_version: 2
+        tcp_keepalives_in: true
+        tcp_keepalives_out: true
+        tcp_small_servers: false
+        telnet_outbound: false
+        udp_small_servers: false
+        vty_logging: false
+      logging_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -209,21 +151,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          ecmp-limit: 16
-          graceful-restart: "true"
-          omp-admin-distance-ipv4: 251
-          omp-admin-distance-ipv6: 251
-          overlay-as: 1
-          send-path-limit: 16
-          shutdown: "false"
-          timers:
-            advertisement-interval: 1
-            eor-timer: 300
-            graceful-restart-timer: 43200
-            holdtime: 60
-      cisco_ospf:
-        deviceType:
+      ipsec_interface_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -235,27 +164,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          ospf:
-            area:
-              interface:
-                dead-interval: 40
-                hello-interval: 10
-                priority: 1
-                retransmit-interval: 5
-            auto-cost:
-              reference-bandwidth: 100
-            distance:
-              external: 110
-              inter-area: 110
-              intra-area: 110
-            timers:
-              spf:
-                delay: 200
-                initial-hold: 1000
-                max-hold: 10000
-      cisco_secure_internet_gateway:
-        deviceType:
+      ntp_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -267,38 +177,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          interface:
-            application: sig
-            auto: "true"
-            dead-peer-detection:
-              dpd-interval: 10
-              dpd-retries: 3
-            ike:
-              authentication-type:
-                pre-shared-key-dynamic: "true"
-              ike-ciphersuite: aes256-cbc-sha1
-              ike-group: "14"
-              ike-rekey-interval: 14400
-              ike-version: 2
-            ip:
-              unnumbered: "true"
-            ipsec:
-              ipsec-ciphersuite: aes256-cbc-sha1
-              ipsec-rekey-interval: 28800
-              ipsec-replay-window: 512
-              perfect-forward-secrecy: none
-            mtu: 1400
-            shutdown: "false"
-            tcp-mss-adjust: 1360
-            track-enable: "true"
-            tunnel-destination: dynamic
-            tunnel-set: secure-internet-gateway-umbrella
-          service:
-            svc-type: sig
-          vpn-id: 0
-      cisco_security:
-        deviceType:
+      omp_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -310,15 +190,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          ipsec:
-            authentication-type: [sha1-hmac, ah-sha1-hmac]
-            extended-ar-window: 256
-            integrity-type: [esp, ip-udp-esp]
-            rekey: 86400
-            replay-window: "2048"
-      cisco_snmp:
-        deviceType:
+      ospf_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -330,10 +203,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          shutdown: "false"
-      cisco_system:
-        deviceType:
+      secure_internet_gateway_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -345,32 +216,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          admin-tech-on-failure: "true"
-          clock:
-            timezone: UTC
-          console-baud-rate: "9600"
-          control-session-pps: 300
-          idle-timeout: 300
-          on-demand:
-            enable: "false"
-            idle-timeout: 10
-          overlay-id: 1
-          port-hop: "true"
-          port-offset: 0
-          track-default-gateway: "true"
-          track-transport: "true"
-      cisco_thousandeyes:
-        deviceType:
-          - C8300-1N1S-4T2X
-          - C8300-1N1S-6T
-          - C8300-2N2S-6T
-          - C8300-2N2S-4T2X
-          - C8200-1N-4T
-          - C8200L-1N-4T
-        parameters:
-      cisco_vpn:
-        deviceType:
+      security_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -382,16 +229,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          ecmp-hash-key:
-            layer4: "false"
-          ip:
-            route:
-              next-hop:
-                distance: 1
-              distance: 1
-      cisco_vpn_interface:
-        deviceType:
+      sig_credentials_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -403,37 +242,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          arp-timeout: 1200
-          ip:
-            dhcp-distance: 1
-          mtu: 1500
-          nat:
-            tcp-timeout: 60
-            udp-timeout: 1
-          shutdown: "false"
-          tunnel-interface:
-            allow-service:
-              all: "false"
-              bgp: "false"
-              dhcp: "true"
-              dns: "true"
-              https: "false"
-              icmp: "true"
-              netconf: "false"
-              ntp: "false"
-              ospf: "false"
-              snmp: "false"
-              sshd: "false"
-              stun: "false"
-            clear-dont-fragment: "false"
-            encapsulation:
-              encap: ipsec
-            hello-interval: 1000
-            hello-tolerance: 12
-            vmanage-connection-preference: 5
-      cisco_vpn_interface_ipsec:
-        deviceType:
+      snmp_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -445,24 +255,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
-          dead-peer-detection:
-            dpd-interval: 10
-            dpd-retries: 3
-          ike:
-            ike-ciphersuite: aes256-cbc-sha1
-            ike-group: "16"
-            ike-rekey-interval: 14400
-            ike-version: 2
-          ipsec:
-            ipsec-ciphersuite: aes256-gcm
-            ipsec-rekey-interval: 3600
-            ipsec-replay-window: 512
-            perfect-forward-secrecy: none
-          mtu: 1400
-          shutdown: "false"
-      cli-template:
-        deviceType:
+      system_templates:
+        device_types:
           - C8000V
           - C8300-1N1S-4T2X
           - C8300-1N1S-6T
@@ -474,4 +268,29 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        parameters:
+        endpoint_trackers:
+          interval: 60
+          multiplier: 3
+          threshold: 300
+          type: interface
+      thousandeyes_templates:
+        device_types:
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      vpn_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500-20X6C
+          - C8500L-8S4X
+          - C8200-1N-4T
+          - C8200L-1N-4T

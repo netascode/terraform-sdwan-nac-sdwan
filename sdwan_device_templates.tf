@@ -11,29 +11,30 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       ft.templateType == "cedge_global" ? sdwan_cedge_global_feature_template.cedge_global_feature_template[ft.templateName].id :
       ft.templateType == "cisco_banner" ? sdwan_cisco_banner_feature_template.cisco_banner_feature_template[ft.templateName].id :
       ft.templateType == "cisco_bfd" ? sdwan_cisco_bfd_feature_template.cisco_bfd_feature_template[ft.templateName].id :
-      ft.templateType == "cisco_omp" ? sdwan_cisco_omp_feature_template.cisco_omp_feature_template[ft.templateName].id :
+      /*      ft.templateType == "cisco_omp" ? sdwan_cisco_omp_feature_template.cisco_omp_feature_template[ft.templateName].id :
       ft.templateType == "cisco_security" ? sdwan_cisco_security_feature_template.cisco_security_feature_template[ft.templateName].id :
       ft.templateType == "cisco_sig_credentials" ? sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template[ft.templateName].id :
       ft.templateType == "cisco_snmp" ? sdwan_cisco_snmp_feature_template.cisco_snmp_feature_template[ft.templateName].id :
       ft.templateType == "cisco_system" ? sdwan_cisco_system_feature_template.cisco_system_feature_template[ft.templateName].id :
       ft.templateType == "cisco_vpn" ? sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[ft.templateName].id :
-      ft.templateType == "cli-template" ? sdwan_cli_template_feature_template.cli_template_feature_template[ft.templateName].id : null
+      ft.templateType == "cli-template" ? sdwan_cli_template_feature_template.cli_template_feature_template[ft.templateName].id : */ null
     )
     version = (
       ft.templateType == "cedge_aaa" ? sdwan_cedge_aaa_feature_template.cedge_aaa_feature_template[ft.templateName].version :
       ft.templateType == "cedge_global" ? sdwan_cedge_global_feature_template.cedge_global_feature_template[ft.templateName].version :
       ft.templateType == "cisco_banner" ? sdwan_cisco_banner_feature_template.cisco_banner_feature_template[ft.templateName].version :
       ft.templateType == "cisco_bfd" ? sdwan_cisco_bfd_feature_template.cisco_bfd_feature_template[ft.templateName].version :
-      ft.templateType == "cisco_omp" ? sdwan_cisco_omp_feature_template.cisco_omp_feature_template[ft.templateName].version :
+      /*      ft.templateType == "cisco_omp" ? sdwan_cisco_omp_feature_template.cisco_omp_feature_template[ft.templateName].version :
       ft.templateType == "cisco_security" ? sdwan_cisco_security_feature_template.cisco_security_feature_template[ft.templateName].version :
       ft.templateType == "cisco_sig_credentials" ? sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template[ft.templateName].version :
       ft.templateType == "cisco_snmp" ? sdwan_cisco_snmp_feature_template.cisco_snmp_feature_template[ft.templateName].version :
       ft.templateType == "cisco_system" ? sdwan_cisco_system_feature_template.cisco_system_feature_template[ft.templateName].version :
       ft.templateType == "cisco_vpn" ? sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[ft.templateName].version :
-      ft.templateType == "cli-template" ? sdwan_cli_template_feature_template.cli_template_feature_template[ft.templateName].version : null
+      ft.templateType == "cli-template" ? sdwan_cli_template_feature_template.cli_template_feature_template[ft.templateName].version : */ null
     )
-    type = ft.templateType
-    sub_templates = try(length(ft.subTemplates) == 0, true) ? null : [for st in ft.subTemplates : {
+    type          = ft.templateType
+    sub_templates = null
+    /* sub_templates = try(length(ft.subTemplates) == 0, true) ? null : [for st in ft.subTemplates : {
       id = (
         st.templateType == "cisco_bgp" ? sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.templateName].id :
         st.templateType == "cisco_ospf" ? sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.templateName].id :
@@ -49,7 +50,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
         st.templateType == "cisco_vpn_interface" ? sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[st.templateName].version : null
       )
       type = st.templateType
-    }]
+    }] */
   }]
 }
 

@@ -610,7 +610,8 @@ resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
   transport_gateway                  = try(each.value.transport_gateway, null)
   transport_gateway_variable         = try(each.value.transport_gateway_variable, null)
   advertise_ipv4_routes = try(length(each.value.ipv4_advertise_protocols) == 0, true) ? null : [for a in each.value.ipv4_advertise_protocols : {
-    protocol = a
+    protocol                = a
+    advertise_external_ospf = a == "ospf" ? "external" : null
   }]
   advertise_ipv6_routes = try(length(each.value.ipv6_advertise_protocols) == 0, true) ? null : [for a in each.value.ipv6_advertise_protocols : {
     protocol = a
@@ -898,7 +899,7 @@ resource "sdwan_cisco_snmp_feature_template" "cisco_snmp_feature_template" {
   shutdown_variable = try(each.value.shutdown_variable, null)
   communities = try(length(each.value.communities) == 0, true) ? null : [for c in each.value.communities : {
     name                   = c.name
-    authorization          = try(c.authorization_read_only, null)
+    authorization          = try(c.authorization_read_only, can(c.authorization_variable) ? null : local.defaults.sdwan.edge_feature_templates.snmp_templates.communities.authorization_read_only) == true ? "read-only" : null
     authorization_variable = try(c.authorization_read_only_variable, null)
     view                   = try(c.view, null)
     view_variable          = try(c.view_variable, null)

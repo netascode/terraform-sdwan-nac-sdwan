@@ -535,8 +535,8 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     authentication_type_variable = try(prof.authentication_type_variable, null)
     version                      = try(prof.version, null)
     version_variable             = try(prof.version_variable, null)
-    ciphersuite_list          = try(prof.ciphersuites, null)
-    ciphersuite_list_variable = try(prof.version_ciphersuites_variablevariable, null)
+    ciphersuite_list             = try(prof.ciphersuites, null)
+    ciphersuite_list_variable    = try(prof.version_ciphersuites_variablevariable, null)
   }]
 }
 
@@ -1067,8 +1067,8 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
     transport_endpoint_port_variable     = try(obj.transport_endpoint_port_variable, null)
     transport_endpoint_protocol          = try(obj.transport_endpoint_protocol, null)
     transport_endpoint_protocol_variable = try(obj.transport_endpoint_protocol_variable, null)
-    type          = try(obj.type, null)
-    type_variable = try(obj.type_variable, null)
+    type                                 = try(obj.type, null)
+    type_variable                        = try(obj.type_variable, null)
   }]
 }
 

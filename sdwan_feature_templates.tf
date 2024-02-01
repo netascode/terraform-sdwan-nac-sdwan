@@ -1795,7 +1795,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
   static_mac_addresses = try(length(each.value.static_mac_addresses) == 0, true) ? null : [for sma in try(each.value.static_mac_addresses, []) : {
     if_name              = try(sma.interface_name, null)
     if_name_variable     = try(sma.interface_name_variable, null)
-    mac_address          = try(sma.mac_address, null)
+    mac_address          = try(sma.mac_address, null) == null ? null : format("%s.%s.%s", substr(replace(sma.mac_address, ":", ""), 0, 4), substr(replace(sma.mac_address, ":", ""), 4, 4), substr(replace(sma.mac_address, ":", ""), 8, 4))
     mac_address_variable = try(sma.mac_address_variable, null)
     optional             = try(sma.optional, null)
     vlan                 = try(sma.vlan, null)

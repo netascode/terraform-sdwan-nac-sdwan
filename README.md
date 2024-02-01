@@ -91,6 +91,7 @@ module "sdwan" {
 | [sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_ntp_feature_template) | resource |
 | [sdwan_cisco_omp_feature_template.cisco_omp_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_omp_feature_template) | resource |
 | [sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_ospf_feature_template) | resource |
+| [sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_secure_internet_gateway_feature_template) | resource |
 | [sdwan_cisco_security_feature_template.cisco_security_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_security_feature_template) | resource |
 | [sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_sig_credentials_feature_template) | resource |
 | [sdwan_cisco_snmp_feature_template.cisco_snmp_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_snmp_feature_template) | resource |
@@ -98,6 +99,7 @@ module "sdwan" {
 | [sdwan_cisco_thousandeyes_feature_template.cisco_thousandeyes_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_thousandeyes_feature_template) | resource |
 | [sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_vpn_feature_template) | resource |
 | [sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_vpn_interface_feature_template) | resource |
+| [sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_vpn_interface_ipsec_feature_template) | resource |
 | [sdwan_class_map_policy_object.class_map_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/class_map_policy_object) | resource |
 | [sdwan_cli_template_feature_template.cli_template_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_template_feature_template) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
@@ -126,8 +128,10 @@ module "sdwan" {
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
 | [sdwan_sla_class_policy_object.sla_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sla_class_policy_object) | resource |
 | [sdwan_standard_community_list_policy_object.standard_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/standard_community_list_policy_object) | resource |
+| [sdwan_switchport_feature_template.switchport_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/switchport_feature_template) | resource |
 | [sdwan_tloc_list_policy_object.tloc_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tloc_list_policy_object) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
+| [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |
 | [sdwan_vpn_list_policy_object.vpn_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_list_policy_object) | resource |
 | [sdwan_vpn_membership_policy_definition.vpn_membership_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_membership_policy_definition) | resource |
 | [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |

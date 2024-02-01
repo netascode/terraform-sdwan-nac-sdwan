@@ -96,15 +96,15 @@ resource "sdwan_site_list_policy_object" "site_list_policy_object" {
 }
 
 resource "sdwan_sla_class_policy_object" "sla_class_policy_object" {
-  for_each                      = { for p in try(local.policy_objects.sla, {}) : p.name => p }
+  for_each                      = { for p in try(local.policy_objects.sla_classes, {}) : p.name => p }
   name                          = each.value.name
-  jitter                        = each.value.jitter_ms
-  latency                       = each.value.latency_ms
-  loss                          = each.value.loss_percentage
-  fallback_best_tunnel_criteria = each.value.fallback_best_tunnel_criteria
-  fallback_best_tunnel_jitter   = each.value.fallback_best_tunnel_jitter
-  fallback_best_tunnel_latency  = each.value.fallback_best_tunnel_latency
-  fallback_best_tunnel_loss     = each.value.fallback_best_tunnel_loss
+  jitter                        = try(each.value.jitter_ms, null)
+  latency                       = try(each.value.latency_ms, null)
+  loss                          = try(each.value.loss_percentage, null)
+  fallback_best_tunnel_criteria = try(each.value.fallback_best_tunnel_criteria, null)
+  fallback_best_tunnel_jitter   = try(each.value.fallback_best_tunnel_jitter, null)
+  fallback_best_tunnel_latency  = try(each.value.fallback_best_tunnel_latency, null)
+  fallback_best_tunnel_loss     = try(each.value.fallback_best_tunnel_loss, null)
 }
 
 resource "sdwan_tloc_list_policy_object" "tloc_list_policy_object" {
@@ -119,10 +119,10 @@ resource "sdwan_tloc_list_policy_object" "tloc_list_policy_object" {
 }
 
 resource "sdwan_vpn_list_policy_object" "vpn_list_policy_object" {
-  for_each = { for p in try(local.policy_objects.lists.vpn, {}) : p.name => p }
+  for_each = { for p in try(local.policy_objects.vpn_lists, {}) : p.name => p }
   name     = each.value.name
   entries = [for e in concat(try(each.value.vpn_ids, []), [for r in try(each.value.vpn_id_ranges, []) : "${r.from}-${r.to}"]) : {
-    vpn_id = e.vpn
+    vpn_id = e
   }]
 }
 

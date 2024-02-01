@@ -651,9 +651,9 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     area_number          = try(a.area_number, null)
     area_number_variable = try(a.area_number_variable, null)
     stub                 = try(a.area_type, null) == "stub" ? true : null
-    stub_no_summary      = try(a.area_type, null) == "stub" && try(a.no_summary, null) == true ? true : null
+    stub_no_summary      = try(a.area_type, null) == "stub" && try(a.no_summary, null) == true ? true : try(a.area_type, null) == "stub" && try(a.no_summary, null) == null ? false : null
     nssa                 = try(a.area_type, null) == "nssa" ? true : null
-    nssa_no_summary      = try(a.area_type, null) == "nssa" && try(a.no_summary, null) == true ? true : null
+    nssa_no_summary      = try(a.area_type, null) == "nssa" && try(a.no_summary, null) == true ? true : try(a.area_type, null) == "nssa" && try(a.no_summary, null) == null ? false : null
     interfaces = try(length(a.interfaces) == 0, true) ? null : [for i in a.interfaces : {
       name                                          = try(i.name, null)
       name_variable                                 = try(i.name_variable, null)

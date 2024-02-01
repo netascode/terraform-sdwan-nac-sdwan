@@ -1,10 +1,10 @@
 locals {
-  cedge_feature_templates = try(local.model.sdwan.cedge_feature_templates, {})
-  edge_device_templates   = try(local.model.sdwan.edge_device_templates, {})
-  localized_policies      = try(local.model.sdwan.localized_policies, {})
-  policy_objects          = try(local.model.sdwan.policy_objects, {})
-  sites                   = try(local.model.sdwan.sites, {})
-  centralized_policies    = try(local.model.sdwan.centralized_policies, {})
+  edge_feature_templates = try(local.model.sdwan.edge_feature_templates, {})
+  edge_device_templates  = try(local.model.sdwan.edge_device_templates, {})
+  localized_policies     = try(local.model.sdwan.localized_policies, {})
+  policy_objects         = try(local.model.sdwan.policy_objects, {})
+  sites                  = try(local.model.sdwan.sites, {})
+  centralized_policies   = try(local.model.sdwan.centralized_policies, {})
   device_type_map = {
     "C8000V" : "vedge-C8000V"
     "C8300-1N1S-4T2X" : "vedge-C8300-1N1S-4T2X"

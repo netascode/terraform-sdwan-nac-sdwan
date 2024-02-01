@@ -15,7 +15,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        authentication_and_authorization_order: local
+        authentication_and_authorization_order:
+          - local
       banner_templates:
         device_types:
           - C8000V
@@ -228,8 +229,6 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-        communities:
-          authorization_read_only: true
       svi_interface_templates:
         device_types:
           - C8000V
@@ -268,6 +267,9 @@ defaults:
           - C8300-1N1S-6T
           - C8300-2N2S-6T
           - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
       vpn_templates:

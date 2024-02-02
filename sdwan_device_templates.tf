@@ -139,7 +139,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
         }],
       ])
     }],
-    try(each.value.vpn_service_templates, null) == null ? [] : [for st in try(each.value.vpn_service_templates, []) : {
+    try(each.value.vpn_service_templates, null) == null ? null : [for st in try(each.value.vpn_service_templates, []) : {
       id      = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[st.name].id
       version = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[st.name].version
       type    = "cisco_vpn"

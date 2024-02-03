@@ -229,6 +229,8 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+        communities:
+          authorization_read_only: true
       svi_interface_templates:
         device_types:
           - C8000V

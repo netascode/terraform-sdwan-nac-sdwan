@@ -169,7 +169,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
             version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
             type    = "cisco_vpn_interface"
-            sub_templates = try(eit.dhcp_server_template, null) == null ? [] : [{
+            sub_templates = try(eit.dhcp_server_template, null) == null ? null : [{
               id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].id
               version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].version
               type    = "cisco_dhcp_server"
@@ -179,7 +179,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
             version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
             type    = "cisco_vpn_interface_ipsec"
-            sub_templates = try(iit.dhcp_server_template, null) == null ? [] : [{
+            sub_templates = try(iit.dhcp_server_template, null) == null ? null : [{
               id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].id
               version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
               type    = "cisco_dhcp_server"
@@ -189,7 +189,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
             version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
             type    = "vpn-interface-svi"
-            sub_templates = try(sit.dhcp_server_template, null) == null ? [] : [{
+            sub_templates = try(sit.dhcp_server_template, null) == null ? null : [{
               id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].id
               version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].version
               type    = "cisco_dhcp_server"

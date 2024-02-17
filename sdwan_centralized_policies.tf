@@ -3,6 +3,8 @@ resource "sdwan_activate_centralized_policy" "activate_centralized_policy" {
   if p == "activated_policy" }
   id      = try(local.centralized_policies.activated_policy, null) != null ? sdwan_centralized_policy.centralized_policy[local.centralized_policies.activated_policy].id : null
   version = try(local.centralized_policies.activated_policy, null) != null ? sdwan_centralized_policy.centralized_policy[local.centralized_policies.activated_policy].version : null
+
+  depends_on = [sdwan_attach_feature_device_template.attach_feature_device_template]
 }
 
 resource "sdwan_centralized_policy" "centralized_policy" {

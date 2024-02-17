@@ -10,17 +10,18 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       id      = sdwan_cisco_system_feature_template.cisco_system_feature_template[each.value.system_template].id
       version = sdwan_cisco_system_feature_template.cisco_system_feature_template[each.value.system_template].version
       type    = "cisco_system"
-      sub_templates = flatten([
-        try(each.value.logging_template, null) == null ? [] : [{
-          id      = sdwan_cisco_logging_feature_template.cisco_logging_feature_template[each.value.logging_template].id
-          version = sdwan_cisco_logging_feature_template.cisco_logging_feature_template[each.value.logging_template].version
-          type    = "cisco_logging"
-        }],
-        try(each.value.ntp_template, null) == null ? [] : [{
-          id      = sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template[each.value.ntp_template].id
-          version = sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template[each.value.ntp_template].version
-          type    = "cisco_ntp"
-        }]
+      sub_templates = !(can(each.value.logging_template) ||
+        can(each.value.ntp_template)) ? null : flatten([
+          try(each.value.logging_template, null) == null ? [] : [{
+            id      = sdwan_cisco_logging_feature_template.cisco_logging_feature_template[each.value.logging_template].id
+            version = sdwan_cisco_logging_feature_template.cisco_logging_feature_template[each.value.logging_template].version
+            type    = "cisco_logging"
+          }],
+          try(each.value.ntp_template, null) == null ? [] : [{
+            id      = sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template[each.value.ntp_template].id
+            version = sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template[each.value.ntp_template].version
+            type    = "cisco_ntp"
+          }]
       ])
     }],
     try(each.value.aaa_template, null) == null ? [] : [{
@@ -82,108 +83,118 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       id      = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[each.value.vpn_0_template.name].id
       version = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[each.value.vpn_0_template.name].version
       type    = "cisco_vpn"
-      sub_templates = flatten([
-        try(each.value.vpn_0_template.ospf_template, null) == null ? [] : [{
-          id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].id
-          version = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].version
-          type    = "cisco_ospf"
-        }],
-        try(each.value.vpn_0_template.bgp_template, null) == null ? [] : [{
-          id      = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[each.value.vpn_0_template.bgp_template].id
-          version = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[each.value.vpn_0_template.bgp_template].version
-          type    = "cisco_bgp"
-        }],
-        try(each.value.vpn_0_template.ethernet_interface_templates, null) == null ? [] : [for eit in try(each.value.vpn_0_template.ethernet_interface_templates, []) : {
-          id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
-          version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
-          type    = "cisco_vpn_interface"
-        }],
-        try(each.value.vpn_0_template.ipsec_interface_templates, null) == null ? [] : [for iit in try(each.value.vpn_0_template.ipsec_interface_templates, []) : {
-          id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
-          version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
-          type    = "cisco_vpn_interface_ipsec"
-          sub_templates = flatten([
-            try(iit.dhcp_server_template, null) == null ? [] : [{
-              id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].id
-              version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
-              type    = "cisco_dhcp_server"
-            }],
-          ])
-        }],
-        try(each.value.vpn_0_template.svi_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.svi_interface_templates, []) : {
-          id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
-          version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
-          type    = "vpn-interface-svi"
-        }],
-        try(each.value.vpn_0_template.secure_internet_gateway_template, null) == null ? [] : [{
-          id      = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].id
-          version = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].version
-          type    = "cisco_secure_internet_gateway"
-        }],
+      sub_templates = !(can(each.value.vpn_0_template.ospf_template) ||
+        can(each.value.vpn_0_template.bgp_template) ||
+        can(each.value.vpn_0_template.ethernet_interface_templates) ||
+        can(each.value.vpn_0_template.ipsec_interface_templates) ||
+        can(each.value.vpn_0_template.svi_interface_templates) ||
+        can(each.value.vpn_0_template.secure_internet_gateway_template)) ? null : flatten([
+          try(each.value.vpn_0_template.ospf_template, null) == null ? [] : [{
+            id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].id
+            version = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].version
+            type    = "cisco_ospf"
+          }],
+          try(each.value.vpn_0_template.bgp_template, null) == null ? [] : [{
+            id      = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[each.value.vpn_0_template.bgp_template].id
+            version = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[each.value.vpn_0_template.bgp_template].version
+            type    = "cisco_bgp"
+          }],
+          try(each.value.vpn_0_template.ethernet_interface_templates, null) == null ? [] : [for eit in try(each.value.vpn_0_template.ethernet_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
+            version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
+            type    = "cisco_vpn_interface"
+          }],
+          try(each.value.vpn_0_template.ipsec_interface_templates, null) == null ? [] : [for iit in try(each.value.vpn_0_template.ipsec_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
+            version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
+            type    = "cisco_vpn_interface_ipsec"
+            sub_templates = !can(iit.dhcp_server_template) ? null : flatten([
+              try(iit.dhcp_server_template, null) == null ? [] : [{
+                id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].id
+                version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
+                type    = "cisco_dhcp_server"
+              }],
+            ])
+          }],
+          try(each.value.vpn_0_template.svi_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.svi_interface_templates, []) : {
+            id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
+            version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
+            type    = "vpn-interface-svi"
+          }],
+          try(each.value.vpn_0_template.secure_internet_gateway_template, null) == null ? [] : [{
+            id      = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].id
+            version = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].version
+            type    = "cisco_secure_internet_gateway"
+          }],
       ])
     }],
     try(each.value.vpn_512_template, null) == null ? [] : [{
       id      = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[each.value.vpn_512_template.name].id
       version = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[each.value.vpn_512_template.name].version
       type    = "cisco_vpn"
-      sub_templates = flatten([
-        try(each.value.vpn_512_template.ethernet_interface_templates, null) == null ? [] : [for eit in try(each.value.vpn_512_template.ethernet_interface_templates, []) : {
-          id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
-          version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
-          type    = "cisco_vpn_interface"
-        }],
-        try(each.value.vpn_512_template.svi_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_512_template.svi_interface_templates, []) : {
-          id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
-          version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
-          type    = "vpn-interface-svi"
-        }],
+      sub_templates = !(can(each.value.vpn_512_template.ethernet_interface_templates) ||
+        can(each.value.vpn_512_template.svi_interface_templates)) ? null : flatten([
+          try(each.value.vpn_512_template.ethernet_interface_templates, null) == null ? [] : [for eit in try(each.value.vpn_512_template.ethernet_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
+            version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
+            type    = "cisco_vpn_interface"
+          }],
+          try(each.value.vpn_512_template.svi_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_512_template.svi_interface_templates, []) : {
+            id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
+            version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
+            type    = "vpn-interface-svi"
+          }],
       ])
     }],
     try(each.value.vpn_service_templates, null) == null ? try([for ss in try(each.value.vpn_service_templates, []) : null], []) : [for st in try(each.value.vpn_service_templates, []) : {
       id      = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[st.name].id
       version = sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template[st.name].version
       type    = "cisco_vpn"
-      sub_templates = flatten([
-        try(st.ospf_template, null) == null ? [] : [{
-          id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].id
-          version = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].version
-          type    = "cisco_ospf"
-        }],
-        try(st.bgp_template, null) == null ? [] : [{
-          id      = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.bgp_template].id
-          version = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.bgp_template].version
-          type    = "cisco_bgp"
-        }],
-        try(st.ethernet_interface_templates, null) == null ? [] : [for eit in try(st.ethernet_interface_templates, []) : {
-          id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
-          version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
-          type    = "cisco_vpn_interface"
-          sub_templates = try(eit.dhcp_server_template, null) == null ? [] : [{
-            id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].id
-            version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].version
-            type    = "cisco_dhcp_server"
-          }]
-        }],
-        try(st.ipsec_interface_templates, null) == null ? [] : [for iit in try(st.ipsec_interface_templates, []) : {
-          id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
-          version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
-          type    = "cisco_vpn_interface_ipsec"
-          sub_templates = try(iit.dhcp_server_template, null) == null ? [] : [{
-            id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].id
-            version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
-            type    = "cisco_dhcp_server"
-          }]
-        }],
-        try(st.svi_interface_templates, null) == null ? [] : [for sit in try(st.svi_interface_templates, []) : {
-          id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
-          version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
-          type    = "vpn-interface-svi"
-          sub_templates = try(sit.dhcp_server_template, null) == null ? [] : [{
-            id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].id
-            version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].version
-            type    = "cisco_dhcp_server"
+      sub_templates = !(can(st.ospf_template) ||
+        can(st.bgp_template) ||
+        can(st.ethernet_interface_templates) ||
+        can(st.ipsec_interface_templates) ||
+        can(st.svi_interface_templates)) ? null : flatten([
+          try(st.ospf_template, null) == null ? [] : [{
+            id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].id
+            version = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].version
+            type    = "cisco_ospf"
           }],
-        }],
+          try(st.bgp_template, null) == null ? [] : [{
+            id      = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.bgp_template].id
+            version = sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template[st.bgp_template].version
+            type    = "cisco_bgp"
+          }],
+          try(st.ethernet_interface_templates, null) == null ? [] : [for eit in try(st.ethernet_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
+            version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
+            type    = "cisco_vpn_interface"
+            sub_templates = try(eit.dhcp_server_template, null) == null ? [] : [{
+              id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].id
+              version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[eit.dhcp_server_template].version
+              type    = "cisco_dhcp_server"
+            }]
+          }],
+          try(st.ipsec_interface_templates, null) == null ? [] : [for iit in try(st.ipsec_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
+            version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
+            type    = "cisco_vpn_interface_ipsec"
+            sub_templates = try(iit.dhcp_server_template, null) == null ? [] : [{
+              id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].id
+              version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
+              type    = "cisco_dhcp_server"
+            }]
+          }],
+          try(st.svi_interface_templates, null) == null ? [] : [for sit in try(st.svi_interface_templates, []) : {
+            id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
+            version = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].version
+            type    = "vpn-interface-svi"
+            sub_templates = try(sit.dhcp_server_template, null) == null ? [] : [{
+              id      = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].id
+              version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[sit.dhcp_server_template].version
+              type    = "cisco_dhcp_server"
+            }],
+          }],
       ])
     }],
   ])

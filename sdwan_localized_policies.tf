@@ -36,7 +36,18 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
     id          = s.id
     name        = try(s.name, "Access Control List")
     base_action = s.base_action
-    match_entries = flatten([
+    match_entries = !(can(s.match_criterias.class) ||
+      can(s.match_criterias.destination_data_prefix_list) ||
+      can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_ports) ||
+      can(s.match_criterias.dscp) ||
+      can(s.match_criterias.packet_length) ||
+      can(s.match_criterias.priority) ||
+      can(s.match_criterias.protocols) ||
+      can(s.match_criterias.source_data_prefix_list) ||
+      can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ports) ||
+      can(s.match_criterias.tcp)) ? null : flatten([
       try(s.match_criterias.class, null) == null ? [] : [{
         type              = "class"
         class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
@@ -90,7 +101,13 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
       }]
     ])
 
-    action_entries = flatten([
+    action_entries = !(can(s.actions.counter_name) ||
+      can(s.actions.class) ||
+      can(s.actions.log) ||
+      can(s.actions.mirror_list) ||
+      can(s.actions.policer) ||
+      can(s.actions.next_hop) ||
+      can(s.actions.dscp)) ? null : flatten([
       try(s.actions.counter_name, null) == null ? [] : [{
         type         = "count"
         counter_name = s.actions.counter_name
@@ -140,7 +157,18 @@ resource "sdwan_ipv6_acl_policy_definition" "ipv6_acl_policy_definition" {
     id          = s.id
     name        = try(s.name, "Access Control List")
     base_action = s.base_action
-    match_entries = flatten([
+    match_entries = !(can(s.match_criterias.class) ||
+      can(s.match_criterias.destination_data_prefix_list) ||
+      can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_port) ||
+      can(s.match_criterias.next_header) ||
+      can(s.match_criterias.packet_length) ||
+      can(s.match_criterias.priority) ||
+      can(s.match_criterias.source_data_prefix_list) ||
+      can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ports) ||
+      can(s.match_criterias.tcp) ||
+      can(s.match_criterias.traffic_class)) ? null : flatten([
       try(s.match_criterias.class, null) == null ? [] : [{
         type              = "class"
         class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.match_criterias.class].id
@@ -194,7 +222,13 @@ resource "sdwan_ipv6_acl_policy_definition" "ipv6_acl_policy_definition" {
       }]
     ])
 
-    action_entries = flatten([
+    action_entries = !(can(s.actions.counter_name) ||
+      can(s.actions.class) ||
+      can(s.actions.log) ||
+      can(s.actions.mirror_list) ||
+      can(s.actions.policer) ||
+      can(s.actions.next_hop) ||
+      can(s.actions.dscp)) ? null : flatten([
       try(s.actions.counter_name, null) == null ? [] : [{
         type         = "count"
         counter_name = s.actions.counter_name
@@ -244,7 +278,12 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
     id          = s.id
     name        = try(s.sequenceName, "Device Access Control List")
     base_action = s.base_action
-    match_entries = flatten([
+    match_entries = !(can(s.match_criterias.destination_data_prefix_list) ||
+      can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_port) ||
+      can(s.match_criterias.source_data_prefix_list) ||
+      can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ports)) ? null : flatten([
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
         type                                      = "destinationDataPrefixList"
         destination_data_ipv4_prefix_list_id      = sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
@@ -288,7 +327,12 @@ resource "sdwan_ipv6_device_acl_policy_definition" "ipv6_device_acl_policy_defin
     id          = s.id
     name        = try(s.sequenceName, "Device Access Control List")
     base_action = s.base_action
-    match_entries = flatten([
+    match_entries = !(can(s.match_criterias.destination_data_prefix_list) ||
+      can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_port) ||
+      can(s.match_criterias.source_data_prefix_list) ||
+      can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ports)) ? null : flatten([
       try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
         type                                      = "destinationDataIpv6PrefixList"
         destination_data_ipv6_prefix_list_id      = sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object[s.match_criterias.destination_data_prefix_list].id
@@ -333,7 +377,19 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
     ip_type     = s.ip_type
     name        = try(s.name, "Route")
     base_action = s.base_action
-    match_entries = flatten([
+    match_entries = !(can(s.match_criterias.prefix_list) ||
+      can(s.match_criterias.prefix_list) ||
+      can(s.match_criterias.as_path_list) ||
+      can(s.match_criterias.standard_community_lists) ||
+      can(s.match_criterias.expanded_community_list) ||
+      can(s.match_criterias.extended_community_list) ||
+      can(s.match_criterias.bgp_local_preference) ||
+      can(s.match_criterias.metric) ||
+      can(s.match_criterias.next_hop_prefix_list) ||
+      can(s.match_criterias.origin) ||
+      can(s.match_criterias.peer) ||
+      can(s.match_criterias.omp_tag) ||
+      can(s.match_criterias.ospf_tag)) ? null : flatten([
       try(s.match_criterias.prefix_list, null) == null ? [] : [{
         type                = "address"
         prefix_list_id      = sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[s.match_criterias.prefix_list].id
@@ -391,7 +447,21 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
       }]
     ])
 
-    action_entries = flatten([
+    action_entries = !(can(s.actions.aggregator_ip) ||
+      can(s.actions.prepend_as_paths) ||
+      can(s.actions.exclude_as_paths) ||
+      can(s.actions.atomic_aggregate) ||
+      can(s.actions.communities) ||
+      can(s.actions.community_additive) ||
+      can(s.actions.local_preference) ||
+      can(s.actions.metric) ||
+      can(s.actions.weight) ||
+      can(s.actions.metric_type) ||
+      can(s.actions.next_hop) ||
+      can(s.actions.omp_tag) ||
+      can(s.actions.ospf_tag) ||
+      can(s.actions.origin) ||
+      can(s.actions.originator)) ? null : flatten([
       try(s.actions.aggregator_ip, null) == null || try(s.actions.aggregator, null) == null ? [] : [{
         type                  = "aggregator"
         aggregator            = s.actions.aggregator

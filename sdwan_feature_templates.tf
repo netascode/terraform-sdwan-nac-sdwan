@@ -81,7 +81,7 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
   accounting_rules = try(length(each.value.accounting_rules) == 0, true) ? null : [for rule in each.value.accounting_rules : {
     name                = index(each.value.accounting_rules, rule)
     method              = rule.method
-    privilege_level     = rule.privilege_level
+    privilege_level     = try(rule.privilege_level, null)
     start_stop          = try(rule.start_stop, null)
     start_stop_variable = try(rule.start_stop_variable, null)
     groups              = join(",", rule.groups)

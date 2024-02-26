@@ -326,7 +326,7 @@ resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
     optional_variable                = try(n.optional_variable, null)
     address_families = try(length(n.address_families) == 0, true) ? null : [for af in n.address_families : {
       family_type                            = try(af.family_type, null)
-      maximum_prefixes                       = af.maximum_prefixes
+      maximum_prefixes                       = try(af.maximum_prefixes, null)
       maximum_prefixes_variable              = try(af.maximum_prefixes_variable, null)
       maximum_prefixes_restart               = try(af.maximum_prefixes_restart, null)
       maximum_prefixes_restart_variable      = try(af.maximum_prefixes_restart_variable, null)
@@ -387,7 +387,7 @@ resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
     optional_variable                = try(n.optional_variable, null)
     address_families = try(length(n.address_families) == 0, true) ? null : [for af in n.address_families : {
       family_type                            = try(af.family_type, null)
-      maximum_prefixes                       = af.maximum_prefixes
+      maximum_prefixes                       = try(af.maximum_prefixes, null)
       maximum_prefixes_variable              = try(af.maximum_prefixes_variable, null)
       maximum_prefixes_restart               = try(af.maximum_prefixes_restart, null)
       maximum_prefixes_restart_variable      = try(af.maximum_prefixes_restart_variable, null)

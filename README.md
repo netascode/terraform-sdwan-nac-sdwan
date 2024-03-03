@@ -15,13 +15,12 @@ Configuring a Banner Feature Template using YAML:
 
 ```yaml
 sdwan:
-  cedge_feature_templates:
-    cisco_banner:
+  edge_feature_templates:
+    banner_templates:
       - name: FT-CEDGE-BANNER-01
         description: Base banner template; support carrier returns
-        parameters:
-          login: "login banner: new\n"
-          motd: "motd banner:\r\nNo message today\n"
+        login: "login banner: new\n"
+        motd: "motd banner:\r\nNo message today\n"
 ```
 
 #### `main.tf`

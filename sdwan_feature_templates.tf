@@ -1411,7 +1411,6 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   nat_type                                       = try(each.value.ipv4_nat_type, null)
   nat_type_variable                              = try(each.value.ipv4_nat_type_variable, null)
   propagate_sgt                                  = try(each.value.sgt_propagation, null)
-  qos_adaptive                                   = try(each.value.adaptive_qos, null)
   qos_adaptive_bandwidth_downstream              = try(each.value.adaptive_qos_shaping_rate_downstream.default, null)
   qos_adaptive_bandwidth_downstream_variable     = try(each.value.adaptive_qos_shaping_rate_downstream.default_variable, null)
   qos_adaptive_bandwidth_upstream                = try(each.value.adaptive_qos_shaping_rate_upstream.default, null)

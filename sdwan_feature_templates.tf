@@ -840,7 +840,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     accept_lifetime_end_time          = try(key.accept_lifetime_end_time_epoch, null)
     accept_lifetime_end_time_format   = try(key.accept_lifetime_end_time_format, null)
     accept_lifetime_infinite          = try(key.accept_lifetime_end_time_format, null) == "infinite" ? true : null
-    accept_lifetime_start_time_epoch  = try(key.accept_lifetime_start_time_epoch, null)
+    accept_lifetime_start_time        = try(key.accept_lifetime_start_time_epoch, null)
     chain_name                        = key.key_chain_name
     crypto_algorithm                  = try(key.crypto_algorithm, null)
     id                                = key.id

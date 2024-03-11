@@ -3,6 +3,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
   name           = each.value.name
   description    = each.value.description
   device_type    = try(local.device_type_map[each.value.device_model], "vedge-${each.value.device_model}")
+  device_role    = "sdwan-edge"
   policy_id      = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].id
   policy_version = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].version
   general_templates = flatten([

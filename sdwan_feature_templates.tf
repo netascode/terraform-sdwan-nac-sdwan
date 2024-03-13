@@ -1234,6 +1234,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   omp_advertise_ipv4_routes = try(length(each.value.omp_advertise_ipv4_routes) == 0, true) ? null : [for route in each.value.omp_advertise_ipv4_routes : {
     protocol              = try(route.protocol, null)
     protocol_variable     = try(route.protocol_variable, null)
+    protocol_sub_type     = try(route.protocol, "") == "ospf" ? ["external"] : null
     route_policy          = try(route.route_policy, null)
     route_policy_variable = try(route.route_policy_variable, null)
     prefixes = try(length(route.networks) == 0, true) ? null : [for p in route.networks : {

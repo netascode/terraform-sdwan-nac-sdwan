@@ -267,6 +267,7 @@ defaults:
           interval: 60
           multiplier: 3
           threshold: 300
+          type: interface
       thousandeyes_templates:
         device_types:
           - C8300-1N1S-4T2X

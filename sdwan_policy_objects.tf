@@ -97,6 +97,8 @@ resource "sdwan_site_list_policy_object" "site_list_policy_object" {
 
 resource "sdwan_sla_class_policy_object" "sla_class_policy_object" {
   for_each                      = { for p in try(local.policy_objects.sla_classes, {}) : p.name => p }
+  app_probe_class_id            = try(sdwan_app_probe_class_policy_object.app_probe_class_policy_object[each.value.app_probe_class].id, null)
+  app_probe_class_version       = try(sdwan_app_probe_class_policy_object.app_probe_class_policy_object[each.value.app_probe_class].version, null)
   name                          = each.value.name
   jitter                        = try(each.value.jitter_ms, null)
   latency                       = try(each.value.latency_ms, null)

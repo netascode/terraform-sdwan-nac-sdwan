@@ -1449,6 +1449,8 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   tcp_timeout_variable                           = try(each.value.ipv4_nat_tcp_timeout_variable, null)
   tloc_extension                                 = try(each.value.tloc_extension, null)
   tloc_extension_variable                        = try(each.value.tloc_extension_variable, null)
+  tracker                                        = try([each.value.tracker], null)
+  tracker_variable                               = try(each.value.tracker_variable, null)
   tunnel_bandwidth                               = try(each.value.tunnel_interface.per_tunnel_qos_bandwidth_percent, null)
   tunnel_bandwidth_variable                      = try(each.value.tunnel_interface.per_tunnel_qos_bandwidth_percent_variable, null)
   tunnel_interface_allow_all                     = try(each.value.tunnel_interface.allow_service_all, null)

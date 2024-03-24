@@ -190,6 +190,14 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+        interfaces:
+          ike_ciphersuite: aes256-cbc-sha1
+          ike_group: 14
+          ike_rekey_interval: 14400
+          ipsec_rekey_interval: 3600
+          ipsec_replay_window: 512
+          ipsec_ciphersuite: aes256-gcm
+          ipsec_perfect_forward_secrecy: none
       security_templates:
         device_types:
           - C8000V

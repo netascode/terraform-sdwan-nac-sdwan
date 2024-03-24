@@ -714,46 +714,57 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
   device_types               = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   tracker_source_ip          = try(each.value.tracker_source_ip, null)
   tracker_source_ip_variable = try(each.value.tracker_source_ip_variable, null)
+  vpn_id                     = 0
   interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for interface in try(each.value.interfaces, []) : {
     application                            = "sig"
+    auto_tunnel_mode                       = each.value.sig_provider == "other" ? false : true
     description                            = try(interface.description, null)
     description_variable                   = try(interface.description_variable, null)
     dead_peer_detection_interval           = try(interface.dpd_interval, null)
     dead_peer_detection_interval_variable  = try(interface.dpd_interval_variable, null)
     dead_peer_detection_retries            = try(interface.dpd_retries, null)
     dead_peer_detection_retries_variable   = try(interface.dpd_retries_variable, null)
-    ike_ciphersuite                        = try(interface.ike_ciphersuite, null)
-    ike_ciphersuite_variable               = try(interface.ike_ciphersuite_variable, null)
-    ike_group                              = try(interface.ike_group, null)
-    ike_group_variable                     = try(interface.ike_group_variable, null)
-    ike_pre_shared_key                     = try(interface.ike_pre_shared_key, null)
-    ike_pre_shared_key_variable            = try(interface.ike_pre_shared_key_variable, null)
-    ike_pre_shared_key_local_id            = try(interface.ike_pre_shared_key_local_id, null)
-    ike_pre_shared_key_local_id_variable   = try(interface.ike_pre_shared_key_local_id_variable, null)
-    ike_pre_shared_key_remote_id           = try(interface.ike_pre_shared_key_remote_id, null)
-    ike_pre_shared_key_remote_id_variable  = try(interface.ike_pre_shared_key_remote_id_variable, null)
-    ike_rekey_interval                     = try(interface.ike_rekey_interval, null)
-    ike_rekey_interval_variable            = try(interface.ike_rekey_interval_variable, null)
-    ipsec_ciphersuite                      = try(interface.ipsec_ciphersuite, null)
-    ipsec_ciphersuite_variable             = try(interface.ipsec_ciphersuite_variable, null)
-    ipsec_perfect_forward_secrecy          = try(interface.ipsec_perfect_forward_secrecy, null)
-    ipsec_perfect_forward_secrecy_variable = try(interface.ipsec_perfect_forward_secrecy_variable, null)
-    ipsec_rekey_interval                   = try(interface.ipsec_rekey_interval, null)
-    ipsec_rekey_interval_variable          = try(interface.ipsec_rekey_interval_variable, null)
-    ipsec_replay_window                    = try(interface.ipsec_replay_window, null)
-    ipsec_replay_window_variable           = try(interface.ipsec_replay_window_variable, null)
+    ike_ciphersuite                        = interface.tunnel_type == "ipsec" ? try(interface.ike_ciphersuite, can(interface.ike_ciphersuite_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ike_ciphersuite) : null
+    ike_ciphersuite_variable               = interface.tunnel_type == "ipsec" ? try(interface.ike_ciphersuite_variable, null) : null
+    ike_group                              = interface.tunnel_type == "ipsec" ? try(interface.ike_group, can(interface.ike_group_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ike_group) : null
+    ike_group_variable                     = interface.tunnel_type == "ipsec" ? try(interface.ike_group_variable, null) : null
+    ike_pre_shared_key                     = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key, null) : null
+    ike_pre_shared_key_variable            = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key_variable, null) : null
+    ike_pre_shared_key_dynamic             = each.value.sig_provider == "other" ? null : interface.tunnel_type == "ipsec" ? true : null
+    ike_pre_shared_key_local_id            = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key_local_id, null) : null
+    ike_pre_shared_key_local_id_variable   = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key_local_id_variable, null) : null
+    ike_pre_shared_key_remote_id           = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key_remote_id, null) : null
+    ike_pre_shared_key_remote_id_variable  = interface.tunnel_type == "ipsec" ? try(interface.ike_pre_shared_key_remote_id_variable, null) : null
+    ike_rekey_interval                     = interface.tunnel_type == "ipsec" ? try(interface.ike_rekey_interval, can(interface.ike_rekey_interval_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ike_rekey_interval) : null
+    ike_rekey_interval_variable            = interface.tunnel_type == "ipsec" ? try(interface.ike_rekey_interval_variable, null) : null
+    ike_version                            = interface.tunnel_type == "ipsec" ? 2 : null
+    ip_unnumbered                          = "true"
+    ipsec_ciphersuite                      = interface.tunnel_type == "ipsec" ? try(interface.ipsec_ciphersuite, can(interface.ipsec_ciphersuite_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ipsec_ciphersuite) : null
+    ipsec_ciphersuite_variable             = interface.tunnel_type == "ipsec" ? try(interface.ipsec_ciphersuite_variable, null) : null
+    ipsec_perfect_forward_secrecy          = interface.tunnel_type == "ipsec" ? try(interface.ipsec_perfect_forward_secrecy, can(interface.ipsec_perfect_forward_secrecy_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ipsec_perfect_forward_secrecy) : null
+    ipsec_perfect_forward_secrecy_variable = interface.tunnel_type == "ipsec" ? try(interface.ipsec_perfect_forward_secrecy_variable, null) : null
+    ipsec_rekey_interval                   = interface.tunnel_type == "ipsec" ? try(interface.ipsec_rekey_interval, can(interface.ipsec_rekey_interval_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ipsec_rekey_interval) : null
+    ipsec_rekey_interval_variable          = interface.tunnel_type == "ipsec" ? try(interface.ipsec_rekey_interval_variable, null) : null
+    ipsec_replay_window                    = interface.tunnel_type == "ipsec" ? try(interface.ipsec_replay_window, can(interface.ipsec_replay_window_variable) ? null : local.defaults.sdwan.edge_feature_templates.secure_internet_gateway_templates.interfaces.ipsec_replay_window) : null
+    ipsec_replay_window_variable           = interface.tunnel_type == "ipsec" ? try(interface.ipsec_replay_window_variable, null) : null
     mtu                                    = try(interface.mtu, null)
     mtu_variable                           = try(interface.mtu_variable, null)
     name                                   = try(interface.name, null)
     name_variable                          = try(interface.name_variable, null)
     shutdown                               = try(interface.shutdown, null)
-    sig_provider                           = interface.sig_provider == "umbrella" ? "secure-internet-gateway-umbrella" : interface.sig_provider == "zscaler" ? "secure-internet-gateway-zscaler" : interface.sig_provider == "other" ? "secure-internet-gateway-other" : null
+    sig_provider                           = each.value.sig_provider == "umbrella" ? "secure-internet-gateway-umbrella" : each.value.sig_provider == "zscaler" ? "secure-internet-gateway-zscaler" : each.value.sig_provider == "other" ? "secure-internet-gateway-other" : null
     tcp_mss                                = try(interface.tcp_mss, null)
     tcp_mss_variable                       = try(interface.tcp_mss_variable, null)
     track_enable                           = try(interface.track, null)
+    tracker                                = try(interface.tracker, null)
+    tracker_variable                       = try(interface.tracker_variable, null)
     tunnel_dc_preference                   = try(interface.tunnel_dc_preference, null)
-    tunnel_destination                     = try(interface.tunnel_destination, null)
-    tunnel_destination_variable            = try(interface.tunnel_destination_variable, null)
+    tunnel_destination                     = each.value.sig_provider == "other" ? try(each.value.tunnel_destination, null) : "dynamic"
+    tunnel_destination_variable            = each.value.sig_provider == "other" ? try(each.value.tunnel_destination_variable, null) : null
+    tunnel_route_via                       = try(interface.tunnel_source_interface, null)
+    tunnel_route_via_variable              = try(interface.tunnel_source_interface_variable, null)
+    tunnel_public_ip                       = interface.tunnel_type == "gre" ? try(interface.tunnel_public_source_ip, null) : null
+    tunnel_public_ip_variable              = interface.tunnel_type == "gre" ? try(interface.tunnel_public_source_ip_variable, null) : null
     tunnel_source_interface                = try(interface.tunnel_source_interface, null)
     tunnel_source_interface_variable       = try(interface.tunnel_source_interface_variable, null)
   }]
@@ -771,16 +782,15 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
     threshold_variable        = try(tracker.threshold_variable, null)
   }]
   services = [{
-    service_type = (
-    try(each.value.umbrella_primary_data_center, each.value.umbrella_primary_data_center_variable, each.value.umbrella_secondary_data_center, each.value.umbrella_secondary_data_center_variable, each.value.zscaler_primary_data_center, each.value.zscaler_primary_data_center_variable, each.value.zscaler_secondary_data_center, each.value.zscaler_secondary_data_center_variable, each.value.zscaler_aup_block_internet_until_accepted, each.value.zscaler_aup_enabled, each.value.zscaler_aup_force_ssl_inspection, each.value.zscaler_aup_timeout, each.value.zscaler_authentication_required, each.value.zscaler_caution_enabled, each.value.zscaler_ips_control_enabled, each.value.zscaler_firewall_enabled, each.value.zscaler_location_name_variable, each.value.zscaler_surrogate_display_time_unit, each.value.zscaler_surrogate_idle_time, each.value.zscaler_surrogate_ip, each.value.zscaler_surrogate_ip_enforce_for_known_browsers, each.value.zscaler_surrogate_refresh_time, each.value.zscaler_surrogate_refresh_time_unit, each.value.zscaler_xff_forward, null) == null ? null : "sig")
-    aup_block_internet_until_accepted               = try(each.value.zscaler_aup_block_internet_until_accepted, null)
-    aup_enabled                                     = try(each.value.zscaler_aup_enabled, null)
-    aup_force_ssl_inspection                        = try(each.value.zscaler_aup_force_ssl_inspection, null)
-    aup_timeout                                     = try(each.value.zscaler_aup_timeout, null)
+    service_type                                    = "sig"
     umbrella_primary_data_center                    = try(each.value.umbrella_primary_data_center, null)
     umbrella_primary_data_center_variable           = try(each.value.umbrella_primary_data_center_variable, null)
     umbrella_secondary_data_center                  = try(each.value.umbrella_secondary_data_center, null)
     umbrella_secondary_data_center_variable         = try(each.value.umbrella_secondary_data_center_variable, null)
+    zscaler_aup_block_internet_until_accepted       = try(each.value.zscaler_aup_block_internet_until_accepted, null)
+    zscaler_aup_enabled                             = try(each.value.zscaler_aup_enabled, null)
+    zscaler_aup_force_ssl_inspection                = try(each.value.zscaler_aup_force_ssl_inspection, null)
+    zscaler_aup_timeout                             = try(each.value.zscaler_aup_timeout, null)
     zscaler_authentication_required                 = try(each.value.zscaler_authentication_required, null)
     zscaler_caution_enabled                         = try(each.value.zscaler_caution_enabled, null)
     zscaler_firewall_enabled                        = try(each.value.zscaler_firewall_enabled, null)

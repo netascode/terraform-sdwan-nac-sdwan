@@ -151,7 +151,7 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   udp_small_servers_variable    = try(each.value.udp_small_servers_variable, null)
   vty_logging                   = try(each.value.vty_logging, null)
   vty_logging_variable          = try(each.value.vty_logging_variable, null)
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on                    = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
@@ -163,7 +163,7 @@ resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   login_variable = try(each.value.login_variable, null)
   motd           = try(each.value.motd, null)
   motd_variable  = try(each.value.motd_variable, null)
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on     = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
@@ -582,7 +582,7 @@ resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
   }]
   trusted_keys          = try(each.value.trusted_keys, null)
   trusted_keys_variable = try(each.value.trusted_keys_variable, null)
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on            = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
@@ -905,7 +905,7 @@ resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_f
   zscaler_password_variable         = try(each.value.zscaler_password_variable, null)
   zscaler_username                  = try(each.value.zscaler_username, null)
   zscaler_username_variable         = try(each.value.zscaler_username_variable, null)
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on                        = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_snmp_feature_template" "cisco_snmp_feature_template" {
@@ -1754,7 +1754,7 @@ resource "sdwan_cisco_vpn_interface_ipsec_feature_template" "cisco_vpn_interface
   tunnel_source_interface_variable       = try(each.value.tunnel_source_interface_variable, null)
   tunnel_source                          = try(each.value.tunnel_source_ip, null)
   tunnel_source_variable                 = try(each.value.tunnel_source_ip_variable, null)
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on                             = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
@@ -1763,7 +1763,7 @@ resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
   description  = each.value.description
   device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cli_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   cli_config   = each.value.cli_config
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on   = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_switchport_feature_template" "switchport_feature_template" {

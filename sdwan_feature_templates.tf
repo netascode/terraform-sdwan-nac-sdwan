@@ -570,8 +570,8 @@ resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
     source_interface_variable      = try(server.source_interface_variable, null)
     version                        = try(server.version, null)
     version_variable               = try(server.version_variable, null)
-    vpn_id                         = try(server.vpn, null)
-    vpn_id_variable                = try(server.vpn_variable, null)
+    vpn_id                         = try(server.vpn_id, null)
+    vpn_id_variable                = try(server.vpn_id_variable, null)
   }]
   trusted_keys          = try(each.value.trusted_keys, null)
   trusted_keys_variable = try(each.value.trusted_keys_variable, null)
@@ -759,8 +759,8 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
     tracker                                = try(interface.tracker, null)
     tracker_variable                       = try(interface.tracker_variable, null)
     tunnel_dc_preference                   = try(interface.tunnel_dc_preference, null)
-    tunnel_destination                     = each.value.sig_provider == "other" ? try(each.value.tunnel_destination, null) : "dynamic"
-    tunnel_destination_variable            = each.value.sig_provider == "other" ? try(each.value.tunnel_destination_variable, null) : null
+    tunnel_destination                     = each.value.sig_provider == "other" ? try(interface.tunnel_destination, null) : "dynamic"
+    tunnel_destination_variable            = each.value.sig_provider == "other" ? try(interface.tunnel_destination_variable, null) : null
     tunnel_route_via                       = try(interface.tunnel_source_interface, null)
     tunnel_route_via_variable              = try(interface.tunnel_source_interface_variable, null)
     tunnel_public_ip                       = interface.tunnel_type == "gre" ? try(interface.tunnel_public_source_ip, null) : null
@@ -800,12 +800,12 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
     zscaler_primary_data_center_variable            = try(each.value.zscaler_primary_data_center_variable, null)
     zscaler_secondary_data_center                   = try(each.value.zscaler_secondary_data_center, null)
     zscaler_secondary_data_center_variable          = try(each.value.zscaler_secondary_data_center_variable, null)
-    zscaler_surrogate_display_time_unit             = try(each.value.zscaler_surrogate_display_time_unit, null)
+    zscaler_surrogate_display_time_unit             = try(upper(each.value.zscaler_surrogate_display_time_unit), null)
     zscaler_surrogate_idle_time                     = try(each.value.zscaler_surrogate_idle_time, null)
     zscaler_surrogate_ip                            = try(each.value.zscaler_surrogate_ip, null)
     zscaler_surrogate_ip_enforce_for_known_browsers = try(each.value.zscaler_surrogate_ip_enforce_for_known_browsers, null)
     zscaler_surrogate_refresh_time                  = try(each.value.zscaler_surrogate_refresh_time, null)
-    zscaler_surrogate_refresh_time_unit             = try(each.value.zscaler_surrogate_refresh_time_unit, null)
+    zscaler_surrogate_refresh_time_unit             = try(upper(each.value.zscaler_surrogate_refresh_time_unit), null)
     zscaler_xff_forward                             = try(each.value.zscaler_xff_forward, null)
     interface_pairs = try(length(each.value.high_availability_interface_pairs) == 0, true) ? null : [for pair in try(each.value.high_availability_interface_pairs, []) : {
       active_interface        = try(pair.active_interface, null)

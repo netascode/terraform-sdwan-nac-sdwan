@@ -1763,7 +1763,29 @@ resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
   description  = each.value.description
   device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cli_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   cli_config   = each.value.cli_config
-  depends_on   = [sdwan_localized_policy.localized_policy]
+  depends_on = [
+    sdwan_cedge_aaa_feature_template.cedge_aaa_feature_template,
+    sdwan_cedge_global_feature_template.cedge_global_feature_template,
+    sdwan_cisco_banner_feature_template.cisco_banner_feature_template,
+    sdwan_cisco_bfd_feature_template.cisco_bfd_feature_template,
+    sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template,
+    sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template,
+    sdwan_cisco_logging_feature_template.cisco_logging_feature_template,
+    sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template,
+    sdwan_cisco_omp_feature_template.cisco_omp_feature_template,
+    sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template,
+    sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template,
+    sdwan_cisco_security_feature_template.cisco_security_feature_template,
+    sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template,
+    sdwan_cisco_snmp_feature_template.cisco_snmp_feature_template,
+    sdwan_cisco_system_feature_template.cisco_system_feature_template,
+    sdwan_cisco_thousandeyes_feature_template.cisco_thousandeyes_feature_template,
+    sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template,
+    sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template,
+    sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template,
+    sdwan_switchport_feature_template.switchport_feature_template,
+    sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template
+  ]
 }
 
 resource "sdwan_switchport_feature_template" "switchport_feature_template" {

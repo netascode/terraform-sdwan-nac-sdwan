@@ -188,6 +188,7 @@ resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
     pmtu_discovery_variable = try(color.path_mtu_discovery_variable, null)
     dscp                    = try(color.default_dscp, null)
     dscp_variable           = try(color.dscp_variable, null)
+    optional                = try(color.optional, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
 }

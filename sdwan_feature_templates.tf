@@ -185,9 +185,10 @@ resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
     multiplier              = try(color.multiplier, null)
     multiplier_variable     = try(color.multiplier_variable, null)
     pmtu_discovery          = try(color.path_mtu_discovery, null)
-    pmtu_discovery_variable = try(color.pmtu_discovery_variable, null)
+    pmtu_discovery_variable = try(color.path_mtu_discovery_variable, null)
     dscp                    = try(color.default_dscp, null)
     dscp_variable           = try(color.dscp_variable, null)
+    optional                = try(color.optional, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
 }
@@ -666,6 +667,8 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     interfaces = try(length(a.interfaces) == 0, true) ? null : [for i in a.interfaces : {
       name                                          = try(i.name, null)
       name_variable                                 = try(i.name_variable, null)
+      authentication_type                           = try(i.authentication_type, null)
+      authentication_type_variable                  = try(i.authentication_type_variable, null)
       authentication_message_digest_key             = try(i.authentication_message_digest_key, null)
       authentication_message_digest_key_variable    = try(i.authentication_message_digest_key_variable, null)
       authentication_message_digest_key_id          = try(i.authentication_message_digest_key_id, null)
@@ -854,8 +857,8 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
   keys = try(length(each.value.keys) == 0, true) ? null : [for key in each.value.keys : {
     accept_ao_mismatch                = try(key.accept_ao_mismatch, null)
     accept_ao_mismatch_variable       = try(key.accept_ao_mismatch_variable, null)
-    accept_lifetime                   = try(key.accept_lifetime, null)
-    accept_lifetime_variable          = try(key.accept_lifetime_variable, null)
+    accept_lifetime_local             = try(key.accept_lifetime, null)
+    accept_lifetime_local_variable    = try(key.accept_lifetime_variable, null)
     accept_lifetime_duration          = try(key.accept_lifetime_duration_seconds, null)
     accept_lifetime_duration_variable = try(key.accept_lifetime_duration_variable, null)
     accept_lifetime_end_time          = try(key.accept_lifetime_end_time_epoch, null)
@@ -871,8 +874,8 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     receive_id_variable               = try(key.receive_id_variable, null)
     send_id                           = try(key.send_id, null)
     send_id_variable                  = try(key.send_id_variable, null)
-    send_lifetime                     = try(key.send_lifetime, null)
-    send_lifetime_variable            = try(key.send_lifetime_variable, null)
+    send_lifetime_local               = try(key.send_lifetime, null)
+    send_lifetime_local_variable      = try(key.send_lifetime_variable, null)
     send_lifetime_duration            = try(key.send_lifetime_duration_seconds, null)
     send_lifetime_duration_variable   = try(key.send_lifetime_duration_variable, null)
     send_lifetime_end_time            = try(key.send_lifetime_end_time_epoch, null)

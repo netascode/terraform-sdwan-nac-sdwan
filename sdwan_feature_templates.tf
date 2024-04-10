@@ -666,6 +666,8 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     interfaces = try(length(a.interfaces) == 0, true) ? null : [for i in a.interfaces : {
       name                                          = try(i.name, null)
       name_variable                                 = try(i.name_variable, null)
+      authentication_type                           = try(i.authentication_type, null)
+      authentication_type_variable                  = try(i.authentication_type_variable, null)
       authentication_message_digest_key             = try(i.authentication_message_digest_key, null)
       authentication_message_digest_key_variable    = try(i.authentication_message_digest_key_variable, null)
       authentication_message_digest_key_id          = try(i.authentication_message_digest_key_id, null)

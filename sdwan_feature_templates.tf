@@ -1841,7 +1841,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
     switchport_mode                                   = try(interface.mode, null)
     switchport_access_vlan                            = try(interface.access_vlan, null)
     switchport_access_vlan_variable                   = try(interface.access_vlan_variable, null)
-    switchport_trunk_allowed_vlans                    = join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"]))
+    switchport_trunk_allowed_vlans                    = length(concat(try(interface.trunk_allowed_vlans, []), try(interface.trunk_allowed_vlans_ranges, []))) > 0 ? join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"])) : null
     switchport_trunk_vlans_variable                   = try(interface.trunk_allowed_vlans_variable, null)
     switchport_trunk_native_vlan                      = try(interface.trunk_native_vlan, null)
     switchport_trunk_native_vlan_variable             = try(interface.trunk_native_vlan_variable, null)

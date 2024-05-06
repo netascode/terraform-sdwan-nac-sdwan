@@ -522,8 +522,8 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
           }],
           try(s.actions.preferred_color_group, null) == null ? [] : [{
             type                               = "preferredColorGroup"
-            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
-            preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
+            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].id
+            preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].version
           }]
         ]),
       }],

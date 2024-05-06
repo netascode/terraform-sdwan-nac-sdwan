@@ -371,7 +371,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
   for_each       = { for d in try(local.localized_policies.definitions.route_policies, {}) : d.name => d }
   name           = each.value.name
   description    = each.value.description
-  default_action = try(each.value.parameters.default_action.type, null)
+  default_action = try(each.value.default_action, null)
   sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
     ip_type     = s.ip_type

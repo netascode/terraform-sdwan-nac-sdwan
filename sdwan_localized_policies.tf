@@ -276,7 +276,7 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
   default_action = try(each.value.default_action, null)
   sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
-    name        = try(s.sequenceName, "Device Access Control List")
+    name        = try(s.name, "Device Access Control List")
     base_action = s.base_action
     match_entries = !(can(s.match_criterias.destination_data_prefix_list) ||
       can(s.match_criterias.destination_ip_prefix) ||
@@ -325,7 +325,7 @@ resource "sdwan_ipv6_device_acl_policy_definition" "ipv6_device_acl_policy_defin
   default_action = try(each.value.default_action, null)
   sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
-    name        = try(s.sequenceName, "Device Access Control List")
+    name        = try(s.name, "Device Access Control List")
     base_action = s.base_action
     match_entries = !(can(s.match_criterias.destination_data_prefix_list) ||
       can(s.match_criterias.destination_ip_prefix) ||

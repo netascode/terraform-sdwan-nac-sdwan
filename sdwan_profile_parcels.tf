@@ -2,7 +2,7 @@ resource "sdwan_cli_config_profile_parcel" "cli_config_profile_parcel" {
   for_each = {
     for cli in try(local.feature_profiles.cli_profiles, {}) :
     "${cli.name}-config" => cli
-    if lookup(cli, "config", null) != null
+    if try(cli.config, null) != null
   }
   name               = try(each.value.config.name, "${each.value.name}-config")
   description        = try(each.value.config.description, "")

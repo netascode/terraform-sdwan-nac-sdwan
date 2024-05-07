@@ -217,8 +217,6 @@ resource "sdwan_system_logging_profile_parcel" "system_logging_profile_parcel" {
   name                      = try(each.value.logging.name, "${each.value.name}-logging")
   description               = try(each.value.logging.description, null)
   feature_profile_id        = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
-  disk_enable               = try(each.value.logging.disk_enable, null)
-  disk_enable_variable      = try("{{${each.value.logging.disk_enable_variable}}}", null)
   disk_file_rotate          = try(each.value.logging.disk_file_rotate, null)
   disk_file_rotate_variable = try("{{${each.value.logging.disk_file_rotate_variable}}}", null)
   disk_file_size            = try(each.value.logging.disk_file_size, null)

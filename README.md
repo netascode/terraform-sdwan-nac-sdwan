@@ -100,6 +100,8 @@ module "sdwan" {
 | [sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_vpn_interface_feature_template) | resource |
 | [sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cisco_vpn_interface_ipsec_feature_template) | resource |
 | [sdwan_class_map_policy_object.class_map_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/class_map_policy_object) | resource |
+| [sdwan_cli_config_profile_parcel.cli_config_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_config_profile_parcel) | resource |
+| [sdwan_cli_feature_profile.cli_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_feature_profile) | resource |
 | [sdwan_cli_template_feature_template.cli_template_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_template_feature_template) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |

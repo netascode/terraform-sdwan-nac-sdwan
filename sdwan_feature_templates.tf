@@ -1091,7 +1091,7 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
     transport_endpoint_port_variable     = try(obj.transport_endpoint_port_variable, null)
     transport_endpoint_protocol          = try(obj.transport_endpoint_protocol, null)
     transport_endpoint_protocol_variable = try(obj.transport_endpoint_protocol_variable, null)
-    type                                 = try(can(obj.group_trackers) ? "tracker-group" : try (obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type))
+    type                                 = try(can(obj.group_trackers) ? "tracker-group" : try(obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type))
     type_variable                        = try(obj.type_variable, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]

@@ -1141,21 +1141,21 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   omp_admin_distance_ipv6_variable = try(each.value.omp_admin_distance_ipv6_variable, null)
   vpn_id                           = try(each.value.vpn_id, null)
   vpn_name                         = try(each.value.vpn_name, null)
-  dns_hosts = try(each.value.ipv4_dns_hosts, each.value.ipv6_dns_hosts, null ) == null ? null : flatten([
-  try(each.value.ipv4_dns_hosts, null) == null ? [] : [for host in each.value.ipv4_dns_hosts : {
-    hostname          = try(host.hostname, null)
-    hostname_variable = try(host.hostname_variable, null)
-    ip                = try(host.ips, null)
-    ip_variable       = try(host.ips_variable, null)
-    optional          = try(host.optional, null)
-  }],
-  try(each.value.ipv6_dns_hosts, null) == null ? [] : [for host in each.value.ipv6_dns_hosts : {
-    hostname          = try(host.hostname, null)
-    hostname_variable = try(host.hostname_variable, null)
-    ip                = try(host.ips, null)
-    ip_variable       = try(host.ips_variable, null)
-    optional          = try(host.optional, null)
-  }]
+  dns_hosts = try(each.value.ipv4_dns_hosts, each.value.ipv6_dns_hosts, null) == null ? null : flatten([
+    try(each.value.ipv4_dns_hosts, null) == null ? [] : [for host in each.value.ipv4_dns_hosts : {
+      hostname          = try(host.hostname, null)
+      hostname_variable = try(host.hostname_variable, null)
+      ip                = try(host.ips, null)
+      ip_variable       = try(host.ips_variable, null)
+      optional          = try(host.optional, null)
+    }],
+    try(each.value.ipv6_dns_hosts, null) == null ? [] : [for host in each.value.ipv6_dns_hosts : {
+      hostname          = try(host.hostname, null)
+      hostname_variable = try(host.hostname_variable, null)
+      ip                = try(host.ips, null)
+      ip_variable       = try(host.ips_variable, null)
+      optional          = try(host.optional, null)
+    }]
   ])
   dns_ipv4_servers = try(each.value.ipv4_primary_dns_server, each.value.ipv4_primary_dns_server_variable, each.value.ipv4_secondary_dns_server, each.value.ipv4_secondary_dns_server_variable, null) == null ? null : flatten([
     try(each.value.ipv4_primary_dns_server, each.value.ipv4_primary_dns_server_variable, null) == null ? [] : [{

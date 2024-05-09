@@ -97,6 +97,7 @@ resource "sdwan_cedge_aaa_feature_template" "cedge_aaa_feature_template" {
     groups          = join(",", rule.groups)
     authenticated   = try(rule.authenticated, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
@@ -150,6 +151,7 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   udp_small_servers_variable    = try(each.value.udp_small_servers_variable, null)
   vty_logging                   = try(each.value.vty_logging, null)
   vty_logging_variable          = try(each.value.vty_logging_variable, null)
+  depends_on                    = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
@@ -161,6 +163,7 @@ resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   login_variable = try(each.value.login_variable, null)
   motd           = try(each.value.motd, null)
   motd_variable  = try(each.value.motd_variable, null)
+  depends_on     = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
@@ -187,6 +190,7 @@ resource "sdwan_cisco_bfd_feature_template" "cisco_bfd_feature_template" {
     dscp_variable           = try(color.dscp_variable, null)
     optional                = try(color.optional, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
@@ -442,6 +446,7 @@ resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
     interface_name          = try(m.interface_name, null)
     interface_name_variable = try(m.interface_name_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_template" {
@@ -484,6 +489,7 @@ resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_t
     hostname_variable    = try(lease.hostname_variable, null)
     optional             = try(lease.optional, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template" {
@@ -539,6 +545,7 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     ciphersuite_list             = try(prof.ciphersuites, null)
     ciphersuite_list_variable    = try(prof.version_ciphersuites_variablevariable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
@@ -576,6 +583,7 @@ resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
   }]
   trusted_keys          = try(each.value.trusted_keys, null)
   trusted_keys_variable = try(each.value.trusted_keys_variable, null)
+  depends_on            = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
@@ -616,6 +624,7 @@ resource "sdwan_cisco_omp_feature_template" "cisco_omp_feature_template" {
   advertise_ipv6_routes = try(length(each.value.ipv6_advertise_protocols) == 0, true) ? null : [for a in each.value.ipv6_advertise_protocols : {
     protocol = a
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
@@ -708,6 +717,7 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     policy_name          = try(each.value.route_policy, null)
     policy_name_variable = try(each.value.route_policy_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_internet_gateway_feature_template" {
@@ -817,6 +827,7 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
       backup_interface_weight = try(pair.backup_interface_weight, null)
     }]
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_security_feature_template" "cisco_security_feature_template" {
@@ -872,6 +883,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     send_lifetime_infinite            = try(key.send_lifetime_end_time_format, null) == "infinite" ? true : null
     send_lifetime_start_time          = try(key.send_lifetime_start_time_epoch, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_feature_template" {
@@ -896,6 +908,7 @@ resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_f
   zscaler_password_variable         = try(each.value.zscaler_password_variable, null)
   zscaler_username                  = try(each.value.zscaler_username, null)
   zscaler_username_variable         = try(each.value.zscaler_username_variable, null)
+  depends_on                        = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_snmp_feature_template" "cisco_snmp_feature_template" {
@@ -958,6 +971,7 @@ resource "sdwan_cisco_snmp_feature_template" "cisco_snmp_feature_template" {
       exclude_variable = try(o.exclude_variable, null)
     }]
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
@@ -1077,9 +1091,10 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
     transport_endpoint_port_variable     = try(obj.transport_endpoint_port_variable, null)
     transport_endpoint_protocol          = try(obj.transport_endpoint_protocol, null)
     transport_endpoint_protocol_variable = try(obj.transport_endpoint_protocol_variable, null)
-    type                                 = try(can(obj.group_trackers) ? "tracker-group" : try (obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type))
+    type                                 = try(can(obj.group_trackers) ? "tracker-group" : try(obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type))
     type_variable                        = try(obj.type_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_thousandeyes_feature_template" "cisco_thousandeyes_feature_template" {
@@ -1110,6 +1125,7 @@ resource "sdwan_cisco_thousandeyes_feature_template" "cisco_thousandeyes_feature
     te_vpn_variable                 = try(each.value.vpn_id_variable, null)
     te_web_proxy_type               = try(each.value.proxy_type, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
@@ -1217,7 +1233,6 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     prefix          = try(route.prefix, null)
     prefix_variable = try(route.prefix_variable, null)
     optional        = try(route.optional, null)
-    vpn_id            = try(route.next_hop_dia, null) == true ? 0 : null
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address           = try(nh.address, null)
       address_variable  = try(nh.address_variable, null)
@@ -1359,6 +1374,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     translate_ip_subnet           = try(rule.translate_ip_subnet, null)
     translate_ip_subnet_variable  = try(rule.translate_ip_subnet_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_feature_template" {
@@ -1691,6 +1707,7 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
     translate_port_variable = try(entry.translate_port_variable, null)
     optional                = try(entry.optional, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_vpn_interface_ipsec_feature_template" "cisco_vpn_interface_ipsec_feature_template" {
@@ -1749,6 +1766,7 @@ resource "sdwan_cisco_vpn_interface_ipsec_feature_template" "cisco_vpn_interface
   tunnel_source_interface_variable       = try(each.value.tunnel_source_interface_variable, null)
   tunnel_source                          = try(each.value.tunnel_source_ip, null)
   tunnel_source_variable                 = try(each.value.tunnel_source_ip_variable, null)
+  depends_on                             = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
@@ -1757,6 +1775,29 @@ resource "sdwan_cli_template_feature_template" "cli_template_feature_template" {
   description  = each.value.description
   device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cli_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   cli_config   = each.value.cli_config
+  depends_on = [
+    sdwan_cedge_aaa_feature_template.cedge_aaa_feature_template,
+    sdwan_cedge_global_feature_template.cedge_global_feature_template,
+    sdwan_cisco_banner_feature_template.cisco_banner_feature_template,
+    sdwan_cisco_bfd_feature_template.cisco_bfd_feature_template,
+    sdwan_cisco_bgp_feature_template.cisco_bgp_feature_template,
+    sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template,
+    sdwan_cisco_logging_feature_template.cisco_logging_feature_template,
+    sdwan_cisco_ntp_feature_template.cisco_ntp_feature_template,
+    sdwan_cisco_omp_feature_template.cisco_omp_feature_template,
+    sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template,
+    sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template,
+    sdwan_cisco_security_feature_template.cisco_security_feature_template,
+    sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template,
+    sdwan_cisco_snmp_feature_template.cisco_snmp_feature_template,
+    sdwan_cisco_system_feature_template.cisco_system_feature_template,
+    sdwan_cisco_thousandeyes_feature_template.cisco_thousandeyes_feature_template,
+    sdwan_cisco_vpn_feature_template.cisco_vpn_feature_template,
+    sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template,
+    sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template,
+    sdwan_switchport_feature_template.switchport_feature_template,
+    sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template
+  ]
 }
 
 resource "sdwan_switchport_feature_template" "switchport_feature_template" {
@@ -1809,7 +1850,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
     switchport_mode                                   = try(interface.mode, null)
     switchport_access_vlan                            = try(interface.access_vlan, null)
     switchport_access_vlan_variable                   = try(interface.access_vlan_variable, null)
-    switchport_trunk_allowed_vlans                    = join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"]))
+    switchport_trunk_allowed_vlans                    = length(concat(try(interface.trunk_allowed_vlans, []), try(interface.trunk_allowed_vlans_ranges, []))) > 0 ? join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"])) : null
     switchport_trunk_vlans_variable                   = try(interface.trunk_allowed_vlans_variable, null)
     switchport_trunk_native_vlan                      = try(interface.trunk_native_vlan, null)
     switchport_trunk_native_vlan_variable             = try(interface.trunk_native_vlan_variable, null)
@@ -1823,6 +1864,7 @@ resource "sdwan_switchport_feature_template" "switchport_feature_template" {
     vlan                 = try(sma.vlan, null)
     vlan_variable        = try(sma.vlan_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_template" {
@@ -1950,4 +1992,5 @@ resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_t
     mac_address_variable  = try(e.mac_address_variable, null)
     optional              = try(e.optional, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }

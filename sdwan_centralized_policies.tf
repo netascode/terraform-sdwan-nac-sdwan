@@ -260,13 +260,18 @@ resource "sdwan_hub_and_spoke_topology_policy_definition" "hub_and_spoke_topolog
   vpn_list_id      = sdwan_vpn_list_policy_object.vpn_list_policy_object[each.value.vpn_list].id
   vpn_list_version = sdwan_vpn_list_policy_object.vpn_list_policy_object[each.value.vpn_list].version
   topologies = try(length(each.value.hub_and_spoke_sites) == 0, true) ? null : [for t in each.value.hub_and_spoke_sites : {
-    name = t.name
+    name                = t.name
+    all_hubs_are_equal  = try(t.equal_preference, null)
+    advertise_hub_tlocs = try(t.advertise_tloc, null)
+    tloc_list_id        = try(t.tloc_list, null) == null ? null : sdwan_tloc_list_policy_object.tloc_list_policy_object[t.tloc_list].id
     spokes = try(length(t.spokes) == 0, true) ? null : [for s in t.spokes : {
       site_list_id      = sdwan_site_list_policy_object.site_list_policy_object[s.site_list].id
       site_list_version = sdwan_site_list_policy_object.site_list_policy_object[s.site_list].version
       hubs = try(length(s.hubs) == 0, true) ? null : [for h in s.hubs : {
-        site_list_id      = sdwan_site_list_policy_object.site_list_policy_object[h.site_list].id
-        site_list_version = sdwan_site_list_policy_object.site_list_policy_object[h.site_list].version
+        site_list_id         = sdwan_site_list_policy_object.site_list_policy_object[h.site_list].id
+        site_list_version    = sdwan_site_list_policy_object.site_list_policy_object[h.site_list].version
+        ipv4_prefix_list_ids = try(length(h.ipv4_prefix_lists) == 0, true) ? null : [for p in h.ipv4_prefix_lists : sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object[p].id]
+        ipv6_prefix_list_ids = try(length(h.ipv6_prefix_lists) == 0, true) ? null : [for p in h.ipv6_prefix_lists : sdwan_ipv6_prefix_list_policy_object.ipv6_prefix_list_policy_object[p].id]
         }
       ]
     }]

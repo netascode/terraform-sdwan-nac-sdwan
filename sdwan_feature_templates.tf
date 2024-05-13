@@ -1091,7 +1091,7 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
     transport_endpoint_port_variable     = try(obj.transport_endpoint_port_variable, null)
     transport_endpoint_protocol          = try(obj.transport_endpoint_protocol, null)
     transport_endpoint_protocol_variable = try(obj.transport_endpoint_protocol_variable, null)
-    type                                 = try(obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type)
+    type                                 = try(can(obj.group_trackers) ? "tracker-group" : try(obj.type, can(obj.type_variable) ? null : local.defaults.sdwan.edge_feature_templates.system_templates.endpoint_trackers.type))
     type_variable                        = try(obj.type_variable, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
@@ -1141,13 +1141,22 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   omp_admin_distance_ipv6_variable = try(each.value.omp_admin_distance_ipv6_variable, null)
   vpn_id                           = try(each.value.vpn_id, null)
   vpn_name                         = try(each.value.vpn_name, null)
-  dns_hosts = try(length(each.value.ipv4_dns_hosts) == 0, true) ? null : [for host in each.value.ipv4_dns_hosts : {
-    hostname          = try(host.hostname, null)
-    hostname_variable = try(host.hostname_variable, null)
-    ip                = try(host.ips, null)
-    ip_variable       = try(host.ips_variable, null)
-    optional          = try(host.optional, null)
-  }]
+  dns_hosts = try(each.value.ipv4_dns_hosts, each.value.ipv6_dns_hosts, null) == null ? null : flatten([
+    try(each.value.ipv4_dns_hosts, null) == null ? [] : [for host in each.value.ipv4_dns_hosts : {
+      hostname          = try(host.hostname, null)
+      hostname_variable = try(host.hostname_variable, null)
+      ip                = try(host.ips, null)
+      ip_variable       = try(host.ips_variable, null)
+      optional          = try(host.optional, null)
+    }],
+    try(each.value.ipv6_dns_hosts, null) == null ? [] : [for host in each.value.ipv6_dns_hosts : {
+      hostname          = try(host.hostname, null)
+      hostname_variable = try(host.hostname_variable, null)
+      ip                = try(host.ips, null)
+      ip_variable       = try(host.ips_variable, null)
+      optional          = try(host.optional, null)
+    }]
+  ])
   dns_ipv4_servers = try(each.value.ipv4_primary_dns_server, each.value.ipv4_primary_dns_server_variable, each.value.ipv4_secondary_dns_server, each.value.ipv4_secondary_dns_server_variable, null) == null ? null : flatten([
     try(each.value.ipv4_primary_dns_server, each.value.ipv4_primary_dns_server_variable, null) == null ? [] : [{
       address          = try(each.value.ipv4_primary_dns_server, null)
@@ -1162,13 +1171,13 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   ])
   dns_ipv6_servers = try(each.value.ipv6_primary_dns_server, each.value.ipv6_primary_dns_server_variable, each.value.ipv6_secondary_dns_server, each.value.ipv6_secondary_dns_server_variable, null) == null ? null : flatten([
     try(each.value.ipv6_primary_dns_server, each.value.ipv6_primary_dns_server_variable, null) == null ? [] : [{
-      address          = try(each.value.ipv4_primary_dns_server, null)
-      address_variable = try(each.value.ipv4_primary_dns_server_variable, null)
+      address          = try(each.value.ipv6_primary_dns_server, null)
+      address_variable = try(each.value.ipv6_primary_dns_server_variable, null)
       role             = "primary"
     }],
     try(each.value.ipv6_secondary_dns_server, each.value.ipv6_secondary_dns_server_variable, null) == null ? [] : [{
-      address          = try(each.value.ipv4_secondary_dns_server, null)
-      address_variable = try(each.value.ipv4_secondary_dns_server_variable, null)
+      address          = try(each.value.ipv6_secondary_dns_server, null)
+      address_variable = try(each.value.ipv6_secondary_dns_server_variable, null)
       role             = "secondary"
     }]
   ])

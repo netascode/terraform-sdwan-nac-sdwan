@@ -199,6 +199,9 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       ])
     }],
   ])
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 locals {

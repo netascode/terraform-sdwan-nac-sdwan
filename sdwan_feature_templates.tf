@@ -446,6 +446,7 @@ resource "sdwan_cisco_bgp_feature_template" "cisco_bgp_feature_template" {
     interface_name          = try(m.interface_name, null)
     interface_name_variable = try(m.interface_name_variable, null)
   }]
+  depends_on = [sdwan_localized_policy.localized_policy]
 }
 
 resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_template" {

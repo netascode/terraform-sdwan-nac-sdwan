@@ -188,3 +188,12 @@ resource "sdwan_zone_list_policy_object" "zone_list_policy_object" {
     }]
   )
 }
+
+resource "sdwan_data_fqdn_prefix_list_policy_object" "fqdn_prefix_list_policy_object" {
+  for_each = { for p in try(local.policy_objects.fqdn_data_prefix_lists, {}) : p.name => p }
+  name     = each.value.name
+  entries = [for e in try(each.value.fqdns, []) : {
+    fqdn = e
+  }]
+
+}

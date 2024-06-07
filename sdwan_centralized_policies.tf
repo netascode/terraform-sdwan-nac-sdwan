@@ -22,8 +22,8 @@ resource "sdwan_centralized_policy" "centralized_policy" {
           h == "site_lists_out" ? "out" :
           h == "region_lists_in" ? "in" :
           h == "region_lists_out" ? "out" :
-          h == "regions_in" ? "in" :
-          h == "regions_out" ? "out" :
+          h == "region_in" ? "in" :
+          h == "region_out" ? "out" :
           null
         )
         site_list_ids = (
@@ -46,12 +46,11 @@ resource "sdwan_centralized_policy" "centralized_policy" {
           h == "region_lists_out" ? [for x in try(d.site_region.region_lists_out, []) : sdwan_region_list_policy_object.region_list_policy_object[x].version] :
           null
         )
-        # This needs a fix on provider. regions_ids is not a list, it just accepts a single value
-        # region_ids = (
-        #   h == "regions_in" ? try([d.site_region.regions_in], []) :
-        #   h == "regions_out" ? try([d.site_region.regions_out], []) :
-        #   null
-        # )
+        region_ids = (
+          h == "region_in" ? try([d.site_region.region_in], []) :
+          h == "region_out" ? try([d.site_region.region_out], []) :
+          null
+        )
     }] }],
     [for d in try(each.value.hub_and_spoke_topology, []) : {
       id      = sdwan_hub_and_spoke_topology_policy_definition.hub_and_spoke_topology_policy_definition[d.policy_definition].id
@@ -73,11 +72,14 @@ resource "sdwan_centralized_policy" "centralized_policy" {
       version = sdwan_traffic_data_policy_definition.traffic_data_policy_definition[d.policy_definition].version
       type    = "data"
       entries = try(d.site_region_vpn, null) != null ? [for h in(try(d.site_region_vpn, [])) : {
-        direction          = try(h.direction, null) != null ? h.direction : null
-        site_list_ids      = [for x in try(h.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].id]
-        site_list_versions = [for x in try(h.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].version]
-        vpn_list_ids       = [for x in try(h.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].id]
-        vpn_list_versions  = [for x in try(h.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].version]
+        direction            = try(h.direction, null) != null ? h.direction : null
+        site_list_ids        = try(h.site_lists, null) != null ? [for x in try(h.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].id] : null
+        site_list_versions   = try(h.site_lists, null) != null ? [for x in try(h.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].version] : null
+        vpn_list_ids         = try(h.vpn_lists, null) != null ? [for x in try(h.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].id] : null
+        vpn_list_versions    = try(h.vpn_lists, null) != null ? [for x in try(h.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].version] : null
+        region_list_ids      = try(h.region_list, null) != null ? [sdwan_region_list_policy_object.region_list_policy_object[h.region_list].id] : null
+        region_list_versions = try(h.region_list, null) != null ? [sdwan_region_list_policy_object.region_list_policy_object[h.region_list].version] : null
+        region_ids           = try(h.region, null) != null ? [h.region] : null
       }] : null
     }],
     [for d in try(each.value.cflowd, []) : {
@@ -94,10 +96,13 @@ resource "sdwan_centralized_policy" "centralized_policy" {
       version = sdwan_application_aware_routing_policy_definition.application_aware_routing_policy_definition[d.policy_definition].version
       type    = "appRoute"
       entries = [{
-        site_list_ids      = [for x in try(d.site_region_vpn.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].id]
-        site_list_versions = [for x in try(d.site_region_vpn.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].version]
-        vpn_list_ids       = [for x in try(d.site_region_vpn.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].id]
-        vpn_list_versions  = [for x in try(d.site_region_vpn.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].version]
+        site_list_ids        = try(d.site_region_vpn.site_lists, null) != null ? [for x in try(d.site_region_vpn.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].id] : null
+        site_list_versions   = try(d.site_region_vpn.site_lists, null) != null ? [for x in try(d.site_region_vpn.site_lists, []) : sdwan_site_list_policy_object.site_list_policy_object[x].version] : null
+        vpn_list_ids         = try(d.site_region_vpn.vpn_lists, null) != null ? [for x in try(d.site_region_vpn.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].id] : null
+        vpn_list_versions    = try(d.site_region_vpn.vpn_lists, null) != null ? [for x in try(d.site_region_vpn.vpn_lists, []) : sdwan_vpn_list_policy_object.vpn_list_policy_object[x].version] : null
+        region_list_ids      = try(d.site_region_vpn.region_list, null) != null ? [sdwan_region_list_policy_object.region_list_policy_object[d.site_region_vpn.region_list].id] : null
+        region_list_versions = try(d.site_region_vpn.region_list, null) != null ? [sdwan_region_list_policy_object.region_list_policy_object[d.site_region_vpn.region_list].version] : null
+        region_ids           = try(d.site_region_vpn.region, null) != null ? [d.site_region_vpn.region] : null
       }]
     }]
   )

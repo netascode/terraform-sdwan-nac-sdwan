@@ -467,3 +467,20 @@ resource "sdwan_system_omp_profile_parcel" "system_omp_profile_parcel" {
   transport_gateway                    = try(each.value.omp.transport_gateway, null)
   transport_gateway_variable           = try("{{${each.value.omp.transport_gateway_variable}}}", null)
 }
+
+resource "sdwan_system_performance_monitoring_profile_parcel" "system_performance_monitoring_profile_parcel" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-performance_monitoring" => sys
+    if lookup(sys, "performance_monitoring", null) != null
+  }
+  name                        = each.value.performance_monitoring.name
+  description                 = try(each.value.performance_monitoring.description, null)
+  feature_profile_id          = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  app_perf_monitor_app_group  = try(each.value.performance_monitoring.app_perf_monitor_app_groups, null)
+  app_perf_monitor_enabled    = try(each.value.performance_monitoring.app_perf_monitor_enabled, null)
+  event_driven_config_enabled = try(each.value.performance_monitoring.event_driven_config_enabled, null)
+  event_driven_events         = try(each.value.performance_monitoring.event_driven_events, null)
+  monitoring_config_enabled   = try(each.value.performance_monitoring.monitoring_config_enabled, null)
+  monitoring_config_interval  = try(each.value.performance_monitoring.monitoring_config_interval, null)
+}

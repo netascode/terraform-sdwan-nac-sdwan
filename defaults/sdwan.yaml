@@ -300,8 +300,3 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
-    feature_profiles:
-      system_profiles:
-        aaa:
-          auth_order: 
-            - "local"

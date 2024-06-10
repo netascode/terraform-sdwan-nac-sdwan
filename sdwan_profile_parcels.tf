@@ -109,6 +109,85 @@ resource "sdwan_system_banner_profile_parcel" "system_banner_profile_parcel" {
   motd_variable      = try("{{${each.value.banner.motd_variable}}}", null)
 }
 
+resource "sdwan_system_basic_profile_parcel" "system_basic_profile_parcel" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-basic" => sys
+    if lookup(sys, "basic", null) != null
+  }
+  name                                = each.value.basic.name
+  description                         = try(each.value.basic.description, null)
+  feature_profile_id                  = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  admin_tech_on_failure               = try(each.value.basic.admin_tech_on_failure, null)
+  admin_tech_on_failure_variable      = try("{{${each.value.basic.admin_tech_on_failure_variable}}}", null)
+  affinity_group_number               = try(each.value.basic.affinity_group_number, null)
+  affinity_group_number_variable      = try("{{${each.value.basic.affinity_group_number_variable}}}", null)
+  affinity_group_preferences          = try(each.value.basic.affinity_group_preferences, null)
+  affinity_group_preferences_variable = try("{{${each.value.basic.affinity_group_preferences_variable}}}", null)
+  affinity_per_vrfs = try(length(each.value.basic.affinity_per_vrfs) == 0, true) ? null : [for a in each.value.basic.affinity_per_vrfs : {
+    affinity_group_number          = try(a.affinity_group_number, null)
+    affinity_group_number_variable = try("{{${a.affinity_group_number_variable}}}", null)
+    vrf_range                      = try(a.vrf_range, null)
+    vrf_range_variable             = try("{{${a.vrf_range_variable}}}", null)
+  }]
+  affinity_preference_auto            = try(each.value.basic.affinity_preference_auto, null)
+  affinity_preference_auto_variable   = try("{{${each.value.basic.affinity_preference_auto_variable}}}", null)
+  config_description                  = try(each.value.basic.system_description, null)
+  config_description_variable         = try("{{${each.value.basic.system_description_variable}}}", null)
+  console_baud_rate                   = try(each.value.basic.console_baud_rate, null)
+  console_baud_rate_variable          = try("{{${each.value.basic.console_baud_rate_variable}}}", null)
+  control_session_pps                 = try(each.value.basic.control_session_pps, null)
+  control_session_pps_variable        = try("{{${each.value.basic.control_session_pps_variable}}}", null)
+  controller_groups                   = try(each.value.basic.controller_groups, null)
+  controller_groups_variable          = try("{{${each.value.basic.controller_groups_variable}}}", null)
+  device_groups                       = try(each.value.basic.device_groups, null)
+  device_groups_variable              = try("{{${each.value.basic.device_groups_variable}}}", null)
+  enhanced_app_aware_routing          = try(each.value.basic.enhanced_app_aware_routing, null)
+  enhanced_app_aware_routing_variable = try("{{${each.value.basic.enhanced_app_aware_routing_variable}}}", null)
+  gps_geo_fencing_enable              = try(each.value.basic.geo_fencing_enable, null)
+  gps_geo_fencing_range               = try(each.value.basic.geo_fencing_range, null)
+  gps_geo_fencing_range_variable      = try("{{${each.value.basic.geo_fencing_range_variable}}}", null)
+  gps_latitude                        = try(each.value.basic.latitude, null)
+  gps_latitude_variable               = try("{{${each.value.basic.latitude_variable}}}", null)
+  gps_longitude                       = try(each.value.basic.longitude, null)
+  gps_longitude_variable              = try("{{${each.value.basic.longitude_variable}}}", null)
+  gps_sms_enable                      = try(each.value.basic.geo_fencing_sms_enable, null)
+  gps_sms_mobile_numbers = try(length(each.value.basic.geo_fencing_sms_mobile_numbers) == 0, true) ? null : [for n in each.value.basic.geo_fencing_sms_mobile_numbers : {
+    number          = try(n.number, null)
+    number_variable = try("{{${n.number_variable}}}", null)
+  }]
+  idle_timeout                    = try(each.value.basic.idle_timeout, null)
+  idle_timeout_variable           = try("{{${each.value.basic.idle_timeout_variable}}}", null)
+  location                        = try(each.value.basic.location, null)
+  location_variable               = try("{{${each.value.basic.location_variable}}}", null)
+  max_omp_sessions                = try(each.value.basic.max_omp_sessions, null)
+  max_omp_sessions_variable       = try("{{${each.value.basic.max_omp_sessions_variable}}}", null)
+  multi_tenant                    = try(each.value.basic.multitenant, null)
+  multi_tenant_variable           = try("{{${each.value.basic.multitenant_variable}}}", null)
+  on_demand_enable                = try(each.value.basic.on_demand_tunnel, null)
+  on_demand_enable_variable       = try("{{${each.value.basic.on_demand_tunnel_variable}}}", null)
+  on_demand_idle_timeout          = try(each.value.basic.on_demand_tunnel_idle_timeout, null)
+  on_demand_idle_timeout_variable = try("{{${each.value.basic.on_demand_tunnel_idle_timeout_variable}}}", null)
+  overlay_id                      = try(each.value.basic.overlay_id, null)
+  overlay_id_variable             = try("{{${each.value.basic.overlay_id_variable}}}", null)
+  port_hopping                    = try(each.value.basic.port_hopping, null)
+  port_hopping_variable           = try("{{${each.value.basic.port_hopping_variable}}}", null)
+  port_offset                     = try(each.value.basic.port_offset, null)
+  port_offset_variable            = try("{{${each.value.basic.port_offset_variable}}}", null)
+  site_types                      = try(each.value.basic.site_types, null)
+  site_types_variable             = try("{{${each.value.basic.site_types_variable}}}", null)
+  timezone                        = try(each.value.basic.timezone, null)
+  timezone_variable               = try("{{${each.value.basic.timezone_variable}}}", null)
+  track_default_gateway           = try(each.value.basic.track_default_gateway, null)
+  track_default_gateway_variable  = try("{{${each.value.basic.track_default_gateway_variable}}}", null)
+  track_interface_tag             = try(each.value.basic.track_interface_tag, null)
+  track_interface_tag_variable    = try("{{${each.value.basic.track_interface_tag_variable}}}", null)
+  track_transport                 = try(each.value.basic.track_transport, null)
+  track_transport_variable        = try("{{${each.value.basic.track_transport_variable}}}", null)
+  transport_gateway               = try(each.value.basic.transport_gateway, null)
+  transport_gateway_variable      = try("{{${each.value.basic.transport_gateway_variable}}}", null)
+}
+
 resource "sdwan_system_bfd_profile_parcel" "system_bfd_profile_parcel" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :

@@ -495,7 +495,7 @@ resource "sdwan_system_security_profile_parcel" "system_security_profile_parcel"
   description                          = try(each.value.security.description, null)
   feature_profile_id                   = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   anti_replay_window                   = try(each.value.security.anti_replay_window, null)
-  anti_replay_window_variable          = try("{{${each.value.anti_replay_window_variable}}}", null)
+  anti_replay_window_variable          = try("{{${each.value.security.anti_replay_window_variable}}}", null)
   extended_anti_replay_window          = try(each.value.security.extended_anti_replay_window, null)
   extended_anti_replay_window_variable = try("{{${each.value.security.extended_anti_replay_window_variable}}}", null)
   integrity_type                       = try(each.value.security.integrity_types, null)
@@ -535,4 +535,70 @@ resource "sdwan_system_security_profile_parcel" "system_security_profile_parcel"
   }]
   rekey          = try(each.value.security.rekey_time, null)
   rekey_variable = try("{{${each.value.security.rekey_time_variable}}}", null)
+}
+
+resource "sdwan_system_snmp_profile_parcel" "system_snmp_profile_parcel" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-snmp" => sys
+    if lookup(sys, "snmp", null) != null
+  }
+  name               = each.value.snmp.name
+  description        = try(each.value.snmp.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  communities = try(length(each.value.snmp.communities) == 0, true) ? null : [for c in each.value.snmp.communities : {
+    authorization          = try(c.authorization, null)
+    authorization_variable = try("{{${c.authorization_variable}}}", null)
+    name                   = c.name
+    user_label             = c.user_label
+    view                   = try(c.view, null)
+    view_variable          = try("{{${c.view_variable}}}", null)
+  }]
+  contact_person          = try(each.value.snmp.contact_person, null)
+  contact_person_variable = try("{{${each.value.snmp.contact_person_variable}}}", null)
+  groups = try(length(each.value.snmp.groups) == 0, true) ? null : [for group in each.value.snmp.groups : {
+    name           = group.name
+    security_level = group.security_level
+    view           = try(group.view, null)
+    view_variable  = try("{{${group.view.view_variable}}}", null)
+  }]
+  location_of_device          = try(each.value.snmp.location, null)
+  location_of_device_variable = try("{{${each.value.snmp.location_variable}}}", null)
+  shutdown                    = try(each.value.snmp.shutdown, null)
+  shutdown_variable           = try("{{${each.value.snmp.shutdown_variable}}}", null)
+  trap_target_servers = try(length(each.value.snmp.trap_target_servers) == 0, true) ? null : [for server in each.value.snmp.trap_target_servers : {
+    ip                        = try(server.ip, null)
+    ip_variable               = try("{{${server.ip_variable}}}", null)
+    port                      = try(server.port, null)
+    port_variable             = try("{{${server.port_variable}}}", null)
+    source_interface          = try(server.source_interface, null)
+    source_interface_variable = try("{{${server.source_interface_variable}}}", null)
+    user                      = try(server.user, null)
+    user_label                = try(server.user_label, null)
+    user_variable             = try("{{${server.user_variable}}}", null)
+    vpn_id                    = try(server.vpn_id, null)
+    vpn_id_variable           = try("{{${server.vpn_id_variable}}}", null)
+  }]
+  users = try(length(each.value.snmp.users) == 0, true) ? null : [for user in each.value.snmp.users : {
+    authentication_password          = try(user.authentication_password, null)
+    authentication_password_variable = try("{{${user.authentication_password_variable}}}", null)
+    authentication_protocol          = try(user.authentication_protocol, null)
+    authentication_protocol_variable = try("{{${user.authentication_protocol_variable}}}", null)
+    group                            = try(user.group, null)
+    group_variable                   = try("{{${user.group_variable}}}", null)
+    name                             = user.name
+    privacy_password                 = try(user.privacy_password, null)
+    privacy_password_variable        = try("{{${user.privacy_password_variable}}}", null)
+    privacy_protocol                 = try(user.privacy_protocol, null)
+    privacy_protocol_variable        = try("{{${user.privacy_protocol_variable}}}", null)
+  }]
+  views = try(length(each.value.snmp.views) == 0, true) ? null : [for view in each.value.snmp.views : {
+    name = view.name
+    oids = try(length(view.oids) == 0, true) ? null : [for oid in view.oids : {
+      exclude          = try(oid.exclude, null)
+      exclude_variable = try("{{${oid.exclude_variable}}}", null)
+      id               = try(oid.id, null)
+      id_variable      = try("{{${oid.id_variable}}}", null)
+    }]
+  }]
 }

@@ -484,3 +484,55 @@ resource "sdwan_system_performance_monitoring_profile_parcel" "system_performanc
   monitoring_config_enabled   = try(each.value.performance_monitoring.monitoring_config_enabled, null)
   monitoring_config_interval  = try(each.value.performance_monitoring.monitoring_config_interval, null)
 }
+
+resource "sdwan_system_security_profile_parcel" "system_security_profile_parcel" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-security" => sys
+    if lookup(sys, "security", null) != null
+  }
+  name                                 = each.value.security.name
+  description                          = try(each.value.security.description, null)
+  feature_profile_id                   = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  anti_replay_window                   = try(each.value.security.anti_replay_window, null)
+  anti_replay_window_variable          = try("{{${each.value.anti_replay_window_variable}}}", null)
+  extended_anti_replay_window          = try(each.value.security.extended_anti_replay_window, null)
+  extended_anti_replay_window_variable = try("{{${each.value.security.extended_anti_replay_window_variable}}}", null)
+  integrity_type                       = try(each.value.security.integrity_types, null)
+  integrity_type_variable              = try("{{${each.value.security.integrity_types_variable}}}", null)
+  ipsec_pairwise_keying                = try(each.value.security.ipsec_pairwise_keying, null)
+  ipsec_pairwise_keying_variable       = try("{{${each.value.security.ipsec_pairwise_keying_variable}}}", null)
+  keychains = try(length(each.value.security.key_chains) == 0, true) ? null : [for key_chain in each.value.security.key_chains : {
+    key_chain_name = key_chain.name
+    key_id         = key_chain.key_id
+  }]
+  keys = try(length(each.value.security.keys) == 0, true) ? null : [for key in each.value.security.keys : {
+    accept_ao_mismatch              = try(key.accept_ao_mismatch, null)
+    accept_ao_mismatch_variable     = try("{{${key.accept_ao_mismatch_variable}}}", null)
+    accept_life_time_duration       = try(key.accept_life_time_duration, null)
+    accept_life_time_exact          = try(key.accept_life_time_exact, null)
+    accept_life_time_infinite       = try(key.accept_life_time_infinite, null)
+    accept_life_time_local          = try(key.accept_life_time_local, null)
+    accept_life_time_local_variable = try("{{${key.accept_life_time_local_variable}}}", null)
+    accept_life_time_start_epoch    = try(key.accept_life_time_start_epoch, null)
+    crypto_algorithm                = key.crypto_algorithm
+    id                              = key.id
+    include_tcp_options             = try(key.include_tcp_options, null)
+    include_tcp_options_variable    = try("{{${key.include_tcp_options_variable}}}", null)
+    key_string                      = try(key.key_string, null)
+    key_string_variable             = try("{{${key.key_string_variable}}}", null)
+    name                            = key.key_chain_name
+    receiver_id                     = try(key.receiver_id, null)
+    receiver_id_variable            = try("{{${key.receiver_id_variable}}}", null)
+    send_id                         = try(key.send_id, null)
+    send_id_variable                = try("{{${key.send_id_variable}}}", null)
+    send_life_time_duration         = try(key.send_life_time_duration, null)
+    send_life_time_exact            = try(key.send_life_time_exact, null)
+    send_life_time_infinite         = try(key.send_life_time_infinite, null)
+    send_life_time_local            = try(key.send_life_time_local, null)
+    send_life_time_local_variable   = try("{{${key.send_life_time_local_variable}}}", null)
+    send_life_time_start_epoch      = try(key.send_life_time_start_epoch, null)
+  }]
+  rekey          = try(each.value.security.rekey_time, null)
+  rekey_variable = try("{{${each.value.security.rekey_time_variable}}}", null)
+}

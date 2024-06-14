@@ -132,6 +132,7 @@ module "sdwan" {
 | [sdwan_switchport_feature_template.switchport_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/switchport_feature_template) | resource |
 | [sdwan_system_aaa_profile_parcel.system_aaa_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_aaa_profile_parcel) | resource |
 | [sdwan_system_banner_profile_parcel.system_banner_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_banner_profile_parcel) | resource |
+| [sdwan_system_basic_profile_parcel.system_basic_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_basic_profile_parcel) | resource |
 | [sdwan_system_bfd_profile_parcel.system_bfd_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_bfd_profile_parcel) | resource |
 | [sdwan_system_feature_profile.system_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_feature_profile) | resource |
 | [sdwan_system_flexible_port_speed_profile_parcel.system_flexible_port_speed_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_flexible_port_speed_profile_parcel) | resource |
@@ -139,6 +140,10 @@ module "sdwan" {
 | [sdwan_system_logging_profile_parcel.system_logging_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_logging_profile_parcel) | resource |
 | [sdwan_system_mrf_profile_parcel.system_mrf_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_mrf_profile_parcel) | resource |
 | [sdwan_system_ntp_profile_parcel.system_ntp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ntp_profile_parcel) | resource |
+| [sdwan_system_omp_profile_parcel.system_omp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_omp_profile_parcel) | resource |
+| [sdwan_system_performance_monitoring_profile_parcel.system_performance_monitoring_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_performance_monitoring_profile_parcel) | resource |
+| [sdwan_system_security_profile_parcel.system_security_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_security_profile_parcel) | resource |
+| [sdwan_system_snmp_profile_parcel.system_snmp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_snmp_profile_parcel) | resource |
 | [sdwan_tloc_list_policy_object.tloc_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tloc_list_policy_object) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
 | [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |

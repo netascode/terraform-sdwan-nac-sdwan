@@ -433,11 +433,19 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
         type            = "lossProtect"
         loss_correction = s.actions.loss_correction.type
       }],
-      try(s.actions.loss_correction.loss_threshold_percentage, null) == null && try(s.actions.loss_correction.type, null) == null ? [] : [{
+      try(s.actions.loss_correction.loss_threshold_percentage, null) != null && try(s.actions.loss_correction.type, null) == "fecAdaptive" ? [{
         type                          = "lossProtectFec"
         loss_correction_fec           = s.actions.loss_correction.type
-        loss_correction_fec_threshold = s.actions.loss_correction.loss_threshold_percentage
-      }],
+        loss_correction_fec_threshold = try(s.actions.loss_correction.loss_threshold_percentage, null)
+      }] : [],
+      try(s.actions.loss_correction.type, null) != null && try(s.actions.loss_correction.type, null) == "packetDuplication" ? [{
+        type                               = "lossProtectPktDup"
+        loss_correction_packet_duplication = s.actions.loss_correction.type
+      }] : [],
+      try(s.actions.loss_correction.type, null) != null && try(s.actions.loss_correction.type, null) == "fecAlways" ? [{
+        type                = "lossProtectFec"
+        loss_correction_fec = s.actions.loss_correction.type
+      }] : [],
       try(s.actions.redirect_dns.type, null) == null ? [] : [{
         type = "redirectDns"
         redirect_dns = (

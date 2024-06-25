@@ -180,6 +180,6 @@ resource "sdwan_local_application_list_policy_object" "local_application_list_po
   name     = each.value.name
   entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
     application        = try(e.application, null)
-    # application_family = try(e.application_family, null)
+    application_family = try(e.application_family, null)
   }]
 }

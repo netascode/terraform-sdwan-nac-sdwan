@@ -195,5 +195,4 @@ resource "sdwan_data_fqdn_prefix_list_policy_object" "fqdn_prefix_list_policy_ob
   entries = [for e in try(each.value.fqdns, []) : {
     fqdn = e
   }]
-
 }

@@ -13,8 +13,8 @@ resource "sdwan_cli_config_profile_parcel" "cli_config_profile_parcel" {
 resource "sdwan_service_tracker_profile_parcel" "service_tracker_profile_parcel" {
   for_each = {
     for tracker_item in flatten([
-      for profile in local.feature_profiles.service_profiles : [
-        for tracker in profile.endpoint_trackers : {
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "endpoint_trackers", []) : {
           profile = profile
           tracker = tracker
         }

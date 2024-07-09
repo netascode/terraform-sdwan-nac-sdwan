@@ -602,3 +602,71 @@ resource "sdwan_system_snmp_profile_parcel" "system_snmp_profile_parcel" {
     }]
   }]
 }
+
+resource "sdwan_transport_wan_vpn_profile_parcel" "transport_wan_vpn_profile_parcel" {
+  for_each = {
+    for transport in try(local.feature_profiles.transport_profiles, {}) :
+    "${transport.name}-wan_vpn" => transport
+    if lookup(transport, "wan_vpn", null) != null
+  }
+  name                         = each.value.wan_vpn.name
+  description                  = try(each.value.wan_vpn.description, null)
+  feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
+  enhance_ecmp_keying          = try(each.value.wan_vpn.enhance_ecmp_keying, null)
+  enhance_ecmp_keying_variable = try("{{${each.value.wan_vpn.enhance_ecmp_keying_variable}}}", null)
+  ipv4_static_routes = try(length(each.value.wan_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv4_static_routes : {
+    administrative_distance          = try(route.administrative_distance, null)
+    administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
+    gateway                          = try(route.gateway, "nextHop")
+    next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
+      address                          = try(nh.address, null)
+      address_variable                 = try("{{${nh.address_variable}}}", null)
+      administrative_distance          = try(nh.administrative_distance, null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+    }]
+    network_address          = try(route.network_address, null)
+    network_address_variable = try("{{${route.network_address_variable}}}", null)
+    subnet_mask              = try(route.subnet_mask, null)
+    subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
+  }]
+  ipv6_static_routes = try(length(each.value.wan_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv6_static_routes : {
+    nat = try(route.nat, null)
+    next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
+      address                          = try(nh.address, null)
+      address_variable                 = try("{{${nh.address_variable}}}", null)
+      administrative_distance          = try(nh.administrative_distance, null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+    }]
+    null0           = try(route.null0, null)
+    prefix          = try(route.prefix, null)
+    prefix_variable = try("{{${route.prefix_variable}}}", null)
+  }]
+  nat_64_v4_pools = try(length(each.value.wan_vpn.nat_64_v4_pools) == 0, true) ? null : [for pool in each.value.wan_vpn.nat_64_v4_pools : {
+    nat64_v4_pool_name                 = try(pool.name, null)
+    nat64_v4_pool_name_variable        = try("{{${pool.name_variable}}}", null)
+    nat64_v4_pool_overload             = try(pool.overload, null)
+    nat64_v4_pool_overload_variable    = try("{{${pool.overload_variable}}}", null)
+    nat64_v4_pool_range_end            = try(pool.range_end, null)
+    nat64_v4_pool_range_end_variable   = try("{{${pool.range_end_variable}}}", null)
+    nat64_v4_pool_range_start          = try(pool.range_start, null)
+    nat64_v4_pool_range_start_variable = try("{{${pool.range_start_variable}}}", null)
+  }]
+  new_host_mappings = try(length(each.value.wan_vpn.host_mappings) == 0, true) ? null : [for host in each.value.wan_vpn.host_mappings : {
+    host_name                     = try(host.hostname, null)
+    host_name_variable            = try("{{${host.hostname_variable}}}", null)
+    list_of_ip_addresses          = try(host.ips, null)
+    list_of_ip_addresses_variable = try("{{${host.ips_variable}}}", null)
+  }]
+  primary_dns_address_ipv4            = try(each.value.wan_vpn.ipv4_primary_dns_address, null)
+  primary_dns_address_ipv4_variable   = try("{{${each.value.wan_vpn.ipv4_primary_dns_address_variable}}}", null)
+  primary_dns_address_ipv6            = try(each.value.wan_vpn.ipv6_primary_dns_address, null)
+  primary_dns_address_ipv6_variable   = try("{{${each.value.wan_vpn.ipv6_primary_dns_address_variable}}}", null)
+  secondary_dns_address_ipv4          = try(each.value.wan_vpn.ipv4_secondary_dns_address, null)
+  secondary_dns_address_ipv4_variable = try("{{${each.value.wan_vpn.ipv4_secondary_dns_address_variable}}}", null)
+  secondary_dns_address_ipv6          = try(each.value.wan_vpn.ipv6_secondary_dns_address, null)
+  secondary_dns_address_ipv6_variable = try("{{${each.value.wan_vpn.ipv6_secondary_dns_address_variable}}}", null)
+  services = try(length(each.value.wan_vpn.services) == 0, true) ? null : [for service in each.value.wan_vpn.services : {
+    service_type = service
+  }]
+  vpn = 0
+}

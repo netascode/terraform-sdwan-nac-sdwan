@@ -22,7 +22,7 @@ resource "sdwan_service_tracker_profile_parcel" "service_tracker_profile_parcel"
     ])
     : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
   }
-  name                       = try(each.value.tracker.name, "${each.value.profile.name}-aaa")
+  name                       = each.value.tracker.name
   description                = try(each.value.tracker.description, null)
   feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
   endpoint_api_url           = try(each.value.tracker.endpoint_api_url, null)

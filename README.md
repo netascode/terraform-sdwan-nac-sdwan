@@ -105,12 +105,14 @@ module "sdwan" {
 | [sdwan_cli_template_feature_template.cli_template_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_template_feature_template) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
+| [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource  |
 | [sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv4_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv6_prefix_list_policy_object) | resource |
 | [sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/expanded_community_list_policy_object) | resource |
 | [sdwan_extended_community_list_policy_object.extended_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/extended_community_list_policy_object) | resource |
 | [sdwan_feature_device_template.feature_device_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/feature_device_template) | resource |
 | [sdwan_hub_and_spoke_topology_policy_definition.hub_and_spoke_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/hub_and_spoke_topology_policy_definition) | resource |
+| [sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/intrusion_prevention_policy_definition) | resource |
 | [sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_acl_policy_definition) | resource |
 | [sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_device_acl_policy_definition) | resource |
 | [sdwan_ipv4_prefix_list_policy_object.ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv4_prefix_list_policy_object) | resource |
@@ -126,6 +128,7 @@ module "sdwan" {
 | [sdwan_region_list_policy_object.region_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/region_list_policy_object) | resource |
 | [sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/rewrite_rule_policy_definition) | resource |
 | [sdwan_route_policy_definition.route_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/route_policy_definition) | resource |
+| [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
 | [sdwan_sla_class_policy_object.sla_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sla_class_policy_object) | resource |
 | [sdwan_standard_community_list_policy_object.standard_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/standard_community_list_policy_object) | resource |
@@ -135,13 +138,11 @@ module "sdwan" {
 | [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |
 | [sdwan_vpn_list_policy_object.vpn_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_list_policy_object) | resource |
 | [sdwan_vpn_membership_policy_definition.vpn_membership_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_membership_policy_definition) | resource |
+| [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
+| [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
 | [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 | [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
-| [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource  |
-| [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
-| [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
-| [sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/intrusion_prevention_policy_definition) | resource |
+
 ## Modules
 
 No modules.

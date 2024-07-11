@@ -68,7 +68,6 @@ module "sdwan" {
 | <a name="provider_utils"></a> [utils](#provider\_utils) | >= 0.2.5 |
 
 ## Resources
-
 | Name | Type |
 |------|------|
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
@@ -105,7 +104,7 @@ module "sdwan" {
 | [sdwan_cli_template_feature_template.cli_template_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cli_template_feature_template) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
-| [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource  |
+| [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv4_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv6_prefix_list_policy_object) | resource |
 | [sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/expanded_community_list_policy_object) | resource |
@@ -129,12 +128,30 @@ module "sdwan" {
 | [sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/rewrite_rule_policy_definition) | resource |
 | [sdwan_route_policy_definition.route_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/route_policy_definition) | resource |
 | [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
+| [sdwan_service_feature_profile.service_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_feature_profile) | resource |
+| [sdwan_service_tracker_profile_parcel.service_tracker_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_profile_parcel) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
 | [sdwan_sla_class_policy_object.sla_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sla_class_policy_object) | resource |
 | [sdwan_standard_community_list_policy_object.standard_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/standard_community_list_policy_object) | resource |
 | [sdwan_switchport_feature_template.switchport_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/switchport_feature_template) | resource |
+| [sdwan_system_aaa_profile_parcel.system_aaa_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_aaa_profile_parcel) | resource |
+| [sdwan_system_banner_profile_parcel.system_banner_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_banner_profile_parcel) | resource |
+| [sdwan_system_basic_profile_parcel.system_basic_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_basic_profile_parcel) | resource |
+| [sdwan_system_bfd_profile_parcel.system_bfd_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_bfd_profile_parcel) | resource |
+| [sdwan_system_feature_profile.system_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_feature_profile) | resource |
+| [sdwan_system_flexible_port_speed_profile_parcel.system_flexible_port_speed_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_flexible_port_speed_profile_parcel) | resource |
+| [sdwan_system_global_profile_parcel.system_global_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_global_profile_parcel) | resource |
+| [sdwan_system_logging_profile_parcel.system_logging_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_logging_profile_parcel) | resource |
+| [sdwan_system_mrf_profile_parcel.system_mrf_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_mrf_profile_parcel) | resource |
+| [sdwan_system_ntp_profile_parcel.system_ntp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ntp_profile_parcel) | resource |
+| [sdwan_system_omp_profile_parcel.system_omp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_omp_profile_parcel) | resource |
+| [sdwan_system_performance_monitoring_profile_parcel.system_performance_monitoring_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_performance_monitoring_profile_parcel) | resource |
+| [sdwan_system_security_profile_parcel.system_security_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_security_profile_parcel) | resource |
+| [sdwan_system_snmp_profile_parcel.system_snmp_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_snmp_profile_parcel) | resource |
 | [sdwan_tloc_list_policy_object.tloc_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tloc_list_policy_object) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
+| [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
+| [sdwan_transport_wan_vpn_profile_parcel.transport_wan_vpn_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_profile_parcel) | resource |
 | [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |
 | [sdwan_vpn_list_policy_object.vpn_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_list_policy_object) | resource |
 | [sdwan_vpn_membership_policy_definition.vpn_membership_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_membership_policy_definition) | resource |

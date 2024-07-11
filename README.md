@@ -117,6 +117,7 @@ module "sdwan" {
 | [sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_acl_policy_definition) | resource |
 | [sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_device_acl_policy_definition) | resource |
 | [sdwan_ipv6_prefix_list_policy_object.ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/ipv6_prefix_list_policy_object) | resource |
+| [sdwan_local_application_list_policy_object.local_application_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/local_application_list_policy_object) | resource |
 | [sdwan_localized_policy.localized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/localized_policy) | resource |
 | [sdwan_mesh_topology_policy_definition.mesh_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mesh_topology_policy_definition) | resource |
 | [sdwan_mirror_policy_object.mirror_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mirror_policy_object) | resource |

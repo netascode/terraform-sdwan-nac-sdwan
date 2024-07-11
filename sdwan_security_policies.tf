@@ -77,10 +77,10 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           type  = "protocolName"
           value = join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p]))
         }],
-        try(r.match_criterias.local_application_list, null) == null ? [] : [{
-          type      = "appList"
-          policy_id = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
-        }],
+        # try(r.match_criterias.local_application_list, null) == null ? [] : [{
+        #   type      = "appList"
+        #   policy_id = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
+        # }],
     ]))
   }]
   apply_zone_pairs = [for zp in each.value.zone_pairs : {

@@ -68,6 +68,7 @@ module "sdwan" {
 | <a name="provider_utils"></a> [utils](#provider\_utils) | >= 0.2.5 |
 
 ## Resources
+
 | Name | Type |
 |------|------|
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |

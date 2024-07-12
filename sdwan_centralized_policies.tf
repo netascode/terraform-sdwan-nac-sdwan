@@ -442,7 +442,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
         type                               = "lossProtectPktDup"
         loss_correction_packet_duplication = s.actions.loss_correction.type
       }] : [],
-      && try(s.actions.loss_correction.type, null) == "fecAlways" ? [{
+      try(s.actions.loss_correction.type, null) == "fecAlways" ? [{
         type                = "lossProtectFec"
         loss_correction_fec = s.actions.loss_correction.type
       }] : [],

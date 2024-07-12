@@ -1,11 +1,13 @@
 resource "sdwan_feature_device_template" "feature_device_template" {
-  for_each       = { for t in try(local.edge_device_templates, {}) : t.name => t }
-  name           = each.value.name
-  description    = each.value.description
-  device_type    = try(local.device_type_map[each.value.device_model], "vedge-${each.value.device_model}")
-  device_role    = "sdwan-edge"
-  policy_id      = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].id
-  policy_version = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].version
+  for_each                = { for t in try(local.edge_device_templates, {}) : t.name => t }
+  name                    = each.value.name
+  description             = each.value.description
+  device_type             = try(local.device_type_map[each.value.device_model], "vedge-${each.value.device_model}")
+  device_role             = "sdwan-edge"
+  policy_id               = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].id
+  policy_version          = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].version
+  security_policy_id      = try(each.value.security_policy, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy].id
+  security_policy_version = try(each.value.security_policy, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy].version
   general_templates = flatten([
     try(each.value.system_template, null) == null ? [] : [{
       id      = sdwan_cisco_system_feature_template.cisco_system_feature_template[each.value.system_template].id

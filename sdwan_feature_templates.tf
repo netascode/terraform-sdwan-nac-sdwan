@@ -1994,3 +1994,16 @@ resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_t
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
 }
+
+resource "sdwan_security_app_hosting_feature_template" "security_app_hosting_feature_template" {
+  for_each          = { for t in try(local.edge_feature_templates.secure_app_hosting_templates, {}) : t.name => t }
+  name              = each.value.name
+  description       = each.value.description
+  device_types      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.secure_app_hosting_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  virtual_applications = [{
+  nat               = try(each.value.nat, null)
+  database_url      = try(each.value.download_url_database_on_device, null)
+  resource_profile  = try(each.value.resource_profile, null)
+  instance_id       = 1
+}]
+}

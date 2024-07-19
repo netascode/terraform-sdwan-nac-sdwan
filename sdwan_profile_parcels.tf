@@ -126,8 +126,8 @@ resource "sdwan_system_aaa_profile_parcel" "system_aaa_profile_parcel" {
     privilege          = try(user.privilege, null)
     privilege_variable = try("{{${user.privilege_variable}}}", null)
     public_keys = try(length(user.public_key_chains) == 0, true) ? null : [for public_key in user.public_key_chains : {
-      key_type   = try(public_key.key_type, null)
-      key_string = public_key.key_string
+      key_type   = "ssh-rsa"
+      key_string = public_key
     }]
   }]
 }

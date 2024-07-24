@@ -22,29 +22,27 @@ resource "sdwan_service_tracker_profile_parcel" "service_tracker_profile_parcel"
     ])
     : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
   }
-  name                       = each.value.tracker.name
-  description                = try(each.value.tracker.description, null)
-  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
-  endpoint_api_url           = try(each.value.tracker.endpoint_api_url, null)
-  endpoint_api_url_variable  = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
-  endpoint_dns_name          = try(each.value.tracker.endpoint_dns_name, null)
-  endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
-  endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
-  endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type      = "static-route"
-  interval                   = try(each.value.tracker.interval, null)
-  interval_variable          = try("{{${each.value.tracker.interval_variable}}}", null)
-  multiplier                 = try(each.value.tracker.multiplier, null)
-  multiplier_variable        = try("{{${each.value.tracker.multiplier_variable}}}", null)
-  port                       = try(each.value.tracker.endpoint_tcp_udp_port, null)
-  port_variable              = try("{{${each.value.tracker.endpoint_tcp_udp_port_variable}}}", null)
-  protocol                   = try(each.value.tracker.endpoint_tcp_udp_protocol, null)
-  protocol_variable          = try("{{${each.value.tracker.endpoint_tcp_udp_protocol_variable}}}", null)
-  threshold                  = try(each.value.tracker.threshold, null)
-  threshold_variable         = try("{{${each.value.tracker.threshold_variable}}}", null)
-  tracker_name               = try(each.value.tracker.tracker_name, null)
-  tracker_name_variable      = try("{{${each.value.tracker.tracker_name_variable}}}", null)
-  tracker_type               = "endpoint"
+  name                      = each.value.tracker.name
+  description               = try(each.value.tracker.description, null)
+  feature_profile_id        = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  endpoint_api_url          = try(each.value.tracker.endpoint_url, null)
+  endpoint_api_url_variable = try("{{${each.value.tracker.endpoint_url_variable}}}", null)
+  endpoint_ip               = try(each.value.tracker.endpoint_ip, null)
+  endpoint_ip_variable      = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type     = "static-route"
+  interval                  = try(each.value.tracker.interval, null)
+  interval_variable         = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                = try(each.value.tracker.multiplier, null)
+  multiplier_variable       = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  port                      = try(each.value.tracker.endpoint_port, null)
+  port_variable             = try("{{${each.value.tracker.endpoint_port_variable}}}", null)
+  protocol                  = try(each.value.tracker.endpoint_protocol, null)
+  protocol_variable         = try("{{${each.value.tracker.endpoint_protocol_variable}}}", null)
+  threshold                 = try(each.value.tracker.threshold, null)
+  threshold_variable        = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name              = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable     = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type              = "endpoint"
 }
 
 

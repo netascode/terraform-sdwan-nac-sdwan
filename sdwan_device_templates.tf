@@ -6,9 +6,14 @@ resource "sdwan_feature_device_template" "feature_device_template" {
   device_role             = "sdwan-edge"
   policy_id               = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].id
   policy_version          = try(each.value.localized_policy, null) == null ? null : sdwan_localized_policy.localized_policy[each.value.localized_policy].version
-  security_policy_id      = try(each.value.security_policy, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy].id
-  security_policy_version = try(each.value.security_policy, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy].version
+  security_policy_id      = try(each.value.security_policy.name, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy.name].id
+  security_policy_version = try(each.value.security_policy.name, null) == null ? null : sdwan_security_policy.security_policy[each.value.security_policy.name].version
   general_templates = flatten([
+    try(each.value.security_policy.container_profile, null) == null ? [] : [{
+      id      = sdwan_security_app_hosting_feature_template.security_app_hosting_feature_template[each.value.security_policy.container_profile].id
+      version = sdwan_security_app_hosting_feature_template.security_app_hosting_feature_template[each.value.security_policy.container_profile].version
+      type    = "virtual-application-utd"
+    }],
     try(each.value.system_template, null) == null ? [] : [{
       id      = sdwan_cisco_system_feature_template.cisco_system_feature_template[each.value.system_template].id
       version = sdwan_cisco_system_feature_template.cisco_system_feature_template[each.value.system_template].version

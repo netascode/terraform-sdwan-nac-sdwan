@@ -869,7 +869,8 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     crypto_algorithm                  = try(key.crypto_algorithm, null)
     id                                = key.id
     include_tcp_options               = try(key.include_tcp_options, null)
-    key_string                        = key.key_string
+    key_string                        = try(key.key_string, null)
+    key_string_variable               = try(key.key_string_variable, null)
     receive_id                        = try(key.receive_id, null)
     receive_id_variable               = try(key.receive_id_variable, null)
     send_id                           = try(key.send_id, null)

@@ -639,6 +639,30 @@ resource "sdwan_system_snmp_profile_parcel" "system_snmp_profile_parcel" {
   }]
 }
 
+resource "sdwan_transport_ipv6_tracker_group_profile_parcel" "transport_ipv6_tracker_group_profile_parcel" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for tracker in lookup(profile, "ipv6_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                     = each.value.tracker.name
+  description              = try(each.value.tracker.description, null)
+  feature_profile_id       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  tracker_boolean          = try(each.value.tracker.tracker_boolean, null)
+  tracker_boolean_variable = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    tracker_id = sdwan_transport_ipv6_tracker_profile_parcel.transport_ipv6_tracker_profile_parcel["${each.value.profile.name}-${t}"].id
+  }]
+  tracker_name          = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+}
+
 resource "sdwan_transport_ipv6_tracker_profile_parcel" "transport_ipv6_tracker_profile_parcel" {
   for_each = {
     for tracker_item in flatten([

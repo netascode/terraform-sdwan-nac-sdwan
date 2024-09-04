@@ -123,6 +123,7 @@ module "sdwan" {
 | [sdwan_localized_policy.localized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/localized_policy) | resource |
 | [sdwan_mesh_topology_policy_definition.mesh_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mesh_topology_policy_definition) | resource |
 | [sdwan_mirror_policy_object.mirror_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mirror_policy_object) | resource |
+| [sdwan_other_feature_profile.other_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_feature_profile) | resource |
 | [sdwan_policer_policy_object.policer_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policer_policy_object) | resource |
 | [sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/preferred_color_group_policy_object) | resource |
 | [sdwan_qos_map_policy_definition.qos_map_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/qos_map_policy_definition) | resource |

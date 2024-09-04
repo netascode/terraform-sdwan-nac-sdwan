@@ -10,6 +10,28 @@ resource "sdwan_cli_config_profile_parcel" "cli_config_profile_parcel" {
   cli_configuration  = each.value.config.cli_configuration
 }
 
+resource "sdwan_service_tracker_group_profile_parcel" "service_tracker_group_profile_parcel" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "ipv4_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                     = each.value.tracker.name
+  description              = try(each.value.tracker.description, null)
+  feature_profile_id       = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  tracker_boolean          = try(each.value.tracker.tracker_boolean, null)
+  tracker_boolean_variable = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    tracker_id = sdwan_service_tracker_profile_parcel.service_tracker_profile_parcel["${each.value.profile.name}-${t}"].id
+  }]
+}
+
 resource "sdwan_service_tracker_profile_parcel" "service_tracker_profile_parcel" {
   for_each = {
     for tracker_item in flatten([

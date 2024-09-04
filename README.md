@@ -155,6 +155,7 @@ module "sdwan" {
 | [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
 | [sdwan_transport_ipv6_tracker_group_profile_parcel.transport_ipv6_tracker_group_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_group_profile_parcel) | resource |
 | [sdwan_transport_ipv6_tracker_profile_parcel.transport_ipv6_tracker_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_profile_parcel) | resource |
+| [sdwan_transport_tracker_group_profile_parcel.transport_tracker_group_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_tracker_group_profile_parcel) | resource |
 | [sdwan_transport_tracker_profile_parcel.transport_tracker_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_tracker_profile_parcel) | resource |
 | [sdwan_transport_wan_vpn_profile_parcel.transport_wan_vpn_profile_parcel](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_profile_parcel) | resource |
 | [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |

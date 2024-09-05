@@ -10,6 +10,40 @@ resource "sdwan_cli_config_profile_parcel" "cli_config_profile_parcel" {
   cli_configuration  = each.value.config.cli_configuration
 }
 
+resource "sdwan_other_thousandeyes_profile_parcel" "other_thousandeyes_profile_parcel" {
+  for_each = {
+    for other in try(local.feature_profiles.other_profiles, {}) :
+    "${other.name}-thousandeyes" => other
+    if try(other.thousandeyes, null) != null
+  }
+  name               = try(each.value.thousandeyes.name, "${each.value.name}-thousandeyes")
+  description        = try(each.value.thousandeyes.description, "")
+  feature_profile_id = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
+  virtual_application = [{
+    account_group_token             = try(each.value.thousandeyes.account_group_token, null)
+    account_group_token_variable    = try("{{${each.value.thousandeyes.account_group_token_variable}}}", null)
+    agent_default_gateway           = try(each.value.thousandeyes.agent_default_gateway, null)
+    agent_default_gateway_variable  = try("{{${each.value.thousandeyes.agent_default_gateway_variable}}}", null)
+    hostname                        = try(each.value.thousandeyes.hostname, null)
+    hostname_variable               = try("{{${each.value.thousandeyes.hostname_variable}}}", null)
+    management_ip                   = try(each.value.thousandeyes.management_ip, null)
+    management_ip_variable          = try("{{${each.value.thousandeyes.management_ip_variable}}}", null)
+    management_subnet_mask          = try(each.value.thousandeyes.management_subnet_mask, null)
+    management_subnet_mask_variable = try("{{${each.value.thousandeyes.management_subnet_mask_variable}}}", null)
+    name_server_ip                  = try(each.value.thousandeyes.name_server_ip, null)
+    name_server_ip_variable         = try("{{${each.value.thousandeyes.name_server_ip_variable}}}", null)
+    pac_url                         = try(each.value.thousandeyes.pac_proxy_url, null)
+    pac_url_variable                = try("{{${each.value.thousandeyes.pac_proxy_url_variable}}}", null)
+    proxy_host                      = try(each.value.thousandeyes.static_proxy_host, null)
+    proxy_host_variable             = try("{{${each.value.thousandeyes.static_proxy_host_variable}}}", null)
+    proxy_port                      = try(each.value.thousandeyes.static_proxy_port, null)
+    proxy_port_variable             = try("{{${each.value.thousandeyes.static_proxy_port_variable}}}", null)
+    proxy_type                      = try(each.value.thousandeyes.proxy_type, null)
+    vpn                             = try(each.value.thousandeyes.vpn_id, null)
+    vpn_variable                    = try("{{${each.value.thousandeyes.vpn_id_variable}}}", null)
+  }]
+}
+
 resource "sdwan_service_tracker_group_profile_parcel" "service_tracker_group_profile_parcel" {
   for_each = {
     for tracker_item in flatten([

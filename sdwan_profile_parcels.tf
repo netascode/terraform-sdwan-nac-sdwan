@@ -101,6 +101,33 @@ resource "sdwan_service_tracker_feature" "service_tracker_feature" {
   tracker_type              = "endpoint"
 }
 
+resource "sdwan_service_object_tracker_feature" "service_object_tracker_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "object_trackers", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  object_tracker_type        = each.value.tracker.type
+  interface                  = try(each.value.tracker.interface_name, null)
+  interface_variable         = try("{{${each.value.tracker.interface_name_variable}}}", null)
+  object_tracker_id          = try(each.value.tracker.id, null)
+  object_tracker_id_variable = try("{{${each.value.tracker.id_variable}}}", null)
+  route_ip                   = try(each.value.tracker.route_ip, null)
+  route_ip_variable          = try("{{${each.value.tracker.route_ip_variable}}}", null)
+  route_mask                 = try(each.value.tracker.route_mask, null)
+  route_mask_variable        = try("{{${each.value.tracker.route_mask_variable}}}", null)
+  vpn                        = try(each.value.tracker.vpn_id, null)
+  vpn_variable               = try("{{${each.value.tracker.vpn_id_variable}}}", null)
+}
 
 resource "sdwan_system_aaa_feature" "system_aaa_feature" {
   for_each = {

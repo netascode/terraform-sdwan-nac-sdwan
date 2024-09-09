@@ -101,6 +101,30 @@ resource "sdwan_service_tracker_feature" "service_tracker_feature" {
   tracker_type              = "endpoint"
 }
 
+resource "sdwan_service_object_tracker_group_feature" "service_object_tracker_group_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "object_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  object_tracker_id          = try(each.value.tracker.id, null)
+  object_tracker_id_variable = try("{{${each.value.tracker.id_variable}}}", null)
+  reachable                  = try(each.value.tracker.tracker_boolean, null)
+  reachable_variable         = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    object_tracker_id = sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${t}"].id
+  }]
+}
+
 resource "sdwan_service_object_tracker_feature" "service_object_tracker_feature" {
   for_each = {
     for tracker_item in flatten([

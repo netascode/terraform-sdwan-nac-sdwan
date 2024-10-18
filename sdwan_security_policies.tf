@@ -62,16 +62,18 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           value = r.match_criterias.destination_fqdn
         }],
         try(r.match_criterias.destination_ports, null) == null && try(r.match_criterias.destination_port_ranges, null) == null ? [] : [{
-          type  = "destinationPort"
-          value = join(" ", concat([for p in try(r.match_criterias.destination_ports, []) : p], [for s in try(r.match_criterias.destination_port_ranges, []) : "${s.from}-${s.to}"]))
+          type          = "destinationPort"
+          value         = join(" ", concat([for p in try(r.match_criterias.destination_ports, []) : p], [for s in try(r.match_criterias.destination_port_ranges, []) : "${s.from}-${s.to}"]))
+          protocol_type = try(r.match_criterias.protocol_names, null) != null ? join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p])) : null
         }],
         try(r.match_criterias.destination_fqdn_lists, null) == null ? [] : [{
           type      = "destinationFqdnList"
           policy_id = join(" ", [for x in try(r.match_criterias.destination_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].id])
         }],
         try(r.match_criterias.protocols, null) == null ? [] : [{
-          type  = "protocol"
-          value = join(" ", concat([for p in try(r.match_criterias.protocols, []) : p]))
+          type          = "protocol"
+          value         = join(" ", concat([for p in try(r.match_criterias.protocols, []) : p]))
+          protocol_type = try(r.match_criterias.protocol_names, null) != null ? join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p])) : null
         }],
         try(r.match_criterias.protocol_names, null) == null ? [] : [{
           type  = "protocolName"

@@ -59,3 +59,13 @@ resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list"
     ge                 = try(e.g1, null)
   }]
 }
+
+resource "sdwan_policy_object_extended_community_list" "policy_object_extended_community_list" {
+  for_each = { for p in try(local.feature_profiles.policy_object_profile.extended_community_lists, {}) : p.name => p }
+  name                = each.value.name
+  description         = try(each.value.description, "")
+  feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.extended_communities, []) : {
+    extended_community       = e
+  }]
+}

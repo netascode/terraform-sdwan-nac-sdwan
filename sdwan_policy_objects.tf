@@ -77,3 +77,15 @@ resource "sdwan_policy_object_expanded_community_list" "policy_object_expanded_c
   feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   expanded_community_lists = each.value.expanded_communities
 }
+
+resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
+  for_each = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
+  name                = each.value.name
+  description         = try(each.value.description, "")
+  feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  
+  entries = [for e in try(each.value.prefixes, []) : {
+    ipv4_address       = split("/", e)[0]
+    ipv4_prefix_length = split("/", e)[1]
+  }]
+}

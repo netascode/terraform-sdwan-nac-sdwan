@@ -33,3 +33,16 @@ resource "sdwan_policy_object_mirror" "policy_object_mirror" {
     source_ip     = each.value.source_ip
   }]
 }
+
+resource "sdwan_policy_object_ipv4_prefix_list" "policy_object_ipv4_prefix_list" {
+  for_each = { for p in try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, {}) : p.name => p }
+  name                = each.value.name
+  description         = try(each.value.description, "")
+  feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.entries, []) : {
+    ipv4_address       = split("/", e.prefix)[0]
+    ipv4_prefix_length = split("/", e.prefix)[1]
+    le                 = try(e.le, null)
+    ge                 = try(e.g1, null)
+  }]
+}

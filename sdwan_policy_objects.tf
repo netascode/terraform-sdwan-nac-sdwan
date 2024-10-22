@@ -66,6 +66,14 @@ resource "sdwan_policy_object_extended_community_list" "policy_object_extended_c
   description         = try(each.value.description, "")
   feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.extended_communities, []) : {
-    extended_community       = e
+    extended_community = e
   }]
+}
+
+resource "sdwan_policy_object_expanded_community_list" "policy_object_expanded_community_list" {
+  for_each = { for p in try(local.feature_profiles.policy_object_profile.expanded_community_lists, {}) : p.name => p }
+  name                = each.value.name
+  description         = try(each.value.description, "")
+  feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  expanded_community_lists = each.value.expanded_communities
 }

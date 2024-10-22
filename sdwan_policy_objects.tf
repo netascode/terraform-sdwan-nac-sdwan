@@ -83,7 +83,6 @@ resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_pr
   name                = each.value.name
   description         = try(each.value.description, "")
   feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
-  
   entries = [for e in try(each.value.prefixes, []) : {
     ipv4_address       = split("/", e)[0]
     ipv4_prefix_length = split("/", e)[1]
@@ -95,9 +94,18 @@ resource "sdwan_policy_object_data_ipv6_prefix_list" "policy_object_data_ipv6_pr
   name                = each.value.name
   description         = try(each.value.description, "")
   feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
-  
   entries = [for e in try(each.value.prefixes, []) : {
     ipv6_address       = split("/", e)[0]
     ipv6_prefix_length = split("/", e)[1]
+  }]
+}
+
+resource "sdwan_policy_object_class_map" "policy_object_class_map" {
+  for_each = { for p in try(local.feature_profiles.policy_object_profile.class_maps, {}) : p.name => p }
+  name                = each.value.name
+  description         = try(each.value.description, "")
+  feature_profile_id  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [{
+    queue             = each.value.queue
   }]
 }

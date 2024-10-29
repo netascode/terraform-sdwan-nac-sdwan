@@ -101,12 +101,14 @@ resource "sdwan_security_policy" "security_policy" {
   definitions = flatten([
     try(each.value.firewall_policies, null) == null ? [] :
     [for fp in each.value.firewall_policies : {
-      type = "zoneBasedFW"
-      id   = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].id
+      type    = "zoneBasedFW"
+      id      = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].id
+      version = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].version
     }],
     try(each.value.intrusion_prevention_policy, null) == null ? [] : [{
-      type = "intrusionPrevention"
-      id   = sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition[each.value.intrusion_prevention_policy].id
+      type    = "intrusionPrevention"
+      id      = sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition[each.value.intrusion_prevention_policy].id
+      version = sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition[each.value.intrusion_prevention_policy].version
     }]
   ])
   direct_internet_applications = (

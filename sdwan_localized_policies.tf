@@ -541,32 +541,39 @@ resource "sdwan_localized_policy" "localized_policy" {
   ipv6_visibility_cache_entries = try(each.value.ipv6_visibility_cache_entries, null)
   definitions = flatten([
     try(each.value.definitions.qos_maps, null) == null ? [] : [for qosmap in each.value.definitions.qos_maps : [{
-      type = "qosMap"
-      id   = sdwan_qos_map_policy_definition.qos_map_policy_definition[qosmap].id
+      type    = "qosMap"
+      id      = sdwan_qos_map_policy_definition.qos_map_policy_definition[qosmap].id
+      version = sdwan_qos_map_policy_definition.qos_map_policy_definition[qosmap].version
     }]],
     try(each.value.definitions.rewrite_rules, null) == null ? [] : [for rule in each.value.definitions.rewrite_rules : [{
-      type = "rewriteRule"
-      id   = sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[rule].id
+      type    = "rewriteRule"
+      id      = sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[rule].id
+      version = sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition[rule].version
     }]],
     try(each.value.definitions.route_policies, null) == null ? [] : [for policy in each.value.definitions.route_policies : [{
-      type = "vedgeRoute"
-      id   = sdwan_route_policy_definition.route_policy_definition[policy].id
+      type    = "vedgeRoute"
+      id      = sdwan_route_policy_definition.route_policy_definition[policy].id
+      version = sdwan_route_policy_definition.route_policy_definition[policy].version
     }]],
     try(each.value.definitions.ipv4_access_control_lists, null) == null ? [] : [for acl in each.value.definitions.ipv4_access_control_lists : [{
-      type = "acl"
-      id   = sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition[acl].id
+      type    = "acl"
+      id      = sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition[acl].id
+      version = sdwan_ipv4_acl_policy_definition.ipv4_acl_policy_definition[acl].version
     }]],
     try(each.value.definitions.ipv6_access_control_lists, null) == null ? [] : [for acl in each.value.definitions.ipv6_access_control_lists : [{
-      type = "aclv6"
-      id   = sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition[acl].id
+      type    = "aclv6"
+      id      = sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition[acl].id
+      version = sdwan_ipv6_acl_policy_definition.ipv6_acl_policy_definition[acl].version
     }]],
     try(each.value.definitions.ipv4_device_access_policies, null) == null ? [] : [for acl in each.value.definitions.ipv4_device_access_policies : [{
-      type = "deviceAccessPolicy"
-      id   = sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition[acl].id
+      type    = "deviceAccessPolicy"
+      id      = sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition[acl].id
+      version = sdwan_ipv4_device_acl_policy_definition.ipv4_device_acl_policy_definition[acl].version
     }]],
     try(each.value.definitions.ipv6_device_access_policies, null) == null ? [] : [for acl in each.value.definitions.ipv6_device_access_policies : [{
-      type = "deviceAccessPolicyv6"
-      id   = sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition[acl].id
+      type    = "deviceAccessPolicyv6"
+      id      = sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition[acl].id
+      version = sdwan_ipv6_device_acl_policy_definition.ipv6_device_acl_policy_definition[acl].version
     }]]
   ])
 }

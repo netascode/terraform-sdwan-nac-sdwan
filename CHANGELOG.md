@@ -14,6 +14,7 @@
 - add support for sdwan_policy_object_mirror resource
 - add support for sdwan_policy_object_policer resource
 - add support for sdwan_policy_object_tloc_list resource
+- add support for variables in secure app hosting feature template
 
 ## 0.1.0
 

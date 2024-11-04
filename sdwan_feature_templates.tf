@@ -2004,9 +2004,12 @@ resource "sdwan_security_app_hosting_feature_template" "security_app_hosting_fea
   description  = each.value.description
   device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.secure_app_hosting_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   virtual_applications = [{
-    nat              = try(each.value.nat, null)
-    database_url     = try(each.value.download_url_database_on_device, null)
-    resource_profile = try(each.value.resource_profile, null)
-    instance_id      = 1
+    nat                       = try(each.value.nat, null)
+    nat_variable              = try(each.value.nat_variable, null)
+    database_url              = try(each.value.download_url_database_on_device, null)
+    database_url_variable     = try(each.value.download_url_database_on_device_variable, null)
+    resource_profile          = try(each.value.resource_profile, null)
+    resource_profile_variable = try(each.value.resource_profile_variable, null)
+    instance_id               = 1
   }]
 }

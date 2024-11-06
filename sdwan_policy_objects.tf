@@ -1,7 +1,7 @@
 resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.tloc_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.tlocs, []) : {
     color         = e.color
@@ -14,7 +14,7 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
 resource "sdwan_policy_object_policer" "policy_object_policer" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.policers, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
     burst_bytes   = each.value.burst_bytes
@@ -26,7 +26,7 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
 resource "sdwan_policy_object_mirror" "policy_object_mirror" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.mirror_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
     remote_destination_ip = each.value.remote_destination_ip
@@ -37,7 +37,7 @@ resource "sdwan_policy_object_mirror" "policy_object_mirror" {
 resource "sdwan_policy_object_ipv4_prefix_list" "policy_object_ipv4_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.entries, []) : {
     ipv4_address       = split("/", e.prefix)[0]
@@ -50,7 +50,7 @@ resource "sdwan_policy_object_ipv4_prefix_list" "policy_object_ipv4_prefix_list"
 resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.entries, []) : {
     ipv6_address       = split("/", e.prefix)[0]
@@ -63,7 +63,7 @@ resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list"
 resource "sdwan_policy_object_extended_community_list" "policy_object_extended_community_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.extended_community_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.extended_communities, []) : {
     extended_community = e
@@ -73,7 +73,7 @@ resource "sdwan_policy_object_extended_community_list" "policy_object_extended_c
 resource "sdwan_policy_object_expanded_community_list" "policy_object_expanded_community_list" {
   for_each                 = { for p in try(local.feature_profiles.policy_object_profile.expanded_community_lists, {}) : p.name => p }
   name                     = each.value.name
-  description              = try(each.value.description, "")
+  description              = try(each.value.description, null)
   feature_profile_id       = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   expanded_community_lists = each.value.expanded_communities
 }
@@ -81,7 +81,7 @@ resource "sdwan_policy_object_expanded_community_list" "policy_object_expanded_c
 resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv4_address       = split("/", e)[0]
@@ -92,7 +92,7 @@ resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_pr
 resource "sdwan_policy_object_data_ipv6_prefix_list" "policy_object_data_ipv6_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv6_address       = split("/", e)[0]
@@ -103,7 +103,7 @@ resource "sdwan_policy_object_data_ipv6_prefix_list" "policy_object_data_ipv6_pr
 resource "sdwan_policy_object_class_map" "policy_object_class_map" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.class_maps, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, "")
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
     queue = each.value.queue

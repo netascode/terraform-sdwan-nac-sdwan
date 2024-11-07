@@ -43,7 +43,7 @@ resource "sdwan_policy_object_ipv4_prefix_list" "policy_object_ipv4_prefix_list"
     ipv4_address       = split("/", e.prefix)[0]
     ipv4_prefix_length = split("/", e.prefix)[1]
     le                 = try(e.le, null)
-    ge                 = try(e.g1, null)
+    ge                 = try(e.ge, null)
   }]
 }
 
@@ -56,7 +56,7 @@ resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list"
     ipv6_address       = split("/", e.prefix)[0]
     ipv6_prefix_length = split("/", e.prefix)[1]
     le                 = try(e.le, null)
-    ge                 = try(e.g1, null)
+    ge                 = try(e.ge, null)
   }]
 }
 

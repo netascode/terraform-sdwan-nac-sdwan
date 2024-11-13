@@ -15,6 +15,9 @@
 - add support for sdwan_policy_object_policer resource
 - add support for sdwan_policy_object_tloc_list resource
 - add support for variables in secure app hosting feature template
+- fix issue where sdwan_custom_control_topology_policy_definition always shows diff when actions are not configured in data model
+- fix issue where sdwan_traffic_data_policy_definition always shows diff when match_criterias or actions are not configured in data model
+- fix issue where sdwan_application_aware_routing_policy_definition always shows diff when match_criterias or actions are not configured in data model
 
 ## 0.1.0
 

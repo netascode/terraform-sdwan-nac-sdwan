@@ -202,7 +202,7 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
         group_id = s.match_criterias.group_id
       }]
     ])
-    action_entries = flatten([
+    action_entries = try(s.actions, null) == null ? null : flatten([
       try(s.actions.community, null) == null && try(s.actions.community_additive, null) == null && try(s.actions.omp_tag, null) == null && try(s.actions.preference, null) == null && try(s.actions.tloc_action, null) == null && try(s.actions.tloc, null) == null && try(s.actions.tloc_list, null) == null ? [] : [{
         type = "set"
         set_parameters = flatten([
@@ -326,7 +326,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
     )
     ip_type     = try(s.ip_type, null)
     base_action = try(s.base_action, null)
-    match_entries = flatten([
+    match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
         type                     = "appList"
         application_list_id      = sdwan_application_list_policy_object.application_list_policy_object[s.match_criterias.application_list].id
@@ -396,7 +396,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
         traffic_to = s.match_criterias.traffic_to
       }]
     ])
-    action_entries = flatten([
+    action_entries = try(s.actions, null) == null ? null : flatten([
       try(s.actions.log, null) == null ? [] : [{
         type = "log"
         log  = s.actions.log
@@ -579,7 +579,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
     id      = s.id
     name    = s.name
     ip_type = try(s.ip_type, null)
-    match_entries = flatten([
+    match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
         type                     = "appList"
         application_list_id      = sdwan_application_list_policy_object.application_list_policy_object[s.match_criterias.application_list].id
@@ -641,7 +641,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
         traffic_to = s.match_criterias.traffic_to
       }]
     ])
-    action_entries = flatten([
+    action_entries = try(s.actions, null) == null ? null : flatten([
       try(s.actions.counter_name, null) == null ? [] : [{
         type    = "count"
         counter = s.actions.counter_name

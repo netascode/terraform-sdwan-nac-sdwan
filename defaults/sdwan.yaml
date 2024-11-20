@@ -1,6 +1,13 @@
 ---
 defaults:
   sdwan:
+    centralized_policies:
+      definitions:
+        data_policy:
+          cflowd:
+            protocol: ipv4
+            tos: false 
+            remarked_dscp: false
     edge_feature_templates:
       aaa_templates:
         device_types:

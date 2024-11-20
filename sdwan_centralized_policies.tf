@@ -553,13 +553,13 @@ resource "sdwan_cflowd_policy_definition" "cflowd_policy_definition" {
   for_each              = { for d in try(local.centralized_policies.definitions.data_policy.cflowd, {}) : d.name => d }
   name                  = each.value.name
   description           = each.value.description
-  active_flow_timeout   = each.value.active_flow_timeout
-  inactive_flow_timeout = each.value.inactive_flow_timeout
-  sampling_interval     = each.value.sampling_interval
-  flow_refresh          = each.value.flow_refresh
-  protocol              = each.value.protocol
-  tos                   = each.value.tos
-  remarked_dscp         = each.value.remarked_dscp
+  active_flow_timeout   = try(each.value.active_flow_timeout, null)
+  inactive_flow_timeout = try(each.value.inactive_flow_timeout, null)
+  sampling_interval     = try(each.value.sampling_interval, null)
+  flow_refresh          = try(each.value.flow_refresh, null)
+  protocol              = try(each.value.protocol, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.protocol)
+  tos                   = try(each.value.tos, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.tos)
+  remarked_dscp         = try(each.value.remarked_dscp, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.remarked_dscp)
   collectors = try(length(each.value.collectors) == 0, true) ? null : [for t in each.value.collectors : {
     vpn_id           = t.vpn
     ip_address       = t.ip_address

@@ -316,7 +316,10 @@ defaults:
         aaa:
           auth_order:
             - local
-    centralized_policies.definitions:
-      data_policy:
-        cflowd:
-          protocol: "ipv4"
+    centralized_policies:
+      definitions:
+        data_policy:
+          cflowd:
+            protocol: ipv4
+            tos: false 
+            remarked_dscp: false

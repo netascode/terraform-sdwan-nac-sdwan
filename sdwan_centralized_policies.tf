@@ -557,9 +557,9 @@ resource "sdwan_cflowd_policy_definition" "cflowd_policy_definition" {
   inactive_flow_timeout = try(each.value.inactive_flow_timeout, null)
   sampling_interval     = try(each.value.sampling_interval, null)
   flow_refresh          = try(each.value.flow_refresh, null)
-  protocol              = try(each.value.protocol, local.centralized_policies.definitions.data_policy.cflowd.protocol)
-  tos                   = try(each.value.tos, null)
-  remarked_dscp         = try(each.value.remarked_dscp, null)
+  protocol              = try(each.value.protocol, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.protocol)
+  tos                   = try(each.value.tos, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.tos)
+  remarked_dscp         = try(each.value.remarked_dscp, local.defaults.sdwan.centralized_policies.definitions.data_policy.cflowd.remarked_dscp)
   collectors = try(length(each.value.collectors) == 0, true) ? null : [for t in each.value.collectors : {
     vpn_id           = t.vpn
     ip_address       = t.ip_address

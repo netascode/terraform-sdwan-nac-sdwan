@@ -312,7 +312,41 @@ defaults:
           - C8200-1N-4T
           - C8200L-1N-4T
     feature_profiles:
+      cli_profiles:
+        config:
+          name: config
+      other_profiles:
+        thousandeyes:
+          name: thousandeyes
       system_profiles:
         aaa:
+          name: aaa
           auth_order:
             - local
+        banner:
+          name: banner
+        basic:
+          name: basic
+        bfd:
+          name: bfd
+        flexible_port_speed:
+          name: flexible_port_speed
+        global:
+          name: global
+        logging:
+          name: logging
+        mrf:
+          name: mrf
+        ntp:
+          name: ntp
+        omp:
+          name: omp
+        performance_monitoring:
+          name: performance_monitoring
+        security:
+          name: security
+        snmp:
+          name: snmp
+      transport_profiles:
+        wan_vpn:
+          name: wan_vpn

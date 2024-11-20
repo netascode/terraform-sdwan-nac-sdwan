@@ -6,7 +6,7 @@ defaults:
         data_policy:
           cflowd:
             protocol: ipv4
-            tos: false 
+            tos: false
             remarked_dscp: false
     edge_feature_templates:
       aaa_templates:

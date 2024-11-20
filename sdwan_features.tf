@@ -4,7 +4,7 @@ resource "sdwan_cli_config_feature" "cli_config_feature" {
     "${cli.name}-config" => cli
     if try(cli.config, null) != null
   }
-  name               = try(each.value.config.name, "config")
+  name               = try(each.value.config.name, local.defaults.sdwan.feature_profiles.cli_profiles.config.name)
   description        = try(each.value.config.description, "")
   feature_profile_id = sdwan_cli_feature_profile.cli_feature_profile[each.value.name].id
   cli_configuration  = each.value.config.cli_configuration
@@ -16,7 +16,7 @@ resource "sdwan_other_thousandeyes_feature" "other_thousandeyes_feature" {
     "${other.name}-thousandeyes" => other
     if try(other.thousandeyes, null) != null
   }
-  name               = try(each.value.thousandeyes.name, "thousandeyes")
+  name               = try(each.value.thousandeyes.name, local.defaults.sdwan.feature_profiles.other_profiles.thousandeyes.name)
   description        = try(each.value.thousandeyes.description, "")
   feature_profile_id = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
   virtual_application = [{
@@ -159,7 +159,7 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     "${sys.name}-aaa" => sys
     if try(sys.aaa, null) != null
   }
-  name                      = try(each.value.aaa.name, "aaa")
+  name                      = try(each.value.aaa.name, local.defaults.sdwan.feature_profiles.system_profiles.aaa.name)
   description               = try(each.value.aaa.description, null)
   feature_profile_id        = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   accounting_group          = try(each.value.aaa.dot1x_accounting, null)
@@ -243,7 +243,7 @@ resource "sdwan_system_banner_feature" "system_banner_feature" {
     "${sys.name}-banner" => sys
     if try(sys.banner, null) != null
   }
-  name               = try(each.value.banner.name, "banner")
+  name               = try(each.value.banner.name, local.defaults.sdwan.feature_profiles.system_profiles.banner.name)
   description        = try(each.value.banner.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   login              = try(each.value.banner.login, null)
@@ -258,7 +258,7 @@ resource "sdwan_system_basic_feature" "system_basic_feature" {
     "${sys.name}-basic" => sys
     if lookup(sys, "basic", null) != null
   }
-  name                                = try(each.value.basic.name, "basic")
+  name                                = try(each.value.basic.name, local.defaults.sdwan.feature_profiles.system_profiles.basic.name)
   description                         = try(each.value.basic.description, null)
   feature_profile_id                  = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   admin_tech_on_failure               = try(each.value.basic.admin_tech_on_failure, null)
@@ -337,7 +337,7 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
     "${sys.name}-bfd" => sys
     if try(sys.bfd, null) != null
   }
-  name               = try(each.value.bfd.name, "bfd")
+  name               = try(each.value.bfd.name, local.defaults.sdwan.feature_profiles.system_profiles.bfd.name)
   description        = try(each.value.bfd.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   colors = try(length(each.value.bfd.colors) == 0, true) ? null : [for c in each.value.bfd.colors : {
@@ -366,7 +366,7 @@ resource "sdwan_system_flexible_port_speed_feature" "system_flexible_port_speed_
     "${sys.name}-flexible_port_speed" => sys
     if try(sys.flexible_port_speed, null) != null
   }
-  name               = try(each.value.flexible_port_speed.name, "flexible_port_speed")
+  name               = try(each.value.flexible_port_speed.name, local.defaults.sdwan.feature_profiles.system_profiles.flexible_port_speed.name)
   description        = try(each.value.flexible_port_speed.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   port_type          = try(each.value.flexible_port_speed.port_type, null)
@@ -379,7 +379,7 @@ resource "sdwan_system_global_feature" "system_global_feature" {
     "${sys.name}-global" => sys
     if try(sys.global, null) != null
   }
-  name                          = try(each.value.global.name, "global")
+  name                          = try(each.value.global.name, local.defaults.sdwan.feature_profiles.system_profiles.global.name)
   description                   = try(each.value.global.description, null)
   feature_profile_id            = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   arp_proxy                     = try(each.value.global.arp_proxy, null)
@@ -436,7 +436,7 @@ resource "sdwan_system_logging_feature" "system_logging_feature" {
     "${sys.name}-logging" => sys
     if try(sys.logging, null) != null
   }
-  name                      = try(each.value.logging.name, "logging")
+  name                      = try(each.value.logging.name, local.defaults.sdwan.feature_profiles.system_profiles.logging.name)
   description               = try(each.value.logging.description, null)
   feature_profile_id        = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   disk_file_rotate          = try(each.value.logging.disk_file_rotate, null)
@@ -491,7 +491,7 @@ resource "sdwan_system_mrf_feature" "system_mrf_feature" {
     "${sys.name}-mrf" => sys
     if try(sys.mrf, null) != null
   }
-  name                         = try(each.value.mrf.name, "mrf")
+  name                         = try(each.value.mrf.name, local.defaults.sdwan.feature_profiles.system_profiles.mrf.name)
   description                  = try(each.value.mrf.description, null)
   feature_profile_id           = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   enable_migration_to_mrf      = try(each.value.mrf.migration_to_mrf, null)
@@ -509,7 +509,7 @@ resource "sdwan_system_ntp_feature" "system_ntp_feature" {
     "${sys.name}-ntp" => sys
     if try(sys.ntp, null) != null
   }
-  name               = try(each.value.ntp.name, "ntp")
+  name               = try(each.value.ntp.name, local.defaults.sdwan.feature_profiles.system_profiles.ntp.name)
   description        = try(each.value.ntp.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   authentication_keys = try(length(each.value.ntp.authentication_keys) == 0, true) ? null : [for key in each.value.ntp.authentication_keys : {
@@ -548,7 +548,7 @@ resource "sdwan_system_omp_feature" "system_omp_feature" {
     "${sys.name}-omp" => sys
     if lookup(sys, "omp", null) != null
   }
-  name                                 = try(each.value.omp.name, "omp")
+  name                                 = try(each.value.omp.name, local.defaults.sdwan.feature_profiles.system_profiles.omp.name)
   description                          = try(each.value.omp.description, null)
   feature_profile_id                   = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   advertise_ipv4_bgp                   = try(each.value.omp.advertise_ipv4_bgp, null)
@@ -617,7 +617,7 @@ resource "sdwan_system_performance_monitoring_feature" "system_performance_monit
     "${sys.name}-performance_monitoring" => sys
     if lookup(sys, "performance_monitoring", null) != null
   }
-  name                        = try(each.value.performance_monitoring.name, "performance_monitoring")
+  name                        = try(each.value.performance_monitoring.name, local.defaults.sdwan.feature_profiles.system_profiles.performance_monitoring.name)
   description                 = try(each.value.performance_monitoring.description, null)
   feature_profile_id          = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   app_perf_monitor_app_group  = try(each.value.performance_monitoring.app_perf_monitor_app_groups, null)
@@ -634,7 +634,7 @@ resource "sdwan_system_security_feature" "system_security_feature" {
     "${sys.name}-security" => sys
     if lookup(sys, "security", null) != null
   }
-  name                                 = try(each.value.security.name, "security")
+  name                                 = try(each.value.security.name, local.defaults.sdwan.feature_profiles.system_profiles.security.name)
   description                          = try(each.value.security.description, null)
   feature_profile_id                   = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   anti_replay_window                   = try(each.value.security.anti_replay_window, null)
@@ -686,7 +686,7 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
     "${sys.name}-snmp" => sys
     if lookup(sys, "snmp", null) != null
   }
-  name               = try(each.value.snmp.name, "snmp")
+  name               = try(each.value.snmp.name, local.defaults.sdwan.feature_profiles.system_profiles.snmp.name)
   description        = try(each.value.snmp.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   communities = try(length(each.value.snmp.communities) == 0, true) ? null : [for c in each.value.snmp.communities : {
@@ -868,7 +868,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
     "${transport.name}-wan_vpn" => transport
     if lookup(transport, "wan_vpn", null) != null
   }
-  name                         = try(each.value.wan_vpn.name, "wan_vpn")
+  name                         = try(each.value.wan_vpn.name, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.name)
   description                  = try(each.value.wan_vpn.description, null)
   feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
   enhance_ecmp_keying          = try(each.value.wan_vpn.enhance_ecmp_keying, null)

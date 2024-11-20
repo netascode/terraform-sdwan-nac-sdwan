@@ -19,6 +19,7 @@
 - fix issue where sdwan_traffic_data_policy_definition always shows diff when match_criterias or actions are not configured in data model
 - fix issue where sdwan_application_aware_routing_policy_definition always shows diff when match_criterias or actions are not configured in data model
 - add defaults for UX 2.0 feature names
+- fix issue where certain parameters were required by sdwan_cflowd_policy_definition resource, but are optional in the UI
 
 ## 0.1.0
 

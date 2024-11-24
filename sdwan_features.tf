@@ -746,6 +746,59 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
   }]
 }
 
+resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
+  for_each = {
+    for acl_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for acl in lookup(profile, "ipv4_acls", []) : {
+          profile = profile
+          acl     = acl
+        }
+      ]
+    ])
+    : "${acl_item.profile.name}-${acl_item.acl.name}" => acl_item
+  }
+  name               = each.value.acl.name
+  description        = try(each.value.acl.description, null)
+  feature_profile_id = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  default_action     = each.value.acl.default_action
+  sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
+    actions = length(keys(try(s.actions, {}))) > 0 ? [{
+      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_set_dscp       = s.base_action == "accept" ? try(s.actions.dscp, null) : null
+      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
+      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+    }] : null
+    base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
+    match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
+      destination_data_prefix          = try(s.match_entries.destination_data_prefix, null)
+      destination_data_prefix_list_id  = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_data_prefix_variable = try("{{${s.match_entries.destination_data_prefix_variable}}}", null)
+      destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
+        port = p
+      }]
+      dscps                       = try(s.match_entries.dscps, null)
+      icmp_messages               = try(s.match_entries.icmp_messages, null)
+      packet_length               = try(s.match_entries.packet_length, null)
+      protocols                   = try(s.match_entries.protocols, null)
+      source_data_prefix          = try(s.match_entries.source_data_prefix, null)
+      source_data_prefix_list_id  = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_data_prefix_variable = try("{{${s.match_entries.source_data_prefix_variable}}}", null)
+      source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
+        port = p
+      }]
+      tcp_state = try(s.match_entries.tcp_state, null)
+    }] : null
+    sequence_id   = s.id
+    sequence_name = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.ipv4_acls.sequences.name)
+    }
+  ]
+}
+
 resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([

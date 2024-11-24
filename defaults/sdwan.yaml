@@ -355,5 +355,8 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        ipv4_acls:
+          sequences:
+            name: acl
         wan_vpn:
           name: wan_vpn

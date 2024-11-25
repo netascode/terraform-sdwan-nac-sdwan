@@ -850,6 +850,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     a == "ip-udp-esp" ? "ah-sha1-hmac" :
     a == "ip-udp-esp-no-id" ? "ah-no-id" :
   a]
+  authentication_type_variable     = try(each.value.authentication_types_variable, null)
   keychains = try(length(each.value.key_chains) == 0, true) ? null : [for key in each.value.key_chains : {
     key_id = key.key_id
     name   = key.name

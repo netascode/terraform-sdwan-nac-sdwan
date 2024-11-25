@@ -119,7 +119,7 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
     type        = try(s.type, null)
     ip_type     = try(s.ip_type, null)
     base_action = try(s.base_action, null)
-    match_entries = flatten([
+    match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.color_list, null) == null ? [] : [{
         type               = "colorList"
         color_list_id      = sdwan_color_list_policy_object.color_list_policy_object[s.match_criterias.color_list].id

@@ -21,6 +21,7 @@
 - add defaults for UX 2.0 feature names
 - fix issue where certain parameters were required by sdwan_cflowd_policy_definition resource, but are optional in the UI
 - fix issue where authentication_type_variable was not configurable with sdwan_cisco_security_feature_template
+- in sdwan_cflowd_policy_definition, fix export_spreading to be optional
 
 ## 0.1.0
 

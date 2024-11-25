@@ -566,7 +566,7 @@ resource "sdwan_cflowd_policy_definition" "cflowd_policy_definition" {
     port             = t.port
     transport        = t.transport
     source_interface = t.source_interface
-    export_spreading = t.export_spreading
+    export_spreading = try(t.export_spreading, null)
   }]
 }
 

@@ -896,7 +896,8 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
       administrative_distance          = try(nh.administrative_distance, null)
       administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
-    null0           = try(route.null0, null)
+    gateway         = try(route.gateway, "nextHop")
+    null0           = try(route.gateway, "nextHop") == "null0" ? true : null
     prefix          = try(route.prefix, null)
     prefix_variable = try("{{${route.prefix_variable}}}", null)
   }]

@@ -2014,3 +2014,82 @@ resource "sdwan_security_app_hosting_feature_template" "security_app_hosting_fea
     instance_id               = 1
   }]
 }
+
+resource "sdwan_cellular_controller_feature_template" "cellular_controller_feature_template" {
+  for_each                       = { for t in try(local.edge_feature_templates.cellular_controller_templates, {}) : t.name => t }
+  name                           = each.value.name
+  description                    = each.value.description
+  device_types                   = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_controller_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  cellular_interface_id          = try(each.value.cellular_interface_id, null)
+  cellular_interface_id_variable = try(each.value.cellular_interface_id_variable, null)
+  primary_sim_slot               = try(each.value.primary_sim_slot, null)
+  primary_sim_slot_variable      = try(each.value.primary_sim_slot_variable, null)
+  sim_failover_retries           = try(each.value.sim_failover_retries, null)
+  sim_failover_retries_variable  = try(each.value.sim_failover_retries_variable, null)
+  sim_failover_timeout           = try(each.value.sim_failover_timeout, null)
+  sim_failover_timeout_variable  = try(each.value.sim_failover_timeout_variable, null)
+}
+
+resource "sdwan_cellular_cedge_profile_feature_template" "cellular_cedge_profile_feature_template" {
+  for_each                          = { for t in try(local.edge_feature_templates.cellular_profile_templates, {}) : t.name => t }
+  name                              = each.value.name
+  description                       = each.value.description
+  device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_profile_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  profile_id                        = try(each.value.profile_id, null)
+  profile_id_variable               = try(each.value.profile_id_variable, null)
+  access_point_name                 = try(each.value.access_point_name, null)
+  access_point_name_variable        = try(each.value.access_point_name_variable, null)
+  packet_data_network_type          = try(each.value.packet_data_network_type, null)
+  packet_data_network_type_variable = try(each.value.packet_data_network_type_variable, null)
+  authentication_type               = try(each.value.authentication_type, null)
+  authentication_type_variable      = try(each.value.authentication_type_variable, null)
+  profile_username                  = try(each.value.profile_username, null)
+  profile_username_variable         = try(each.value.profile_username_variable, null)
+  profile_password                  = try(each.value.profile_password, null)
+  profile_password_variable         = try(each.value.profile_password_variable, null)
+}
+
+resource "sdwan_cisco_vpn_interface_gre_feature_template" "cisco_vpn_interface_gre_feature_template" {
+  for_each                         = { for t in try(local.edge_feature_templates.gre_interface_templates, {}) : t.name => t }
+  name                             = each.value.name
+  description                      = each.value.description
+  device_types                     = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.gre_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  interface_name                   = try(each.value.interface_name, null)
+  interface_name_variable          = try(each.value.interface_name_variable, null)
+  interface_description            = try(each.value.interface_description, null)
+  interface_description_variable   = try(each.value.interface_description_variable, null)
+  shutdown                         = try(each.value.shutdown, null)
+  shutdown_variable                = try(each.value.shutdown_variable, null)
+  tunnel_source_interface          = try(each.value.tunnel_source_interface, null)
+  tunnel_source_interface_variable = try(each.value.tunnel_source_interface_variable, null)
+  tunnel_source                    = try(each.value.tunnel_source_ip, null)
+  tunnel_source_variable           = try(each.value.tunnel_source_ip_variable, null)
+  tunnel_destination               = try(each.value.tunnel_destination, null)
+  tunnel_destination_variable      = try(each.value.tunnel_destination_variable, null)
+  ip_address                       = try(each.value.ip_address, null)
+  ip_address_variable              = try(each.value.ip_address_variable, null)
+  ip_mtu                           = try(each.value.ip_mtu, null)
+  ip_mtu_variable                  = try(each.value.ip_mtu_variable, null)
+  tcp_mss_adjust                   = try(each.value.tcp_mss, null)
+  tcp_mss_adjust_variable          = try(each.value.tcp_mss_variable, null)
+  clear_dont_fragment              = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_variable     = try(each.value.clear_dont_fragment_variable, null)
+  rewrite_rule                     = try(each.value.rewrite_rule, null)
+  rewrite_rule_variable            = try(each.value.rewrite_rule_variable, null)
+  tracker                          = try([each.value.tracker], null)
+  tracker_variable                 = try(each.value.tracker_variable, null)
+  application                      = try(each.value.application, null)
+  application_variable             = try(each.value.application_variable, null)
+  access_lists = try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+}

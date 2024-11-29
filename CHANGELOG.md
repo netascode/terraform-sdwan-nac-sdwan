@@ -26,6 +26,7 @@
 - add support for sdwan_cellular_controller_feature_template resource
 - add support for sdwan_cellular_cedge_profile_feature_template resource
 - add support for sdwan_cisco_vpn_interface_gre_feature_template resource
+- add support for sdwan_vpn_interface_cellular_feature_template resource
 
 ## 0.1.0
 

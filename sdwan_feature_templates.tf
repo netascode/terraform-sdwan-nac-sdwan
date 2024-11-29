@@ -2093,3 +2093,209 @@ resource "sdwan_cisco_vpn_interface_gre_feature_template" "cisco_vpn_interface_g
     }]
   ])
 }
+
+resource "sdwan_vpn_interface_cellular_feature_template" "vpn_interface_cellular_feature_template" {
+  for_each                                                = { for t in try(local.edge_feature_templates.cellular_interface_templates, {}) : t.name => t }
+  name                                                    = each.value.name
+  description                                             = each.value.description
+  device_types                                            = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  cellular_interface_name                                 = try(each.value.interface_name, null)
+  cellular_interface_name_variable                        = try(each.value.interface_name_variable, null)
+  interface_description                                   = try(each.value.interface_description, null)
+  interface_description_variable                          = try(each.value.interface_description_variable, null)
+  shutdown                                                = try(each.value.shutdown, null)
+  shutdown_variable                                       = try(each.value.shutdown_variable, null)
+  ipv4_dhcp_helper                                        = try(each.value.dhcp_helpers, null)
+  ipv4_dhcp_helper_variable                               = try(each.value.dhcp_helpers_variable, null)
+  bandwidth_downstream                                    = try(each.value.bandwidth_downstream, null)
+  bandwidth_downstream_variable                           = try(each.value.bandwidth_downstream_variable, null)
+  bandwidth_upstream                                      = try(each.value.bandwidth_upstream, null)
+  bandwidth_upstream_variable                             = try(each.value.bandwidth_upstream_variable, null)
+  ip_mtu                                                  = try(each.value.ip_mtu, null)
+  ip_mtu_variable                                         = try(each.value.ip_mtu_variable, null)
+  tunnel_interface_allow_all                              = try(each.value.tunnel_interface.allow_service_all, null)
+  tunnel_interface_allow_all_variable                     = try(each.value.tunnel_interface.allow_service_all_variable, null)
+  tunnel_interface_allow_bgp                              = try(each.value.tunnel_interface.allow_service_bgp, null)
+  tunnel_interface_allow_bgp_variable                     = try(each.value.tunnel_interface.allow_service_bgp_variable, null)
+  tunnel_interface_allow_dhcp                             = try(each.value.tunnel_interface.allow_service_dhcp, null)
+  tunnel_interface_allow_dhcp_variable                    = try(each.value.tunnel_interface.allow_service_dhcp_variable, null)
+  tunnel_interface_allow_dns                              = try(each.value.tunnel_interface.allow_service_dns, null)
+  tunnel_interface_allow_dns_variable                     = try(each.value.tunnel_interface.allow_service_dns_variable, null)
+  tunnel_interface_allow_https                            = try(each.value.tunnel_interface.allow_service_https, null)
+  tunnel_interface_allow_https_variable                   = try(each.value.tunnel_interface.allow_service_https_variable, null)
+  tunnel_interface_allow_icmp                             = try(each.value.tunnel_interface.allow_service_icmp, null)
+  tunnel_interface_allow_icmp_variable                    = try(each.value.tunnel_interface.allow_service_icmp_variable, null)
+  tunnel_interface_allow_netconf                          = try(each.value.tunnel_interface.allow_service_netconf, null)
+  tunnel_interface_allow_netconf_variable                 = try(each.value.tunnel_interface.allow_service_netconf_variable, null)
+  tunnel_interface_allow_ntp                              = try(each.value.tunnel_interface.allow_service_ntp, null)
+  tunnel_interface_allow_ntp_variable                     = try(each.value.tunnel_interface.allow_service_ntp_variable, null)
+  tunnel_interface_allow_ospf                             = try(each.value.tunnel_interface.allow_service_ospf, null)
+  tunnel_interface_allow_ospf_variable                    = try(each.value.tunnel_interface.allow_service_ospf_variable, null)
+  tunnel_interface_allow_snmp                             = try(each.value.tunnel_interface.allow_service_snmp, null)
+  tunnel_interface_allow_snmp_variable                    = try(each.value.tunnel_interface.allow_service_snmp_variable, null)
+  tunnel_interface_allow_ssh                              = try(each.value.tunnel_interface.allow_service_ssh, null)
+  tunnel_interface_allow_ssh_variable                     = try(each.value.tunnel_interface.allow_service_ssh_variable, null)
+  tunnel_interface_allow_stun                             = try(each.value.tunnel_interface.allow_service_stun, null)
+  tunnel_interface_allow_stun_variable                    = try(each.value.tunnel_interface.allow_service_stun_variable, null)
+  tunnel_interface_bind_loopback_tunnel                   = try(each.value.tunnel_interface.bind_loopback_tunnel, null)
+  tunnel_interface_bind_loopback_tunnel_variable          = try(each.value.tunnel_interface.bind_loopback_tunnel_variable, null)
+  tunnel_interface_border                                 = try(each.value.tunnel_interface.border, null)
+  tunnel_interface_border_variable                        = try(each.value.tunnel_interface.border_variable, null)
+  tunnel_interface_carrier                                = try(each.value.tunnel_interface.carrier, null)
+  tunnel_interface_carrier_variable                       = try(each.value.tunnel_interface.carrier_variable, null)
+  tunnel_interface_clear_dont_fragment                    = try(each.value.tunnel_interface.clear_dont_fragment, null)
+  tunnel_interface_clear_dont_fragment_variable           = try(each.value.tunnel_interface.clear_dont_fragment_variable, null)
+  tunnel_interface_color                                  = try(each.value.tunnel_interface.color, null)
+  tunnel_interface_color_variable                         = try(each.value.tunnel_interface.color_variable, null)
+  tunnel_interface_color_restrict                         = try(each.value.tunnel_interface.restrict, null)
+  tunnel_interface_color_restrict_variable                = try(each.value.tunnel_interface.restrict_variable, null)
+  core_region                                             = try(each.value.tunnel_interface.core_region, null)
+  core_region_variable                                    = try(each.value.tunnel_interface.core_region_variable, null)
+  enable_core_region                                      = try(each.value.tunnel_interface.enable_core_region, null)
+  enable_core_region_variable                             = try(each.value.tunnel_interface.enable_core_region_variable, null)
+  tunnel_interface_exclude_controller_group_list          = try(each.value.tunnel_interface.exclude_controller_groups, null)
+  tunnel_interface_exclude_controller_group_list_variable = try(each.value.tunnel_interface.exclude_controller_groups_variable, null)
+  tunnel_interface_encapsulations = try(each.value.tunnel_interface.gre_encapsulation, each.value.tunnel_interface.ipsec_encapsulation, null) == null ? null : flatten([
+    try(each.value.tunnel_interface.gre_encapsulation, null) == null ? [] : [{
+      encapsulation       = "gre"
+      preference          = try(each.value.tunnel_interface.gre_preference, null)
+      preference_variable = try(each.value.tunnel_interface.gre_preference_variable, null)
+      weight              = try(each.value.tunnel_interface.gre_weight, null)
+      weight_variable     = try(each.value.tunnel_interface.gre_weight_variable, null)
+    }],
+    try(each.value.tunnel_interface.ipsec_encapsulation, null) == null ? [] : [{
+      encapsulation       = "ipsec"
+      preference          = try(each.value.tunnel_interface.ipsec_preference, null)
+      preference_variable = try(each.value.tunnel_interface.ipsec_preference_variable, null)
+      weight              = try(each.value.tunnel_interface.ipsec_weight, null)
+      weight_variable     = try(each.value.tunnel_interface.ipsec_weight_variable, null)
+    }]
+  ])
+  tunnel_interface_groups                                 = try([each.value.tunnel_interface.group], null)
+  tunnel_interface_groups_variable                        = try(each.value.tunnel_interface.group_variable, null)
+  tunnel_interface_hello_interval                         = try(each.value.tunnel_interface.hello_interval, null)
+  tunnel_interface_hello_interval_variable                = try(each.value.tunnel_interface.hello_interval_variable, null)
+  tunnel_interface_hello_tolerance                        = try(each.value.tunnel_interface.hello_tolerance, null)
+  tunnel_interface_hello_tolerance_variable               = try(each.value.tunnel_interface.hello_tolerance_variable, null)
+  tunnel_interface_last_resort_circuit                    = try(each.value.tunnel_interface.last_resort_circuit, null)
+  tunnel_interface_last_resort_circuit_variable           = try(each.value.tunnel_interface.last_resort_circuit_variable, null)
+  tunnel_interface_low_bandwidth_link                     = try(each.value.tunnel_interface.low_bandwidth_link, null)
+  tunnel_interface_low_bandwidth_link_variable            = try(each.value.tunnel_interface.low_bandwidth_link_variable, null)
+  tunnel_interface_max_control_connections                = try(each.value.tunnel_interface.max_control_connections, null)
+  tunnel_interface_max_control_connections_variable       = try(each.value.tunnel_interface.max_control_connections_variable, null)
+  tunnel_interface_nat_refresh_interval                   = try(each.value.tunnel_interface.nat_refresh_interval, null)
+  tunnel_interface_nat_refresh_interval_variable          = try(each.value.tunnel_interface.nat_refresh_interval_variable, null)
+  tunnel_interface_network_broadcast                      = try(each.value.tunnel_interface.network_broadcast, null)
+  tunnel_interface_network_broadcast_variable             = try(each.value.tunnel_interface.network_broadcast_variable, null)
+  tunnel_interface_port_hop                               = try(each.value.tunnel_interface.port_hop, null)
+  tunnel_interface_port_hop_variable                      = try(each.value.tunnel_interface.port_hop_variable, null)
+  tunnel_interface_tunnel_tcp_mss                         = try(each.value.tunnel_interface.tcp_mss, null)
+  tunnel_interface_tunnel_tcp_mss_variable                = try(each.value.tunnel_interface.tcp_mss_variable, null)
+  tunnel_qos_mode                                         = try(each.value.tunnel_interface.per_tunnel_qos_mode, null)
+  tunnel_qos_mode_variable                                = try(each.value.tunnel_interface.per_tunnel_qos_mode_variable, null)
+  secondary_region                                        = try(each.value.tunnel_interface.secondary_region, null)
+  secondary_region_variable                               = try(each.value.tunnel_interface.secondary_region_variable, null)
+  tunnel_interface_vbond_as_stun_server                   = try(each.value.tunnel_interface.vbond_as_stun_server, null)
+  tunnel_interface_vbond_as_stun_server_variable          = try(each.value.tunnel_interface.vbond_as_stun_server_variable, null)
+  tunnel_interface_vmanage_connection_preference          = try(each.value.tunnel_interface.vmanage_connection_preference, null)
+  tunnel_interface_vmanage_connection_preference_variable = try(each.value.tunnel_interface.vmanage_connection_preference_variable, null)
+  nat                                                     = try(each.value.nat, null)
+  nat_refresh_mode                                        = try(each.value.nat_refresh_mode, null)
+  nat_refresh_mode_variable                               = try(each.value.nat_refresh_mode_variable, null)
+  nat_tcp_timeout                                         = try(each.value.nat_tcp_timeout, null)
+  nat_tcp_timeout_variable                                = try(each.value.nat_tcp_timeout_variable, null)
+  nat_udp_timeout                                         = try(each.value.nat_udp_timeout, null)
+  nat_udp_timeout_variable                                = try(each.value.nat_udp_timeout_variable, null)
+  nat_block_icmp_error                                    = try(each.value.nat_block_icmp, null)
+  nat_block_icmp_error_variable                           = try(each.value.nat_block_icmp_variable, null)
+  nat_response_to_ping                                    = try(each.value.nat_response_to_ping, null)
+  nat_response_to_ping_variable                           = try(each.value.nat_response_to_ping_variable, null)
+  nat_port_forwards = try(each.value.nat_port_forwarding_rules, null) == null ? null : [for pfr in each.value.nat_port_forwarding_rules : {
+    port_start_range            = try(pfr.port_range_start, null)
+    port_end_range              = try(pfr.port_range_end, null)
+    protocol                    = try(pfr.protocol, null)
+    private_vpn                 = try(pfr.vpn, null)
+    private_vpn_variable        = try(pfr.vpn_variable, null)
+    private_ip_address          = try(pfr.private_ip, null)
+    private_ip_address_variable = try(pfr.private_ip_variable, null)
+  }]
+  qos_adaptive_period                        = try(each.value.adaptive_qos_period, null)
+  qos_adaptive_period_variable               = try(each.value.adaptive_qos_period_variable, null)
+  qos_adaptive_bandwidth_downstream          = try(each.value.adaptive_qos_shaping_rate_downstream.default, null)
+  qos_adaptive_bandwidth_downstream_variable = try(each.value.adaptive_qos_shaping_rate_downstream.default_variable, null)
+  qos_adaptive_bandwidth_upstream            = try(each.value.adaptive_qos_shaping_rate_upstream.default, null)
+  qos_adaptive_bandwidth_upstream_variable   = try(each.value.adaptive_qos_shaping_rate_upstream.default_variable, null)
+  qos_adaptive_max_downstream                = try(each.value.adaptive_qos_shaping_rate_downstream.maximum, null)
+  qos_adaptive_max_downstream_variable       = try(each.value.adaptive_qos_shaping_rate_downstream.maximum_variable, null)
+  qos_adaptive_max_upstream                  = try(each.value.adaptive_qos_shaping_rate_upstream.maximum, null)
+  qos_adaptive_max_upstream_variable         = try(each.value.adaptive_qos_shaping_rate_upstream.maximum_variable, null)
+  qos_adaptive_min_downstream                = try(each.value.adaptive_qos_shaping_rate_downstream.minimum, null)
+  qos_adaptive_min_downstream_variable       = try(each.value.adaptive_qos_shaping_rate_downstream.minimum_variable, null)
+  qos_adaptive_min_upstream                  = try(each.value.adaptive_qos_shaping_rate_upstream.minimum, null)
+  qos_adaptive_min_upstream_variable         = try(each.value.adaptive_qos_shaping_rate_upstream.minimum_variable, null)
+  shaping_rate                               = try(each.value.shaping_rate, null)
+  shaping_rate_variable                      = try(each.value.shaping_rate_variable, null)
+  qos_map                                    = try(each.value.qos_map, null)
+  qos_map_variable                           = try(each.value.qos_map_variable, null)
+  qos_map_vpn                                = try(each.value.vpn_qos_map, null)
+  qos_map_vpn_variable                       = try(each.value.vpn_qos_map_variable, null)
+  write_rule                                 = try(each.value.rewrite_rule, null)
+  write_rule_variable                        = try(each.value.rewrite_rule_variable, null)
+  ipv4_access_lists = try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+  ipv6_access_lists = try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+  policers = try(each.value.ingress_policer_name, each.value.ingress_policer_name_variable, each.value.egress_policer_name, each.value.egress_policer_name_variable, null) == null ? null : flatten([
+    try(each.value.ingress_policer_name, each.value.ingress_policer_name_variable, null) == null ? [] : [{
+      policer_name = try(each.value.ingress_policer_name, null)
+      direction    = "in"
+    }],
+    try(each.value.egress_policer_name, each.value.egress_policer_name_variable, null) == null ? [] : [{
+      policer_name = try(each.value.egress_policer_name, null)
+      direction    = "out"
+    }]
+  ])
+  static_arps = try(length(each.value.static_arps) == 0, true) ? null : [for arp in each.value.static_arps : {
+    ip_address          = try(arp.ip_address, null)
+    ip_address_variable = try(arp.ip_address_variable, null)
+    mac                 = try(arp.mac_address, null)
+    mac_variable        = try(arp.mac_address_variable, null)
+    optional            = try(arp.optional, null)
+  }]
+  pmtu_discovery                   = try(each.value.path_mtu_discovery, null)
+  pmtu_discovery_variable          = try(each.value.path_mtu_discovery_variable, null)
+  tcp_mss                          = try(each.value.tcp_mss, null)
+  tcp_mss_variable                 = try(each.value.tcp_mss_variable, null)
+  clear_dont_fragment_bit          = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_bit_variable = try(each.value.clear_dont_fragment_variable, null)
+  static_ingress_qos               = try(each.value.static_ingress_qos, null)
+  static_ingress_qos_variable      = try(each.value.static_ingress_qos_variable, null)
+  autonegotiate                    = try(each.value.autonegotiate, null)
+  autonegotiate_variable           = try(each.value.autonegotiate_variable, null)
+  tloc_extension                   = try(each.value.tloc_extension, null)
+  tloc_extension_variable          = try(each.value.tloc_extension_variable, null)
+  tracker                          = try([each.value.tracker], null)
+  tracker_variable                 = try(each.value.tracker_variable, null)
+  ip_directed_broadcast            = try(each.value.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable   = try(each.value.ip_directed_broadcast_variable, null)
+}

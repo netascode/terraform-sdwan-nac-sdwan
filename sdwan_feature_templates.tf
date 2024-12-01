@@ -154,6 +154,18 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   depends_on                    = [sdwan_localized_policy.localized_policy]
 }
 
+locals {
+  managed_banner_templates = [for t in try(local.edge_feature_templates.banner_templates, []) : t.name]
+  unmanaged_banner_templates = flatten(distinct([
+    for t in try(local.edge_device_templates, []) : try(t.banner_template, []) if !contains(local.managed_banner_templates, try(t.banner_template, []))
+  ]))
+}
+
+data "sdwan_cisco_banner_feature_template" "unmanaged" {
+  for_each = toset(local.unmanaged_banner_templates)
+  name     = each.value
+}
+
 resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   for_each       = { for t in try(local.edge_feature_templates.banner_templates, {}) : t.name => t }
   name           = each.value.name

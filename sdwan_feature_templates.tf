@@ -2047,6 +2047,8 @@ resource "sdwan_cellular_cedge_profile_feature_template" "cellular_cedge_profile
   profile_username_variable         = try(each.value.profile_username_variable, null)
   profile_password                  = try(each.value.profile_password, null)
   profile_password_variable         = try(each.value.profile_password_variable, null)
+  no_overwrite                      = try(each.value.no_overwrite, null)
+  no_overwrite_variable             = try(each.value.no_overwrite_variable, null)
 }
 
 resource "sdwan_cisco_vpn_interface_gre_feature_template" "cisco_vpn_interface_gre_feature_template" {

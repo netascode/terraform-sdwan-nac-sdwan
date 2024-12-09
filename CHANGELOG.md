@@ -23,6 +23,7 @@
 - fix issue where authentication_type_variable was not configurable with sdwan_cisco_security_feature_template
 - in sdwan_cflowd_policy_definition, fix export_spreading to be optional
 - add gateway parameter to ipv6_static_routes of sdwan_transport_wan_vpn_feature
+- add support for sdwan_other_ucse_feature resource
 
 ## 0.1.0
 

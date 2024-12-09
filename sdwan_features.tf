@@ -50,7 +50,7 @@ resource "sdwan_other_ucse_feature" "other_ucse_feature" {
     "${other.name}-ucse" => other
     if try(other.ucse, null) != null
   }
-  name                             = try(each.value.ucse.name, "ucse")
+  name                             = try(each.value.ucse.name, local.defaults.sdwan.feature_profiles.other_profiles.ucse.name)
   description                      = try(each.value.ucse.description, "")
   feature_profile_id               = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
   access_port_dedicated            = try(each.value.ucse.cimc_access_port_dedicated, null)

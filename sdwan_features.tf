@@ -44,6 +44,38 @@ resource "sdwan_other_thousandeyes_feature" "other_thousandeyes_feature" {
   }]
 }
 
+resource "sdwan_other_ucse_feature" "other_ucse_feature" {
+  for_each = {
+    for other in try(local.feature_profiles.other_profiles, {}) :
+    "${other.name}-ucse" => other
+    if try(other.ucse, null) != null
+  }
+  name                             = try(each.value.ucse.name, "ucse")
+  description                      = try(each.value.ucse.description, "")
+  feature_profile_id               = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
+  access_port_dedicated            = try(each.value.ucse.cimc_access_port_dedicated, null)
+  access_port_shared_failover_type = try(each.value.ucse.cimc_access_port_shared_failover_type, null)
+  access_port_shared_type          = try(each.value.ucse.cimc_access_port_shared_type, null)
+  assign_priority                  = try(each.value.ucse.cimc_assign_priority, null)
+  assign_priority_variable         = try("{{${each.value.ucse.cimc_assign_priority_variable}}}", null)
+  bay                              = each.value.ucse.bay
+  default_gateway                  = try(each.value.ucse.cimc_default_gateway, null)
+  default_gateway_variable         = try("{{${each.value.ucse.cimc_default_gateway_variable}}}", null)
+  interfaces = try(length(each.value.ucse.interfaces) == 0, true) ? null : [for i in each.value.ucse.interfaces : {
+    interface_name              = try(i.interface_name, null)
+    interface_name_variable     = try("{{${i.interface_name_variable}}}", null)
+    ipv4_address                = try(i.ipv4_address, null)
+    ipv4_address_variable       = try("{{${i.ipv4_address_variable}}}", null)
+    ucse_interface_vpn          = try(i.vpn_id, null)
+    ucse_interface_vpn_variable = try("{{${i.vpn_id_variable}}}", null)
+  }]
+  ipv4_address          = try(each.value.ucse.cimc_ipv4_address, null)
+  ipv4_address_variable = try("{{${each.value.ucse.cimc_ipv4_address_variable}}}", null)
+  slot                  = each.value.ucse.slot
+  vlan_id               = try(each.value.ucse.cimc_vlan_id, null)
+  vlan_id_variable      = try("{{${each.value.ucse.cimc_vlan_id_variable}}}", null)
+}
+
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([

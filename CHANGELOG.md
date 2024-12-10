@@ -24,6 +24,7 @@
 - in sdwan_cflowd_policy_definition, fix export_spreading to be optional
 - add gateway parameter to ipv6_static_routes of sdwan_transport_wan_vpn_feature
 - add support for sdwan_other_ucse_feature resource
+- add support for sdwan_transport_management_vpn_feature
 
 ## 0.1.0
 

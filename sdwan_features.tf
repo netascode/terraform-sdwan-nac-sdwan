@@ -981,7 +981,7 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   autonegotiate_variable              = try("{{${each.value.interface.autonegotiate_variable}}}", null)
   duplex                              = try(each.value.interface.duplex, null)
   duplex_variable                     = try("{{${each.value.interface.duplex_variable}}}", null)
-  enable_dhcpv6                       = each.value.interface.ipv6_configuration_type == "dynamic" ? true : null
+  enable_dhcpv6                       = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type) == "dynamic" ? true : null
   icmp_redirect_disable               = try(each.value.interface.icmp_redirect_disable, null)
   icmp_redirect_disable_variable      = try("{{${each.value.interface.icmp_redirect_disable_variable}}}", null)
   interface_description               = try(each.value.interface.interface_description, null)

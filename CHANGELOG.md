@@ -25,6 +25,7 @@
 - add gateway parameter to ipv6_static_routes of sdwan_transport_wan_vpn_feature
 - add support for sdwan_other_ucse_feature resource
 - add support for sdwan_transport_management_vpn_feature
+- add support for sdwan_transport_management_vpn_interface_ethernet_feature
 
 ## 0.1.0
 

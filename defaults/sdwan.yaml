@@ -355,5 +355,18 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        management_vpn:
+          name: management_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+          ipv4_static_routes:
+            gateway: nextHop
+          ipv6_static_routes:
+            gateway: nextHop
         wan_vpn:
           name: wan_vpn
+          ipv4_static_routes:
+            gateway: nextHop
+          ipv6_static_routes:
+            gateway: nextHop

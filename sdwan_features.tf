@@ -1,3 +1,158 @@
+resource "sdwan_cli_config_feature" "cli_config_feature" {
+  for_each = {
+    for cli in try(local.feature_profiles.cli_profiles, {}) :
+    "${cli.name}-config" => cli
+    if try(cli.config, null) != null
+  }
+  name               = try(each.value.config.name, local.defaults.sdwan.feature_profiles.cli_profiles.config.name)
+  description        = try(each.value.config.description, "")
+  feature_profile_id = sdwan_cli_feature_profile.cli_feature_profile[each.value.name].id
+  cli_configuration  = each.value.config.cli_configuration
+}
+
+resource "sdwan_other_thousandeyes_feature" "other_thousandeyes_feature" {
+  for_each = {
+    for other in try(local.feature_profiles.other_profiles, {}) :
+    "${other.name}-thousandeyes" => other
+    if try(other.thousandeyes, null) != null
+  }
+  name               = try(each.value.thousandeyes.name, local.defaults.sdwan.feature_profiles.other_profiles.thousandeyes.name)
+  description        = try(each.value.thousandeyes.description, "")
+  feature_profile_id = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
+  virtual_application = [{
+    account_group_token             = try(each.value.thousandeyes.account_group_token, null)
+    account_group_token_variable    = try("{{${each.value.thousandeyes.account_group_token_variable}}}", null)
+    agent_default_gateway           = try(each.value.thousandeyes.agent_default_gateway, null)
+    agent_default_gateway_variable  = try("{{${each.value.thousandeyes.agent_default_gateway_variable}}}", null)
+    hostname                        = try(each.value.thousandeyes.hostname, null)
+    hostname_variable               = try("{{${each.value.thousandeyes.hostname_variable}}}", null)
+    management_ip                   = try(each.value.thousandeyes.management_ip, null)
+    management_ip_variable          = try("{{${each.value.thousandeyes.management_ip_variable}}}", null)
+    management_subnet_mask          = try(each.value.thousandeyes.management_subnet_mask, null)
+    management_subnet_mask_variable = try("{{${each.value.thousandeyes.management_subnet_mask_variable}}}", null)
+    name_server_ip                  = try(each.value.thousandeyes.name_server_ip, null)
+    name_server_ip_variable         = try("{{${each.value.thousandeyes.name_server_ip_variable}}}", null)
+    pac_url                         = try(each.value.thousandeyes.pac_proxy_url, null)
+    pac_url_variable                = try("{{${each.value.thousandeyes.pac_proxy_url_variable}}}", null)
+    proxy_host                      = try(each.value.thousandeyes.static_proxy_host, null)
+    proxy_host_variable             = try("{{${each.value.thousandeyes.static_proxy_host_variable}}}", null)
+    proxy_port                      = try(each.value.thousandeyes.static_proxy_port, null)
+    proxy_port_variable             = try("{{${each.value.thousandeyes.static_proxy_port_variable}}}", null)
+    proxy_type                      = try(each.value.thousandeyes.proxy_type, null)
+    vpn                             = try(each.value.thousandeyes.vpn_id, null)
+    vpn_variable                    = try("{{${each.value.thousandeyes.vpn_id_variable}}}", null)
+  }]
+}
+
+resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "ipv4_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                     = each.value.tracker.name
+  description              = try(each.value.tracker.description, null)
+  feature_profile_id       = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  tracker_boolean          = try(each.value.tracker.tracker_boolean, null)
+  tracker_boolean_variable = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    tracker_id = sdwan_service_tracker_feature.service_tracker_feature["${each.value.profile.name}-${t}"].id
+  }]
+}
+
+resource "sdwan_service_tracker_feature" "service_tracker_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "ipv4_trackers", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                      = each.value.tracker.name
+  description               = try(each.value.tracker.description, null)
+  feature_profile_id        = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  endpoint_api_url          = try(each.value.tracker.endpoint_url, null)
+  endpoint_api_url_variable = try("{{${each.value.tracker.endpoint_url_variable}}}", null)
+  endpoint_ip               = try(each.value.tracker.endpoint_ip, null)
+  endpoint_ip_variable      = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type     = "static-route"
+  interval                  = try(each.value.tracker.interval, null)
+  interval_variable         = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                = try(each.value.tracker.multiplier, null)
+  multiplier_variable       = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  port                      = try(each.value.tracker.endpoint_port, null)
+  port_variable             = try("{{${each.value.tracker.endpoint_port_variable}}}", null)
+  protocol                  = try(each.value.tracker.endpoint_protocol, null)
+  protocol_variable         = try("{{${each.value.tracker.endpoint_protocol_variable}}}", null)
+  threshold                 = try(each.value.tracker.threshold, null)
+  threshold_variable        = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name              = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable     = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type              = "endpoint"
+}
+
+resource "sdwan_service_object_tracker_group_feature" "service_object_tracker_group_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "object_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  object_tracker_id          = try(each.value.tracker.id, null)
+  object_tracker_id_variable = try("{{${each.value.tracker.id_variable}}}", null)
+  reachable                  = try(each.value.tracker.tracker_boolean, null)
+  reachable_variable         = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    object_tracker_id = sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${t}"].id
+  }]
+}
+
+resource "sdwan_service_object_tracker_feature" "service_object_tracker_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
+        for tracker in lookup(profile, "object_trackers", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  object_tracker_type        = each.value.tracker.type
+  interface                  = try(each.value.tracker.interface_name, null)
+  interface_variable         = try("{{${each.value.tracker.interface_name_variable}}}", null)
+  object_tracker_id          = try(each.value.tracker.id, null)
+  object_tracker_id_variable = try("{{${each.value.tracker.id_variable}}}", null)
+  route_ip                   = try(each.value.tracker.route_ip, null)
+  route_ip_variable          = try("{{${each.value.tracker.route_ip_variable}}}", null)
+  route_mask                 = try(each.value.tracker.route_mask, null)
+  route_mask_variable        = try("{{${each.value.tracker.route_mask_variable}}}", null)
+  vpn                        = try(each.value.tracker.vpn_id, null)
+  vpn_variable               = try("{{${each.value.tracker.vpn_id_variable}}}", null)
+}
+
 resource "sdwan_system_aaa_feature" "system_aaa_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
@@ -589,4 +744,189 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
       id_variable      = try("{{${oid.id_variable}}}", null)
     }]
   }]
+}
+
+resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for tracker in lookup(profile, "ipv4_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                     = each.value.tracker.name
+  description              = try(each.value.tracker.description, null)
+  feature_profile_id       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  tracker_boolean          = try(each.value.tracker.tracker_boolean, null)
+  tracker_boolean_variable = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    tracker_id = sdwan_transport_tracker_feature.transport_tracker_feature["${each.value.profile.name}-${t}"].id
+  }]
+}
+
+resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for tracker in lookup(profile, "ipv4_trackers", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                           = each.value.tracker.name
+  description                    = try(each.value.tracker.description, null)
+  feature_profile_id             = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  endpoint_api_url               = try(each.value.tracker.endpoint_api_url, null)
+  endpoint_api_url_variable      = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
+  endpoint_dns_name              = try(each.value.tracker.endpoint_dns_name, null)
+  endpoint_dns_name_variable     = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
+  endpoint_ip                    = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
+  endpoint_ip_variable           = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type          = try(each.value.tracker.endpoint_tracker_type, null)
+  endpoint_tracker_type_variable = try("{{${each.value.tracker.endpoint_tracker_type_variable}}}", null)
+  interval                       = try(each.value.tracker.interval, null)
+  interval_variable              = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                     = try(each.value.tracker.multiplier, null)
+  multiplier_variable            = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  threshold                      = try(each.value.tracker.threshold, null)
+  threshold_variable             = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name                   = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable          = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type                   = try(each.value.tracker.tracker_type, null)
+  tracker_type_variable          = try("{{${each.value.tracker.tracker_type_variable}}}", null)
+}
+
+resource "sdwan_transport_ipv6_tracker_group_feature" "transport_ipv6_tracker_group_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for tracker in lookup(profile, "ipv6_tracker_groups", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                     = each.value.tracker.name
+  description              = try(each.value.tracker.description, null)
+  feature_profile_id       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  tracker_boolean          = try(each.value.tracker.tracker_boolean, null)
+  tracker_boolean_variable = try("{{${each.value.tracker.tracker_boolean_variable}}}", null)
+  tracker_elements = try(length(each.value.tracker.trackers) == 0, true) ? null : [for t in each.value.tracker.trackers : {
+    tracker_id = sdwan_transport_ipv6_tracker_feature.transport_ipv6_tracker_feature["${each.value.profile.name}-${t}"].id
+  }]
+  tracker_name          = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+}
+
+resource "sdwan_transport_ipv6_tracker_feature" "transport_ipv6_tracker_feature" {
+  for_each = {
+    for tracker_item in flatten([
+      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
+        for tracker in lookup(profile, "ipv6_trackers", []) : {
+          profile = profile
+          tracker = tracker
+        }
+      ]
+    ])
+    : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
+  }
+  name                           = each.value.tracker.name
+  description                    = try(each.value.tracker.description, null)
+  feature_profile_id             = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  endpoint_api_url               = try(each.value.tracker.endpoint_api_url, null)
+  endpoint_api_url_variable      = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
+  endpoint_dns_name              = try(each.value.tracker.endpoint_dns_name, null)
+  endpoint_dns_name_variable     = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
+  endpoint_ip                    = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
+  endpoint_ip_variable           = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type          = try(each.value.tracker.endpoint_tracker_type, null)
+  endpoint_tracker_type_variable = try("{{${each.value.tracker.endpoint_tracker_type_variable}}}", null)
+  interval                       = try(each.value.tracker.interval, null)
+  interval_variable              = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                     = try(each.value.tracker.multiplier, null)
+  multiplier_variable            = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  threshold                      = try(each.value.tracker.threshold, null)
+  threshold_variable             = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name                   = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable          = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type                   = try(each.value.tracker.tracker_type, null)
+  tracker_type_variable          = try("{{${each.value.tracker.tracker_type_variable}}}", null)
+}
+
+resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
+  for_each = {
+    for transport in try(local.feature_profiles.transport_profiles, {}) :
+    "${transport.name}-wan_vpn" => transport
+    if lookup(transport, "wan_vpn", null) != null
+  }
+  name                         = try(each.value.wan_vpn.name, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.name)
+  description                  = try(each.value.wan_vpn.description, null)
+  feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
+  enhance_ecmp_keying          = try(each.value.wan_vpn.enhance_ecmp_keying, null)
+  enhance_ecmp_keying_variable = try("{{${each.value.wan_vpn.enhance_ecmp_keying_variable}}}", null)
+  ipv4_static_routes = try(length(each.value.wan_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv4_static_routes : {
+    administrative_distance          = try(route.administrative_distance, null)
+    administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
+    gateway                          = try(route.gateway, "nextHop")
+    next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
+      address                          = try(nh.address, null)
+      address_variable                 = try("{{${nh.address_variable}}}", null)
+      administrative_distance          = try(nh.administrative_distance, null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+    }]
+    network_address          = try(route.network_address, null)
+    network_address_variable = try("{{${route.network_address_variable}}}", null)
+    subnet_mask              = try(route.subnet_mask, null)
+    subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
+  }]
+  ipv6_static_routes = try(length(each.value.wan_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv6_static_routes : {
+    nat = try(route.nat, null)
+    next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
+      address                          = try(nh.address, null)
+      address_variable                 = try("{{${nh.address_variable}}}", null)
+      administrative_distance          = try(nh.administrative_distance, null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+    }]
+    gateway         = try(route.gateway, "nextHop")
+    null0           = try(route.gateway, "nextHop") == "null0" ? true : null
+    prefix          = try(route.prefix, null)
+    prefix_variable = try("{{${route.prefix_variable}}}", null)
+  }]
+  nat_64_v4_pools = try(length(each.value.wan_vpn.nat_64_v4_pools) == 0, true) ? null : [for pool in each.value.wan_vpn.nat_64_v4_pools : {
+    nat64_v4_pool_name                 = try(pool.name, null)
+    nat64_v4_pool_name_variable        = try("{{${pool.name_variable}}}", null)
+    nat64_v4_pool_overload             = try(pool.overload, null)
+    nat64_v4_pool_overload_variable    = try("{{${pool.overload_variable}}}", null)
+    nat64_v4_pool_range_end            = try(pool.range_end, null)
+    nat64_v4_pool_range_end_variable   = try("{{${pool.range_end_variable}}}", null)
+    nat64_v4_pool_range_start          = try(pool.range_start, null)
+    nat64_v4_pool_range_start_variable = try("{{${pool.range_start_variable}}}", null)
+  }]
+  new_host_mappings = try(length(each.value.wan_vpn.host_mappings) == 0, true) ? null : [for host in each.value.wan_vpn.host_mappings : {
+    host_name                     = try(host.hostname, null)
+    host_name_variable            = try("{{${host.hostname_variable}}}", null)
+    list_of_ip_addresses          = try(host.ips, null)
+    list_of_ip_addresses_variable = try("{{${host.ips_variable}}}", null)
+  }]
+  primary_dns_address_ipv4            = try(each.value.wan_vpn.ipv4_primary_dns_address, null)
+  primary_dns_address_ipv4_variable   = try("{{${each.value.wan_vpn.ipv4_primary_dns_address_variable}}}", null)
+  primary_dns_address_ipv6            = try(each.value.wan_vpn.ipv6_primary_dns_address, null)
+  primary_dns_address_ipv6_variable   = try("{{${each.value.wan_vpn.ipv6_primary_dns_address_variable}}}", null)
+  secondary_dns_address_ipv4          = try(each.value.wan_vpn.ipv4_secondary_dns_address, null)
+  secondary_dns_address_ipv4_variable = try("{{${each.value.wan_vpn.ipv4_secondary_dns_address_variable}}}", null)
+  secondary_dns_address_ipv6          = try(each.value.wan_vpn.ipv6_secondary_dns_address, null)
+  secondary_dns_address_ipv6_variable = try("{{${each.value.wan_vpn.ipv6_secondary_dns_address_variable}}}", null)
+  services = try(length(each.value.wan_vpn.services) == 0, true) ? null : [for service in each.value.wan_vpn.services : {
+    service_type = service
+  }]
+  vpn = 0
 }

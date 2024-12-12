@@ -1,8 +1,8 @@
 resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
-        for tracker in lookup(profile, "ipv4_tracker_groups", []) : {
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for tracker in try(profile.ipv4_tracker_groups, []) : {
           profile = profile
           tracker = tracker
         }
@@ -23,8 +23,8 @@ resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_featur
 resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
-        for tracker in lookup(profile, "ipv4_trackers", []) : {
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for tracker in try(profile.ipv4_trackers, []) : {
           profile = profile
           tracker = tracker
         }
@@ -58,8 +58,8 @@ resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
 resource "sdwan_transport_ipv6_tracker_group_feature" "transport_ipv6_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
-        for tracker in lookup(profile, "ipv6_tracker_groups", []) : {
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for tracker in try(profile.ipv6_tracker_groups, []) : {
           profile = profile
           tracker = tracker
         }
@@ -82,8 +82,8 @@ resource "sdwan_transport_ipv6_tracker_group_feature" "transport_ipv6_tracker_gr
 resource "sdwan_transport_ipv6_tracker_feature" "transport_ipv6_tracker_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
-        for tracker in lookup(profile, "ipv6_trackers", []) : {
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for tracker in try(profile.ipv6_trackers, []) : {
           profile = profile
           tracker = tracker
         }
@@ -173,9 +173,9 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
 resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_management_vpn_interface_ethernet_feature" {
   for_each = {
     for interface_item in flatten([
-      for profile in local.feature_profiles.transport_profiles : [
-        for management_vpn in [profile.management_vpn] : [
-          for interface in management_vpn.ethernet_interfaces : {
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for management_vpn in try([profile.management_vpn], []) : [
+          for interface in try(management_vpn.ethernet_interfaces, []) : {
             profile        = profile
             management_vpn = management_vpn
             interface      = interface
@@ -254,7 +254,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   for_each = {
     for transport in try(local.feature_profiles.transport_profiles, {}) :
     "${transport.name}-wan_vpn" => transport
-    if lookup(transport, "wan_vpn", null) != null
+    if try(transport.wan_vpn, null) != null
   }
   name                         = try(each.value.wan_vpn.name, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.name)
   description                  = try(each.value.wan_vpn.description, null)

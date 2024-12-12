@@ -101,7 +101,7 @@ resource "sdwan_system_basic_feature" "system_basic_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
     "${sys.name}-basic" => sys
-    if lookup(sys, "basic", null) != null
+    if try(sys.basic, null) != null
   }
   name                                = try(each.value.basic.name, local.defaults.sdwan.feature_profiles.system_profiles.basic.name)
   description                         = try(each.value.basic.description, null)
@@ -391,7 +391,7 @@ resource "sdwan_system_omp_feature" "system_omp_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
     "${sys.name}-omp" => sys
-    if lookup(sys, "omp", null) != null
+    if try(sys.omp, null) != null
   }
   name                                 = try(each.value.omp.name, local.defaults.sdwan.feature_profiles.system_profiles.omp.name)
   description                          = try(each.value.omp.description, null)
@@ -460,7 +460,7 @@ resource "sdwan_system_performance_monitoring_feature" "system_performance_monit
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
     "${sys.name}-performance_monitoring" => sys
-    if lookup(sys, "performance_monitoring", null) != null
+    if try(sys.performance_monitoring, null) != null
   }
   name                        = try(each.value.performance_monitoring.name, local.defaults.sdwan.feature_profiles.system_profiles.performance_monitoring.name)
   description                 = try(each.value.performance_monitoring.description, null)
@@ -477,7 +477,7 @@ resource "sdwan_system_security_feature" "system_security_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
     "${sys.name}-security" => sys
-    if lookup(sys, "security", null) != null
+    if try(sys.security, null) != null
   }
   name                                 = try(each.value.security.name, local.defaults.sdwan.feature_profiles.system_profiles.security.name)
   description                          = try(each.value.security.description, null)
@@ -529,7 +529,7 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
     "${sys.name}-snmp" => sys
-    if lookup(sys, "snmp", null) != null
+    if try(sys.snmp, null) != null
   }
   name               = try(each.value.snmp.name, local.defaults.sdwan.feature_profiles.system_profiles.snmp.name)
   description        = try(each.value.snmp.description, null)

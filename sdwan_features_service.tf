@@ -1,8 +1,8 @@
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
-        for tracker in lookup(profile, "ipv4_tracker_groups", []) : {
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for tracker in try(profile.ipv4_tracker_groups, []) : {
           profile = profile
           tracker = tracker
         }
@@ -23,8 +23,8 @@ resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
 resource "sdwan_service_tracker_feature" "service_tracker_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
-        for tracker in lookup(profile, "ipv4_trackers", []) : {
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for tracker in try(profile.ipv4_trackers, []) : {
           profile = profile
           tracker = tracker
         }
@@ -58,8 +58,8 @@ resource "sdwan_service_tracker_feature" "service_tracker_feature" {
 resource "sdwan_service_object_tracker_group_feature" "service_object_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
-        for tracker in lookup(profile, "object_tracker_groups", []) : {
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for tracker in try(profile.object_tracker_groups, []) : {
           profile = profile
           tracker = tracker
         }
@@ -82,8 +82,8 @@ resource "sdwan_service_object_tracker_group_feature" "service_object_tracker_gr
 resource "sdwan_service_object_tracker_feature" "service_object_tracker_feature" {
   for_each = {
     for tracker_item in flatten([
-      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
-        for tracker in lookup(profile, "object_trackers", []) : {
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for tracker in try(profile.object_trackers, []) : {
           profile = profile
           tracker = tracker
         }

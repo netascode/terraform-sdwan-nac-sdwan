@@ -325,6 +325,8 @@ defaults:
       other_profiles:
         thousandeyes:
           name: thousandeyes
+        ucse:
+          name: ucse
       system_profiles:
         aaa:
           name: aaa

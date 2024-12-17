@@ -459,7 +459,7 @@ resource "sdwan_system_omp_feature" "system_omp_feature" {
 resource "sdwan_system_performance_monitoring_feature" "system_performance_monitoring_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
-    "${sys.name}-performance_monitoring" => sys
+    "${sys.name}-perfmonitor" => sys
     if try(sys.performance_monitoring, null) != null
   }
   name                        = try(each.value.performance_monitoring.name, local.defaults.sdwan.feature_profiles.system_profiles.performance_monitoring.name)

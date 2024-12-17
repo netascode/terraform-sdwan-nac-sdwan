@@ -3,7 +3,19 @@ defaults:
   sdwan:
     centralized_policies:
       definitions:
+        control_policy:
+          custom_control_topology:
+            sequences:
+              ip_type: ipv4
         data_policy:
+          application_aware_routing:
+            sequences:
+              ip_type: ipv4
+              type: app_route
+          traffic_data:
+            sequences:
+              ip_type: ipv4
+              type: custom
           cflowd:
             protocol: ipv4
             tos: false

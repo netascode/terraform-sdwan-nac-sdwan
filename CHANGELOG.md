@@ -25,6 +25,7 @@
 - add support for sdwan_transport_management_vpn_feature
 - add support for sdwan_transport_management_vpn_interface_ethernet_feature
 - separate "sdwan_profile_parcels.tf" into "sdwan_features_cli.tf", "sdwan_features_other.tf", "sdwan_features_service.tf", "sdwan_features_system.tf" and "sdwan_features_transport.tf"
+- rename sdwan_system_performance_monitoring_feature resources from "...-performance_monitor" to "...-perfmonitor"
 
 ## 0.1.0
 

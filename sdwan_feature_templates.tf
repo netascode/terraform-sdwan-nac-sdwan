@@ -2210,8 +2210,8 @@ resource "sdwan_vpn_interface_cellular_feature_template" "vpn_interface_cellular
   nat_udp_timeout_variable                                = try(each.value.nat_udp_timeout_variable, null)
   nat_block_icmp_error                                    = try(each.value.nat_block_icmp, null)
   nat_block_icmp_error_variable                           = try(each.value.nat_block_icmp_variable, null)
-  nat_response_to_ping                                    = try(each.value.nat_response_to_ping, null)
-  nat_response_to_ping_variable                           = try(each.value.nat_response_to_ping_variable, null)
+  nat_response_to_ping                                    = try(each.value.nat_respond_to_ping, null)
+  nat_response_to_ping_variable                           = try(each.value.nat_respond_to_ping_variable, null)
   nat_port_forwards = try(each.value.nat_port_forwarding_rules, null) == null ? null : [for pfr in each.value.nat_port_forwarding_rules : {
     port_start_range            = try(pfr.port_range_start, null)
     port_end_range              = try(pfr.port_range_end, null)

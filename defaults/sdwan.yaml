@@ -380,6 +380,11 @@ defaults:
             gateway: nextHop
         wan_vpn:
           name: wan_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+            tunnel_interface:
+              ipsec_encapsulation: true
           ipv4_static_routes:
             gateway: nextHop
           ipv6_static_routes:

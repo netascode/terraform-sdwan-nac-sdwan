@@ -22,10 +22,15 @@
 - in sdwan_cflowd_policy_definition, fix export_spreading to be optional
 - add gateway parameter to ipv6_static_routes of sdwan_transport_wan_vpn_feature
 - add support for sdwan_other_ucse_feature resource
-- add support for sdwan_transport_management_vpn_feature
-- add support for sdwan_transport_management_vpn_interface_ethernet_feature
+- add support for sdwan_transport_management_vpn_feature resource
+- add support for sdwan_transport_management_vpn_interface_ethernet_feature resource
 - separate "sdwan_profile_parcels.tf" into "sdwan_features_cli.tf", "sdwan_features_other.tf", "sdwan_features_service.tf", "sdwan_features_system.tf" and "sdwan_features_transport.tf"
 - rename sdwan_system_performance_monitoring_feature resources from "...-performance_monitor" to "...-perfmonitor"
+- add support for sdwan_transport_wan_vpn_ethernet_interface resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature resource
 
 ## 0.1.0
 

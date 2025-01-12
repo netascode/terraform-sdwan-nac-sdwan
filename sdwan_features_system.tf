@@ -194,8 +194,8 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
     hello_interval_variable = try("{{${c.hello_interval_variable}}}", null)
     multiplier              = try(c.multiplier, null)
     multiplier_variable     = try("{{${c.multiplier_variable}}}", null)
-    pmtu_discovery          = try(c.pmtu_discovery, null)
-    pmtu_discovery_variable = try("{{${c.pmtu_discovery_variable}}}", null)
+    pmtu_discovery          = try(c.path_mtu_discovery, null)
+    pmtu_discovery_variable = try("{{${c.path_mtu_discovery_variable}}}", null)
   }]
   default_dscp           = try(each.value.bfd.default_dscp, null)
   default_dscp_variable  = try("{{${each.value.bfd.dscp_variable}}}", null)

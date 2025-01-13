@@ -3,7 +3,19 @@ defaults:
   sdwan:
     centralized_policies:
       definitions:
+        control_policy:
+          custom_control_topology:
+            sequences:
+              ip_type: ipv4
         data_policy:
+          application_aware_routing:
+            sequences:
+              ip_type: ipv4
+              type: app_route
+          traffic_data:
+            sequences:
+              ip_type: ipv4
+              type: custom
           cflowd:
             protocol: ipv4
             tos: false
@@ -325,6 +337,8 @@ defaults:
       other_profiles:
         thousandeyes:
           name: thousandeyes
+        ucse:
+          name: ucse
       system_profiles:
         aaa:
           name: aaa
@@ -355,5 +369,23 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        management_vpn:
+          name: management_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+          ipv4_static_routes:
+            gateway: nextHop
+          ipv6_static_routes:
+            gateway: nextHop
         wan_vpn:
           name: wan_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+            tunnel_interface:
+              ipsec_encapsulation: true
+          ipv4_static_routes:
+            gateway: nextHop
+          ipv6_static_routes:
+            gateway: nextHop

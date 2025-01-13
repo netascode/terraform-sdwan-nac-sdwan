@@ -1,6 +1,5 @@
 ## 0.1.1 (unreleased)
 
-- rename "sdwan_profile_parcels.tf" to "sdwan_features.tf"
 - provide default value for name if not explicitly set for sdwan_system_basic_feature, sdwan_system_omp_feature, sdwan_system_performance_monitoring_feature, sdwan_system_security_feature, sdwan_system_snmp_feature and sdwan_transport_wan_vpn_feature
 - simplify default feature name from "profile_name-feature_name" to "feature_name"
 - add support for sdwan_policy_object_feature_profile resource
@@ -18,11 +17,20 @@
 - fix issue where sdwan_custom_control_topology_policy_definition always shows diff when match_criterias or actions are not configured in data model
 - fix issue where sdwan_traffic_data_policy_definition always shows diff when match_criterias or actions are not configured in data model
 - fix issue where sdwan_application_aware_routing_policy_definition always shows diff when match_criterias or actions are not configured in data model
-- add defaults for UX 2.0 feature names
 - fix issue where certain parameters were required by sdwan_cflowd_policy_definition resource, but are optional in the UI
 - fix issue where authentication_type_variable was not configurable with sdwan_cisco_security_feature_template
 - in sdwan_cflowd_policy_definition, fix export_spreading to be optional
 - add gateway parameter to ipv6_static_routes of sdwan_transport_wan_vpn_feature
+- add support for sdwan_other_ucse_feature resource
+- add support for sdwan_transport_management_vpn_feature resource
+- add support for sdwan_transport_management_vpn_interface_ethernet_feature resource
+- separate "sdwan_profile_parcels.tf" into "sdwan_features_cli.tf", "sdwan_features_other.tf", "sdwan_features_service.tf", "sdwan_features_system.tf" and "sdwan_features_transport.tf"
+- rename sdwan_system_performance_monitoring_feature resources from "...-performance_monitor" to "...-perfmonitor"
+- add support for sdwan_transport_wan_vpn_ethernet_interface resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature resource
+- add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature resource
 - add support for sdwan_cellular_controller_feature_template resource
 - add support for sdwan_cellular_cedge_profile_feature_template resource
 - add support for sdwan_cisco_vpn_interface_gre_feature_template resource

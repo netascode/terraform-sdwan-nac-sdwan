@@ -31,6 +31,7 @@
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature resource
+- add support for sdwan_configuration_group resource (single device configuration group only)
 
 ## 0.1.0
 

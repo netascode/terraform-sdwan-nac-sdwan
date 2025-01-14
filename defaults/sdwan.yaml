@@ -330,6 +330,9 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+    sites:
+      routers:
+        configuration_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:

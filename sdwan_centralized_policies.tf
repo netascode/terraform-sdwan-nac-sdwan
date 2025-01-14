@@ -117,7 +117,7 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
     id          = s.id
     name        = s.name
     type        = try(s.type, null)
-    ip_type     = try(s.ip_type, null)
+    ip_type     = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.control_policy.custom_control_topology.sequences.ip_type)
     base_action = try(s.base_action, null)
     match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.color_list, null) == null ? [] : [{
@@ -317,14 +317,14 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
     id   = s.id
     name = s.name
     type = (
-      s.type == "application_firewall" ? "applicationFirewall" :
-      s.type == "qos" ? "qos" :
-      s.type == "service_chaining" ? "serviceChaining" :
-      s.type == "traffic_engineering" ? "trafficEngineering" :
-      s.type == "custom" ? "data" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "application_firewall" ? "applicationFirewall" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "qos" ? "qos" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "service_chaining" ? "serviceChaining" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "traffic_engineering" ? "trafficEngineering" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "custom" ? "data" :
       null
     )
-    ip_type     = try(s.ip_type, null)
+    ip_type     = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.ip_type)
     base_action = try(s.base_action, null)
     match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
@@ -578,7 +578,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
   sequences = [for s in each.value.sequences : {
     id      = s.id
     name    = s.name
-    ip_type = try(s.ip_type, null)
+    ip_type = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.data_policy.application_aware_routing.sequences.ip_type)
     match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
         type                     = "appList"

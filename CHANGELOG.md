@@ -1,3 +1,7 @@
+## 1.0.1 (unreleased)
+
+- fix vty_line_logging parameter not being set in sdwan_system_global_feature
+
 ## 1.0.0
 
 - provide default value for name if not explicitly set for sdwan_system_basic_feature, sdwan_system_omp_feature, sdwan_system_performance_monitoring_feature, sdwan_system_security_feature, sdwan_system_snmp_feature and sdwan_transport_wan_vpn_feature

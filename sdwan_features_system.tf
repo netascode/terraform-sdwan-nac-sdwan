@@ -271,8 +271,8 @@ resource "sdwan_system_global_feature" "system_global_feature" {
   tcp_small_servers_variable    = try("{{${each.value.global.tcp_small_servers_variable}}}", null)
   udp_small_servers             = try(each.value.global.udp_small_servers, null)
   udp_small_servers_variable    = try("{{${each.value.global.udp_small_servers_variable}}}", null)
-  vty_line_logging              = try(each.value.global.vty_line_logging, null)
-  vty_line_logging_variable     = try("{{${each.value.global.vty_line_logging_variable}}}", null)
+  vty_line_logging              = try(each.value.global.vty_logging, null)
+  vty_line_logging_variable     = try("{{${each.value.global.vty_logging_variable}}}", null)
 }
 
 resource "sdwan_system_logging_feature" "system_logging_feature" {

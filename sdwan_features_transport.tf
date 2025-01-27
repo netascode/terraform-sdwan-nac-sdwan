@@ -587,7 +587,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_f
         ]
       ]
     ])
-    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-associate_tracker" => interface_item
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-tracker" => interface_item
     if try(interface_item.interface.ipv4_tracker, null) != null
   }
   feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
@@ -609,7 +609,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_g
         ]
       ]
     ])
-    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-associate_tracker_group" => interface_item
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-trackergroup" => interface_item
     if try(interface_item.interface.ipv4_tracker_group, null) != null
   }
   feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
@@ -631,7 +631,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_trac
         ]
       ]
     ])
-    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-associate_ipv6_tracker" => interface_item
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-ipv6_tracker" => interface_item
     if try(interface_item.interface.ipv6_tracker, null) != null
   }
   feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
@@ -653,7 +653,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_trac
         ]
       ]
     ])
-    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-associate_ipv6_tracker_group" => interface_item
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-ipv6_trackergroup" => interface_item
     if try(interface_item.interface.ipv6_tracker_group, null) != null
   }
   feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id

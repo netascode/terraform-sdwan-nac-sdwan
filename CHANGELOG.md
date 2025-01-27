@@ -1,4 +1,8 @@
-## 0.1.1 (unreleased)
+## 1.0.1 (unreleased)
+
+- fix vty_line_logging parameter not being set in sdwan_system_global_feature
+
+## 1.0.0
 
 - provide default value for name if not explicitly set for sdwan_system_basic_feature, sdwan_system_omp_feature, sdwan_system_performance_monitoring_feature, sdwan_system_security_feature, sdwan_system_snmp_feature and sdwan_transport_wan_vpn_feature
 - simplify default feature name from "profile_name-feature_name" to "feature_name"
@@ -31,6 +35,10 @@
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature resource
+- add support for sdwan_cellular_controller_feature_template resource
+- add support for sdwan_cellular_cedge_profile_feature_template resource
+- add support for sdwan_cisco_vpn_interface_gre_feature_template resource
+- add support for sdwan_vpn_interface_cellular_feature_template resource
 
 ## 0.1.0
 

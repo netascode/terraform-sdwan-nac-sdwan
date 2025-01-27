@@ -1,3 +1,14 @@
+resource "sdwan_policy_object_as_path_list" "policy_object_as_path_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.as_path_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  as_path_list_id    = each.value.id
+  entries = [for a in each.value.as_paths : {
+    as_path_list = a
+  }]
+}
+
 resource "sdwan_policy_object_class_map" "policy_object_class_map" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.class_maps, {}) : p.name => p }
   name               = each.value.name

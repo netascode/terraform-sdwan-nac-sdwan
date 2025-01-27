@@ -3,6 +3,7 @@
 - fix vty_line_logging parameter not being set in sdwan_system_global_feature
 - add support for sdwan_policy_object_as_path_list resource
 - add support for sdwan_policy_object_standard_community_list resource
+- fix ipv4_dhcp_helpers_variable not being set when configuring sdwan_transport_management_vpn_interface_ethernet_feature and sdwan_transport_wan_vpn_interface_ethernet_feature
 
 ## 1.0.0
 

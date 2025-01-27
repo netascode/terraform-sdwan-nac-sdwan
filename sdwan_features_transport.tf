@@ -222,7 +222,7 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   ipv4_dhcp_distance                  = try(each.value.interface.ipv4_dhcp_distance, null)
   ipv4_dhcp_distance_variable         = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
   ipv4_dhcp_helper                    = try(each.value.interface.ipv4_dhcp_helpers, null)
-  ipv4_dhcp_helper_variable           = try("{{${each.value.interface.ipv4_dhcp_helper_variable}}}", null)
+  ipv4_dhcp_helper_variable           = try("{{${each.value.interface.ipv4_dhcp_helpers_variable}}}", null)
   ipv4_iperf_server                   = try(each.value.interface.iperf_server, null)
   ipv4_iperf_server_variable          = try("{{${each.value.interface.iperf_server_variable}}}", null)
   ipv4_secondary_addresses = try(length(each.value.interface.ipv4_secondary_addresses) == 0, true) ? null : [for a in each.value.interface.ipv4_secondary_addresses : {
@@ -385,7 +385,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   ipv4_dhcp_distance             = try(each.value.interface.ipv4_dhcp_distance, null)
   ipv4_dhcp_distance_variable    = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
   ipv4_dhcp_helper               = try(each.value.interface.ipv4_dhcp_helpers, null)
-  ipv4_dhcp_helper_variable      = try("{{${each.value.interface.ipv4_dhcp_helper_variable}}}", null)
+  ipv4_dhcp_helper_variable      = try("{{${each.value.interface.ipv4_dhcp_helpers_variable}}}", null)
   ipv4_secondary_addresses = try(length(each.value.interface.ipv4_secondary_addresses) == 0, true) ? null : [for a in each.value.interface.ipv4_secondary_addresses : {
     address              = try(a.address, null)
     address_variable     = try("{{${a.address_variable}}}", null)

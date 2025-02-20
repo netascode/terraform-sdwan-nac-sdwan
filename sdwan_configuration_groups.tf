@@ -11,6 +11,9 @@ resource "sdwan_configuration_group" "configuration_group" {
     try(each.value.other_profile, null) == null ? [] : [{
       id = sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id
     }],
+    try(each.value.policy_object_profile, null) == null ? [] : [{
+      id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+    }],
     try(each.value.service_profile, null) == null ? [] : [{
       id = sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id
     }],
@@ -19,9 +22,6 @@ resource "sdwan_configuration_group" "configuration_group" {
     }],
     try(each.value.transport_profile, null) == null ? [] : [{
       id = sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id
-    }],
-    try(each.value.policy_object_profile, null) == null ? [] : [{
-      id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
     }]
   ])
   devices = [
@@ -37,11 +37,11 @@ resource "sdwan_configuration_group" "configuration_group" {
   ]
   feature_versions = flatten([
     try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_version[each.value.other_profile],
+    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    # try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions[each.value.other_profile],
     try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
     try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile],
-    try(each.value.policy_object_profile, null) == null ? [] : [local.feature_profiles.policy_object_profile.version]
+    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
   ])
   lifecycle {
     create_before_destroy = true
@@ -54,12 +54,18 @@ locals {
       try(profile.config, null) == null ? [] : [sdwan_cli_config_feature.cli_config_feature["${profile.name}-config"].version],
     ])
   }
-  other_profile_features_version = {
+  other_profile_features_versions = {
     for profile in try(local.feature_profiles.other_profiles, []) : profile.name => flatten([
       try(profile.thousandeyes, null) == null ? [] : [sdwan_other_thousandeyes_feature.other_thousandeyes_feature["${profile.name}-thousandeyes"].version],
       try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
     ])
   }
+  # policy_object_profile_features_versions = {
+  #   for profile in try(local.feature_profiles.policy_object_profile, []) : profile.name => flatten([
+  #     try(profile.thousandeyes, null) == null ? [] : [sdwan_other_thousandeyes_feature.other_thousandeyes_feature["${profile.name}-thousandeyes"].version],
+  #     try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
+  #   ])
+  # }
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
       try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
@@ -114,10 +120,10 @@ locals {
       try(profile.wan_vpn, null) == null ? [] : [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${profile.name}-wan_vpn"].version],
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${interface.name}"].version,
-        # try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
-        # try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-trackergroup"].version],
-        # try(interface.ipv6_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_tracker"].version],
-        # try(interface.ipv6_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_trackergroup"].version],
+        try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
+        try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-trackergroup"].version],
+        try(interface.ipv6_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_tracker"].version],
+        try(interface.ipv6_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_trackergroup"].version],
       ]],
     ])
   }

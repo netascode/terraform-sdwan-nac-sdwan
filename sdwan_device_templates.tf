@@ -215,12 +215,12 @@ locals {
   routers = flatten([
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
-        chassis_id          = router.chassis_id
-        deploy              = try(router.deploy, null)
-        model               = try(router.model, null)
-        device_template     = try(router.device_template, null)
-        configuration_group = try(router.configuration_group, null)
-        device_variables    = router.device_variables
+        chassis_id                 = router.chassis_id
+        configuration_group        = try(router.configuration_group, null)
+        configuration_group_deploy = try(router.configuration_group_deploy, null)
+        device_template            = try(router.device_template, null)
+        device_variables           = try(router.device_variables, null)
+        model                      = try(router.model, null)
       }
     ]
   ])

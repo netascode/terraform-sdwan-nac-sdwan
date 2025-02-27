@@ -5,6 +5,8 @@
 - add support for sdwan_policy_object_standard_community_list resource
 - fix ipv4_dhcp_helpers_variable not being set when configuring sdwan_transport_management_vpn_interface_ethernet_feature and sdwan_transport_wan_vpn_interface_ethernet_feature
 - change sdwan_transport_wan_vpn_interface_ethernet_feature_associateX_feature resources names to match name logic
+- fix dhcp parameter logic for sdwan_cisco_vpn_interface_feature_template
+- fix VRRP prefix_variable parameter for sdwan_cisco_vpn_interface_feature_template and sdwan_vpn_interface_svi_feature_template
 
 ## 1.0.0
 

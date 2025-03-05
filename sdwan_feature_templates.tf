@@ -1400,7 +1400,7 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   block_non_source_ip_variable                   = try(each.value.block_non_source_ip_variable, null)
   core_region                                    = try(each.value.tunnel_interface.core_region, null)
   core_region_variable                           = try(each.value.tunnel_interface.core_region_variable, null)
-  dhcp                                           = try(each.value.ipv4_address_dhcp, null) == null ? null : true
+  dhcp                                           = try(each.value.ipv4_address_dhcp, null) == true ? true : null
   dhcp_distance                                  = try(each.value.dhcp_distance, null)
   dhcp_distance_variable                         = try(each.value.dhcp_distance_variable, null)
   duplex                                         = try(each.value.duplex, null)
@@ -1654,10 +1654,10 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
     group_id          = try(group.id, null)
     group_id_variable = try(group.id_variable, null)
     ipv6_addresses = try(group.link_local_address, group.link_local_address_variable, group.global_prefix, group.global_prefix_variable, null) == null ? null : [{
-      ipv6_link_local            = try(group.link_local_address, null)
-      ipv6_link_local_variable   = try(group.link_local_address_variable, null)
-      prefix                     = try(group.global_prefix, null)
-      prefix_link_local_variable = try(group.global_prefix_variable, null)
+      ipv6_link_local          = try(group.link_local_address, null)
+      ipv6_link_local_variable = try(group.link_local_address_variable, null)
+      prefix                   = try(group.global_prefix, null)
+      prefix_variable          = try(group.global_prefix_variable, null)
     }]
     optional                   = try(group.optional, null)
     priority                   = try(group.priority, null)
@@ -1973,7 +1973,7 @@ resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_t
       link_local_address          = try(v.link_local_address, null)
       link_local_address_variable = try(v.link_local_address_variable, null)
       prefix                      = try(v.global_prefix, null)
-      prefix_link_local_variable  = try(v.global_prefix_variable, null)
+      prefix_variable             = try(v.global_prefix_variable, null)
     }]
     ipv6_secondary_addresses = try(length(v.secondary_addresses) == 0, true) ? null : [for sa in try(v.secondary_addresses, []) : {
       prefix          = try(sa.address, null)

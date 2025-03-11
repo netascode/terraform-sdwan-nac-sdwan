@@ -472,7 +472,7 @@ resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_t
   tftp_servers_variable      = try(each.value.tftp_servers_variable, null)
   options = try(length(each.value.options) == 0, true) ? null : [for option in each.value.options : {
     ascii                = try(option.ascii, null)
-    ascii_variable       = try(option.source_ip_variable, null)
+    ascii_variable       = try(option.ascii_variable, null)
     hex                  = try(option.hex, null)
     hex_variable         = try(option.hex_variable, null)
     ip_address           = try(option.ip_addresses, null)

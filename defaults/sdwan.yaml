@@ -418,6 +418,10 @@ defaults:
             gateway: nextHop
           ipv6_static_routes:
             gateway: nextHop
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
         wan_vpn:
           name: wan_vpn
           ethernet_interfaces:

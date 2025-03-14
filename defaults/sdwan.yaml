@@ -398,6 +398,10 @@ defaults:
           name: ipv4_device_access_policy
           sequences:
             name: acl
+        ipv6_device_access_policy:
+          name: ipv6_device_access_policy
+          sequences:
+            name: acl
         logging:
           name: logging
         mrf:

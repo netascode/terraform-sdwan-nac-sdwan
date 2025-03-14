@@ -166,6 +166,8 @@ module "sdwan" {
 | [sdwan_system_feature_profile.system_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_feature_profile) | resource |
 | [sdwan_system_flexible_port_speed_feature.system_flexible_port_speed_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_flexible_port_speed_feature) | resource |
 | [sdwan_system_global_feature.system_global_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_global_feature) | resource |
+| [sdwan_system_ipv4_device_access_feature.system_ipv4_device_access_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ipv4_device_access_feature) | resource |
+| [sdwan_system_ipv6_device_access_feature.system_ipv6_device_access_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ipv6_device_access_feature) | resource |
 | [sdwan_system_logging_feature.system_logging_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_logging_feature) | resource |
 | [sdwan_system_mrf_feature.system_mrf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_mrf_feature) | resource |
 | [sdwan_system_ntp_feature.system_ntp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ntp_feature) | resource |

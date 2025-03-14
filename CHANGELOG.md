@@ -8,6 +8,7 @@
 - fix dhcp parameter logic for sdwan_cisco_vpn_interface_feature_template
 - fix VRRP prefix_variable parameter for sdwan_cisco_vpn_interface_feature_template and sdwan_vpn_interface_svi_feature_template
 - fix ascii_variable parameter for sdwan_cisco_dhcp_server_feature_template
+- add support for sdwan_system_ipv4_device_access_feature resource
 
 ## 1.0.0
 

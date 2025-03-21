@@ -417,6 +417,11 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        bgp:
+          name: bgp
+          ipv4_neighbors:
+            ipv4_address_families:
+              maximum_prefixes_reach_policy: off
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

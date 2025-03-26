@@ -1,4 +1,18 @@
-## 0.1.1 (unreleased)
+## 1.0.1 (unreleased)
+
+- fix vty_line_logging parameter not being set in sdwan_system_global_feature
+- add support for sdwan_policy_object_as_path_list resource
+- add support for sdwan_policy_object_standard_community_list resource
+- fix ipv4_dhcp_helpers_variable not being set when configuring sdwan_transport_management_vpn_interface_ethernet_feature and sdwan_transport_wan_vpn_interface_ethernet_feature
+- change sdwan_transport_wan_vpn_interface_ethernet_feature_associateX_feature resources names to match name logic
+- fix dhcp parameter logic for sdwan_cisco_vpn_interface_feature_template
+- fix VRRP prefix_variable parameter for sdwan_cisco_vpn_interface_feature_template and sdwan_vpn_interface_svi_feature_template
+- fix ascii_variable parameter for sdwan_cisco_dhcp_server_feature_template
+- add support for sdwan_system_ipv4_device_access_feature resource
+- add support for sdwan_system_ipv6_device_access_feature resource
+- add support for sdwan_service_dhcp_server_feature resource
+
+## 1.0.0
 
 - provide default value for name if not explicitly set for sdwan_system_basic_feature, sdwan_system_omp_feature, sdwan_system_performance_monitoring_feature, sdwan_system_security_feature, sdwan_system_snmp_feature and sdwan_transport_wan_vpn_feature
 - simplify default feature name from "profile_name-feature_name" to "feature_name"
@@ -31,6 +45,10 @@
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature resource
 - add support for sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature resource
+- add support for sdwan_cellular_controller_feature_template resource
+- add support for sdwan_cellular_cedge_profile_feature_template resource
+- add support for sdwan_cisco_vpn_interface_gre_feature_template resource
+- add support for sdwan_vpn_interface_cellular_feature_template resource
 - add support for sdwan_configuration_group resource (single device configuration group only)
 
 ## 0.1.0

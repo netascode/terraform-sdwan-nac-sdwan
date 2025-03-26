@@ -4,7 +4,7 @@ terraform {
   required_providers {
     sdwan = {
       source  = "CiscoDevNet/sdwan"
-      version = ">= 0.5.1"
+      version = ">= 0.5.3"
     }
     utils = {
       source  = "netascode/utils"

@@ -330,6 +330,46 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+      gre_interface_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500-20X6C
+          - C8500L-8S4X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_interface_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_controller_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_profile_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
     sites:
       routers:
         configuration_group_deploy: true
@@ -357,6 +397,14 @@ defaults:
           name: flexible_port_speed
         global:
           name: global
+        ipv4_device_access_policy:
+          name: ipv4_device_access_policy
+          sequences:
+            name: acl
+        ipv6_device_access_policy:
+          name: ipv6_device_access_policy
+          sequences:
+            name: acl
         logging:
           name: logging
         mrf:

@@ -194,8 +194,8 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
     hello_interval_variable = try("{{${c.hello_interval_variable}}}", null)
     multiplier              = try(c.multiplier, null)
     multiplier_variable     = try("{{${c.multiplier_variable}}}", null)
-    pmtu_discovery          = try(c.pmtu_discovery, null)
-    pmtu_discovery_variable = try("{{${c.pmtu_discovery_variable}}}", null)
+    pmtu_discovery          = try(c.path_mtu_discovery, null)
+    pmtu_discovery_variable = try("{{${c.path_mtu_discovery_variable}}}", null)
   }]
   default_dscp           = try(each.value.bfd.default_dscp, null)
   default_dscp_variable  = try("{{${each.value.bfd.dscp_variable}}}", null)
@@ -271,8 +271,56 @@ resource "sdwan_system_global_feature" "system_global_feature" {
   tcp_small_servers_variable    = try("{{${each.value.global.tcp_small_servers_variable}}}", null)
   udp_small_servers             = try(each.value.global.udp_small_servers, null)
   udp_small_servers_variable    = try("{{${each.value.global.udp_small_servers_variable}}}", null)
-  vty_line_logging              = try(each.value.global.vty_line_logging, null)
-  vty_line_logging_variable     = try("{{${each.value.global.vty_line_logging_variable}}}", null)
+  vty_line_logging              = try(each.value.global.vty_logging, null)
+  vty_line_logging_variable     = try("{{${each.value.global.vty_logging_variable}}}", null)
+}
+
+resource "sdwan_system_ipv4_device_access_feature" "system_ipv4_device_access_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ipv4_device_access_policy" => sys
+    if try(sys.ipv4_device_access_policy, null) != null
+  }
+  name               = try(each.value.ipv4_device_access_policy.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.name)
+  description        = try(each.value.ipv4_device_access_policy.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  default_action     = each.value.ipv4_device_access_policy.default_action
+  sequences = try(length(each.value.ipv4_device_access_policy.sequences) == 0, true) ? null : [for s in each.value.ipv4_device_access_policy.sequences : {
+    base_action                         = s.base_action
+    destination_ip_prefix_list          = try(s.match_entries.destination_data_prefixes, null)
+    destination_ip_prefix_list_variable = try("{{${s.match_entries.destination_data_prefixes_variable}}}", null)
+    destination_data_prefix_list_id     = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id, null)
+    device_access_port                  = s.match_entries.destination_port
+    id                                  = index(each.value.ipv4_device_access_policy.sequences, s) + 1
+    name                                = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.sequences.name)
+    source_ip_prefix_list               = try(s.match_entries.source_data_prefixes, null)
+    source_ip_prefix_list_variable      = try("{{${s.match_entries.source_data_prefixes_variable}}}", null)
+    source_data_prefix_list_id          = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id, null)
+    source_ports                        = try(s.match_entries.source_ports, null)
+  }]
+}
+
+resource "sdwan_system_ipv6_device_access_feature" "system_ipv6_device_access_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ipv6_device_access_policy" => sys
+    if try(sys.ipv6_device_access_policy, null) != null
+  }
+  name               = try(each.value.ipv6_device_access_policy.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv6_device_access_policy.name)
+  description        = try(each.value.ipv6_device_access_policy.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  default_action     = each.value.ipv6_device_access_policy.default_action
+  sequences = try(length(each.value.ipv6_device_access_policy.sequences) == 0, true) ? null : [for s in each.value.ipv6_device_access_policy.sequences : {
+    base_action                     = s.base_action
+    destination_ip_prefix_list      = try(s.match_entries.destination_data_prefixes, null)
+    destination_data_prefix_list_id = try(sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list].id, null)
+    device_access_port              = s.match_entries.destination_port
+    id                              = index(each.value.ipv6_device_access_policy.sequences, s) + 1
+    name                            = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv6_device_access_policy.sequences.name)
+    source_ip_prefix_list           = try(s.match_entries.source_data_prefixes, null)
+    source_data_prefix_list_id      = try(sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.source_data_prefix_list].id, null)
+    source_ports                    = try(s.match_entries.source_ports, null)
+  }]
 }
 
 resource "sdwan_system_logging_feature" "system_logging_feature" {
@@ -446,8 +494,8 @@ resource "sdwan_system_omp_feature" "system_omp_feature" {
   omp_admin_distance_ipv6_variable     = try("{{${each.value.omp.omp_admin_distance_ipv6_variable}}}", null)
   overlay_as                           = try(each.value.omp.overlay_as, null)
   overlay_as_variable                  = try("{{${each.value.omp.overlay_as_variable}}}", null)
-  paths_advertised_per_prefix          = try(each.value.omp.paths_advertised_per_prefix, null)
-  paths_advertised_per_prefix_variable = try("{{${each.value.omp.paths_advertised_per_prefix_variable}}}", null)
+  paths_advertised_per_prefix          = try(each.value.omp.send_path_limit, null)
+  paths_advertised_per_prefix_variable = try("{{${each.value.omp.send_path_limit_variable}}}", null)
   shutdown                             = try(each.value.omp.shutdown, null)
   shutdown_variable                    = try("{{${each.value.omp.shutdown_variable}}}", null)
   site_types                           = try(each.value.omp.site_types, null)

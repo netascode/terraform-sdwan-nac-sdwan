@@ -134,6 +134,16 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             version = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].version
             type    = "cisco_secure_internet_gateway"
           }],
+          try(each.value.vpn_0_template.gre_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.gre_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_gre_feature_template.cisco_vpn_interface_gre_feature_template[sit.name].id
+            version = sdwan_cisco_vpn_interface_gre_feature_template.cisco_vpn_interface_gre_feature_template[sit.name].version
+            type    = "cisco_vpn_interface_gre"
+          }],
+          try(each.value.vpn_0_template.cellular_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.cellular_interface_templates, []) : {
+            id      = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].id
+            version = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].version
+            type    = "vpn-cedge-interface-cellular"
+          }],
       ])
     }],
     try(each.value.vpn_512_template, null) == null ? [] : [{
@@ -205,6 +215,18 @@ resource "sdwan_feature_device_template" "feature_device_template" {
           }],
       ])
     }],
+    try(each.value.cellular_controller_templates, null) == null ? [] : [for st in try(each.value.cellular_controller_templates, []) : {
+      id      = sdwan_cellular_controller_feature_template.cellular_controller_feature_template[st.name].id
+      version = sdwan_cellular_controller_feature_template.cellular_controller_feature_template[st.name].version
+      type    = "cellular-cedge-controller"
+      sub_templates = !(can(st.cellular_profile_templates)) ? null : flatten([
+        try(st.cellular_profile_templates, null) == null ? [] : [for eit in try(st.cellular_profile_templates, []) : {
+          id      = sdwan_cellular_cedge_profile_feature_template.cellular_cedge_profile_feature_template[eit.name].id
+          version = sdwan_cellular_cedge_profile_feature_template.cellular_cedge_profile_feature_template[eit.name].version
+          type    = "cellular-cedge-profile"
+        }],
+      ])
+    }]
   ])
   lifecycle {
     create_before_destroy = true

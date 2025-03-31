@@ -4,13 +4,13 @@ resource "sdwan_configuration_group" "configuration_group" {
   name        = each.value.name
   description = try(each.value.description, "")
   solution    = "sdwan"
-  feature_profiles = flatten([
-    try(sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id, []),
-    try(sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id, []),
-    try(sdwan_policy_object_feature_profile.policy_object_feature_profile[each.value.policy_object_profile].id, []),
-    try(sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id, []),
-    try(sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id, []),
-    try(sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id, [])
+  feature_profile_ids = flatten([
+    try(each.value.cli_profile, null) == null ? [] : [sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id],
+    try(each.value.other_profile, null) == null ? [] : [sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id],
+    try(each.value.policy_object_profile, null) == null ? [] : [sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id],
+    try(each.value.service_profile, null) == null ? [] : [sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id],
+    try(each.value.system_profile, null) == null ? [] : [sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id],
+    try(each.value.transport_profile, null) == null ? [] : [sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id],
   ])
   devices = [
     for router in local.routers : {
@@ -18,15 +18,15 @@ resource "sdwan_configuration_group" "configuration_group" {
       deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
         name       = name
-        value      = can(value[0]) ? null : value
-        value_list = can(value[0]) ? value : null
+        value      = try(tostring(value), null)
+        list_value = try(tolist(value), null)
       }]
     } if router.configuration_group == each.value.name
   ]
   feature_versions = flatten([
     try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
     try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
-    # try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions[each.value.other_profile],
+    try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
     try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
     try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
     try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
@@ -48,14 +48,49 @@ locals {
       try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
     ])
   }
-  # policy_object_profile_features_versions = {
-  #   for profile in try(local.feature_profiles.policy_object_profile, []) : profile.name => flatten([
-  #     try(profile.thousandeyes, null) == null ? [] : [sdwan_other_thousandeyes_feature.other_thousandeyes_feature["${profile.name}-thousandeyes"].version],
-  #     try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
-  #   ])
-  # }
+  policy_object_profile_features_versions = flatten([
+    try(local.feature_profiles.policy_object_profile.as_path_lists, null) == null ? [] : [for as_path_list in try(local.feature_profiles.policy_object_profile.as_path_lists, []) : [
+      sdwan_policy_object_as_path_list.policy_object_as_path_list[as_path_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.class_maps, null) == null ? [] : [for class_map in try(local.feature_profiles.policy_object_profile.class_maps, []) : [
+      sdwan_policy_object_class_map.policy_object_class_map[class_map.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, null) == null ? [] : [for ipv4_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, []) : [
+      sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[ipv4_data_prefix_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, null) == null ? [] : [for ipv6_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, []) : [
+      sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[ipv6_data_prefix_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.expanded_community_lists, null) == null ? [] : [for expanded_community_list in try(local.feature_profiles.policy_object_profile.expanded_community_lists, []) : [
+      sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[expanded_community_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.extended_community_lists, null) == null ? [] : [for extended_community_list in try(local.feature_profiles.policy_object_profile.extended_community_lists, []) : [
+      sdwan_policy_object_extended_community_list.policy_object_extended_community_list[extended_community_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, null) == null ? [] : [for ipv4_prefix_list in try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, []) : [
+      sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[ipv4_prefix_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, null) == null ? [] : [for ipv6_prefix_list in try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, []) : [
+      sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[ipv6_prefix_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.mirrors, null) == null ? [] : [for mirror in try(local.feature_profiles.policy_object_profile.mirrors, []) : [
+      sdwan_policy_object_mirror.policy_object_mirror[mirror.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.policers, null) == null ? [] : [for policer in try(local.feature_profiles.policy_object_profile.policers, []) : [
+      sdwan_policy_object_policer.policy_object_policer[policer.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.standard_community_lists, null) == null ? [] : [for standard_community_list in try(local.feature_profiles.policy_object_profile.standard_community_lists, []) : [
+      sdwan_policy_object_standard_community_list.policy_object_standard_community_list[standard_community_list.name].version,
+    ]],
+    try(local.feature_profiles.policy_object_profile.tloc_lists, null) == null ? [] : [for tloc_list in try(local.feature_profiles.policy_object_profile.tloc_lists, []) : [
+      sdwan_policy_object_tloc_list.policy_object_tloc_list[tloc_list.name].version,
+    ]],
+  ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
+      try(profile.dhcp_servers, null) == null ? [] : [for dhcp_server in try(profile.dhcp_servers, []) : [
+        sdwan_service_dhcp_server_feature.service_dhcp_server_feature["${profile.name}-${dhcp_server.name}"].version
+      ]],
       try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
         sdwan_service_tracker_group_feature.service_tracker_group_feature["${profile.name}-${ipv4_tracker_group.name}"].version
       ]],
@@ -78,6 +113,8 @@ locals {
       try(profile.bfd, null) == null ? [] : [sdwan_system_bfd_feature.system_bfd_feature["${profile.name}-bfd"].version],
       try(profile.flexible_port_speed, null) == null ? [] : [sdwan_system_flexible_port_speed_feature.system_flexible_port_speed_feature["${profile.name}-flexible_port_speed"].version],
       try(profile.global, null) == null ? [] : [sdwan_system_global_feature.system_global_feature["${profile.name}-global"].version],
+      try(profile.ipv4_device_access_policy, null) == null ? [] : [sdwan_system_ipv4_device_access_feature.system_ipv4_device_access_feature["${profile.name}-ipv4_device_access_policy"].version],
+      try(profile.ipv6_device_access_policy, null) == null ? [] : [sdwan_system_ipv6_device_access_feature.system_ipv6_device_access_feature["${profile.name}-ipv6_device_access_policy"].version],
       try(profile.logging, null) == null ? [] : [sdwan_system_logging_feature.system_logging_feature["${profile.name}-logging"].version],
       try(profile.mrf, null) == null ? [] : [sdwan_system_mrf_feature.system_mrf_feature["${profile.name}-mrf"].version],
       try(profile.ntp, null) == null ? [] : [sdwan_system_ntp_feature.system_ntp_feature["${profile.name}-ntp"].version],
@@ -89,7 +126,7 @@ locals {
   }
   transport_profile_features_versions = {
     for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => flatten([
-      try(profile.ipv4_tracker_group, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_group, []) : [
+      try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
         sdwan_transport_tracker_group_feature.transport_tracker_group_feature["${profile.name}-${ipv4_tracker_group.name}"].version
       ]],
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [

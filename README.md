@@ -180,7 +180,9 @@ module "sdwan" {
 | [sdwan_tag.tag](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tag) | resource |
 | [sdwan_tloc_list_policy_object.tloc_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tloc_list_policy_object) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
+| [sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_profile_feature) | resource |
 | [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
+| [sdwan_transport_gps_feature.transport_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_gps_feature) | resource |
 | [sdwan_transport_ipv6_tracker_feature.transport_ipv6_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_feature) | resource |
 | [sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_group_feature) | resource |
 | [sdwan_transport_management_vpn_feature.transport_management_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_management_vpn_feature) | resource |

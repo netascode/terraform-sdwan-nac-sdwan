@@ -31,6 +31,27 @@ resource "sdwan_configuration_group" "configuration_group" {
     try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
     try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
   ])
+  topology_devices = try(each.value.device_tags, null) == null ? null : [for index, device_tag in try(each.value.device_tags, []) : {
+    criteria_attribute = "tag"
+    criteria_value     = device_tag.name
+    unsupported_features = length(flatten([
+      for tag in try(each.value.device_tags, []) :
+      [
+        for feature in try(tag.features, []) :
+        try(local.unsupported_features[each.value.transport_profile][feature], null)
+        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], null) != null
+      ]
+      ])) == 0 ? null : flatten([
+      for tag in try(each.value.device_tags, []) :
+      [
+        for feature in try(tag.features, []) :
+        try(local.unsupported_features[each.value.transport_profile][feature], null)
+        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], null) != null
+      ]
+    ])
+  }]
+  topology_site_devices = try(each.value.device_tags, null) == null ? null : 2
+  depends_on            = [sdwan_tag.tag]
   lifecycle {
     create_before_destroy = true
   }
@@ -151,5 +172,23 @@ locals {
         try(interface.ipv6_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_trackergroup"].version],
       ]],
     ])
+  }
+
+  unsupported_features = {
+    for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => merge(
+      {
+        for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
+          parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
+          parcel_type = "wan/vpn/interface/ethernet"
+        }
+      },
+      # Other features to be added when supported
+      # {
+      #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
+      #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
+      #     parcel_type = "wan/vpn/interface/gre"
+      #   }
+      # }
+    )
   }
 }

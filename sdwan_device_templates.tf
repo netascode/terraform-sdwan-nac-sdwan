@@ -240,6 +240,7 @@ locals {
         chassis_id                 = router.chassis_id
         configuration_group        = try(router.configuration_group, null)
         configuration_group_deploy = try(router.configuration_group_deploy, null)
+        tags                       = try(router.tags, [])
         device_template            = try(router.device_template, null)
         device_variables           = try(router.device_variables, null)
         model                      = try(router.model, null)

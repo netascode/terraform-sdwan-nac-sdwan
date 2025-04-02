@@ -11,6 +11,8 @@
 - add support for sdwan_system_ipv4_device_access_feature resource
 - add support for sdwan_system_ipv6_device_access_feature resource
 - add support for sdwan_service_dhcp_server_feature resource
+- add support for sdwan_configuration_group resource
+- add support for sdwan_tag
 
 ## 1.0.0
 

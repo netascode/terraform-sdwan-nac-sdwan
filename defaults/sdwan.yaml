@@ -370,6 +370,9 @@ defaults:
           - C8300-2N2S-4T2X
           - C8200-1N-4T
           - C8200L-1N-4T
+    sites:
+      routers:
+        configuration_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -379,6 +382,8 @@ defaults:
           name: thousandeyes
         ucse:
           name: ucse
+      policy_object_profile:
+        name: policy_objects
       system_profiles:
         aaa:
           name: aaa

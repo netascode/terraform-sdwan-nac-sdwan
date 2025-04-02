@@ -237,17 +237,20 @@ locals {
   routers = flatten([
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
-        chassis_id       = router.chassis_id
-        model            = router.model
-        device_template  = router.device_template
-        device_variables = router.device_variables
+        chassis_id                 = router.chassis_id
+        configuration_group        = try(router.configuration_group, null)
+        configuration_group_deploy = try(router.configuration_group_deploy, null)
+        tags                       = try(router.tags, [])
+        device_template            = try(router.device_template, null)
+        device_variables           = try(router.device_variables, null)
+        model                      = try(router.model, null)
       }
     ]
   ])
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
-  for_each = { for r in local.routers : r.chassis_id => r }
+  for_each = { for r in local.routers : r.chassis_id => r if r.device_template != null }
   id       = sdwan_feature_device_template.feature_device_template[each.value.device_template].id
   version  = sdwan_feature_device_template.feature_device_template[each.value.device_template].version
   devices = [

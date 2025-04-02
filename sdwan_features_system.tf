@@ -91,9 +91,9 @@ resource "sdwan_system_banner_feature" "system_banner_feature" {
   name               = try(each.value.banner.name, local.defaults.sdwan.feature_profiles.system_profiles.banner.name)
   description        = try(each.value.banner.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
-  login              = try(each.value.banner.login, null)
+  login              = try(replace(each.value.banner.login, "\n", "\\n"), null)
   login_variable     = try("{{${each.value.banner.login_variable}}}", null)
-  motd               = try(each.value.banner.motd, null)
+  motd               = try(replace(each.value.banner.motd, "\n", "\\n"), null)
   motd_variable      = try("{{${each.value.banner.motd_variable}}}", null)
 }
 

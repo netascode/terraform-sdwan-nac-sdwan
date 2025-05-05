@@ -31,7 +31,7 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
       weight             = try(a.weight, null)
     }]
     base_action = s.base_action
-    id          = s.id
+    id          = index(each.value.route_policy.sequences, s) + 1
     match_entries = try(length(s.match_entries) == 0, true) ? null : [for m in [s.match_entries] : {
       as_path_list_id                  = try(sdwan_policy_object_as_path_list.policy_object_as_path_list[m.as_path_list].id, null)
       bgp_local_preference             = try(m.bgp_local_preference, null)

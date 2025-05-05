@@ -91,9 +91,9 @@ resource "sdwan_system_banner_feature" "system_banner_feature" {
   name               = try(each.value.banner.name, local.defaults.sdwan.feature_profiles.system_profiles.banner.name)
   description        = try(each.value.banner.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
-  login              = try(each.value.banner.login, null)
+  login              = try(replace(each.value.banner.login, "\n", "\\n"), null)
   login_variable     = try("{{${each.value.banner.login_variable}}}", null)
-  motd               = try(each.value.banner.motd, null)
+  motd               = try(replace(each.value.banner.motd, "\n", "\\n"), null)
   motd_variable      = try("{{${each.value.banner.motd_variable}}}", null)
 }
 
@@ -273,6 +273,54 @@ resource "sdwan_system_global_feature" "system_global_feature" {
   udp_small_servers_variable    = try("{{${each.value.global.udp_small_servers_variable}}}", null)
   vty_line_logging              = try(each.value.global.vty_logging, null)
   vty_line_logging_variable     = try("{{${each.value.global.vty_logging_variable}}}", null)
+}
+
+resource "sdwan_system_ipv4_device_access_feature" "system_ipv4_device_access_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ipv4_device_access_policy" => sys
+    if try(sys.ipv4_device_access_policy, null) != null
+  }
+  name               = try(each.value.ipv4_device_access_policy.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.name)
+  description        = try(each.value.ipv4_device_access_policy.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  default_action     = each.value.ipv4_device_access_policy.default_action
+  sequences = try(length(each.value.ipv4_device_access_policy.sequences) == 0, true) ? null : [for s in each.value.ipv4_device_access_policy.sequences : {
+    base_action                         = s.base_action
+    destination_ip_prefix_list          = try(s.match_entries.destination_data_prefixes, null)
+    destination_ip_prefix_list_variable = try("{{${s.match_entries.destination_data_prefixes_variable}}}", null)
+    destination_data_prefix_list_id     = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id, null)
+    device_access_port                  = s.match_entries.destination_port
+    id                                  = index(each.value.ipv4_device_access_policy.sequences, s) + 1
+    name                                = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.sequences.name)
+    source_ip_prefix_list               = try(s.match_entries.source_data_prefixes, null)
+    source_ip_prefix_list_variable      = try("{{${s.match_entries.source_data_prefixes_variable}}}", null)
+    source_data_prefix_list_id          = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id, null)
+    source_ports                        = try(s.match_entries.source_ports, null)
+  }]
+}
+
+resource "sdwan_system_ipv6_device_access_feature" "system_ipv6_device_access_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ipv6_device_access_policy" => sys
+    if try(sys.ipv6_device_access_policy, null) != null
+  }
+  name               = try(each.value.ipv6_device_access_policy.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv6_device_access_policy.name)
+  description        = try(each.value.ipv6_device_access_policy.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  default_action     = each.value.ipv6_device_access_policy.default_action
+  sequences = try(length(each.value.ipv6_device_access_policy.sequences) == 0, true) ? null : [for s in each.value.ipv6_device_access_policy.sequences : {
+    base_action                     = s.base_action
+    destination_ip_prefix_list      = try(s.match_entries.destination_data_prefixes, null)
+    destination_data_prefix_list_id = try(sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list].id, null)
+    device_access_port              = s.match_entries.destination_port
+    id                              = index(each.value.ipv6_device_access_policy.sequences, s) + 1
+    name                            = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv6_device_access_policy.sequences.name)
+    source_ip_prefix_list           = try(s.match_entries.source_data_prefixes, null)
+    source_data_prefix_list_id      = try(sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.source_data_prefix_list].id, null)
+    source_ports                    = try(s.match_entries.source_ports, null)
+  }]
 }
 
 resource "sdwan_system_logging_feature" "system_logging_feature" {

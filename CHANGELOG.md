@@ -1,4 +1,4 @@
-## 1.0.1 (unreleased)
+## 1.1.0
 
 - fix vty_line_logging parameter not being set in sdwan_system_global_feature
 - add support for sdwan_policy_object_as_path_list resource
@@ -8,6 +8,11 @@
 - fix dhcp parameter logic for sdwan_cisco_vpn_interface_feature_template
 - fix VRRP prefix_variable parameter for sdwan_cisco_vpn_interface_feature_template and sdwan_vpn_interface_svi_feature_template
 - fix ascii_variable parameter for sdwan_cisco_dhcp_server_feature_template
+- add support for sdwan_system_ipv4_device_access_feature resource
+- add support for sdwan_system_ipv6_device_access_feature resource
+- add support for sdwan_service_dhcp_server_feature resource
+- add support for sdwan_configuration_group resource
+- add support for sdwan_tag resource
 
 ## 1.0.0
 

@@ -370,6 +370,9 @@ defaults:
           - C8300-2N2S-4T2X
           - C8200-1N-4T
           - C8200L-1N-4T
+    sites:
+      routers:
+        configuration_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -394,6 +397,14 @@ defaults:
           name: flexible_port_speed
         global:
           name: global
+        ipv4_device_access_policy:
+          name: ipv4_device_access_policy
+          sequences:
+            name: acl
+        ipv6_device_access_policy:
+          name: ipv6_device_access_policy
+          sequences:
+            name: acl
         logging:
           name: logging
         mrf:

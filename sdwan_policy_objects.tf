@@ -86,7 +86,7 @@ resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list"
 }
 
 resource "sdwan_policy_object_mirror" "policy_object_mirror" {
-  for_each           = { for p in try(local.feature_profiles.policy_object_profile.mirror_lists, {}) : p.name => p }
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.mirrors, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id

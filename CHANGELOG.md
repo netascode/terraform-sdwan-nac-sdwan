@@ -1,3 +1,7 @@
+## 1.2.0 (unreleased)
+
+- add support for sdwan_transport_route_policy_feature resource
+
 ## 1.1.0
 
 - fix vty_line_logging parameter not being set in sdwan_system_global_feature

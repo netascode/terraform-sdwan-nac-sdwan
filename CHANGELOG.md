@@ -1,3 +1,8 @@
+## 1.1.1 (unreleased)
+
+- add support for sdwan_transport_cellular_profile_feature resource
+- add support for sdwan_transport_gps_feature resource
+
 ## 1.1.0
 
 - fix vty_line_logging parameter not being set in sdwan_system_global_feature

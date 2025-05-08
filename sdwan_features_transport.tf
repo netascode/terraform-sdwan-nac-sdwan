@@ -19,16 +19,21 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
       as_path_prepend    = try(a.prepend_as_paths, null)
       community          = try(a.communities, null)
       community_additive = try(a.communities_additive, null)
-      community_variable = try(a.communities_variable, null)
+      community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)
       ipv6_next_hop      = try(a.ipv6_next_hop, null)
       local_preference   = try(a.local_preference, null)
       metric             = try(a.metric, null)
       metric_type        = try(a.metric_type, null)
       omp_tag            = try(a.omp_tag, null)
-      origin             = try(a.origin, null)
-      ospf_tag           = try(a.ospf_tag, null)
-      weight             = try(a.weight, null)
+      origin = try(
+        a.origin == "igp" ? "IGP" :
+        a.origin == "egp" ? "EGP" :
+        a.origin == "incomplete" ? "Incomplete" : null,
+        null
+      )
+      ospf_tag = try(a.ospf_tag, null)
+      weight   = try(a.weight, null)
     }]
     base_action = s.base_action
     id          = index(each.value.route_policy.sequences, s) + 1
@@ -44,7 +49,7 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
       metric                           = try(m.metric, null)
       omp_tag                          = try(m.omp_tag, null)
       ospf_tag                         = try(m.ospf_tag, null)
-      standard_community_list_criteria = try(m.standard_community_list_criteria, null)
+      standard_community_list_criteria = try(upper(m.standard_community_lists_criteria), null)
       standard_community_lists = try(length(m.standard_community_lists) == 0, true) ? null : [for c in m.standard_community_lists : {
         id = try(sdwan_policy_object_standard_community_list.policy_object_standard_community_list[c].id, null)
       }]

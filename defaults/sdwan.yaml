@@ -382,6 +382,11 @@ defaults:
           name: thousandeyes
         ucse:
           name: ucse
+      service_profiles:
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
       system_profiles:
         aaa:
           name: aaa

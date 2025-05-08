@@ -1,6 +1,7 @@
 ## 1.2.0 (unreleased)
 
 - add support for sdwan_transport_route_policy_feature resource
+- add support for sdwan_service_route_policy_feature resource
 
 ## 1.1.0
 

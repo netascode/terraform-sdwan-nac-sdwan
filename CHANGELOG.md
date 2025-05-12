@@ -1,3 +1,7 @@
+## 1.2.0 (unreleased)
+
+- fix administrative_distance_variable parameter not being set in the sdwan_transport_management_vpn_feature
+
 ## 1.1.0
 
 - fix vty_line_logging parameter not being set in sdwan_system_global_feature

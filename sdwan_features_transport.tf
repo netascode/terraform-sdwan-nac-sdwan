@@ -133,7 +133,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     subnet_mask          = try(route.subnet_mask, null)
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
@@ -145,7 +145,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "null0" ? true : null

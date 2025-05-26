@@ -34,7 +34,7 @@ resource "sdwan_transport_gps_feature" "transport_gps_feature" {
   for_each = {
     for gps_item in flatten([
       for profile in try(local.feature_profiles.transport_profiles, []) : [
-        for gps in try(profile.gps, []) : {
+        for gps in try(profile.gps_features, []) : {
           profile = profile
           gps     = gps
         }

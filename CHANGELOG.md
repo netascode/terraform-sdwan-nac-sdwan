@@ -1,5 +1,6 @@
-## 1.1.1 (unreleased)
+## 1.2.0 (unreleased)
 
+- fix administrative_distance_variable parameter not being set in the sdwan_transport_management_vpn_feature
 - add support for sdwan_transport_cellular_profile_feature resource
 - add support for sdwan_transport_gps_feature resource
 

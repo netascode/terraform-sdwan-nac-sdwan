@@ -420,6 +420,8 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        gps_features:
+          gps_enable: true
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

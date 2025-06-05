@@ -45,7 +45,7 @@ resource "sdwan_transport_gps_feature" "transport_gps_feature" {
   name                              = each.value.gps.name
   description                       = try(each.value.gps.description, null)
   feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
-  gps_enable                        = try(each.value.gps.gps_enable, local.defaults.sdwan.feature_profiles.transport_profiles.gps.gps_enable)
+  gps_enable                        = try(each.value.gps.gps_enable, local.defaults.sdwan.feature_profiles.transport_profiles.gps_features.gps_enable, null)
   gps_enable_variable               = try("{{${each.value.gps.gps_enable_variable}}}", null)
   gps_mode                          = try(each.value.gps.gps_mode, null)
   gps_mode_variable                 = try("{{${each.value.gps.gps_mode_variable}}}", null)

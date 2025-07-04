@@ -382,6 +382,8 @@ defaults:
           name: thousandeyes
         ucse:
           name: ucse
+      policy_object_profile:
+        name: policy_objects
       system_profiles:
         aaa:
           name: aaa

@@ -4,6 +4,7 @@
 - add support for sdwan_transport_cellular_profile_feature resource
 - add support for sdwan_transport_gps_feature resource
 - modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
+- add default handling of ip_type for sdwan_route_policy_definition
 
 ## 1.1.0
 

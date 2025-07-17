@@ -1,6 +1,11 @@
 ---
 defaults:
   sdwan:
+    localized_policies:
+      definitions:
+        route_policies:
+          sequences:
+            ip_type: ipv4
     centralized_policies:
       definitions:
         control_policy:

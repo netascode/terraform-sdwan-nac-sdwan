@@ -1,3 +1,64 @@
+resource "sdwan_transport_cellular_profile_feature" "transport_cellular_profile_feature" {
+  for_each = {
+    for cellular_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for cellular in try(profile.cellular_profiles, []) : {
+          profile  = profile
+          cellular = cellular
+        }
+      ]
+    ])
+    : "${cellular_item.profile.name}-${cellular_item.cellular.name}" => cellular_item
+  }
+  name                              = each.value.cellular.name
+  description                       = try(each.value.cellular.description, null)
+  feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  access_point_name                 = try(each.value.cellular.access_point_name, null)
+  access_point_name_variable        = try("{{${each.value.cellular.access_point_name_variable}}}", null)
+  requires_authentication           = try(each.value.cellular.authentication_enable, null)
+  authentication_type               = try(each.value.cellular.authentication_type, null)
+  authentication_type_variable      = try("{{${each.value.cellular.authentication_type_variable}}}", null)
+  profile_id                        = try(each.value.cellular.profile_id, null)
+  profile_id_variable               = try("{{${each.value.cellular.profile_id_variable}}}", null)
+  profile_username                  = try(each.value.cellular.profile_username, null)
+  profile_username_variable         = try("{{${each.value.cellular.profile_username_variable}}}", null)
+  profile_password                  = try(each.value.cellular.profile_password, null)
+  profile_password_variable         = try("{{${each.value.cellular.profile_password_variable}}}", null)
+  packet_data_network_type          = try(each.value.cellular.packet_data_network_type, null)
+  packet_data_network_type_variable = try("{{${each.value.cellular.packet_data_network_type_variable}}}", null)
+  no_overwrite                      = try(each.value.cellular.no_overwrite, null)
+  no_overwrite_variable             = try("{{${each.value.cellular.no_overwrite_variable}}}", null)
+}
+
+resource "sdwan_transport_gps_feature" "transport_gps_feature" {
+  for_each = {
+    for gps_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for gps in try(profile.gps_features, []) : {
+          profile = profile
+          gps     = gps
+        }
+      ]
+    ])
+    : "${gps_item.profile.name}-${gps_item.gps.name}" => gps_item
+  }
+  name                              = each.value.gps.name
+  description                       = try(each.value.gps.description, null)
+  feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  gps_enable                        = try(each.value.gps.gps_enable, local.defaults.sdwan.feature_profiles.transport_profiles.gps_features.gps_enable, null)
+  gps_enable_variable               = try("{{${each.value.gps.gps_enable_variable}}}", null)
+  gps_mode                          = try(each.value.gps.gps_mode, null)
+  gps_mode_variable                 = try("{{${each.value.gps.gps_mode_variable}}}", null)
+  nmea_enable                       = try(each.value.gps.nmea_enable, null)
+  nmea_enable_variable              = try("{{${each.value.gps.nmea_enable_variable}}}", null)
+  nmea_source_address               = try(each.value.gps.nmea_source_address, null)
+  nmea_source_address_variable      = try("{{${each.value.gps.nmea_source_address_variable}}}", null)
+  nmea_destination_address          = try(each.value.gps.nmea_destination_address, null)
+  nmea_destination_address_variable = try("{{${each.value.gps.nmea_destination_address_variable}}}", null)
+  nmea_destination_port             = try(each.value.gps.nmea_destination_port, null)
+  nmea_destination_port_variable    = try("{{${each.value.gps.nmea_destination_port_variable}}}", null)
+}
+
 resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature" {
   for_each = {
     for route_policy_item in flatten([
@@ -194,7 +255,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     subnet_mask          = try(route.subnet_mask, null)
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
@@ -206,7 +267,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "null0" ? true : null

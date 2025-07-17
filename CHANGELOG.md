@@ -1,7 +1,11 @@
 ## 1.2.0 (unreleased)
 
-- add support for sdwan_transport_route_policy_feature resource
+- fix administrative_distance_variable parameter not being set in the sdwan_transport_management_vpn_feature
 - add support for sdwan_service_route_policy_feature resource
+- add support for sdwan_transport_cellular_profile_feature resource
+- add support for sdwan_transport_gps_feature resource
+- add support for sdwan_transport_route_policy_feature resource
+- modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
 
 ## 1.1.0
 

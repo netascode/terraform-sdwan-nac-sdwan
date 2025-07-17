@@ -382,6 +382,8 @@ defaults:
           name: thousandeyes
         ucse:
           name: ucse
+      policy_object_profile:
+        name: policy_objects
       service_profiles:
         route_policies:
           sequences:
@@ -425,6 +427,8 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        gps_features:
+          gps_enable: true
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

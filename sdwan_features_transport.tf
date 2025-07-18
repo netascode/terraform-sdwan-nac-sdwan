@@ -59,6 +59,67 @@ resource "sdwan_transport_gps_feature" "transport_gps_feature" {
   nmea_destination_port_variable    = try("{{${each.value.gps.nmea_destination_port_variable}}}", null)
 }
 
+resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature" {
+  for_each = {
+    for route_policy_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for route_policy in try(profile.route_policies, []) : {
+          profile      = profile
+          route_policy = route_policy
+        }
+      ]
+    ])
+    : "${route_policy_item.profile.name}-${route_policy_item.route_policy.name}" => route_policy_item
+  }
+  name               = each.value.route_policy.name
+  description        = try(each.value.route_policy.description, null)
+  feature_profile_id = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  default_action     = try(each.value.route_policy.default_action, null)
+  sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
+    actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
+      as_path_prepend    = try(a.prepend_as_paths, null)
+      community          = try(a.communities, null)
+      community_additive = try(a.communities_additive, null)
+      community_variable = try("{{${a.communities_variable}}}", null)
+      ipv4_next_hop      = try(a.ipv4_next_hop, null)
+      ipv6_next_hop      = try(a.ipv6_next_hop, null)
+      local_preference   = try(a.bgp_local_preference, null)
+      metric             = try(a.metric, null)
+      metric_type        = try(a.metric_type, null)
+      omp_tag            = try(a.omp_tag, null)
+      origin = try(
+        a.origin == "igp" ? "IGP" :
+        a.origin == "egp" ? "EGP" :
+        a.origin == "incomplete" ? "Incomplete" : null,
+        null
+      )
+      ospf_tag = try(a.ospf_tag, null)
+      weight   = try(a.weight, null)
+    }]
+    base_action = s.base_action
+    id          = s.id
+    match_entries = try(length(s.match_entries) == 0, true) ? null : [for m in [s.match_entries] : {
+      as_path_list_id                  = try(sdwan_policy_object_as_path_list.policy_object_as_path_list[m.as_path_list].id, null)
+      bgp_local_preference             = try(m.bgp_local_preference, null)
+      expanded_community_list_id       = try(sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[m.expanded_community_list].id, null)
+      extended_community_list_id       = try(sdwan_policy_object_extended_community_list.policy_object_extended_community_list[m.extended_community_list].id, null)
+      ipv4_address_prefix_list_id      = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_address_prefix_list].id, null)
+      ipv4_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_next_hop_prefix_list].id, null)
+      ipv6_address_prefix_list_id      = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_address_prefix_list].id, null)
+      ipv6_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_next_hop_prefix_list].id, null)
+      metric                           = try(m.metric, null)
+      omp_tag                          = try(m.omp_tag, null)
+      ospf_tag                         = try(m.ospf_tag, null)
+      standard_community_list_criteria = try(upper(m.standard_community_lists_criteria), null)
+      standard_community_lists = try(length(m.standard_community_lists) == 0, true) ? null : [for c in m.standard_community_lists : {
+        id = try(sdwan_policy_object_standard_community_list.policy_object_standard_community_list[c].id, null)
+      }]
+    }]
+    name     = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.name)
+    protocol = upper(try(s.protocol, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.protocol))
+  }]
+}
+
 resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([

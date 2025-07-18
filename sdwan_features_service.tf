@@ -182,7 +182,7 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
       community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)
       ipv6_next_hop      = try(a.ipv6_next_hop, null)
-      local_preference   = try(a.local_preference, null)
+      local_preference   = try(a.bgp_local_preference, null)
       metric             = try(a.metric, null)
       metric_type        = try(a.metric_type, null)
       omp_tag            = try(a.omp_tag, null)

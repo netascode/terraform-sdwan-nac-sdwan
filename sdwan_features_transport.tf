@@ -185,6 +185,128 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   router_id_variable           = try("{{${each.value.bgp.router_id_variable}}}", null)
 }
 
+resource "sdwan_transport_cellular_profile_feature" "transport_cellular_profile_feature" {
+  for_each = {
+    for cellular_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for cellular in try(profile.cellular_profiles, []) : {
+          profile  = profile
+          cellular = cellular
+        }
+      ]
+    ])
+    : "${cellular_item.profile.name}-${cellular_item.cellular.name}" => cellular_item
+  }
+  name                              = each.value.cellular.name
+  description                       = try(each.value.cellular.description, null)
+  feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  access_point_name                 = try(each.value.cellular.access_point_name, null)
+  access_point_name_variable        = try("{{${each.value.cellular.access_point_name_variable}}}", null)
+  requires_authentication           = try(each.value.cellular.authentication_enable, null)
+  authentication_type               = try(each.value.cellular.authentication_type, null)
+  authentication_type_variable      = try("{{${each.value.cellular.authentication_type_variable}}}", null)
+  profile_id                        = try(each.value.cellular.profile_id, null)
+  profile_id_variable               = try("{{${each.value.cellular.profile_id_variable}}}", null)
+  profile_username                  = try(each.value.cellular.profile_username, null)
+  profile_username_variable         = try("{{${each.value.cellular.profile_username_variable}}}", null)
+  profile_password                  = try(each.value.cellular.profile_password, null)
+  profile_password_variable         = try("{{${each.value.cellular.profile_password_variable}}}", null)
+  packet_data_network_type          = try(each.value.cellular.packet_data_network_type, null)
+  packet_data_network_type_variable = try("{{${each.value.cellular.packet_data_network_type_variable}}}", null)
+  no_overwrite                      = try(each.value.cellular.no_overwrite, null)
+  no_overwrite_variable             = try("{{${each.value.cellular.no_overwrite_variable}}}", null)
+}
+
+resource "sdwan_transport_gps_feature" "transport_gps_feature" {
+  for_each = {
+    for gps_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for gps in try(profile.gps_features, []) : {
+          profile = profile
+          gps     = gps
+        }
+      ]
+    ])
+    : "${gps_item.profile.name}-${gps_item.gps.name}" => gps_item
+  }
+  name                              = each.value.gps.name
+  description                       = try(each.value.gps.description, null)
+  feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  gps_enable                        = try(each.value.gps.gps_enable, local.defaults.sdwan.feature_profiles.transport_profiles.gps_features.gps_enable, null)
+  gps_enable_variable               = try("{{${each.value.gps.gps_enable_variable}}}", null)
+  gps_mode                          = try(each.value.gps.gps_mode, null)
+  gps_mode_variable                 = try("{{${each.value.gps.gps_mode_variable}}}", null)
+  nmea_enable                       = try(each.value.gps.nmea_enable, null)
+  nmea_enable_variable              = try("{{${each.value.gps.nmea_enable_variable}}}", null)
+  nmea_source_address               = try(each.value.gps.nmea_source_address, null)
+  nmea_source_address_variable      = try("{{${each.value.gps.nmea_source_address_variable}}}", null)
+  nmea_destination_address          = try(each.value.gps.nmea_destination_address, null)
+  nmea_destination_address_variable = try("{{${each.value.gps.nmea_destination_address_variable}}}", null)
+  nmea_destination_port             = try(each.value.gps.nmea_destination_port, null)
+  nmea_destination_port_variable    = try("{{${each.value.gps.nmea_destination_port_variable}}}", null)
+}
+
+resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature" {
+  for_each = {
+    for route_policy_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for route_policy in try(profile.route_policies, []) : {
+          profile      = profile
+          route_policy = route_policy
+        }
+      ]
+    ])
+    : "${route_policy_item.profile.name}-${route_policy_item.route_policy.name}" => route_policy_item
+  }
+  name               = each.value.route_policy.name
+  description        = try(each.value.route_policy.description, null)
+  feature_profile_id = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  default_action     = try(each.value.route_policy.default_action, null)
+  sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
+    actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
+      as_path_prepend    = try(a.prepend_as_paths, null)
+      community          = try(a.communities, null)
+      community_additive = try(a.communities_additive, null)
+      community_variable = try("{{${a.communities_variable}}}", null)
+      ipv4_next_hop      = try(a.ipv4_next_hop, null)
+      ipv6_next_hop      = try(a.ipv6_next_hop, null)
+      local_preference   = try(a.bgp_local_preference, null)
+      metric             = try(a.metric, null)
+      metric_type        = try(a.metric_type, null)
+      omp_tag            = try(a.omp_tag, null)
+      origin = try(
+        a.origin == "igp" ? "IGP" :
+        a.origin == "egp" ? "EGP" :
+        a.origin == "incomplete" ? "Incomplete" : null,
+        null
+      )
+      ospf_tag = try(a.ospf_tag, null)
+      weight   = try(a.weight, null)
+    }]
+    base_action = s.base_action
+    id          = s.id
+    match_entries = try(length(s.match_entries) == 0, true) ? null : [for m in [s.match_entries] : {
+      as_path_list_id                  = try(sdwan_policy_object_as_path_list.policy_object_as_path_list[m.as_path_list].id, null)
+      bgp_local_preference             = try(m.bgp_local_preference, null)
+      expanded_community_list_id       = try(sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[m.expanded_community_list].id, null)
+      extended_community_list_id       = try(sdwan_policy_object_extended_community_list.policy_object_extended_community_list[m.extended_community_list].id, null)
+      ipv4_address_prefix_list_id      = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_address_prefix_list].id, null)
+      ipv4_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_next_hop_prefix_list].id, null)
+      ipv6_address_prefix_list_id      = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_address_prefix_list].id, null)
+      ipv6_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_next_hop_prefix_list].id, null)
+      metric                           = try(m.metric, null)
+      omp_tag                          = try(m.omp_tag, null)
+      ospf_tag                         = try(m.ospf_tag, null)
+      standard_community_list_criteria = try(upper(m.standard_community_lists_criteria), null)
+      standard_community_lists = try(length(m.standard_community_lists) == 0, true) ? null : [for c in m.standard_community_lists : {
+        id = try(sdwan_policy_object_standard_community_list.policy_object_standard_community_list[c].id, null)
+      }]
+    }]
+    name     = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.name)
+    protocol = upper(try(s.protocol, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.protocol))
+  }]
+}
+
 resource "sdwan_transport_tracker_group_feature" "transport_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([
@@ -320,7 +442,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     subnet_mask          = try(route.subnet_mask, null)
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
@@ -332,7 +454,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
-      administrative_distance_variable = try("{{${nh.administative_distance_variable}}}", null)
+      administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
     gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "null0" ? true : null

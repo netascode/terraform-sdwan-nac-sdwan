@@ -1,6 +1,11 @@
 ---
 defaults:
   sdwan:
+    localized_policies:
+      definitions:
+        route_policies:
+          sequences:
+            ip_type: ipv4
     centralized_policies:
       definitions:
         control_policy:
@@ -370,6 +375,9 @@ defaults:
           - C8300-2N2S-4T2X
           - C8200-1N-4T
           - C8200L-1N-4T
+    sites:
+      routers:
+        configuration_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -379,6 +387,8 @@ defaults:
           name: thousandeyes
         ucse:
           name: ucse
+      policy_object_profile:
+        name: policy_objects
       system_profiles:
         aaa:
           name: aaa
@@ -422,6 +432,8 @@ defaults:
           ipv4_neighbors:
             ipv4_address_families:
               maximum_prefixes_reach_policy: off
+        gps_features:
+          gps_enable: true
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

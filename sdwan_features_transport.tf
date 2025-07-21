@@ -1,7 +1,7 @@
 resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   for_each = {
     for transport in try(local.feature_profiles.transport_profiles, {}) :
-    "${transport.name}-routing_bgp" => transport
+    "${transport.name}-bgp" => transport
     if try(transport.bgp, null) != null
   }
   name                              = try(each.value.bgp.name, local.defaults.sdwan.feature_profiles.transport_profiles.bgp.name)
@@ -37,16 +37,16 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
     address          = try(neighbor.address, null)
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
-      family_type = address_family.family_type
-      // in_route_policy_id (in_route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
+      family_type                     = address_family.family_type
+      in_route_policy_id              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[address_family.route_policy_in].id, null)
       max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
       max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      // out_route_policy_id (out_route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
-      policy_type               = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp.ipv4_neighbors.ipv4_address_families.maximum_prefixes_reach_policy)
-      restart_interval          = try(address_family.maximum_prefixes_restart_interval, null)
-      restart_interval_variable = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
-      threshold                 = try(address_family.maximum_prefixes_threshold, null)
-      threshold_variable        = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
+      out_route_policy_id             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[address_family.route_policy_out].id, null)
+      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp.ipv4_neighbors.ipv4_address_families.maximum_prefixes_reach_policy)
+      restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      threshold                       = try(address_family.maximum_prefixes_threshold, null)
+      threshold_variable              = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
     }]
     allowas_in_number                = try(neighbor.allowas_in_number, null)
     allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
@@ -91,11 +91,11 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     protocol          = try(redistribute.protocol, null)
     protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
-    // route_policy_id = (route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
+    route_policy_id   = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[redistribute.route_policy].id, null)
   }]
   ipv4_table_map_filter          = try(each.value.bgp.ipv4_table_map_filter, null)
   ipv4_table_map_filter_variable = try("{{${each.value.bgp.ipv4_table_map_filter_variable}}}", null)
-  // ipv4_table_map_route_policy_id (ipv4_table_map_name) TO BE ADDED AFTER RPL IS IMPLEMENTED
+  ipv4_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[each.value.bgp.ipv4_table_map_route_policy].id, null)
   ipv6_aggregate_addresses = try(length(each.value.bgp.ipv6_aggregate_addresses) == 0, true) ? null : [for a in each.value.bgp.ipv6_aggregate_addresses : {
     aggregate_prefix          = try(a.prefix, null)
     aggregate_prefix_variable = try("{{${a.prefix_variable}}}", null)
@@ -110,16 +110,16 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
     address          = try(neighbor.address, null)
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
-      family_type = address_family.family_type
-      // in_route_policy_id (in_route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
+      family_type                     = address_family.family_type
+      in_route_policy_id              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[address_family.route_policy_in].id, null)
       max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
       max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      // out_route_policy_id (out_route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
-      policy_type               = try(address_family.maximum_prefixes_reach_policy, null)
-      restart_interval          = try(address_family.maximum_prefixes_restart_interval, null)
-      restart_interval_variable = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
-      threshold                 = try(address_family.maximum_prefixes_threshold, null)
-      threshold_variable        = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
+      out_route_policy_id             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[address_family.route_policy_out].id, null)
+      policy_type                     = try(address_family.maximum_prefixes_reach_policy, null)
+      restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      threshold                       = try(address_family.maximum_prefixes_threshold, null)
+      threshold_variable              = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
     }]
     allowas_in_number                = try(neighbor.allowas_in_number, null)
     allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
@@ -160,11 +160,11 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     protocol          = try(redistribute.protocol, null)
     protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
-    // route_policy_id = (route_policy) TO BE ADDED AFTER RPL IS IMPLEMENTED
+    route_policy_id   = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[redistribute.route_policy].id, null)
   }]
   ipv6_table_map_filter          = try(each.value.bgp.ipv6_table_map_filter, null)
   ipv6_table_map_filter_variable = try("{{${each.value.bgp.ipv6_table_map_filter_variable}}}", null)
-  // ipv6_table_map_route_policy_id (ipv6_table_map_name) TO BE ADDED AFTER RPL IS IMPLEMENTED
+  ipv6_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature[each.value.bgp.ipv6_table_map_route_policy].id, null)
   keepalive_time                 = try(each.value.bgp.keepalive_time, null)
   keepalive_time_variable        = try("{{${each.value.bgp.keepalive_time_variable}}}", null)
   local_routes_distance          = try(each.value.bgp.local_routes_distance, null)

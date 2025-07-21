@@ -98,7 +98,7 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
           source_ip = s.match_criterias.source_ip_prefix
         }],
         try(s.match_criterias.source_ip_prefix_variable, null) == null ? [] : [{
-          type                    = "sourceIp"
+          type               = "sourceIp"
           source_ip_variable = s.match_criterias.source_ip_prefix_variable
         }],
         try(s.match_criterias.source_ports, null) == null && try(s.match_criterias.source_port_ranges, null) == null ? [] : [{
@@ -323,7 +323,7 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
           source_ip = s.match_criterias.source_ip_prefix
         }],
         try(s.match_criterias.source_ip_prefix_variable, null) == null ? [] : [{
-          type                    = "sourceIp"
+          type               = "sourceIp"
           source_ip_variable = s.match_criterias.source_ip_prefix_variable
         }],
         try(s.match_criterias.source_ports, null) == null ? [] : [{
@@ -433,7 +433,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
           expanded_community_list_version = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].version
         }],
         try(s.match_criterias.expanded_community_list_variable, null) == null ? [] : [{
-          type                            = "expandedCommunityInline"
+          type                             = "expandedCommunityInline"
           expanded_community_list_variable = s.match_criterias.expanded_community_list_variable
         }],
         try(s.match_criterias.extended_community_list, null) == null ? [] : [{

@@ -390,6 +390,13 @@ defaults:
       policy_object_profile:
         name: policy_objects
       service_profiles:
+        bgp_features:
+          ipv4_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
+          ipv6_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
         route_policies:
           sequences:
             name: route

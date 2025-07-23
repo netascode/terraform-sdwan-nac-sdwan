@@ -1,3 +1,200 @@
+resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
+  for_each = {
+    for bgp_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for bgp in try(profile.bgp_features, []) : {
+          profile = profile
+          bgp     = bgp
+        }
+      ]
+    ])
+    : "${bgp_item.profile.name}-${bgp_item.bgp.name}" => bgp_item
+  }
+  name                              = each.value.bgp.name
+  description                       = try(each.value.bgp.description, null)
+  feature_profile_id                = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  always_compare_med                = try(each.value.bgp.always_compare_med, null)
+  always_compare_med_variable       = try("{{${each.value.bgp.always_compare_med_variable}}}", null)
+  as_number                         = try(each.value.bgp.as_number, null)
+  as_number_variable                = try("{{${each.value.bgp.as_number_variable}}}", null)
+  compare_router_id                 = try(each.value.bgp.compare_router_id, null)
+  compare_router_id_variable        = try("{{${each.value.bgp.compare_router_id_variable}}}", null)
+  deterministic_med                 = try(each.value.bgp.deterministic_med, null)
+  deterministic_med_variable        = try("{{${each.value.bgp.deterministic_med_variable}}}", null)
+  external_routes_distance          = try(each.value.bgp.external_routes_distance, null)
+  external_routes_distance_variable = try("{{${each.value.bgp.external_routes_distance_variable}}}", null)
+  hold_time                         = try(each.value.bgp.hold_time, null)
+  hold_time_variable                = try("{{${each.value.bgp.hold_time_variable}}}", null)
+  internal_routes_distance          = try(each.value.bgp.internal_routes_distance, null)
+  internal_routes_distance_variable = try("{{${each.value.bgp.internal_routes_distance_variable}}}", null)
+  ipv4_aggregate_addresses = try(length(each.value.bgp.ipv4_aggregate_addresses) == 0, true) ? null : [for a in each.value.bgp.ipv4_aggregate_addresses : {
+    as_set_path              = try(a.as_set_path, null)
+    as_set_path_variable     = try("{{${a.as_set_path_variable}}}", null)
+    network_address          = try(a.network_address, null)
+    network_address_variable = try("{{${a.network_address_variable}}}", null)
+    subnet_mask              = try(a.subnet_mask, null)
+    subnet_mask_variable     = try("{{${a.subnet_mask_variable}}}", null)
+    summary_only             = try(a.summary_only, null)
+    summary_only_variable    = try("{{${a.summary_only_variable}}}", null)
+  }]
+  ipv4_eibgp_maximum_paths          = try(each.value.bgp.ipv4_eibgp_maximum_paths, null)
+  ipv4_eibgp_maximum_paths_variable = try("{{${each.value.bgp.ipv4_eibgp_maximum_paths_variable}}}", null)
+  ipv4_neighbors = try(length(each.value.bgp.ipv4_neighbors) == 0, true) ? null : [for neighbor in each.value.bgp.ipv4_neighbors : {
+    address          = try(neighbor.address, null)
+    address_variable = try("{{${neighbor.address_variable}}}", null)
+    address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
+      family_type                                     = address_family.family_type
+      in_route_policy_id                              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      max_number_of_prefixes                          = try(address_family.maximum_prefixes_number, null)
+      max_number_of_prefixes_variable                 = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
+      out_route_policy_id                             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp_features.ipv4_neighbors.address_families.maximum_prefixes_reach_policy)
+      restart_interval                                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable                       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      restart_max_number_of_prefixes                  = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number : null, null)
+      restart_max_number_of_prefixes_variable         = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number_variable : null, null)
+      restart_threshold                               = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold : null, null)
+      restart_threshold_variable                      = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold_variable : null, null)
+      warning_message_max_number_of_prefixes          = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number : null, null)
+      warning_message_max_number_of_prefixes_variable = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number_variable : null, null)
+      warning_message_threshold                       = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold : null, null)
+      warning_message_threshold_variable              = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold_variable : null, null)
+    }]
+    allowas_in_number                = try(neighbor.allowas_in_number, null)
+    allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
+    as_override                      = try(neighbor.as_override, null)
+    as_override_variable             = try("{{${neighbor.as_override_variable}}}", null)
+    description                      = try(neighbor.description, null)
+    description_variable             = try("{{${neighbor.description_variable}}}", null)
+    ebgp_multihop                    = try(neighbor.ebgp_multihop, null)
+    ebgp_multihop_variable           = try("{{${neighbor.ebgp_multihop_variable}}}", null)
+    hold_time                        = try(neighbor.hold_time, null)
+    hold_time_variable               = try("{{${neighbor.hold_time_variable}}}", null)
+    keepalive_time                   = try(neighbor.keepalive_time, null)
+    keepalive_time_variable          = try("{{${neighbor.keepalive_time_variable}}}", null)
+    local_as                         = try(neighbor.local_as, null)
+    local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
+    next_hop_self                    = try(neighbor.next_hop_self, null)
+    next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
+    password                         = try(neighbor.password, null)
+    password_variable                = try("{{${neighbor.password_variable}}}", null)
+    remote_as                        = try(neighbor.remote_as, null)
+    remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
+    send_community                   = try(neighbor.send_community, null)
+    send_community_variable          = try("{{${neighbor.send_community_variable}}}", null)
+    send_extended_community          = try(neighbor.send_extended_community, null)
+    send_extended_community_variable = try("{{${neighbor.send_extended_community_variable}}}", null)
+    send_label                       = try(neighbor.send_label, null)
+    shutdown                         = try(neighbor.shutdown, null)
+    shutdown_variable                = try("{{${neighbor.shutdown_variable}}}", null)
+    update_source_interface          = try(neighbor.source_interface, null)
+    update_source_interface_variable = try("{{${neighbor.source_interface_variable}}}", null)
+  }]
+  ipv4_networks = try(length(each.value.bgp.ipv4_networks) == 0, true) ? null : [for network in each.value.bgp.ipv4_networks : {
+    network_address          = try(network.network_address, null)
+    network_address_variable = try("{{${network.network_address_variable}}}", null)
+    subnet_mask              = try(network.subnet_mask, null)
+    subnet_mask_variable     = try("{{${network.subnet_mask_variable}}}", null)
+  }]
+  ipv4_originate          = try(each.value.bgp.ipv4_default_originate, null)
+  ipv4_originate_variable = try("{{${each.value.bgp.ipv4_default_originate_variable}}}", null)
+  ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
+    protocol                      = try(redistribute.protocol, null)
+    protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id               = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    translate_rib_metric          = try(redistribute.translate_rib_metric, null)
+    translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null)
+  }]
+  ipv4_table_map_filter          = try(each.value.bgp.ipv4_table_map_filter, null)
+  ipv4_table_map_filter_variable = try("{{${each.value.bgp.ipv4_table_map_filter_variable}}}", null)
+  ipv4_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv4_table_map_route_policy}"].id, null)
+  ipv6_aggregate_addresses = try(length(each.value.bgp.ipv6_aggregate_addresses) == 0, true) ? null : [for a in each.value.bgp.ipv6_aggregate_addresses : {
+    aggregate_prefix          = try(a.prefix, null)
+    aggregate_prefix_variable = try("{{${a.prefix_variable}}}", null)
+    as_set_path               = try(a.as_set_path, null)
+    as_set_path_variable      = try("{{${a.as_set_path_variable}}}", null)
+    summary_only              = try(a.summary_only, null)
+    summary_only_variable     = try("{{${a.summary_only_variable}}}", null)
+  }]
+  ipv6_eibgp_maximum_paths          = try(each.value.bgp.ipv6_eibgp_maximum_paths, null)
+  ipv6_eibgp_maximum_paths_variable = try("{{${each.value.bgp.ipv6_eibgp_maximum_paths_variable}}}", null)
+  ipv6_neighbors = try(length(each.value.bgp.ipv6_neighbors) == 0, true) ? null : [for neighbor in each.value.bgp.ipv6_neighbors : {
+    address          = try(neighbor.address, null)
+    address_variable = try("{{${neighbor.address_variable}}}", null)
+    address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
+      family_type                     = address_family.family_type
+      in_route_policy_id              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
+      max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
+      out_route_policy_id             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
+      restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      threshold                       = try(address_family.maximum_prefixes_threshold, null)
+      threshold_variable              = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
+    }]
+    allowas_in_number                = try(neighbor.allowas_in_number, null)
+    allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
+    as_override                      = try(neighbor.as_override, null)
+    as_override_variable             = try("{{${neighbor.as_override_variable}}}", null)
+    description                      = try(neighbor.description, null)
+    description_variable             = try("{{${neighbor.description_variable}}}", null)
+    ebgp_multihop                    = try(neighbor.ebgp_multihop, null)
+    ebgp_multihop_variable           = try("{{${neighbor.ebgp_multihop_variable}}}", null)
+    hold_time                        = try(neighbor.hold_time, null)
+    hold_time_variable               = try("{{${neighbor.hold_time_variable}}}", null)
+    keepalive_time                   = try(neighbor.keepalive_time, null)
+    keepalive_time_variable          = try("{{${neighbor.keepalive_time_variable}}}", null)
+    local_as                         = try(neighbor.local_as, null)
+    local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
+    next_hop_self                    = try(neighbor.next_hop_self, null)
+    next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
+    password                         = try(neighbor.password, null)
+    password_variable                = try("{{${neighbor.password_variable}}}", null)
+    remote_as                        = try(neighbor.remote_as, null)
+    remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
+    send_community                   = try(neighbor.send_community, null)
+    send_community_variable          = try("{{${neighbor.send_community_variable}}}", null)
+    send_extended_community          = try(neighbor.send_extended_community, null)
+    send_extended_community_variable = try("{{${neighbor.send_extended_community_variable}}}", null)
+    send_label                       = try(neighbor.send_label, null)
+    shutdown                         = try(neighbor.shutdown, null)
+    shutdown_variable                = try("{{${neighbor.shutdown_variable}}}", null)
+    update_source_interface          = try(neighbor.source_interface, null)
+    update_source_interface_variable = try("{{${neighbor.source_interface_variable}}}", null)
+  }]
+  ipv6_networks = try(length(each.value.bgp.ipv6_networks) == 0, true) ? null : [for network in each.value.bgp.ipv6_networks : {
+    network_prefix          = try(network.prefix, null)
+    network_prefix_variable = try("{{${network.prefix_variable}}}", null)
+  }]
+  ipv6_originate          = try(each.value.bgp.ipv6_default_originate, null)
+  ipv6_originate_variable = try("{{${each.value.bgp.ipv6_default_originate_variable}}}", null)
+  ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
+    protocol                      = try(redistribute.protocol, null)
+    protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id               = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    translate_rib_metric          = try(redistribute.translate_rib_metric, null)
+    translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null)
+  }]
+  ipv6_table_map_filter          = try(each.value.bgp.ipv6_table_map_filter, null)
+  ipv6_table_map_filter_variable = try("{{${each.value.bgp.ipv6_table_map_filter_variable}}}", null)
+  ipv6_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv6_table_map_route_policy}"].id, null)
+  keepalive_time                 = try(each.value.bgp.keepalive_time, null)
+  keepalive_time_variable        = try("{{${each.value.bgp.keepalive_time_variable}}}", null)
+  local_routes_distance          = try(each.value.bgp.local_routes_distance, null)
+  local_routes_distance_variable = try("{{${each.value.bgp.local_routes_distance_variable}}}", null)
+  missing_med_as_worst           = try(each.value.bgp.missing_med_as_worst, null)
+  missing_med_as_worst_variable  = try("{{${each.value.bgp.missing_med_as_worst_variable}}}", null)
+  multipath_relax                = try(each.value.bgp.multipath_relax, null)
+  multipath_relax_variable       = try("{{${each.value.bgp.multipath_relax_variable}}}", null)
+  propagate_as_path              = try(each.value.bgp.propagate_as_path, null)
+  propagate_as_path_variable     = try("{{${each.value.bgp.propagate_as_path_variable}}}", null)
+  propagate_community            = try(each.value.bgp.propagate_community, null)
+  propagate_community_variable   = try("{{${each.value.bgp.propagate_community_variable}}}", null)
+  router_id                      = try(each.value.bgp.router_id, null)
+  router_id_variable             = try("{{${each.value.bgp.router_id_variable}}}", null)
+}
+
 resource "sdwan_service_dhcp_server_feature" "service_dhcp_server_feature" {
   for_each = {
     for dhcp_server_item in flatten([

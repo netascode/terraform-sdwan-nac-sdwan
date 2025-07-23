@@ -109,6 +109,9 @@ locals {
   ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
+      try(profile.bgp_features, null) == null ? [] : [for bgp_feature in try(profile.bgp_features, []) : [
+        sdwan_service_routing_bgp_feature.service_routing_bgp_feature["${profile.name}-${bgp_feature.name}"].version
+      ]],
       try(profile.dhcp_servers, null) == null ? [] : [for dhcp_server in try(profile.dhcp_servers, []) : [
         sdwan_service_dhcp_server_feature.service_dhcp_server_feature["${profile.name}-${dhcp_server.name}"].version
       ]],
@@ -150,6 +153,9 @@ locals {
   }
   transport_profile_features_versions = {
     for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => flatten([
+      try(profile.bgp_features, null) == null ? [] : [for bgp_feature in try(profile.bgp_features, []) : [
+        sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${profile.name}-${bgp_feature.name}"].version
+      ]],
       try(profile.cellular_profiles, null) == null ? [] : [for cellular_profile in try(profile.cellular_profiles, []) : [
         sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature["${profile.name}-${cellular_profile.name}"].version
       ]],
@@ -188,6 +194,18 @@ locals {
 
   unsupported_features = {
     for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => merge(
+      {
+        for feature in try(profile.route_policies, []) : feature.name => {
+          parcel_id   = sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${feature.name}"].id
+          parcel_type = "route-policy"
+        }
+      },
+      {
+        for feature in try(profile.bgp_features, []) : feature.name => {
+          parcel_id   = sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${profile.name}-${feature.name}"].id
+          parcel_type = "routing/bgp"
+        }
+      },
       {
         for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
           parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id

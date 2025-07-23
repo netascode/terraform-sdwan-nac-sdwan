@@ -1,4 +1,3 @@
-
 resource "sdwan_configuration_group" "configuration_group" {
   for_each    = { for g in local.configuration_groups : g.name => g }
   name        = each.value.name
@@ -38,15 +37,27 @@ resource "sdwan_configuration_group" "configuration_group" {
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
-        try(local.unsupported_features[each.value.transport_profile][feature], null)
-        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], null) != null
+        merge(
+          try(local.unsupported_features[each.value.transport_profile][feature], {}),
+          try(local.unsupported_features[each.value.service_profile][feature], {})
+        )
+        if tag.name != device_tag.name && (
+          try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
+          try(local.unsupported_features[each.value.service_profile][feature], null) != null
+        )
       ]
       ])) == 0 ? null : flatten([
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
-        try(local.unsupported_features[each.value.transport_profile][feature], null)
-        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], null) != null
+        merge(
+          try(local.unsupported_features[each.value.transport_profile][feature], {}),
+          try(local.unsupported_features[each.value.service_profile][feature], {})
+        )
+        if tag.name != device_tag.name && (
+          try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
+          try(local.unsupported_features[each.value.service_profile][feature], null) != null
+        )
       ]
     ])
   }]
@@ -174,21 +185,37 @@ locals {
     ])
   }
 
-  unsupported_features = {
-    for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => merge(
-      {
-        for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
-          parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
-          parcel_type = "wan/vpn/interface/ethernet"
-        }
-      },
-      # Other features to be added when supported
-      # {
-      #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
-      #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
-      #     parcel_type = "wan/vpn/interface/gre"
-      #   }
-      # }
-    )
-  }
+  unsupported_features = merge(
+    {
+      for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => merge(
+        {
+          for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/ethernet"
+          }
+        },
+        # Other features to be added when supported
+        # {
+        #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
+        #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
+        #     parcel_type = "wan/vpn/interface/gre"
+        #   }
+        # }
+      )
+    },
+    {
+      for profile in try(local.feature_profiles.service_profiles, []) : profile.name => merge(
+        merge(flatten([
+          for lan_vpn in try(profile.lan_vpns, []) : [
+            for feature in try(lan_vpn.ethernet_interfaces, []) : {
+              (feature.name) = {
+                parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-lan_vpn-${feature.name}"].id
+                parcel_type = "lan/vpn/interface/ethernet"
+              }
+            }
+          ]
+        ])...)
+      )
+    }
+  )
 }

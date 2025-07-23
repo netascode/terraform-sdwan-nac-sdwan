@@ -390,6 +390,14 @@ defaults:
       policy_object_profile:
         name: policy_objects
       service_profiles:
+        lan_vpn:
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+          ipv4_static_routes:
+            gateway: nextHop
+          ipv6_static_routes:
+            gateway: nextHop
         route_policies:
           sequences:
             name: route

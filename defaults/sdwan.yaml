@@ -389,6 +389,11 @@ defaults:
           name: ucse
       policy_object_profile:
         name: policy_objects
+      service_profiles:
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
       system_profiles:
         aaa:
           name: aaa
@@ -445,6 +450,10 @@ defaults:
             gateway: nextHop
           ipv6_static_routes:
             gateway: nextHop
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
         wan_vpn:
           name: wan_vpn
           ethernet_interfaces:

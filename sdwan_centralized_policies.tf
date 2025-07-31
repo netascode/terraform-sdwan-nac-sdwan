@@ -527,7 +527,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
           try(s.actions.local_tloc_list, null) == null ? [] : [{
             type                     = "localTlocList"
             local_tloc_list_color    = join(" ", concat([for p in try(s.actions.local_tloc_list.colors, []) : p]))
-            local_tloc_list_encap    = join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p]))
+            local_tloc_list_encap    = length(join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p]))) > 0 ? join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p])) : null
             local_tloc_list_restrict = try(s.actions.local_tloc_list.restrict, null) == null ? null : s.actions.local_tloc_list.restrict
           }],
           try(s.actions.next_hop.ip_address, null) == null ? [] : [{

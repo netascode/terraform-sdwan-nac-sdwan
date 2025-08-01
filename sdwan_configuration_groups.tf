@@ -70,6 +70,9 @@ locals {
     ])
   }
   policy_object_profile_features_versions = flatten([
+    try(local.feature_profiles.policy_object_profile.application_lists, null) == null ? [] : [for application_list in try(local.feature_profiles.policy_object_profile.application_lists, []) : [
+      sdwan_policy_object_application_list.policy_object_application_list[application_list.name].version,
+    ]],
     try(local.feature_profiles.policy_object_profile.as_path_lists, null) == null ? [] : [for as_path_list in try(local.feature_profiles.policy_object_profile.as_path_lists, []) : [
       sdwan_policy_object_as_path_list.policy_object_as_path_list[as_path_list.name].version,
     ]],

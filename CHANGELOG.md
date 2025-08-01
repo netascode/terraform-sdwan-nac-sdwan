@@ -8,6 +8,7 @@
 - modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
 - add default handling of ip_type for sdwan_route_policy_definition
 - make local_tloc_list encaps parameter optional in traffic data policy
+- add support for sdwan_policy_object_application_list resource
 
 ## 1.1.0
 

@@ -130,3 +130,17 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
     preference    = try(e.preference, null)
   }]
 }
+
+resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.app_probe_classes, {}) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.app_probes, []) : {
+    forwarding_class = e.forwarding_class
+    map = [for m in try(e.mappings, []) : {
+      color         = m.color
+      dscp         = try(m.dscp, null)
+    }]
+  }]
+}

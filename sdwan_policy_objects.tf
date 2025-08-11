@@ -1,3 +1,14 @@
+resource "sdwan_policy_object_application_list" "policy_object_application_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.application_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
+    application        = try(e.application, null)
+    application_family = try(e.application_family, null)
+  }]
+}
+
 resource "sdwan_policy_object_as_path_list" "policy_object_as_path_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.as_path_lists, {}) : p.name => p }
   name               = each.value.name

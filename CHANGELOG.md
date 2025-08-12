@@ -13,6 +13,7 @@
 - add `destination_ip_prefix_variable` and `source_ip_prefix_variable` parameters support in `sdwan_ipv4_acl_policy_definition` and `sdwan_ipv4_device_acl_policy_definition`
 - add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
 - add support for sdwan_policy_object_app_probe_class resource
+- add support for sdwan_service_lan_vpn resource
 
 ## 1.1.0
 

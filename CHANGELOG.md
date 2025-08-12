@@ -10,6 +10,8 @@
 - make local_tloc_list encaps parameter optional in traffic data policy
 - add support for sdwan_policy_object_application_list resource
 - bump supported provider version to >= 0.7.0
+- add `destination_ip_prefix_variable` and `source_ip_prefix_variable` parameters support in `sdwan_ipv4_acl_policy_definition` and `sdwan_ipv4_device_acl_policy_definition`
+- add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
 
 ## 1.1.0
 

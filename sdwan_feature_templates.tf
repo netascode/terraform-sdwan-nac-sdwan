@@ -1184,20 +1184,20 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     }]
   ])
   ipv4_static_gre_routes = try(length(each.value.ipv4_static_gre_routes) == 0, true) ? null : [for route in each.value.ipv4_static_gre_routes : {
-    interface          = try(route.interfaces, null)
-    interface_variable = try(route.interfaces_variable, null)
-    prefix             = try(route.prefix, null)
-    prefix_variable    = try(route.prefix_variable, null)
-    optional           = try(route.optional, null)
-    vpn_id             = 0
+    interfaces          = try(route.interfaces, null)
+    interfaces_variable = try(route.interfaces_variable, null)
+    prefix              = try(route.prefix, null)
+    prefix_variable     = try(route.prefix_variable, null)
+    optional            = try(route.optional, null)
+    vpn_id              = 0
   }]
   ipv4_static_ipsec_routes = try(length(each.value.ipv4_static_ipsec_routes) == 0, true) ? null : [for route in each.value.ipv4_static_ipsec_routes : {
-    interface          = try(route.interfaces, null)
-    interface_variable = try(route.interfaces_variable, null)
-    prefix             = try(route.prefix, null)
-    prefix_variable    = try(route.prefix_variable, null)
-    optional           = try(route.optional, null)
-    vpn_id             = 0
+    interfaces          = try(route.interfaces, null)
+    interfaces_variable = try(route.interfaces_variable, null)
+    prefix              = try(route.prefix, null)
+    prefix_variable     = try(route.prefix_variable, null)
+    optional            = try(route.optional, null)
+    vpn_id              = 0
   }]
   ipv4_static_routes = try(length(each.value.ipv4_static_routes) == 0, true) ? null : [for route in each.value.ipv4_static_routes : {
     dhcp              = try(route.next_hop_dhcp, null)

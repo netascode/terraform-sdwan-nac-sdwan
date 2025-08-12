@@ -5,6 +5,8 @@
 - add support for sdwan_transport_gps_feature resource
 - modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
 - add default handling of ip_type for sdwan_route_policy_definition
+- add `destination_ip_prefix_variable` and `source_ip_prefix_variable` parameters support in `sdwan_ipv4_acl_policy_definition` and `sdwan_ipv4_device_acl_policy_definition`
+- add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
 
 ## 1.1.0
 

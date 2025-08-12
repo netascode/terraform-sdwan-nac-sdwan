@@ -9,6 +9,7 @@
 - add default handling of ip_type for sdwan_route_policy_definition
 - make local_tloc_list encaps parameter optional in traffic data policy
 - add support for sdwan_policy_object_application_list resource
+- bump supported provider version to >= 0.7.0
 
 ## 1.1.0
 

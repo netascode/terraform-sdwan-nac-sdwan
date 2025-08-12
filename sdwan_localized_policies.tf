@@ -39,6 +39,7 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
     match_entries = !(can(s.match_criterias.class) ||
       can(s.match_criterias.destination_data_prefix_list) ||
       can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_ip_prefix_variable) ||
       can(s.match_criterias.destination_ports) ||
       can(s.match_criterias.dscp) ||
       can(s.match_criterias.packet_length) ||
@@ -46,6 +47,7 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
       can(s.match_criterias.protocols) ||
       can(s.match_criterias.source_data_prefix_list) ||
       can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ip_prefix_variable) ||
       can(s.match_criterias.source_ports) ||
       can(s.match_criterias.tcp)) ? null : flatten([
         try(s.match_criterias.class, null) == null ? [] : [{
@@ -61,6 +63,10 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
         try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
           type           = "destinationIp"
           destination_ip = s.match_criterias.destination_ip_prefix
+        }],
+        try(s.match_criterias.destination_ip_prefix_variable, null) == null ? [] : [{
+          type                    = "destinationIp"
+          destination_ip_variable = s.match_criterias.destination_ip_prefix_variable
         }],
         try(s.match_criterias.destination_ports, null) == null && try(s.match_criterias.destination_port_ranges, null) == null ? [] : [{
           type              = "destinationPort"
@@ -90,6 +96,10 @@ resource "sdwan_ipv4_acl_policy_definition" "ipv4_acl_policy_definition" {
         try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
           type      = "sourceIp"
           source_ip = s.match_criterias.source_ip_prefix
+        }],
+        try(s.match_criterias.source_ip_prefix_variable, null) == null ? [] : [{
+          type               = "sourceIp"
+          source_ip_variable = s.match_criterias.source_ip_prefix_variable
         }],
         try(s.match_criterias.source_ports, null) == null && try(s.match_criterias.source_port_ranges, null) == null ? [] : [{
           type         = "sourcePort"
@@ -280,9 +290,11 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
     base_action = s.base_action
     match_entries = !(can(s.match_criterias.destination_data_prefix_list) ||
       can(s.match_criterias.destination_ip_prefix) ||
+      can(s.match_criterias.destination_ip_prefix_variable) ||
       can(s.match_criterias.destination_port) ||
       can(s.match_criterias.source_data_prefix_list) ||
       can(s.match_criterias.source_ip_prefix) ||
+      can(s.match_criterias.source_ip_prefix_variable) ||
       can(s.match_criterias.source_ports)) ? null : flatten([
         try(s.match_criterias.destination_data_prefix_list, null) == null ? [] : [{
           type                                      = "destinationDataPrefixList"
@@ -292,6 +304,10 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
         try(s.match_criterias.destination_ip_prefix, null) == null ? [] : [{
           type           = "destinationIp"
           destination_ip = s.match_criterias.destination_ip_prefix
+        }],
+        try(s.match_criterias.destination_ip_prefix_variable, null) == null ? [] : [{
+          type                    = "destinationIp"
+          destination_ip_variable = s.match_criterias.destination_ip_prefix_variable
         }],
         try(s.match_criterias.destination_port, null) == null ? [] : [{
           type             = "destinationPort"
@@ -305,6 +321,10 @@ resource "sdwan_ipv4_device_acl_policy_definition" "ipv4_device_acl_policy_defin
         try(s.match_criterias.source_ip_prefix, null) == null ? [] : [{
           type      = "sourceIp"
           source_ip = s.match_criterias.source_ip_prefix
+        }],
+        try(s.match_criterias.source_ip_prefix_variable, null) == null ? [] : [{
+          type               = "sourceIp"
+          source_ip_variable = s.match_criterias.source_ip_prefix_variable
         }],
         try(s.match_criterias.source_ports, null) == null ? [] : [{
           type         = "sourcePort"
@@ -382,6 +402,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
       can(s.match_criterias.as_path_list) ||
       can(s.match_criterias.standard_community_lists) ||
       can(s.match_criterias.expanded_community_list) ||
+      can(s.match_criterias.expanded_community_list_variable) ||
       can(s.match_criterias.extended_community_list) ||
       can(s.match_criterias.bgp_local_preference) ||
       can(s.match_criterias.metric) ||
@@ -410,6 +431,10 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
           type                            = "expandedCommunity"
           expanded_community_list_id      = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].id
           expanded_community_list_version = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].version
+        }],
+        try(s.match_criterias.expanded_community_list_variable, null) == null ? [] : [{
+          type                             = "expandedCommunityInline"
+          expanded_community_list_variable = s.match_criterias.expanded_community_list_variable
         }],
         try(s.match_criterias.extended_community_list, null) == null ? [] : [{
           type                            = "extCommunity"
@@ -452,6 +477,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
       can(s.actions.exclude_as_paths) ||
       can(s.actions.atomic_aggregate) ||
       can(s.actions.communities) ||
+      can(s.actions.community_variable) ||
       can(s.actions.community_additive) ||
       can(s.actions.local_preference) ||
       can(s.actions.metric) ||
@@ -482,6 +508,10 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
         try(s.actions.communities, null) == null ? [] : [{
           type      = "community"
           community = join(" ", [for c in s.actions.communities : c])
+        }],
+        try(s.actions.community_variable, null) == null ? [] : [{
+          type               = "community"
+          community_variable = s.actions.community_variable
         }],
         try(s.actions.community_additive, null) == null ? [] : [{
           type               = "communityAdditive"

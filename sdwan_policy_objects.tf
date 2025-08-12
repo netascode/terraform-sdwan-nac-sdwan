@@ -7,7 +7,7 @@ resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
     forwarding_class = each.value.forwarding_class
     map = [for m in try(each.value.mappings, []) : {
       color = m.color
-      dscp = try(m.dscp, null)
+      dscp  = try(m.dscp, null)
     }]
   }]
 }

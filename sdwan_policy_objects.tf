@@ -138,7 +138,7 @@ resource "sdwan_policy_object_standard_community_list" "policy_object_standard_c
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.standard_communities, []) : {
-    standard_community = e
+    standard_community = e == "local-as" ? "local-AS" : e
   }]
 }
 

@@ -145,7 +145,7 @@ resource "sdwan_service_object_tracker_feature" "service_object_tracker_feature"
   name                       = each.value.tracker.name
   description                = try(each.value.tracker.description, null)
   feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
-  object_tracker_type        = each.value.tracker.type
+  object_tracker_type        = each.value.tracker.type == "sig" ? "SIG" : title(each.value.tracker.type)
   interface                  = try(each.value.tracker.interface_name, null)
   interface_variable         = try("{{${each.value.tracker.interface_name_variable}}}", null)
   object_tracker_id          = try(each.value.tracker.id, null)
@@ -176,8 +176,10 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
   default_action     = try(each.value.route_policy.default_action, null)
   sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
-      as_path_prepend    = try(a.prepend_as_paths, null)
-      community          = try(a.communities, null)
+      as_path_prepend = try(a.prepend_as_paths, null)
+      community = try(length(a.communities) == 0, true) ? null : [
+        for c in a.communities : c == "local-as" ? "local-AS" : c
+      ]
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)

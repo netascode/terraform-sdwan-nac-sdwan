@@ -78,9 +78,9 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
   sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
       as_path_prepend = try(a.prepend_as_paths, null)
-      community = try([
+      community = try(length(a.communities) == 0, true) ? null : [
         for c in a.communities : c == "local-as" ? "local-AS" : c
-      ], null)
+      ]
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)

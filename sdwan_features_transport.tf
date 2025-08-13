@@ -77,8 +77,10 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
   default_action     = try(each.value.route_policy.default_action, null)
   sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
-      as_path_prepend    = try(a.prepend_as_paths, null)
-      community          = try(a.communities, null)
+      as_path_prepend = try(a.prepend_as_paths, null)
+      community = try([
+        for c in a.communities : c == "local-as" ? "local-AS" : c
+      ], null)
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)
@@ -248,7 +250,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
   ipv4_static_routes = try(length(each.value.management_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.management_vpn.ipv4_static_routes : {
     administrative_distance          = try(route.administrative_distance, null)
     administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
-    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway)
+    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway)
     network_address                  = try(route.network_address, null)
     network_address_variable         = try("{{${route.network_address_variable}}}", null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
@@ -261,7 +263,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.management_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.management_vpn.ipv6_static_routes : {
-    nat          = try(route.nat, null)
+    nat          = try(upper(route.nat), null)
     nat_variable = try("{{${route.nat_variable}}}", null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
@@ -269,7 +271,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       administrative_distance          = try(nh.administrative_distance, null)
       administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
-    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
+    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "null0" ? true : null
     prefix          = try(route.prefix, null)
     prefix_variable = try("{{${route.prefix_variable}}}", null)
@@ -386,7 +388,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   ipv4_static_routes = try(length(each.value.wan_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv4_static_routes : {
     administrative_distance          = try(route.administrative_distance, null)
     administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
-    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway)
+    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
@@ -399,14 +401,14 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
     subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.wan_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv6_static_routes : {
-    nat = try(route.nat, null)
+    nat = try(upper(route.nat), null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
       administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
-    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway)
+    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway) == "null0" ? true : null
     prefix          = try(route.prefix, null)
     prefix_variable = try("{{${route.prefix_variable}}}", null)
@@ -436,7 +438,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   secondary_dns_address_ipv6          = try(each.value.wan_vpn.ipv6_secondary_dns_address, null)
   secondary_dns_address_ipv6_variable = try("{{${each.value.wan_vpn.ipv6_secondary_dns_address_variable}}}", null)
   services = try(length(each.value.wan_vpn.services) == 0, true) ? null : [for service in each.value.wan_vpn.services : {
-    service_type = service
+    service_type = upper(service)
   }]
   vpn = 0
 }

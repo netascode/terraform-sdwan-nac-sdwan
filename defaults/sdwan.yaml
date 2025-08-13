@@ -440,9 +440,9 @@ defaults:
             ipv4_configuration_type: static
             ipv6_configuration_type: none
           ipv4_static_routes:
-            gateway: nextHop
+            gateway: nexthop
           ipv6_static_routes:
-            gateway: nextHop
+            gateway: nexthop
         route_policies:
           sequences:
             name: route
@@ -455,6 +455,6 @@ defaults:
             tunnel_interface:
               ipsec_encapsulation: true
           ipv4_static_routes:
-            gateway: nextHop
+            gateway: nexthop
           ipv6_static_routes:
-            gateway: nextHop
+            gateway: nexthop

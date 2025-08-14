@@ -561,14 +561,16 @@ resource "sdwan_localized_policy" "localized_policy" {
   for_each                      = { for p in try(local.localized_policies.feature_policies, {}) : p.name => p }
   name                          = each.value.name
   description                   = each.value.description
-  flow_visibility_ipv4          = try(each.value.ipv4_flow_visibility, null)
-  flow_visibility_ipv6          = try(each.value.ipv6_flow_visibility, null)
-  application_visibility_ipv4   = try(each.value.ipv4_application_visibility, null)
-  application_visibility_ipv6   = try(each.value.ipv6_application_visibility, null)
-  implicit_acl_logging          = try(each.value.implicit_acl_logging, null)
+  flow_visibility_ipv4          = try(each.value.ipv4_flow_visibility, false)
+  flow_visibility_ipv6          = try(each.value.ipv6_flow_visibility, false)
+  application_visibility_ipv4   = try(each.value.ipv4_application_visibility, false)
+  application_visibility_ipv6   = try(each.value.ipv6_application_visibility, false)
+  implicit_acl_logging          = try(each.value.implicit_acl_logging, false)
   log_frequency                 = try(each.value.log_frequency, null)
   ipv4_visibility_cache_entries = try(each.value.ipv4_visibility_cache_entries, null)
   ipv6_visibility_cache_entries = try(each.value.ipv6_visibility_cache_entries, null)
+  cloud_qos                     = false
+  cloud_qos_service_side        = false
   definitions = flatten([
     try(each.value.definitions.qos_maps, null) == null ? [] : [for qosmap in each.value.definitions.qos_maps : [{
       type    = "qosMap"

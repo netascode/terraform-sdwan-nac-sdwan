@@ -53,8 +53,8 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       type    = "cisco_security"
     }],
     try(each.value.banner_template, null) == null ? [] : [{
-      id      = sdwan_cisco_banner_feature_template.cisco_banner_feature_template[each.value.banner_template].id
-      version = sdwan_cisco_banner_feature_template.cisco_banner_feature_template[each.value.banner_template].version
+      id      = contains(local.managed_banner_templates, each.value.banner_template) ? sdwan_cisco_banner_feature_template.cisco_banner_feature_template[each.value.banner_template].id : data.sdwan_cisco_banner_feature_template.unmanaged[each.value.banner_template].id
+      version = contains(local.managed_banner_templates, each.value.banner_template) ? sdwan_cisco_banner_feature_template.cisco_banner_feature_template[each.value.banner_template].version : data.sdwan_cisco_banner_feature_template.unmanaged[each.value.banner_template].version
       type    = "cisco_banner"
     }],
     try(each.value.snmp_template, null) == null ? [] : [{

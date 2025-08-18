@@ -67,6 +67,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       version = sdwan_cedge_global_feature_template.cedge_global_feature_template[each.value.global_settings_template].version
       type    = "cedge_global"
     }],
+    try(each.value.igmp_template, null) == null ? [] : [{
+      id      = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[each.value.igmp_template].id
+      version = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[each.value.igmp_template].version
+      type    = "cedge_igmp"
+    }],
     try(each.value.cli_template, null) == null ? [] : [{
       id      = sdwan_cli_template_feature_template.cli_template_feature_template[each.value.cli_template].id
       version = sdwan_cli_template_feature_template.cli_template_feature_template[each.value.cli_template].version

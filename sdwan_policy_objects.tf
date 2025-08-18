@@ -130,3 +130,18 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
     preference    = try(e.preference, null)
   }]
 }
+
+resource "sdwan_policy_object_preferred_color_group" "policy_object_preferred_color_group" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.preferred_color_group_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [{
+    primary_color_preference   = each.value.primary_colors
+    primary_path_preference    = try(each.value.primary_path_preference, null)
+    secondary_color_preference = try(each.value.secondary_colors, null)
+    secondary_path_preference  = try(each.value.secondary_path_preference, null)
+    tertiary_color_preference  = try(each.value.tertiary_colors, null)
+    tertiary_path_preference   = try(each.value.tertiary_path_preference, null)
+  }]
+}

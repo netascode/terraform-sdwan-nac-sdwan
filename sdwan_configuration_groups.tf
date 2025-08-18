@@ -106,6 +106,9 @@ locals {
     try(local.feature_profiles.policy_object_profile.tloc_lists, null) == null ? [] : [for tloc_list in try(local.feature_profiles.policy_object_profile.tloc_lists, []) : [
       sdwan_policy_object_tloc_list.policy_object_tloc_list[tloc_list.name].version,
     ]],
+    try(local.feature_profiles.policy_object_profile.preferred_color_group_lists, null) == null ? [] : [for preferred_color_group in try(local.feature_profiles.policy_object_profile.preferred_color_group_lists, []) : [
+      sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[preferred_color_group.name].version,
+    ]],
   ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([

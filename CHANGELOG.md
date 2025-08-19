@@ -14,6 +14,7 @@
 - add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
 - add support for sdwan_policy_object_app_probe_class resource
 - update UX 2.0 enum values to be lowercase wherever possible
+- add support for sdwan_service_lan_vpn resource
 
 ## 1.1.0
 

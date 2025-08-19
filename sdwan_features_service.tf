@@ -64,9 +64,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   name               = each.value.lan_vpn.name
   description        = try(each.value.lan_vpn.description, null)
   feature_profile_id = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
-
-  advertise_omp_ipv4s = try(length(each.value.lan_vpn.omp_advertise_ipv4_routes) == 0, true) ? null : [
-    for route in each.value.lan_vpn.omp_advertise_ipv4_routes : {
+  advertise_omp_ipv4s = try(length(each.value.lan_vpn.ipv4_omp_advertise_routes) == 0, true) ? null : [
+    for route in each.value.lan_vpn.ipv4_omp_advertise_routes : {
       protocol          = try(route.protocol, null)
       protocol_variable = try("{{${route.protocol_variable}}}", null)
       route_policy_id   = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${route.route_policy}"].id, null)
@@ -91,8 +90,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       }] : null)
     }
   ]
-  advertise_omp_ipv6s = try(length(each.value.lan_vpn.omp_advertise_ipv6_routes) == 0, true) ? null : [
-    for route in each.value.lan_vpn.omp_advertise_ipv6_routes : {
+  advertise_omp_ipv6s = try(length(each.value.lan_vpn.ipv6_omp_advertise_routes) == 0, true) ? null : [
+    for route in each.value.lan_vpn.ipv6_omp_advertise_routes : {
       protocol = (
         try(route.protocol) == "bgp" ? "BGP" :
         try(route.protocol) == "ospf" ? "OSPF" :
@@ -143,7 +142,6 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       list_of_ips_variable = try("{{${mapping.ips_variable}}}", null)
     }
   ]
-
   ipsec_routes = try(length(each.value.lan_vpn.ipsec_routes) == 0, true) ? null : [
     for route in each.value.lan_vpn.ipsec_routes : {
       network_address          = try(route.network_address, null)
@@ -184,7 +182,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       network_address_variable = try("{{${route.network_address_variable}}}", null)
       subnet_mask              = try(route.subnet_mask, null)
       subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
-      gateway                  = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, null)
+      gateway                  = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway)
       dhcp                     = try(route.gateway == "dhcp" ? true : null, null)
       null0                    = try(route.gateway == "null0" ? true : null, null)
       vpn                      = try(route.gateway == "vpn" ? true : null, null)
@@ -196,7 +194,6 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
           administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
         }
       ],
-
       next_hop_with_trackers = try(length(route.next_hops_with_tracker) == 0, true) ? null : [
         for nh in route.next_hops_with_tracker : {
           address                          = try(nh.address, null)
@@ -218,7 +215,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
     for route in each.value.lan_vpn.ipv6_static_routes : {
       prefix          = try(route.prefix, null)
       prefix_variable = try("{{${route.prefix_variable}}}", null)
-      gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, null)
+      gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway)
       nat             = try(route.gateway == "nat" ? upper(route.nat) : null, null)
       nat_variable    = try(route.gateway == "nat" ? "{{${route.nat_variable}}}" : null, null)
       null0           = try(route.gateway == "null0" ? true : null, null)
@@ -277,10 +274,10 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       overload_variable    = try("{{${pool.overload_variable}}}", null)
     }
   ]
-  omp_admin_distance_ipv4           = try(each.value.lan_vpn.omp_admin_distance_ipv4, null)
-  omp_admin_distance_ipv4_variable  = try("{{${each.value.lan_vpn.omp_admin_distance_ipv4_variable}}}", null)
-  omp_admin_distance_ipv6           = try(each.value.lan_vpn.omp_admin_distance_ipv6, null)
-  omp_admin_distance_ipv6_variable  = try("{{${each.value.lan_vpn.omp_admin_distance_ipv6_variable}}}", null)
+  omp_admin_distance_ipv4           = try(each.value.lan_vpn.ipv4_omp_admin_distance, null)
+  omp_admin_distance_ipv4_variable  = try("{{${each.value.lan_vpn.ipv4_omp_admin_distance_variable}}}", null)
+  omp_admin_distance_ipv6           = try(each.value.lan_vpn.ipv6_omp_admin_distance, null)
+  omp_admin_distance_ipv6_variable  = try("{{${each.value.lan_vpn.ipv6_omp_admin_distance_variable}}}", null)
   primary_dns_address_ipv4          = try(each.value.lan_vpn.ipv4_primary_dns_address, null)
   primary_dns_address_ipv4_variable = try("{{${each.value.lan_vpn.ipv4_primary_dns_address_variable}}}", null)
   primary_dns_address_ipv6          = try(each.value.lan_vpn.ipv6_primary_dns_address, null)

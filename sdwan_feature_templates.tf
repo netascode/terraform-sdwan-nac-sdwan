@@ -1049,6 +1049,8 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   track_transport_variable               = try(each.value.track_transport_variable, null)
   transport_gateway                      = try(each.value.transport_gateway, null)
   transport_gateway_variable             = try(each.value.transport_gateway_variable, null)
+  enhanced_app_aware_routing             = try(each.value.enhanced_app_aware_routing, null)
+  # enhanced_app_aware_routing_variable    = try(each.value.enhanced_app_aware_routing_variable, null)
   object_trackers = try(length(each.value.object_trackers) == 0, true) ? null : [for obj in each.value.object_trackers : {
     object_number          = try(obj.id, null)
     object_number_variable = try(obj.id_variable, null)

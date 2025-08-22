@@ -548,6 +548,18 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
   depends_on = [sdwan_localized_policy.localized_policy]
 }
 
+resource "sdwan_cedge_multicast_feature_template" "cedge_multicast_feature_template" {
+  for_each                  = { for m in try(local.edge_feature_templates.multicast_templates, {}) : m.name => m }
+  name                      = each.value.name
+  description               = each.value.description
+  device_types              = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.multicast_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  spt_only                  = try(each.value.spt_only, null)
+  local_replicator          = try(each.value.local_replicator, null)
+  local_replicator_variable = try(each.value.local_replicator_variable, null)
+  threshold                 = try(each.value.threshold, null)
+  threshold_variable        = try(each.value.threshold_variable, null)
+}
+
 resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
   for_each                         = { for t in try(local.edge_feature_templates.ntp_templates, {}) : t.name => t }
   name                             = each.value.name

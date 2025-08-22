@@ -6,6 +6,12 @@ defaults:
         route_policies:
           sequences:
             ip_type: ipv4
+      feature_policies:
+        ipv4_application_visibility: false
+        ipv6_application_visibility: false
+        ipv4_flow_visibility: false
+        ipv6_flow_visibility: false
+        implicit_acl_logging: false
     centralized_policies:
       definitions:
         control_policy:

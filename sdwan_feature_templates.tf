@@ -554,6 +554,7 @@ resource "sdwan_cedge_multicast_feature_template" "cedge_multicast_feature_templ
   description               = each.value.description
   device_types              = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.multicast_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   spt_only                  = try(each.value.spt_only, null)
+  spt_only_variable         = try(each.value.spt_only_variable, null)
   local_replicator          = try(each.value.local_replicator, null)
   local_replicator_variable = try(each.value.local_replicator_variable, null)
   threshold                 = try(each.value.threshold, null)

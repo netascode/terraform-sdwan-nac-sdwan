@@ -81,6 +81,7 @@ module "sdwan" {
 | [sdwan_cedge_aaa_feature_template.cedge_aaa_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cedge_aaa_feature_template) | resource |
 | [sdwan_cedge_global_feature_template.cedge_global_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cedge_global_feature_template) | resource |
 | [sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cedge_igmp_feature_template) | resource |
+| [sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cedge_multicast_feature_template) | resource |
 | [sdwan_cellular_cedge_profile_feature_template.cellular_cedge_profile_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cellular_cedge_profile_feature_template) | resource |
 | [sdwan_cellular_controller_feature_template.cellular_controller_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cellular_controller_feature_template) | resource |
 | [sdwan_centralized_policy.centralized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/centralized_policy) | resource |

@@ -15,6 +15,7 @@
 - add support for sdwan_policy_object_app_probe_class resource
 - update UX 2.0 enum values to be lowercase wherever possible
 - add support for sdwan_cedge_igmp_feature_template resource
+- add support for sdwan_cedge_multicast_feature_template resource
 
 ## 1.1.0
 

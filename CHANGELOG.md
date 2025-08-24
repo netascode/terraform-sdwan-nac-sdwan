@@ -1,5 +1,6 @@
 ## 1.2.0 (unreleased)
 
+- rework `sdwan_attach_feature_device_template` to be per template, not per device
 - fix administrative_distance_variable parameter not being set in the sdwan_transport_management_vpn_feature
 - add support for sdwan_service_route_policy_feature resource
 - add support for sdwan_transport_cellular_profile_feature resource

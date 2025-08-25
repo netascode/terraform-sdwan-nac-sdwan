@@ -262,13 +262,21 @@ locals {
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
-  for_each = { for r in local.routers : r.chassis_id => r if r.device_template != null }
-  id       = sdwan_feature_device_template.feature_device_template[each.value.device_template].id
-  version  = sdwan_feature_device_template.feature_device_template[each.value.device_template].version
+  for_each = {
+    for device_template in try(local.edge_device_templates, {}) :
+    device_template.name => device_template
+    if length([
+      for r in local.routers : r
+      if r.device_template == device_template.name
+    ]) > 0
+  }
+  id      = sdwan_feature_device_template.feature_device_template[each.value.name].id
+  version = sdwan_feature_device_template.feature_device_template[each.value.name].version
   devices = [
-    {
-      id        = each.value.chassis_id
-      variables = each.value.device_variables
+    for r in local.routers : {
+      id        = r.chassis_id
+      variables = r.device_variables
     }
+    if r.device_template == each.value.name
   ]
 }

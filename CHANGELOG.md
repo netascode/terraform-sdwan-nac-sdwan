@@ -14,6 +14,7 @@
 - add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
 - add support for sdwan_policy_object_app_probe_class resource
 - update UX 2.0 enum values to be lowercase wherever possible
+- add `enhanced_app_aware_routing` parameters support in `sdwan_cisco_system_feature_template`
 
 ## 1.1.0
 

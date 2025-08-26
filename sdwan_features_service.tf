@@ -247,8 +247,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       try(sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${pool.tracker_object}"].id, null))
     }
   ]
-  nat_port_forwards = try(length(each.value.lan_vpn.nat_port_forward) == 0, true) ? null : [
-    for forward in each.value.lan_vpn.nat_port_forward : {
+  nat_port_forwards = try(length(each.value.lan_vpn.nat_port_forwards) == 0, true) ? null : [
+    for forward in each.value.lan_vpn.nat_port_forwards : {
       nat_pool_name                 = try(forward.nat_pool_id, null)
       nat_pool_name_variable        = try("{{${forward.nat_pool_id_variable}}}", null)
       protocol                      = try(upper(forward.protocol), null)
@@ -282,8 +282,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   primary_dns_address_ipv4_variable = try("{{${each.value.lan_vpn.ipv4_primary_dns_address_variable}}}", null)
   primary_dns_address_ipv6          = try(each.value.lan_vpn.ipv6_primary_dns_address, null)
   primary_dns_address_ipv6_variable = try("{{${each.value.lan_vpn.ipv6_primary_dns_address_variable}}}", null)
-  route_leak_from_global_vpns = try(length(each.value.lan_vpn.route_leak_from_global) == 0, true) ? null : [
-    for leak in each.value.lan_vpn.route_leak_from_global : {
+  route_leak_from_global_vpns = try(length(each.value.lan_vpn.route_leaks_from_global) == 0, true) ? null : [
+    for leak in each.value.lan_vpn.route_leaks_from_global : {
       route_protocol          = try(leak.protocol, null)
       route_protocol_variable = try("{{${leak.protocol_variable}}}", null)
       route_policy_id         = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${leak.route_policy}"].id, null)
@@ -296,8 +296,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       ]
     }
   ]
-  route_leak_to_global_vpns = try(length(each.value.lan_vpn.route_leak_to_global) == 0, true) ? null : [
-    for leak in each.value.lan_vpn.route_leak_to_global : {
+  route_leak_to_global_vpns = try(length(each.value.lan_vpn.route_leaks_to_global) == 0, true) ? null : [
+    for leak in each.value.lan_vpn.route_leaks_to_global : {
       route_protocol          = try(leak.protocol, null)
       route_protocol_variable = try("{{${leak.protocol_variable}}}", null)
       route_policy_id         = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${leak.route_policy}"].id, null)
@@ -310,8 +310,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       ]
     }
   ]
-  route_leak_from_other_services = try(length(each.value.lan_vpn.route_leak_from_service) == 0, true) ? null : [
-    for leak in each.value.lan_vpn.route_leak_from_service : {
+  route_leak_from_other_services = try(length(each.value.lan_vpn.route_leaks_from_service) == 0, true) ? null : [
+    for leak in each.value.lan_vpn.route_leaks_from_service : {
       source_vpn              = try(leak.source_vpn, null)
       source_vpn_variable     = try("{{${leak.source_vpn_variable}}}", null)
       route_protocol          = try(leak.protocol, null)
@@ -358,8 +358,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       tracking_variable       = try("{{${service.track_enable_variable}}}", null)
     }
   ]
-  static_nats = try(length(each.value.lan_vpn.static_nat) == 0, true) ? null : [
-    for nat in each.value.lan_vpn.static_nat : {
+  static_nats = try(length(each.value.lan_vpn.static_nat_entries) == 0, true) ? null : [
+    for nat in each.value.lan_vpn.static_nat_entries : {
       nat_pool_name                 = try(nat.nat_pool_id, null)
       source_ip                     = try(nat.source_ip, null)
       source_ip_variable            = try("{{${nat.source_ip_variable}}}", null)

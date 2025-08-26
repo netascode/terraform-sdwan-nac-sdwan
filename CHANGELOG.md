@@ -18,6 +18,7 @@
 - add support for sdwan_cedge_igmp_feature_template resource
 - add support for sdwan_cedge_multicast_feature_template resource
 - add `enhanced_app_aware_routing` parameter support in `sdwan_cisco_system_feature_template`
+- fix `devices` and `feature_versions` parameters of `sdwan_configuration_group` to be null when empty
 
 ## 1.1.0
 

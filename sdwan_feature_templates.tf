@@ -154,6 +154,25 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   depends_on                    = [sdwan_localized_policy.localized_policy]
 }
 
+resource "sdwan_cedge_igmp_feature_template" "cedge_igmp_feature_template" {
+  for_each     = { for t in try(local.edge_feature_templates.igmp_templates, {}) : t.name => t }
+  name         = each.value.name
+  description  = each.value.description
+  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.igmp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for interface in each.value.interfaces : {
+    name          = try(interface.name, null)
+    name_variable = try(interface.name_variable, null)
+    optional      = try(interface.optional, null)
+    join_groups = !can(interface.join_groups) ? null : [for group in interface.join_groups : {
+      group_address          = try(group.group_address, null)
+      group_address_variable = try(group.group_address_variable, null)
+      source                 = try(group.source, null)
+      source_variable        = try(group.source_variable, null)
+    }]
+  }]
+  depends_on = [sdwan_localized_policy.localized_policy]
+}
+
 resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   for_each       = { for t in try(local.edge_feature_templates.banner_templates, {}) : t.name => t }
   name           = each.value.name
@@ -546,6 +565,19 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     ciphersuite_list_variable    = try(prof.version_ciphersuites_variablevariable, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
+}
+
+resource "sdwan_cedge_multicast_feature_template" "cedge_multicast_feature_template" {
+  for_each                  = { for m in try(local.edge_feature_templates.multicast_templates, {}) : m.name => m }
+  name                      = each.value.name
+  description               = each.value.description
+  device_types              = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.multicast_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  spt_only                  = try(each.value.spt_only, null)
+  spt_only_variable         = try(each.value.spt_only_variable, null)
+  local_replicator          = try(each.value.local_replicator, null)
+  local_replicator_variable = try(each.value.local_replicator_variable, null)
+  threshold                 = try(each.value.threshold, null)
+  threshold_variable        = try(each.value.threshold_variable, null)
 }
 
 resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
@@ -1049,6 +1081,8 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   track_transport_variable               = try(each.value.track_transport_variable, null)
   transport_gateway                      = try(each.value.transport_gateway, null)
   transport_gateway_variable             = try(each.value.transport_gateway_variable, null)
+  enhanced_app_aware_routing             = try(each.value.enhanced_app_aware_routing, null)
+  # enhanced_app_aware_routing_variable    = try(each.value.enhanced_app_aware_routing_variable, null)
   object_trackers = try(length(each.value.object_trackers) == 0, true) ? null : [for obj in each.value.object_trackers : {
     object_number          = try(obj.id, null)
     object_number_variable = try(obj.id_variable, null)

@@ -15,6 +15,9 @@
 - add support for sdwan_policy_object_app_probe_class resource
 - update UX 2.0 enum values to be lowercase wherever possible
 - add support for sdwan_service_lan_vpn resource
+- add support for sdwan_cedge_igmp_feature_template resource
+- add support for sdwan_cedge_multicast_feature_template resource
+- add `enhanced_app_aware_routing` parameter support in `sdwan_cisco_system_feature_template`
 
 ## 1.1.0
 

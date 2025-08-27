@@ -479,6 +479,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
       }],
       try(s.actions.nat_pool, null) == null ? [] : [{
         type        = "nat"
+        nat_pool    = "pool"
         nat_pool_id = s.actions.nat_pool
       }],
       try(s.actions.dscp, null) == null && try(s.actions.forwarding_class, null) == null && try(s.actions.policer_list, null) == null && try(s.actions.service, null) == null && try(s.actions.tloc_list, null) == null && try(s.actions.tloc, null) == null && try(s.actions.vpn, null) == null && try(s.actions.local_tloc_list, null) == null && try(s.actions.next_hop, null) == null && try(s.actions.preferred_color_group, null) == null ? [] : [{

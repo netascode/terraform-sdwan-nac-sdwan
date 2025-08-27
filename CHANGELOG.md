@@ -19,6 +19,7 @@
 - add support for sdwan_cedge_multicast_feature_template resource
 - add `enhanced_app_aware_routing` parameter support in `sdwan_cisco_system_feature_template`
 - fix `devices` and `feature_versions` parameters of `sdwan_configuration_group` to be null when empty
+- fix `nat_pool` action not being set correctly in `sdwan_traffic_data_policy_definition`
 
 ## 1.1.0
 

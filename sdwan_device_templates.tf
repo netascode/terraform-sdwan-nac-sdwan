@@ -171,7 +171,9 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       sub_templates = !(can(st.ospf_template) ||
         can(st.bgp_template) ||
         can(st.ethernet_interface_templates) ||
+        can(st.igmp_template) ||
         can(st.ipsec_interface_templates) ||
+        can(st.multicast_template) ||
         can(st.svi_interface_templates)) ? null : flatten([
           try(st.ospf_template, null) == null ? [] : [{
             id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].id
@@ -193,6 +195,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
               type    = "cisco_dhcp_server"
             }]
           }],
+          try(st.igmp_template, null) == null ? [] : [{
+            id      = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[st.igmp_template].id
+            version = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[st.igmp_template].version
+            type    = "cedge_igmp"
+          }],
           try(st.ipsec_interface_templates, null) == null ? [] : [for iit in try(st.ipsec_interface_templates, []) : {
             id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
             version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
@@ -202,6 +209,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
               version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
               type    = "cisco_dhcp_server"
             }]
+          }],
+          try(st.multicast_template, null) == null ? [] : [{
+            id      = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].id
+            version = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].version
+            type    = "cedge_multicast"
           }],
           try(st.svi_interface_templates, null) == null ? [] : [for sit in try(st.svi_interface_templates, []) : {
             id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id

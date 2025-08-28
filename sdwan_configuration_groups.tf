@@ -11,7 +11,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     try(each.value.system_profile, null) == null ? [] : [sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id],
     try(each.value.transport_profile, null) == null ? [] : [sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id],
   ])
-  devices = [
+  devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
       id     = router.chassis_id
       deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
@@ -22,7 +22,14 @@ resource "sdwan_configuration_group" "configuration_group" {
       }]
     } if router.configuration_group == each.value.name
   ]
-  feature_versions = flatten([
+  feature_versions = length(flatten([
+    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
+    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
+    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
+    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
+    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    ])) == 0 ? null : flatten([
     try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
     try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
     try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
@@ -37,6 +44,7 @@ resource "sdwan_configuration_group" "configuration_group" {
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
+<<<<<<< HEAD
         merge(
           try(local.unsupported_features[each.value.transport_profile][feature], {}),
           try(local.unsupported_features[each.value.service_profile][feature], {})
@@ -45,11 +53,16 @@ resource "sdwan_configuration_group" "configuration_group" {
           try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
           try(local.unsupported_features[each.value.service_profile][feature], null) != null
         )
+=======
+        try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null))
+        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null)) != null
+>>>>>>> main
       ]
       ])) == 0 ? null : flatten([
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
+<<<<<<< HEAD
         merge(
           try(local.unsupported_features[each.value.transport_profile][feature], {}),
           try(local.unsupported_features[each.value.service_profile][feature], {})
@@ -58,6 +71,10 @@ resource "sdwan_configuration_group" "configuration_group" {
           try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
           try(local.unsupported_features[each.value.service_profile][feature], null) != null
         )
+=======
+        try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null))
+        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null)) != null
+>>>>>>> main
       ]
     ])
   }]
@@ -114,9 +131,6 @@ locals {
     try(local.feature_profiles.policy_object_profile.standard_community_lists, null) == null ? [] : [for standard_community_list in try(local.feature_profiles.policy_object_profile.standard_community_lists, []) : [
       sdwan_policy_object_standard_community_list.policy_object_standard_community_list[standard_community_list.name].version,
     ]],
-    try(local.feature_profiles.policy_object_profile.tloc_lists, null) == null ? [] : [for tloc_list in try(local.feature_profiles.policy_object_profile.tloc_lists, []) : [
-      sdwan_policy_object_tloc_list.policy_object_tloc_list[tloc_list.name].version,
-    ]],
   ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
@@ -129,11 +143,17 @@ locals {
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [
         sdwan_service_tracker_feature.service_tracker_feature["${profile.name}-${ipv4_tracker.name}"].version
       ]],
+      try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
+        sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version
+      ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [
         sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${profile.name}-${object_tracker_group.name}"].version
       ]],
       try(profile.object_trackers, null) == null ? [] : [for object_tracker in try(profile.object_trackers, []) : [
         sdwan_service_object_tracker_feature.service_object_tracker_feature["${profile.name}-${object_tracker.name}"].version
+      ]],
+      try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
+        sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${route_policy.name}"].version
       ]],
     ])
   }
@@ -158,6 +178,12 @@ locals {
   }
   transport_profile_features_versions = {
     for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => flatten([
+      try(profile.cellular_profiles, null) == null ? [] : [for cellular_profile in try(profile.cellular_profiles, []) : [
+        sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature["${profile.name}-${cellular_profile.name}"].version
+      ]],
+      try(profile.gps_features, null) == null ? [] : [for gps_feature in try(profile.gps_features, []) : [
+        sdwan_transport_gps_feature.transport_gps_feature["${profile.name}-${gps_feature.name}"].version
+      ]],
       try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
         sdwan_transport_tracker_group_feature.transport_tracker_group_feature["${profile.name}-${ipv4_tracker_group.name}"].version
       ]],
@@ -173,6 +199,9 @@ locals {
       try(profile.management_vpn, null) == null ? [] : [sdwan_transport_management_vpn_feature.transport_management_vpn_feature["${profile.name}-management_vpn"].version],
       try(profile.management_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.management_vpn.ethernet_interfaces, []) : [
         sdwan_transport_management_vpn_interface_ethernet_feature.transport_management_vpn_interface_ethernet_feature["${profile.name}-management_vpn-${interface.name}"].version
+      ]],
+      try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
+        sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${route_policy.name}"].version
       ]],
       try(profile.wan_vpn, null) == null ? [] : [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${profile.name}-wan_vpn"].version],
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
@@ -194,7 +223,7 @@ locals {
             parcel_type = "wan/vpn/interface/ethernet"
           }
         },
-        # Other features to be added when supported
+        # Other transport features to be added when supported
         # {
         #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
         #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id

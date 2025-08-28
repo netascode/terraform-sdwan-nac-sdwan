@@ -7,6 +7,19 @@
 - add support for sdwan_transport_route_policy_feature resource
 - modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
 - add default handling of ip_type for sdwan_route_policy_definition
+- make local_tloc_list encaps parameter optional in traffic data policy
+- add support for sdwan_policy_object_application_list resource
+- bump supported provider version to >= 0.7.0
+- add `destination_ip_prefix_variable` and `source_ip_prefix_variable` parameters support in `sdwan_ipv4_acl_policy_definition` and `sdwan_ipv4_device_acl_policy_definition`
+- add `expanded_community_list_variable` parameter support in `sdwan_route_policy_definition`
+- add support for sdwan_policy_object_app_probe_class resource
+- update UX 2.0 enum values to be lowercase wherever possible
+- add support for sdwan_service_lan_vpn resource
+- add support for sdwan_cedge_igmp_feature_template resource
+- add support for sdwan_cedge_multicast_feature_template resource
+- add `enhanced_app_aware_routing` parameter support in `sdwan_cisco_system_feature_template`
+- fix `devices` and `feature_versions` parameters of `sdwan_configuration_group` to be null when empty
+- fix `nat_pool` action not being set correctly in `sdwan_traffic_data_policy_definition`
 
 ## 1.1.0
 

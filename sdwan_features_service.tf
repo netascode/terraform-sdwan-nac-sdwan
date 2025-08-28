@@ -130,7 +130,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       subnet_mask              = try(route.subnet_mask, null)
       subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
       interface                = try(route.interfaces, null)
-      interface_variable       = try("{{${route.interfaces_variable}}}", null)
+      interfaces_variable      = try("{{${route.interfaces_variable}}}", null)
       vpn                      = 0
     }
   ]
@@ -149,7 +149,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       subnet_mask              = try(route.subnet_mask, null)
       subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
       interface                = try(route.interfaces, null)
-      interface_variable       = try("{{${route.interfaces_variable}}}", null)
+      interfaces_variable      = try("{{${route.interfaces_variable}}}", null)
     }
   ]
   ipv4_import_route_targets = try(length(each.value.lan_vpn.ipv4_import_route_targets) == 0, true) ? null : [
@@ -549,7 +549,6 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   xconnect                                       = try(each.value.interface.gre_tloc_extension_xconnect, null)
   xconnect_variable                              = try("{{${each.value.interface.gre_tloc_extension_xconnect_variable}}}", null)
 }
-
 
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
   for_each = {

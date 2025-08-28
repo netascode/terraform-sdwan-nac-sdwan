@@ -44,7 +44,6 @@ resource "sdwan_configuration_group" "configuration_group" {
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
-<<<<<<< HEAD
         merge(
           try(local.unsupported_features[each.value.transport_profile][feature], {}),
           try(local.unsupported_features[each.value.service_profile][feature], {})
@@ -53,16 +52,11 @@ resource "sdwan_configuration_group" "configuration_group" {
           try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
           try(local.unsupported_features[each.value.service_profile][feature], null) != null
         )
-=======
-        try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null))
-        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null)) != null
->>>>>>> main
       ]
       ])) == 0 ? null : flatten([
       for tag in try(each.value.device_tags, []) :
       [
         for feature in try(tag.features, []) :
-<<<<<<< HEAD
         merge(
           try(local.unsupported_features[each.value.transport_profile][feature], {}),
           try(local.unsupported_features[each.value.service_profile][feature], {})
@@ -71,10 +65,6 @@ resource "sdwan_configuration_group" "configuration_group" {
           try(local.unsupported_features[each.value.transport_profile][feature], null) != null ||
           try(local.unsupported_features[each.value.service_profile][feature], null) != null
         )
-=======
-        try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null))
-        if tag.name != device_tag.name && try(local.unsupported_features[each.value.transport_profile][feature], try(local.unsupported_features[each.value.service_profile][feature], null)) != null
->>>>>>> main
       ]
     ])
   }]

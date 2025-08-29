@@ -1,4 +1,4 @@
-## 1.2.0 (unreleased)
+## 1.2.0
 
 - add support for UX 1.0 IGMP feature template
 - add support for UX 1.0 multicast feature template

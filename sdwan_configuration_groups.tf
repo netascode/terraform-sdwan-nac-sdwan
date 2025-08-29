@@ -1,4 +1,3 @@
-
 resource "sdwan_configuration_group" "configuration_group" {
   for_each    = { for g in local.configuration_groups : g.name => g }
   name        = each.value.name
@@ -216,15 +215,18 @@ locals {
         # }
       )
     },
-    # Service profile features
     {
       for profile in try(local.feature_profiles.service_profiles, []) : profile.name => merge(
-        {
-          for feature in try(profile.lan_vpns, []) : feature.name => {
-            parcel_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${feature.name}"].id
-            parcel_type = "lan/vpn"
-          }
-        }
+        merge(flatten([
+          for lan_vpn in try(profile.lan_vpns, []) : [
+            for feature in try(lan_vpn.ethernet_interfaces, []) : {
+              (feature.name) = {
+                parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-lan_vpn-${feature.name}"].id
+                parcel_type = "lan/vpn/interface/ethernet"
+              }
+            }
+          ]
+        ])...)
       )
     }
   )

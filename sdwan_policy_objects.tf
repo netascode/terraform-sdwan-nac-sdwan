@@ -132,7 +132,7 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
 }
 
 resource "sdwan_policy_object_preferred_color_group" "policy_object_preferred_color_group" {
-  for_each           = { for p in try(local.feature_profiles.policy_object_profile.preferred_color_group_lists, {}) : p.name => p }
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.preferred_color_groups, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id

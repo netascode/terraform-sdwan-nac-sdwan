@@ -409,6 +409,11 @@ defaults:
       policy_object_profile:
         name: policy_objects
       service_profiles:
+        lan_vpns:
+          ipv4_static_routes:
+            gateway: nexthop
+          ipv6_static_routes:
+            gateway: nexthop
         route_policies:
           sequences:
             name: route

@@ -1,9 +1,32 @@
 ---
 defaults:
   sdwan:
+    localized_policies:
+      definitions:
+        route_policies:
+          sequences:
+            ip_type: ipv4
+      feature_policies:
+        ipv4_application_visibility: false
+        ipv6_application_visibility: false
+        ipv4_flow_visibility: false
+        ipv6_flow_visibility: false
+        implicit_acl_logging: false
     centralized_policies:
       definitions:
+        control_policy:
+          custom_control_topology:
+            sequences:
+              ip_type: ipv4
         data_policy:
+          application_aware_routing:
+            sequences:
+              ip_type: ipv4
+              type: app_route
+          traffic_data:
+            sequences:
+              ip_type: ipv4
+              type: custom
           cflowd:
             protocol: ipv4
             tos: false
@@ -117,6 +140,19 @@ defaults:
           - C8200-1N-4T
           - C8200L-1N-4T
         ssh_version: 2
+      igmp_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500-20X6C
+          - C8500L-8S4X
+          - C8200-1N-4T
+          - C8200L-1N-4T
       ipsec_interface_templates:
         device_types:
           - C8000V
@@ -318,6 +354,49 @@ defaults:
           - C8500L-8S4X
           - C8200-1N-4T
           - C8200L-1N-4T
+      gre_interface_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8500-12X4QC
+          - C8500-12X
+          - C8500-20X6C
+          - C8500L-8S4X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_interface_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_controller_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+      cellular_profile_templates:
+        device_types:
+          - C8000V
+          - C8300-1N1S-4T2X
+          - C8300-1N1S-6T
+          - C8300-2N2S-6T
+          - C8300-2N2S-4T2X
+          - C8200-1N-4T
+          - C8200L-1N-4T
+    sites:
+      routers:
+        configuration_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -325,6 +404,20 @@ defaults:
       other_profiles:
         thousandeyes:
           name: thousandeyes
+        ucse:
+          name: ucse
+      policy_object_profile:
+        name: policy_objects
+      service_profiles:
+        lan_vpns:
+          ipv4_static_routes:
+            gateway: nexthop
+          ipv6_static_routes:
+            gateway: nexthop
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
       system_profiles:
         aaa:
           name: aaa
@@ -340,6 +433,14 @@ defaults:
           name: flexible_port_speed
         global:
           name: global
+        ipv4_device_access_policy:
+          name: ipv4_device_access_policy
+          sequences:
+            name: acl
+        ipv6_device_access_policy:
+          name: ipv6_device_access_policy
+          sequences:
+            name: acl
         logging:
           name: logging
         mrf:
@@ -355,8 +456,32 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        gps_features:
+          gps_enable: true
         ipv4_acls:
           sequences:
             name: acl
+        management_vpn:
+          name: management_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+          ipv4_static_routes:
+            gateway: nexthop
+          ipv6_static_routes:
+            gateway: nexthop
+        route_policies:
+          sequences:
+            name: route
+            protocol: ipv4
         wan_vpn:
           name: wan_vpn
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
+            tunnel_interface:
+              ipsec_encapsulation: true
+          ipv4_static_routes:
+            gateway: nexthop
+          ipv6_static_routes:
+            gateway: nexthop

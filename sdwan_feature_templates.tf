@@ -154,6 +154,25 @@ resource "sdwan_cedge_global_feature_template" "cedge_global_feature_template" {
   depends_on                    = [sdwan_localized_policy.localized_policy]
 }
 
+resource "sdwan_cedge_igmp_feature_template" "cedge_igmp_feature_template" {
+  for_each     = { for t in try(local.edge_feature_templates.igmp_templates, {}) : t.name => t }
+  name         = each.value.name
+  description  = each.value.description
+  device_types = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.igmp_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for interface in each.value.interfaces : {
+    name          = try(interface.name, null)
+    name_variable = try(interface.name_variable, null)
+    optional      = try(interface.optional, null)
+    join_groups = !can(interface.join_groups) ? null : [for group in interface.join_groups : {
+      group_address          = try(group.group_address, null)
+      group_address_variable = try(group.group_address_variable, null)
+      source                 = try(group.source, null)
+      source_variable        = try(group.source_variable, null)
+    }]
+  }]
+  depends_on = [sdwan_localized_policy.localized_policy]
+}
+
 resource "sdwan_cisco_banner_feature_template" "cisco_banner_feature_template" {
   for_each       = { for t in try(local.edge_feature_templates.banner_templates, {}) : t.name => t }
   name           = each.value.name
@@ -472,7 +491,7 @@ resource "sdwan_cisco_dhcp_server_feature_template" "cisco_dhcp_server_feature_t
   tftp_servers_variable      = try(each.value.tftp_servers_variable, null)
   options = try(length(each.value.options) == 0, true) ? null : [for option in each.value.options : {
     ascii                = try(option.ascii, null)
-    ascii_variable       = try(option.source_ip_variable, null)
+    ascii_variable       = try(option.ascii_variable, null)
     hex                  = try(option.hex, null)
     hex_variable         = try(option.hex_variable, null)
     ip_address           = try(option.ip_addresses, null)
@@ -546,6 +565,19 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     ciphersuite_list_variable    = try(prof.version_ciphersuites_variablevariable, null)
   }]
   depends_on = [sdwan_localized_policy.localized_policy]
+}
+
+resource "sdwan_cedge_multicast_feature_template" "cedge_multicast_feature_template" {
+  for_each                  = { for m in try(local.edge_feature_templates.multicast_templates, {}) : m.name => m }
+  name                      = each.value.name
+  description               = each.value.description
+  device_types              = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.multicast_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  spt_only                  = try(each.value.spt_only, null)
+  spt_only_variable         = try(each.value.spt_only_variable, null)
+  local_replicator          = try(each.value.local_replicator, null)
+  local_replicator_variable = try(each.value.local_replicator_variable, null)
+  threshold                 = try(each.value.threshold, null)
+  threshold_variable        = try(each.value.threshold_variable, null)
 }
 
 resource "sdwan_cisco_ntp_feature_template" "cisco_ntp_feature_template" {
@@ -850,6 +882,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
     a == "ip-udp-esp" ? "ah-sha1-hmac" :
     a == "ip-udp-esp-no-id" ? "ah-no-id" :
   a]
+  authentication_type_variable = try(each.value.authentication_types_variable, null)
   keychains = try(length(each.value.key_chains) == 0, true) ? null : [for key in each.value.key_chains : {
     key_id = key.key_id
     name   = key.name
@@ -1048,6 +1081,8 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   track_transport_variable               = try(each.value.track_transport_variable, null)
   transport_gateway                      = try(each.value.transport_gateway, null)
   transport_gateway_variable             = try(each.value.transport_gateway_variable, null)
+  enhanced_app_aware_routing             = try(each.value.enhanced_app_aware_routing, null)
+  # enhanced_app_aware_routing_variable    = try(each.value.enhanced_app_aware_routing_variable, null)
   object_trackers = try(length(each.value.object_trackers) == 0, true) ? null : [for obj in each.value.object_trackers : {
     object_number          = try(obj.id, null)
     object_number_variable = try(obj.id_variable, null)
@@ -1183,20 +1218,20 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     }]
   ])
   ipv4_static_gre_routes = try(length(each.value.ipv4_static_gre_routes) == 0, true) ? null : [for route in each.value.ipv4_static_gre_routes : {
-    interface          = try(route.interfaces, null)
-    interface_variable = try(route.interfaces_variable, null)
-    prefix             = try(route.prefix, null)
-    prefix_variable    = try(route.prefix_variable, null)
-    optional           = try(route.optional, null)
-    vpn_id             = 0
+    interfaces          = try(route.interfaces, null)
+    interfaces_variable = try(route.interfaces_variable, null)
+    prefix              = try(route.prefix, null)
+    prefix_variable     = try(route.prefix_variable, null)
+    optional            = try(route.optional, null)
+    vpn_id              = 0
   }]
   ipv4_static_ipsec_routes = try(length(each.value.ipv4_static_ipsec_routes) == 0, true) ? null : [for route in each.value.ipv4_static_ipsec_routes : {
-    interface          = try(route.interfaces, null)
-    interface_variable = try(route.interfaces_variable, null)
-    prefix             = try(route.prefix, null)
-    prefix_variable    = try(route.prefix_variable, null)
-    optional           = try(route.optional, null)
-    vpn_id             = 0
+    interfaces          = try(route.interfaces, null)
+    interfaces_variable = try(route.interfaces_variable, null)
+    prefix              = try(route.prefix, null)
+    prefix_variable     = try(route.prefix_variable, null)
+    optional            = try(route.optional, null)
+    vpn_id              = 0
   }]
   ipv4_static_routes = try(length(each.value.ipv4_static_routes) == 0, true) ? null : [for route in each.value.ipv4_static_routes : {
     dhcp              = try(route.next_hop_dhcp, null)
@@ -1399,7 +1434,7 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
   block_non_source_ip_variable                   = try(each.value.block_non_source_ip_variable, null)
   core_region                                    = try(each.value.tunnel_interface.core_region, null)
   core_region_variable                           = try(each.value.tunnel_interface.core_region_variable, null)
-  dhcp                                           = try(each.value.ipv4_address_dhcp, null) == null ? null : true
+  dhcp                                           = try(each.value.ipv4_address_dhcp, null) == true ? true : null
   dhcp_distance                                  = try(each.value.dhcp_distance, null)
   dhcp_distance_variable                         = try(each.value.dhcp_distance_variable, null)
   duplex                                         = try(each.value.duplex, null)
@@ -1653,10 +1688,10 @@ resource "sdwan_cisco_vpn_interface_feature_template" "cisco_vpn_interface_featu
     group_id          = try(group.id, null)
     group_id_variable = try(group.id_variable, null)
     ipv6_addresses = try(group.link_local_address, group.link_local_address_variable, group.global_prefix, group.global_prefix_variable, null) == null ? null : [{
-      ipv6_link_local            = try(group.link_local_address, null)
-      ipv6_link_local_variable   = try(group.link_local_address_variable, null)
-      prefix                     = try(group.global_prefix, null)
-      prefix_link_local_variable = try(group.global_prefix_variable, null)
+      ipv6_link_local          = try(group.link_local_address, null)
+      ipv6_link_local_variable = try(group.link_local_address_variable, null)
+      prefix                   = try(group.global_prefix, null)
+      prefix_variable          = try(group.global_prefix_variable, null)
     }]
     optional                   = try(group.optional, null)
     priority                   = try(group.priority, null)
@@ -1972,7 +2007,7 @@ resource "sdwan_vpn_interface_svi_feature_template" "vpn_interface_svi_feature_t
       link_local_address          = try(v.link_local_address, null)
       link_local_address_variable = try(v.link_local_address_variable, null)
       prefix                      = try(v.global_prefix, null)
-      prefix_link_local_variable  = try(v.global_prefix_variable, null)
+      prefix_variable             = try(v.global_prefix_variable, null)
     }]
     ipv6_secondary_addresses = try(length(v.secondary_addresses) == 0, true) ? null : [for sa in try(v.secondary_addresses, []) : {
       prefix          = try(sa.address, null)
@@ -2012,4 +2047,291 @@ resource "sdwan_security_app_hosting_feature_template" "security_app_hosting_fea
     resource_profile_variable = try(each.value.resource_profile_variable, null)
     instance_id               = 1
   }]
+}
+
+resource "sdwan_cellular_controller_feature_template" "cellular_controller_feature_template" {
+  for_each                       = { for t in try(local.edge_feature_templates.cellular_controller_templates, {}) : t.name => t }
+  name                           = each.value.name
+  description                    = each.value.description
+  device_types                   = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_controller_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  cellular_interface_id          = try(each.value.cellular_interface_id, null)
+  cellular_interface_id_variable = try(each.value.cellular_interface_id_variable, null)
+  primary_sim_slot               = try(each.value.primary_sim_slot, null)
+  primary_sim_slot_variable      = try(each.value.primary_sim_slot_variable, null)
+  sim_failover_retries           = try(each.value.sim_failover_retries, null)
+  sim_failover_retries_variable  = try(each.value.sim_failover_retries_variable, null)
+  sim_failover_timeout           = try(each.value.sim_failover_timeout, null)
+  sim_failover_timeout_variable  = try(each.value.sim_failover_timeout_variable, null)
+}
+
+resource "sdwan_cellular_cedge_profile_feature_template" "cellular_cedge_profile_feature_template" {
+  for_each                          = { for t in try(local.edge_feature_templates.cellular_profile_templates, {}) : t.name => t }
+  name                              = each.value.name
+  description                       = each.value.description
+  device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_profile_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  profile_id                        = try(each.value.profile_id, null)
+  profile_id_variable               = try(each.value.profile_id_variable, null)
+  access_point_name                 = try(each.value.access_point_name, null)
+  access_point_name_variable        = try(each.value.access_point_name_variable, null)
+  packet_data_network_type          = try(each.value.packet_data_network_type, null)
+  packet_data_network_type_variable = try(each.value.packet_data_network_type_variable, null)
+  authentication_type               = try(each.value.authentication_type, null)
+  authentication_type_variable      = try(each.value.authentication_type_variable, null)
+  profile_username                  = try(each.value.profile_username, null)
+  profile_username_variable         = try(each.value.profile_username_variable, null)
+  profile_password                  = try(each.value.profile_password, null)
+  profile_password_variable         = try(each.value.profile_password_variable, null)
+  no_overwrite                      = try(each.value.no_overwrite, null)
+  no_overwrite_variable             = try(each.value.no_overwrite_variable, null)
+}
+
+resource "sdwan_cisco_vpn_interface_gre_feature_template" "cisco_vpn_interface_gre_feature_template" {
+  for_each                         = { for t in try(local.edge_feature_templates.gre_interface_templates, {}) : t.name => t }
+  name                             = each.value.name
+  description                      = each.value.description
+  device_types                     = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.gre_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  interface_name                   = try(each.value.interface_name, null)
+  interface_name_variable          = try(each.value.interface_name_variable, null)
+  interface_description            = try(each.value.interface_description, null)
+  interface_description_variable   = try(each.value.interface_description_variable, null)
+  shutdown                         = try(each.value.shutdown, null)
+  shutdown_variable                = try(each.value.shutdown_variable, null)
+  tunnel_source_interface          = try(each.value.tunnel_source_interface, null)
+  tunnel_source_interface_variable = try(each.value.tunnel_source_interface_variable, null)
+  tunnel_source                    = try(each.value.tunnel_source_ip, null)
+  tunnel_source_variable           = try(each.value.tunnel_source_ip_variable, null)
+  tunnel_destination               = try(each.value.tunnel_destination, null)
+  tunnel_destination_variable      = try(each.value.tunnel_destination_variable, null)
+  ip_address                       = try(each.value.ip_address, null)
+  ip_address_variable              = try(each.value.ip_address_variable, null)
+  ip_mtu                           = try(each.value.ip_mtu, null)
+  ip_mtu_variable                  = try(each.value.ip_mtu_variable, null)
+  tcp_mss_adjust                   = try(each.value.tcp_mss, null)
+  tcp_mss_adjust_variable          = try(each.value.tcp_mss_variable, null)
+  clear_dont_fragment              = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_variable     = try(each.value.clear_dont_fragment_variable, null)
+  rewrite_rule                     = try(each.value.rewrite_rule, null)
+  rewrite_rule_variable            = try(each.value.rewrite_rule_variable, null)
+  tracker                          = try([each.value.tracker], null)
+  tracker_variable                 = try(each.value.tracker_variable, null)
+  application                      = try(each.value.application, null)
+  application_variable             = try(each.value.application_variable, null)
+  access_lists = try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+}
+
+resource "sdwan_vpn_interface_cellular_feature_template" "vpn_interface_cellular_feature_template" {
+  for_each                                                = { for t in try(local.edge_feature_templates.cellular_interface_templates, {}) : t.name => t }
+  name                                                    = each.value.name
+  description                                             = each.value.description
+  device_types                                            = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.cellular_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  cellular_interface_name                                 = try(each.value.interface_name, null)
+  cellular_interface_name_variable                        = try(each.value.interface_name_variable, null)
+  interface_description                                   = try(each.value.interface_description, null)
+  interface_description_variable                          = try(each.value.interface_description_variable, null)
+  shutdown                                                = try(each.value.shutdown, null)
+  shutdown_variable                                       = try(each.value.shutdown_variable, null)
+  ipv4_dhcp_helper                                        = try(each.value.dhcp_helpers, null)
+  ipv4_dhcp_helper_variable                               = try(each.value.dhcp_helpers_variable, null)
+  bandwidth_downstream                                    = try(each.value.bandwidth_downstream, null)
+  bandwidth_downstream_variable                           = try(each.value.bandwidth_downstream_variable, null)
+  bandwidth_upstream                                      = try(each.value.bandwidth_upstream, null)
+  bandwidth_upstream_variable                             = try(each.value.bandwidth_upstream_variable, null)
+  ip_mtu                                                  = try(each.value.ip_mtu, null)
+  ip_mtu_variable                                         = try(each.value.ip_mtu_variable, null)
+  tunnel_interface_allow_all                              = try(each.value.tunnel_interface.allow_service_all, null)
+  tunnel_interface_allow_all_variable                     = try(each.value.tunnel_interface.allow_service_all_variable, null)
+  tunnel_interface_allow_bgp                              = try(each.value.tunnel_interface.allow_service_bgp, null)
+  tunnel_interface_allow_bgp_variable                     = try(each.value.tunnel_interface.allow_service_bgp_variable, null)
+  tunnel_interface_allow_dhcp                             = try(each.value.tunnel_interface.allow_service_dhcp, null)
+  tunnel_interface_allow_dhcp_variable                    = try(each.value.tunnel_interface.allow_service_dhcp_variable, null)
+  tunnel_interface_allow_dns                              = try(each.value.tunnel_interface.allow_service_dns, null)
+  tunnel_interface_allow_dns_variable                     = try(each.value.tunnel_interface.allow_service_dns_variable, null)
+  tunnel_interface_allow_https                            = try(each.value.tunnel_interface.allow_service_https, null)
+  tunnel_interface_allow_https_variable                   = try(each.value.tunnel_interface.allow_service_https_variable, null)
+  tunnel_interface_allow_icmp                             = try(each.value.tunnel_interface.allow_service_icmp, null)
+  tunnel_interface_allow_icmp_variable                    = try(each.value.tunnel_interface.allow_service_icmp_variable, null)
+  tunnel_interface_allow_netconf                          = try(each.value.tunnel_interface.allow_service_netconf, null)
+  tunnel_interface_allow_netconf_variable                 = try(each.value.tunnel_interface.allow_service_netconf_variable, null)
+  tunnel_interface_allow_ntp                              = try(each.value.tunnel_interface.allow_service_ntp, null)
+  tunnel_interface_allow_ntp_variable                     = try(each.value.tunnel_interface.allow_service_ntp_variable, null)
+  tunnel_interface_allow_ospf                             = try(each.value.tunnel_interface.allow_service_ospf, null)
+  tunnel_interface_allow_ospf_variable                    = try(each.value.tunnel_interface.allow_service_ospf_variable, null)
+  tunnel_interface_allow_snmp                             = try(each.value.tunnel_interface.allow_service_snmp, null)
+  tunnel_interface_allow_snmp_variable                    = try(each.value.tunnel_interface.allow_service_snmp_variable, null)
+  tunnel_interface_allow_ssh                              = try(each.value.tunnel_interface.allow_service_ssh, null)
+  tunnel_interface_allow_ssh_variable                     = try(each.value.tunnel_interface.allow_service_ssh_variable, null)
+  tunnel_interface_allow_stun                             = try(each.value.tunnel_interface.allow_service_stun, null)
+  tunnel_interface_allow_stun_variable                    = try(each.value.tunnel_interface.allow_service_stun_variable, null)
+  tunnel_interface_bind_loopback_tunnel                   = try(each.value.tunnel_interface.bind_loopback_tunnel, null)
+  tunnel_interface_bind_loopback_tunnel_variable          = try(each.value.tunnel_interface.bind_loopback_tunnel_variable, null)
+  tunnel_interface_border                                 = try(each.value.tunnel_interface.border, null)
+  tunnel_interface_border_variable                        = try(each.value.tunnel_interface.border_variable, null)
+  tunnel_interface_carrier                                = try(each.value.tunnel_interface.carrier, null)
+  tunnel_interface_carrier_variable                       = try(each.value.tunnel_interface.carrier_variable, null)
+  tunnel_interface_clear_dont_fragment                    = try(each.value.tunnel_interface.clear_dont_fragment, null)
+  tunnel_interface_clear_dont_fragment_variable           = try(each.value.tunnel_interface.clear_dont_fragment_variable, null)
+  tunnel_interface_color                                  = try(each.value.tunnel_interface.color, null)
+  tunnel_interface_color_variable                         = try(each.value.tunnel_interface.color_variable, null)
+  tunnel_interface_color_restrict                         = try(each.value.tunnel_interface.restrict, null)
+  tunnel_interface_color_restrict_variable                = try(each.value.tunnel_interface.restrict_variable, null)
+  core_region                                             = try(each.value.tunnel_interface.core_region, null)
+  core_region_variable                                    = try(each.value.tunnel_interface.core_region_variable, null)
+  enable_core_region                                      = try(each.value.tunnel_interface.enable_core_region, null)
+  enable_core_region_variable                             = try(each.value.tunnel_interface.enable_core_region_variable, null)
+  tunnel_interface_exclude_controller_group_list          = try(each.value.tunnel_interface.exclude_controller_groups, null)
+  tunnel_interface_exclude_controller_group_list_variable = try(each.value.tunnel_interface.exclude_controller_groups_variable, null)
+  tunnel_interface_encapsulations = try(each.value.tunnel_interface.gre_encapsulation, each.value.tunnel_interface.ipsec_encapsulation, null) == null ? null : flatten([
+    try(each.value.tunnel_interface.gre_encapsulation, null) == null ? [] : [{
+      encapsulation       = "gre"
+      preference          = try(each.value.tunnel_interface.gre_preference, null)
+      preference_variable = try(each.value.tunnel_interface.gre_preference_variable, null)
+      weight              = try(each.value.tunnel_interface.gre_weight, null)
+      weight_variable     = try(each.value.tunnel_interface.gre_weight_variable, null)
+    }],
+    try(each.value.tunnel_interface.ipsec_encapsulation, null) == null ? [] : [{
+      encapsulation       = "ipsec"
+      preference          = try(each.value.tunnel_interface.ipsec_preference, null)
+      preference_variable = try(each.value.tunnel_interface.ipsec_preference_variable, null)
+      weight              = try(each.value.tunnel_interface.ipsec_weight, null)
+      weight_variable     = try(each.value.tunnel_interface.ipsec_weight_variable, null)
+    }]
+  ])
+  tunnel_interface_groups                                 = try([each.value.tunnel_interface.group], null)
+  tunnel_interface_groups_variable                        = try(each.value.tunnel_interface.group_variable, null)
+  tunnel_interface_hello_interval                         = try(each.value.tunnel_interface.hello_interval, null)
+  tunnel_interface_hello_interval_variable                = try(each.value.tunnel_interface.hello_interval_variable, null)
+  tunnel_interface_hello_tolerance                        = try(each.value.tunnel_interface.hello_tolerance, null)
+  tunnel_interface_hello_tolerance_variable               = try(each.value.tunnel_interface.hello_tolerance_variable, null)
+  tunnel_interface_last_resort_circuit                    = try(each.value.tunnel_interface.last_resort_circuit, null)
+  tunnel_interface_last_resort_circuit_variable           = try(each.value.tunnel_interface.last_resort_circuit_variable, null)
+  tunnel_interface_low_bandwidth_link                     = try(each.value.tunnel_interface.low_bandwidth_link, null)
+  tunnel_interface_low_bandwidth_link_variable            = try(each.value.tunnel_interface.low_bandwidth_link_variable, null)
+  tunnel_interface_max_control_connections                = try(each.value.tunnel_interface.max_control_connections, null)
+  tunnel_interface_max_control_connections_variable       = try(each.value.tunnel_interface.max_control_connections_variable, null)
+  tunnel_interface_nat_refresh_interval                   = try(each.value.tunnel_interface.nat_refresh_interval, null)
+  tunnel_interface_nat_refresh_interval_variable          = try(each.value.tunnel_interface.nat_refresh_interval_variable, null)
+  tunnel_interface_network_broadcast                      = try(each.value.tunnel_interface.network_broadcast, null)
+  tunnel_interface_network_broadcast_variable             = try(each.value.tunnel_interface.network_broadcast_variable, null)
+  tunnel_interface_port_hop                               = try(each.value.tunnel_interface.port_hop, null)
+  tunnel_interface_port_hop_variable                      = try(each.value.tunnel_interface.port_hop_variable, null)
+  tunnel_interface_tunnel_tcp_mss                         = try(each.value.tunnel_interface.tcp_mss, null)
+  tunnel_interface_tunnel_tcp_mss_variable                = try(each.value.tunnel_interface.tcp_mss_variable, null)
+  tunnel_qos_mode                                         = try(each.value.tunnel_interface.per_tunnel_qos_mode, null)
+  tunnel_qos_mode_variable                                = try(each.value.tunnel_interface.per_tunnel_qos_mode_variable, null)
+  secondary_region                                        = try(each.value.tunnel_interface.secondary_region, null)
+  secondary_region_variable                               = try(each.value.tunnel_interface.secondary_region_variable, null)
+  tunnel_interface_vbond_as_stun_server                   = try(each.value.tunnel_interface.vbond_as_stun_server, null)
+  tunnel_interface_vbond_as_stun_server_variable          = try(each.value.tunnel_interface.vbond_as_stun_server_variable, null)
+  tunnel_interface_vmanage_connection_preference          = try(each.value.tunnel_interface.vmanage_connection_preference, null)
+  tunnel_interface_vmanage_connection_preference_variable = try(each.value.tunnel_interface.vmanage_connection_preference_variable, null)
+  nat                                                     = try(each.value.nat, null)
+  nat_refresh_mode                                        = try(each.value.nat_refresh_mode, null)
+  nat_refresh_mode_variable                               = try(each.value.nat_refresh_mode_variable, null)
+  nat_tcp_timeout                                         = try(each.value.nat_tcp_timeout, null)
+  nat_tcp_timeout_variable                                = try(each.value.nat_tcp_timeout_variable, null)
+  nat_udp_timeout                                         = try(each.value.nat_udp_timeout, null)
+  nat_udp_timeout_variable                                = try(each.value.nat_udp_timeout_variable, null)
+  nat_block_icmp_error                                    = try(each.value.nat_block_icmp, null)
+  nat_block_icmp_error_variable                           = try(each.value.nat_block_icmp_variable, null)
+  nat_response_to_ping                                    = try(each.value.nat_respond_to_ping, null)
+  nat_response_to_ping_variable                           = try(each.value.nat_respond_to_ping_variable, null)
+  nat_port_forwards = try(each.value.nat_port_forwarding_rules, null) == null ? null : [for pfr in each.value.nat_port_forwarding_rules : {
+    port_start_range            = try(pfr.port_range_start, null)
+    port_end_range              = try(pfr.port_range_end, null)
+    protocol                    = try(pfr.protocol, null)
+    private_vpn                 = try(pfr.vpn, null)
+    private_vpn_variable        = try(pfr.vpn_variable, null)
+    private_ip_address          = try(pfr.private_ip, null)
+    private_ip_address_variable = try(pfr.private_ip_variable, null)
+  }]
+  qos_adaptive_period                        = try(each.value.adaptive_qos_period, null)
+  qos_adaptive_period_variable               = try(each.value.adaptive_qos_period_variable, null)
+  qos_adaptive_bandwidth_downstream          = try(each.value.adaptive_qos_shaping_rate_downstream.default, null)
+  qos_adaptive_bandwidth_downstream_variable = try(each.value.adaptive_qos_shaping_rate_downstream.default_variable, null)
+  qos_adaptive_bandwidth_upstream            = try(each.value.adaptive_qos_shaping_rate_upstream.default, null)
+  qos_adaptive_bandwidth_upstream_variable   = try(each.value.adaptive_qos_shaping_rate_upstream.default_variable, null)
+  qos_adaptive_max_downstream                = try(each.value.adaptive_qos_shaping_rate_downstream.maximum, null)
+  qos_adaptive_max_downstream_variable       = try(each.value.adaptive_qos_shaping_rate_downstream.maximum_variable, null)
+  qos_adaptive_max_upstream                  = try(each.value.adaptive_qos_shaping_rate_upstream.maximum, null)
+  qos_adaptive_max_upstream_variable         = try(each.value.adaptive_qos_shaping_rate_upstream.maximum_variable, null)
+  qos_adaptive_min_downstream                = try(each.value.adaptive_qos_shaping_rate_downstream.minimum, null)
+  qos_adaptive_min_downstream_variable       = try(each.value.adaptive_qos_shaping_rate_downstream.minimum_variable, null)
+  qos_adaptive_min_upstream                  = try(each.value.adaptive_qos_shaping_rate_upstream.minimum, null)
+  qos_adaptive_min_upstream_variable         = try(each.value.adaptive_qos_shaping_rate_upstream.minimum_variable, null)
+  shaping_rate                               = try(each.value.shaping_rate, null)
+  shaping_rate_variable                      = try(each.value.shaping_rate_variable, null)
+  qos_map                                    = try(each.value.qos_map, null)
+  qos_map_variable                           = try(each.value.qos_map_variable, null)
+  qos_map_vpn                                = try(each.value.vpn_qos_map, null)
+  qos_map_vpn_variable                       = try(each.value.vpn_qos_map_variable, null)
+  write_rule                                 = try(each.value.rewrite_rule, null)
+  write_rule_variable                        = try(each.value.rewrite_rule_variable, null)
+  ipv4_access_lists = try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv4_ingress_access_list, each.value.ipv4_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv4_egress_access_list, each.value.ipv4_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv4_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv4_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+  ipv6_access_lists = try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? null : flatten([
+    try(each.value.ipv6_ingress_access_list, each.value.ipv6_ingress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_ingress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_ingress_access_list_variable, null)
+      direction         = "in"
+    }],
+    try(each.value.ipv6_egress_access_list, each.value.ipv6_egress_access_list_variable, null) == null ? [] : [{
+      acl_name          = try(each.value.ipv6_egress_access_list, null)
+      acl_name_variable = try(each.value.ipv6_egress_access_list_variable, null)
+      direction         = "out"
+    }]
+  ])
+  policers = try(each.value.ingress_policer_name, each.value.ingress_policer_name_variable, each.value.egress_policer_name, each.value.egress_policer_name_variable, null) == null ? null : flatten([
+    try(each.value.ingress_policer_name, each.value.ingress_policer_name_variable, null) == null ? [] : [{
+      policer_name = try(each.value.ingress_policer_name, null)
+      direction    = "in"
+    }],
+    try(each.value.egress_policer_name, each.value.egress_policer_name_variable, null) == null ? [] : [{
+      policer_name = try(each.value.egress_policer_name, null)
+      direction    = "out"
+    }]
+  ])
+  static_arps = try(length(each.value.static_arps) == 0, true) ? null : [for arp in each.value.static_arps : {
+    ip_address          = try(arp.ip_address, null)
+    ip_address_variable = try(arp.ip_address_variable, null)
+    mac                 = try(arp.mac_address, null)
+    mac_variable        = try(arp.mac_address_variable, null)
+    optional            = try(arp.optional, null)
+  }]
+  pmtu_discovery                   = try(each.value.path_mtu_discovery, null)
+  pmtu_discovery_variable          = try(each.value.path_mtu_discovery_variable, null)
+  tcp_mss                          = try(each.value.tcp_mss, null)
+  tcp_mss_variable                 = try(each.value.tcp_mss_variable, null)
+  clear_dont_fragment_bit          = try(each.value.clear_dont_fragment, null)
+  clear_dont_fragment_bit_variable = try(each.value.clear_dont_fragment_variable, null)
+  static_ingress_qos               = try(each.value.static_ingress_qos, null)
+  static_ingress_qos_variable      = try(each.value.static_ingress_qos_variable, null)
+  autonegotiate                    = try(each.value.autonegotiate, null)
+  autonegotiate_variable           = try(each.value.autonegotiate_variable, null)
+  tloc_extension                   = try(each.value.tloc_extension, null)
+  tloc_extension_variable          = try(each.value.tloc_extension_variable, null)
+  tracker                          = try([each.value.tracker], null)
+  tracker_variable                 = try(each.value.tracker_variable, null)
+  ip_directed_broadcast            = try(each.value.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable   = try(each.value.ip_directed_broadcast_variable, null)
 }

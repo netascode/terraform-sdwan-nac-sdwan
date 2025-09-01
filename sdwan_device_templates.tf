@@ -134,6 +134,16 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             version = sdwan_cisco_secure_internet_gateway_feature_template.cisco_secure_internet_gateway_feature_template[each.value.vpn_0_template.secure_internet_gateway_template].version
             type    = "cisco_secure_internet_gateway"
           }],
+          try(each.value.vpn_0_template.gre_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.gre_interface_templates, []) : {
+            id      = sdwan_cisco_vpn_interface_gre_feature_template.cisco_vpn_interface_gre_feature_template[sit.name].id
+            version = sdwan_cisco_vpn_interface_gre_feature_template.cisco_vpn_interface_gre_feature_template[sit.name].version
+            type    = "cisco_vpn_interface_gre"
+          }],
+          try(each.value.vpn_0_template.cellular_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.cellular_interface_templates, []) : {
+            id      = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].id
+            version = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].version
+            type    = "vpn-cedge-interface-cellular"
+          }],
       ])
     }],
     try(each.value.vpn_512_template, null) == null ? [] : [{
@@ -161,7 +171,9 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       sub_templates = !(can(st.ospf_template) ||
         can(st.bgp_template) ||
         can(st.ethernet_interface_templates) ||
+        can(st.igmp_template) ||
         can(st.ipsec_interface_templates) ||
+        can(st.multicast_template) ||
         can(st.svi_interface_templates)) ? null : flatten([
           try(st.ospf_template, null) == null ? [] : [{
             id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].id
@@ -183,6 +195,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
               type    = "cisco_dhcp_server"
             }]
           }],
+          try(st.igmp_template, null) == null ? [] : [{
+            id      = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[st.igmp_template].id
+            version = sdwan_cedge_igmp_feature_template.cedge_igmp_feature_template[st.igmp_template].version
+            type    = "cedge_igmp"
+          }],
           try(st.ipsec_interface_templates, null) == null ? [] : [for iit in try(st.ipsec_interface_templates, []) : {
             id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id
             version = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].version
@@ -192,6 +209,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
               version = sdwan_cisco_dhcp_server_feature_template.cisco_dhcp_server_feature_template[iit.dhcp_server_template].version
               type    = "cisco_dhcp_server"
             }]
+          }],
+          try(st.multicast_template, null) == null ? [] : [{
+            id      = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].id
+            version = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].version
+            type    = "cedge_multicast"
           }],
           try(st.svi_interface_templates, null) == null ? [] : [for sit in try(st.svi_interface_templates, []) : {
             id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id
@@ -205,6 +227,18 @@ resource "sdwan_feature_device_template" "feature_device_template" {
           }],
       ])
     }],
+    try(each.value.cellular_controller_templates, null) == null ? [] : [for st in try(each.value.cellular_controller_templates, []) : {
+      id      = sdwan_cellular_controller_feature_template.cellular_controller_feature_template[st.name].id
+      version = sdwan_cellular_controller_feature_template.cellular_controller_feature_template[st.name].version
+      type    = "cellular-cedge-controller"
+      sub_templates = !(can(st.cellular_profile_templates)) ? null : flatten([
+        try(st.cellular_profile_templates, null) == null ? [] : [for eit in try(st.cellular_profile_templates, []) : {
+          id      = sdwan_cellular_cedge_profile_feature_template.cellular_cedge_profile_feature_template[eit.name].id
+          version = sdwan_cellular_cedge_profile_feature_template.cellular_cedge_profile_feature_template[eit.name].version
+          type    = "cellular-cedge-profile"
+        }],
+      ])
+    }]
   ])
   lifecycle {
     create_before_destroy = true
@@ -215,23 +249,34 @@ locals {
   routers = flatten([
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
-        chassis_id       = router.chassis_id
-        model            = router.model
-        device_template  = router.device_template
-        device_variables = router.device_variables
+        chassis_id                 = router.chassis_id
+        configuration_group        = try(router.configuration_group, null)
+        configuration_group_deploy = try(router.configuration_group_deploy, null)
+        tags                       = try(router.tags, [])
+        device_template            = try(router.device_template, null)
+        device_variables           = try(router.device_variables, null)
+        model                      = try(router.model, null)
       }
     ]
   ])
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
-  for_each = { for r in local.routers : r.chassis_id => r }
-  id       = sdwan_feature_device_template.feature_device_template[each.value.device_template].id
-  version  = sdwan_feature_device_template.feature_device_template[each.value.device_template].version
+  for_each = {
+    for device_template in try(local.edge_device_templates, {}) :
+    device_template.name => device_template
+    if length([
+      for r in local.routers : r
+      if r.device_template == device_template.name
+    ]) > 0
+  }
+  id      = sdwan_feature_device_template.feature_device_template[each.value.name].id
+  version = sdwan_feature_device_template.feature_device_template[each.value.name].version
   devices = [
-    {
-      id        = each.value.chassis_id
-      variables = each.value.device_variables
+    for r in local.routers : {
+      id        = r.chassis_id
+      variables = r.device_variables
     }
+    if r.device_template == each.value.name
   ]
 }

@@ -117,9 +117,9 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
     id          = s.id
     name        = s.name
     type        = try(s.type, null)
-    ip_type     = try(s.ip_type, null)
+    ip_type     = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.control_policy.custom_control_topology.sequences.ip_type)
     base_action = try(s.base_action, null)
-    match_entries = flatten([
+    match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.color_list, null) == null ? [] : [{
         type               = "colorList"
         color_list_id      = sdwan_color_list_policy_object.color_list_policy_object[s.match_criterias.color_list].id
@@ -317,14 +317,14 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
     id   = s.id
     name = s.name
     type = (
-      s.type == "application_firewall" ? "applicationFirewall" :
-      s.type == "qos" ? "qos" :
-      s.type == "service_chaining" ? "serviceChaining" :
-      s.type == "traffic_engineering" ? "trafficEngineering" :
-      s.type == "custom" ? "data" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "application_firewall" ? "applicationFirewall" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "qos" ? "qos" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "service_chaining" ? "serviceChaining" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "traffic_engineering" ? "trafficEngineering" :
+      try(s.type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.type) == "custom" ? "data" :
       null
     )
-    ip_type     = try(s.ip_type, null)
+    ip_type     = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.data_policy.traffic_data.sequences.ip_type)
     base_action = try(s.base_action, null)
     match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
@@ -479,6 +479,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
       }],
       try(s.actions.nat_pool, null) == null ? [] : [{
         type        = "nat"
+        nat_pool    = "pool"
         nat_pool_id = s.actions.nat_pool
       }],
       try(s.actions.dscp, null) == null && try(s.actions.forwarding_class, null) == null && try(s.actions.policer_list, null) == null && try(s.actions.service, null) == null && try(s.actions.tloc_list, null) == null && try(s.actions.tloc, null) == null && try(s.actions.vpn, null) == null && try(s.actions.local_tloc_list, null) == null && try(s.actions.next_hop, null) == null && try(s.actions.preferred_color_group, null) == null ? [] : [{
@@ -527,7 +528,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
           try(s.actions.local_tloc_list, null) == null ? [] : [{
             type                     = "localTlocList"
             local_tloc_list_color    = join(" ", concat([for p in try(s.actions.local_tloc_list.colors, []) : p]))
-            local_tloc_list_encap    = join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p]))
+            local_tloc_list_encap    = length(join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p]))) > 0 ? join(" ", concat([for p in try(s.actions.local_tloc_list.encaps, []) : p])) : null
             local_tloc_list_restrict = try(s.actions.local_tloc_list.restrict, null) == null ? null : s.actions.local_tloc_list.restrict
           }],
           try(s.actions.next_hop.ip_address, null) == null ? [] : [{
@@ -540,7 +541,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
           }],
           try(s.actions.preferred_color_group, null) == null ? [] : [{
             type                               = "preferredColorGroup"
-            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].id
+            preferred_color_group_list_id      = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].id
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].version
           }]
         ]),
@@ -566,7 +567,7 @@ resource "sdwan_cflowd_policy_definition" "cflowd_policy_definition" {
     port             = t.port
     transport        = t.transport
     source_interface = t.source_interface
-    export_spreading = t.export_spreading
+    export_spreading = try(t.export_spreading, null)
   }]
 }
 
@@ -578,7 +579,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
   sequences = [for s in each.value.sequences : {
     id      = s.id
     name    = s.name
-    ip_type = try(s.ip_type, null)
+    ip_type = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.data_policy.application_aware_routing.sequences.ip_type)
     match_entries = try(s.match_criterias, null) == null ? null : flatten([
       try(s.match_criterias.application_list, null) == null ? [] : [{
         type                     = "appList"
@@ -659,7 +660,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
         sla_class_parameters = flatten([
           try(s.actions.sla_class_list.sla_class_list, null) == null ? [] : [{
             type                   = "name"
-            sla_class_list         = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].id
+            sla_class_list_id      = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].id
             sla_class_list_version = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].version
           }],
           try(s.actions.sla_class_list.preferred_colors, null) == null ? [] : [{
@@ -668,7 +669,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
           }],
           try(s.actions.sla_class_list.preferred_color_group, null) == null ? [] : [{
             type                               = "preferredColorGroup"
-            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
+            preferred_color_group_list_id      = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
           }],
           try(s.actions.sla_class_list.when_sla_not_met, null) == "strict_drop" ? [{

@@ -1,13 +1,25 @@
-## 1.2.0 (unreleased)
+## 1.2.0
 
-- fix administrative_distance_variable parameter not being set in the sdwan_transport_management_vpn_feature
-- add support for sdwan_service_route_policy_feature resource
-- add support for sdwan_transport_cellular_profile_feature resource
-- add support for sdwan_transport_gps_feature resource
-- add support for sdwan_transport_route_policy_feature resource
-- modify id field in sdwan_system_ipv4_device_access_feature and sdwan_system_ipv6_device_access_feature
-- add default handling of ip_type for sdwan_route_policy_definition
-- make local_tloc_list encaps parameter optional in traffic data policy
+- add support for UX 1.0 IGMP feature template
+- add support for UX 1.0 multicast feature template
+- add support for service LAN VPN feature
+- add support for service route policy
+- add support for transport cellular profile
+- add support for transport GPS
+- add support for transport route policy
+- add support for policy object application list
+- add support for policy object app probe class
+- add default handling of `ip_type` in UX 1.0 route policy
+- add `expanded_community_list_variable` parameter in UX 1.0 route policy
+- add `destination_ip_prefix_variable` and `source_ip_prefix_variable` parameters support in UX 1.0 IPv4 acl policy IPv6 device acl policy
+- add `enhanced_app_aware_routing` parameter support in UX 1.0 system feature template
+- fix `local_tloc_list` `encaps` parameter to be optional in UX 1.0 traffic data policy
+- fix `nat_pool` action not being set correctly in UX 1.0 traffic data policy
+- fix `sdwan_attach_feature_device_template` resource to be generated per template, not per device
+- fix `devices` and `feature_versions` parameters of configuration group to be null when empty
+- fix `id` parameter in system IPv4 device access and IPv6 device access features
+- fix `administrative_distance_variable` parameter not being set in the transport management VPN feature
+- fix UX 2.0 enum values to be lowercase wherever possible
 
 ## 1.1.0
 

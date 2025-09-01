@@ -516,7 +516,7 @@ resource "sdwan_system_performance_monitoring_feature" "system_performance_monit
   app_perf_monitor_app_group  = try(each.value.performance_monitoring.app_perf_monitor_app_groups, null)
   app_perf_monitor_enabled    = try(each.value.performance_monitoring.app_perf_monitor_enabled, null)
   event_driven_config_enabled = try(each.value.performance_monitoring.event_driven_config_enabled, null)
-  event_driven_events         = try(each.value.performance_monitoring.event_driven_events, null)
+  event_driven_events         = try(length(each.value.performance_monitoring.event_driven_events) == 0, true) ? null : [for e in each.value.performance_monitoring.event_driven_events : upper(e)]
   monitoring_config_enabled   = try(each.value.performance_monitoring.monitoring_config_enabled, null)
   monitoring_config_interval  = try(each.value.performance_monitoring.monitoring_config_interval, null)
 }

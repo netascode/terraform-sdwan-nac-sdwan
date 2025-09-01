@@ -479,6 +479,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
       }],
       try(s.actions.nat_pool, null) == null ? [] : [{
         type        = "nat"
+        nat_pool    = "pool"
         nat_pool_id = s.actions.nat_pool
       }],
       try(s.actions.dscp, null) == null && try(s.actions.forwarding_class, null) == null && try(s.actions.policer_list, null) == null && try(s.actions.service, null) == null && try(s.actions.tloc_list, null) == null && try(s.actions.tloc, null) == null && try(s.actions.vpn, null) == null && try(s.actions.local_tloc_list, null) == null && try(s.actions.next_hop, null) == null && try(s.actions.preferred_color_group, null) == null ? [] : [{
@@ -540,7 +541,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
           }],
           try(s.actions.preferred_color_group, null) == null ? [] : [{
             type                               = "preferredColorGroup"
-            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].id
+            preferred_color_group_list_id      = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].id
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.preferred_color_group].version
           }]
         ]),
@@ -659,7 +660,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
         sla_class_parameters = flatten([
           try(s.actions.sla_class_list.sla_class_list, null) == null ? [] : [{
             type                   = "name"
-            sla_class_list         = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].id
+            sla_class_list_id      = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].id
             sla_class_list_version = sdwan_sla_class_policy_object.sla_class_policy_object[s.actions.sla_class_list.sla_class_list].version
           }],
           try(s.actions.sla_class_list.preferred_colors, null) == null ? [] : [{
@@ -668,7 +669,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
           }],
           try(s.actions.sla_class_list.preferred_color_group, null) == null ? [] : [{
             type                               = "preferredColorGroup"
-            preferred_color_group_list         = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
+            preferred_color_group_list_id      = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].id
             preferred_color_group_list_version = sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object[s.actions.sla_class_list.preferred_color_group].version
           }],
           try(s.actions.sla_class_list.when_sla_not_met, null) == "strict_drop" ? [{

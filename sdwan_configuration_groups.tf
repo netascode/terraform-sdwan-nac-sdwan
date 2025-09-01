@@ -62,7 +62,8 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_tag.tag,
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
-    sdwan_policy_object_tloc_list.policy_object_tloc_list
+    sdwan_policy_object_tloc_list.policy_object_tloc_list,
+    sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group
   ]
   lifecycle {
     create_before_destroy = true

@@ -1,3 +1,7 @@
+## 1.3.0 (unreleased)
+
+- add support for policy object preferred color group
+
 ## 1.2.0
 
 - add support for UX 1.0 IGMP feature template
@@ -51,7 +55,6 @@
 - add support for sdwan_policy_object_ipv6_prefix_list resource
 - add support for sdwan_policy_object_mirror resource
 - add support for sdwan_policy_object_policer resource
-- add support for sdwan_policy_object_preferred_color_group resource
 - add support for sdwan_policy_object_tloc_list resource
 - add support for variables in secure app hosting feature template
 - fix issue where sdwan_custom_control_topology_policy_definition always shows diff when match_criterias or actions are not configured in data model

@@ -83,7 +83,16 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           type      = "appList"
           policy_id = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
         }],
-    ]))
+        try(r.match_criterias.source_port_lists, null) == null ? [] : [{
+          type      = "sourcePortList"
+          policy_id = join(" ", [for x in try(r.match_criterias.source_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+        }],
+        try(r.match_criterias.destination_port_lists, null) == null ? [] : [{
+          type      = "destinationPortList"
+          policy_id = join(" ", [for x in try(r.match_criterias.destination_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+        }],
+      ])
+    )
   }]
   apply_zone_pairs = [for zp in each.value.zone_pairs : {
     source_zone      = try(zp.source_zone, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.source_zone].id

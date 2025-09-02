@@ -207,3 +207,13 @@ resource "sdwan_local_application_list_policy_object" "local_application_list_po
   }]
 }
 
+resource "sdwan_port_list_policy_object" "port_list_policy_object" {
+  for_each = { for p in try(local.policy_objects.port_lists, {}) : p.name => p }
+  name     = each.value.name
+  entries = [
+    for e in try(each.value.ports, []) : {
+      port = e
+    }
+  ]
+}
+

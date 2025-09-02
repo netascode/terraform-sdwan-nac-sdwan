@@ -1,3 +1,8 @@
+## 1.3.0 (unreleased)
+
+- add support for policy object preferred color group
+- add support for classic policy object port list
+
 ## 1.2.0
 
 - add support for UX 1.0 IGMP feature template

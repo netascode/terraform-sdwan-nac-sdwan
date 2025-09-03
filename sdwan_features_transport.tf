@@ -515,8 +515,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   description                  = try(each.value.interface.description, null)
   feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
   transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
-  acl_ipv4_egress_feature_id   = null # to be added when ACL is supported
-  acl_ipv4_ingress_feature_id  = null # to be added when ACL is supported
+  acl_ipv4_egress_feature_id   = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.ipv4_egress_acl}"].id, null)
+  acl_ipv4_ingress_feature_id  = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.ipv4_ingress_acl}"].id, null)
   acl_ipv6_egress_feature_id   = null # to be added when ACL is supported
   acl_ipv6_ingress_feature_id  = null # to be added when ACL is supported
   arp_timeout                  = try(each.value.interface.arp_timeout, null)

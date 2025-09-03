@@ -458,6 +458,9 @@ defaults:
       transport_profiles:
         gps_features:
           gps_enable: true
+        ipv4_acls:
+          sequences:
+            name: acl
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

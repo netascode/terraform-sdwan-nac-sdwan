@@ -258,6 +258,59 @@ resource "sdwan_transport_gps_feature" "transport_gps_feature" {
   nmea_destination_port_variable    = try("{{${each.value.gps.nmea_destination_port_variable}}}", null)
 }
 
+resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
+  for_each = {
+    for acl_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for acl in try(profile.ipv4_acls, []) : {
+          profile = profile
+          acl     = acl
+        }
+      ]
+    ])
+    : "${acl_item.profile.name}-${acl_item.acl.name}" => acl_item
+  }
+  name               = each.value.acl.name
+  description        = try(each.value.acl.description, null)
+  feature_profile_id = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  default_action     = each.value.acl.default_action
+  sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
+    actions = length(keys(try(s.actions, {}))) > 0 ? [{
+      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_set_dscp       = s.base_action == "accept" ? try(s.actions.dscp, null) : null
+      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
+      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+    }] : null
+    base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
+    match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
+      destination_data_prefix          = try(s.match_entries.destination_data_prefix, null)
+      destination_data_prefix_list_id  = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_data_prefix_variable = try("{{${s.match_entries.destination_data_prefix_variable}}}", null)
+      destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
+        port = p
+      }]
+      dscps                       = try(s.match_entries.dscps, null)
+      icmp_messages               = try(s.match_entries.icmp_messages, null)
+      packet_length               = try(s.match_entries.packet_length, null)
+      protocols                   = try(s.match_entries.protocols, null)
+      source_data_prefix          = try(s.match_entries.source_data_prefix, null)
+      source_data_prefix_list_id  = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_data_prefix_variable = try("{{${s.match_entries.source_data_prefix_variable}}}", null)
+      source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
+        port = p
+      }]
+      tcp_state = try(s.match_entries.tcp_state, null)
+    }] : null
+    sequence_id   = s.id
+    sequence_name = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.ipv4_acls.sequences.name)
+    }
+  ]
+}
+
 resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature" {
   for_each = {
     for route_policy_item in flatten([
@@ -276,8 +329,10 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
   default_action     = try(each.value.route_policy.default_action, null)
   sequences = try(length(each.value.route_policy.sequences) == 0, true) ? null : [for s in each.value.route_policy.sequences : {
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
-      as_path_prepend    = try(a.prepend_as_paths, null)
-      community          = try(a.communities, null)
+      as_path_prepend = try(a.prepend_as_paths, null)
+      community = try(length(a.communities) == 0, true) ? null : [
+        for c in a.communities : c == "local-as" ? "local-AS" : c
+      ]
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
       ipv4_next_hop      = try(a.ipv4_next_hop, null)
@@ -447,7 +502,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
   ipv4_static_routes = try(length(each.value.management_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.management_vpn.ipv4_static_routes : {
     administrative_distance          = try(route.administrative_distance, null)
     administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
-    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway)
+    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv4_static_routes.gateway)
     network_address                  = try(route.network_address, null)
     network_address_variable         = try("{{${route.network_address_variable}}}", null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
@@ -460,7 +515,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.management_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.management_vpn.ipv6_static_routes : {
-    nat          = try(route.nat, null)
+    nat          = try(upper(route.nat), null)
     nat_variable = try("{{${route.nat_variable}}}", null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
@@ -468,7 +523,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
       administrative_distance          = try(nh.administrative_distance, null)
       administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
-    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
+    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ipv6_static_routes.gateway) == "null0" ? true : null
     prefix          = try(route.prefix, null)
     prefix_variable = try("{{${route.prefix_variable}}}", null)
@@ -556,7 +611,7 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
   ipv6_address              = try(each.value.interface.ipv6_address, null)
   ipv6_address_variable     = try("{{${each.value.interface.ipv6_address_variable}}}", null)
-  ipv6_configuration_type   = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type)
+  ipv6_configuration_type   = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type)
   load_interval             = try(each.value.interface.load_interval, null)
   load_interval_variable    = try("{{${each.value.interface.load_interval_variable}}}", null)
   mac_address               = try(each.value.interface.mac_address, null)
@@ -585,7 +640,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   ipv4_static_routes = try(length(each.value.wan_vpn.ipv4_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv4_static_routes : {
     administrative_distance          = try(route.administrative_distance, null)
     administrative_distance_variable = try("{{${route.administrative_distance_variable}}}", null)
-    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway)
+    gateway                          = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv4_static_routes.gateway)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
@@ -598,14 +653,14 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
     subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.wan_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv6_static_routes : {
-    nat = try(route.nat, null)
+    nat = try(upper(route.nat), null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
       administrative_distance          = try(nh.administrative_distance, null)
       administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
     }]
-    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway)
+    gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway)
     null0           = try(route.gateway, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipv6_static_routes.gateway) == "null0" ? true : null
     prefix          = try(route.prefix, null)
     prefix_variable = try("{{${route.prefix_variable}}}", null)
@@ -635,7 +690,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   secondary_dns_address_ipv6          = try(each.value.wan_vpn.ipv6_secondary_dns_address, null)
   secondary_dns_address_ipv6_variable = try("{{${each.value.wan_vpn.ipv6_secondary_dns_address_variable}}}", null)
   services = try(length(each.value.wan_vpn.services) == 0, true) ? null : [for service in each.value.wan_vpn.services : {
-    service_type = service
+    service_type = upper(service)
   }]
   vpn = 0
 }
@@ -674,8 +729,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   description                  = try(each.value.interface.description, null)
   feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
   transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
-  acl_ipv4_egress_feature_id   = null # to be added when ACL is supported
-  acl_ipv4_ingress_feature_id  = null # to be added when ACL is supported
+  acl_ipv4_egress_feature_id   = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
+  acl_ipv4_ingress_feature_id  = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
   acl_ipv6_egress_feature_id   = null # to be added when ACL is supported
   acl_ipv6_ingress_feature_id  = null # to be added when ACL is supported
   arp_timeout                  = try(each.value.interface.arp_timeout, null)
@@ -732,7 +787,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
   ipv6_address              = try(each.value.interface.ipv6_address, null)
   ipv6_address_variable     = try("{{${each.value.interface.ipv6_address_variable}}}", null)
-  ipv6_configuration_type   = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type)
+  ipv6_configuration_type   = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type)
   ipv6_dhcp_secondary_address = try(try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "dynamic" && length(each.value.interface.ipv6_secondary_addresses) > 0, false) ? [for a in each.value.interface.ipv6_secondary_addresses : {
     address          = try(a.address, null)
     address_variable = try("{{${a.address_variable}}}", null)

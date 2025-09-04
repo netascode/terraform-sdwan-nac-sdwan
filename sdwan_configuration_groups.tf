@@ -122,6 +122,9 @@ locals {
       try(profile.dhcp_servers, null) == null ? [] : [for dhcp_server in try(profile.dhcp_servers, []) : [
         sdwan_service_dhcp_server_feature.service_dhcp_server_feature["${profile.name}-${dhcp_server.name}"].version
       ]],
+      try(profile.ipv4_acls, null) == null ? [] : [for ipv4_acl in try(profile.ipv4_acls, []) : [
+        sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${profile.name}-${ipv4_acl.name}"].version
+      ]],
       try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
         sdwan_service_tracker_group_feature.service_tracker_group_feature["${profile.name}-${ipv4_tracker_group.name}"].version
       ]],
@@ -168,6 +171,9 @@ locals {
       ]],
       try(profile.gps_features, null) == null ? [] : [for gps_feature in try(profile.gps_features, []) : [
         sdwan_transport_gps_feature.transport_gps_feature["${profile.name}-${gps_feature.name}"].version
+      ]],
+      try(profile.ipv4_acls, null) == null ? [] : [for ipv4_acl in try(profile.ipv4_acls, []) : [
+        sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${profile.name}-${ipv4_acl.name}"].version
       ]],
       try(profile.ipv4_tracker_groups, null) == null ? [] : [for ipv4_tracker_group in try(profile.ipv4_tracker_groups, []) : [
         sdwan_transport_tracker_group_feature.transport_tracker_group_feature["${profile.name}-${ipv4_tracker_group.name}"].version

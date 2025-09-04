@@ -698,16 +698,12 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
 resource "sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature" "transport_wan_vpn_feature_associate_routing_bgp_feature" {
   for_each = {
     for profile in try(local.feature_profiles.transport_profiles, {}) :
-    "${profile.name}-wan_vpn-bgp" => {
-      profile = profile
-      wan_vpn = profile.wan_vpn
-      bgp     = profile.wan_vpn.bgp
-    }
+    "${profile.name}-wan_vpn-bgp" => profile
     if try(profile.wan_vpn.bgp, null) != null
   }
-  feature_profile_id               = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
-  transport_wan_vpn_feature_id     = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
-  transport_routing_bgp_feature_id = sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${each.value.profile.name}-${each.value.bgp}"].id
+  feature_profile_id               = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
+  transport_wan_vpn_feature_id     = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.name}-wan_vpn"].id
+  transport_routing_bgp_feature_id = sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${each.value.name}-${each.value.wan_vpn.bgp}"].id
 }
 
 resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_feature" {

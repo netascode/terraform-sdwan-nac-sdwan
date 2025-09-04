@@ -215,6 +215,12 @@ locals {
     {
       for profile in try(local.feature_profiles.transport_profiles, []) : profile.name => merge(
         {
+          for feature in try(profile.bgp_features, []) : feature.name => {
+            parcel_id   = sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "routing/bgp"
+          }
+        },
+        {
           for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
             parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
             parcel_type = "wan/vpn/interface/ethernet"

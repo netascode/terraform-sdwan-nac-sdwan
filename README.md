@@ -160,6 +160,7 @@ module "sdwan" {
 | [sdwan_service_feature_profile.service_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_feature_profile) | resource |
 | [sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_ipv4_acl_feature) | resource |
 | [sdwan_service_lan_vpn_feature.service_lan_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature) | resource |
+| [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature_associate_routing_bgp_feature) | resource |
 | [sdwan_service_object_tracker_feature.service_object_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_object_tracker_feature) | resource |
 | [sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_object_tracker_group_feature) | resource |
 | [sdwan_service_route_policy_feature.service_route_policy_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_route_policy_feature) | resource |

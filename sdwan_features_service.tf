@@ -624,6 +624,23 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   vpn_variable = try("{{${each.value.lan_vpn.vpn_id_variable}}}", null)
 }
 
+resource "sdwan_service_lan_vpn_feature_associate_routing_bgp_feature" "service_lan_vpn_feature_associate_routing_bgp_feature" {
+  for_each = {
+    for lan_vpn_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for lan_vpn in try(profile.lan_vpns, []) : {
+          profile = profile
+          lan_vpn = lan_vpn
+        } if try(lan_vpn.bgp, null) != null
+      ]
+    ])
+    : "${lan_vpn_item.profile.name}-${lan_vpn_item.lan_vpn.name}-bgp" => lan_vpn_item
+  }
+  feature_profile_id             = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id     = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  service_routing_bgp_feature_id = sdwan_service_routing_bgp_feature.service_routing_bgp_feature["${each.value.profile.name}-${each.value.lan_vpn.bgp}"].id
+}
+
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([

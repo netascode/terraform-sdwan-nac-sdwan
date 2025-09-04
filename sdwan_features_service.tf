@@ -44,11 +44,11 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
       family_type                                     = address_family.family_type
-      in_route_policy_id                              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      in_route_policy_id                              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
       max_number_of_prefixes                          = try(address_family.maximum_prefixes_number, null)
       max_number_of_prefixes_variable                 = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      out_route_policy_id                             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
-      policy_type                                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp_features.ipv4_neighbors.address_families.maximum_prefixes_reach_policy)
+      out_route_policy_id                             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv4_neighbors.address_families.maximum_prefixes_reach_policy)
       restart_interval                                = try(address_family.maximum_prefixes_restart_interval, null)
       restart_interval_variable                       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
       restart_max_number_of_prefixes                  = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number : null, null)
@@ -101,13 +101,13 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
-    route_policy_id               = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    route_policy_id               = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
     translate_rib_metric          = try(redistribute.translate_rib_metric, null)
     translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null)
   }]
   ipv4_table_map_filter          = try(each.value.bgp.ipv4_table_map_filter, null)
   ipv4_table_map_filter_variable = try("{{${each.value.bgp.ipv4_table_map_filter_variable}}}", null)
-  ipv4_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv4_table_map_route_policy}"].id, null)
+  ipv4_table_map_route_policy_id = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv4_table_map_route_policy}"].id, null)
   ipv6_aggregate_addresses = try(length(each.value.bgp.ipv6_aggregate_addresses) == 0, true) ? null : [for a in each.value.bgp.ipv6_aggregate_addresses : {
     aggregate_prefix          = try(a.prefix, null)
     aggregate_prefix_variable = try("{{${a.prefix_variable}}}", null)
@@ -123,11 +123,11 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
       family_type                     = address_family.family_type
-      in_route_policy_id              = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      in_route_policy_id              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
       max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
       max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      out_route_policy_id             = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
-      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.transport_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
+      out_route_policy_id             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
       restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
       restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
       threshold                       = try(address_family.maximum_prefixes_threshold, null)
@@ -172,13 +172,13 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
-    route_policy_id               = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    route_policy_id               = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
     translate_rib_metric          = try(redistribute.translate_rib_metric, null)
     translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null)
   }]
   ipv6_table_map_filter          = try(each.value.bgp.ipv6_table_map_filter, null)
   ipv6_table_map_filter_variable = try("{{${each.value.bgp.ipv6_table_map_filter_variable}}}", null)
-  ipv6_table_map_route_policy_id = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv6_table_map_route_policy}"].id, null)
+  ipv6_table_map_route_policy_id = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${each.value.bgp.ipv6_table_map_route_policy}"].id, null)
   keepalive_time                 = try(each.value.bgp.keepalive_time, null)
   keepalive_time_variable        = try("{{${each.value.bgp.keepalive_time_variable}}}", null)
   local_routes_distance          = try(each.value.bgp.local_routes_distance, null)
@@ -809,6 +809,6 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
       }]
     }]
     name     = try(s.name, local.defaults.sdwan.feature_profiles.service_profiles.route_policies.sequences.name)
-    protocol = upper(try(s.protocol, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.protocol))
+    protocol = upper(try(s.protocol, local.defaults.sdwan.feature_profiles.service_profiles.route_policies.sequences.protocol))
   }]
 }

@@ -52,8 +52,8 @@ resource "sdwan_service_dhcp_server_feature" "service_dhcp_server_feature" {
 resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
   for_each = {
     for acl_item in flatten([
-      for profile in lookup(local.feature_profiles, "service_profiles", []) : [
-        for acl in lookup(profile, "ipv4_acls", []) : {
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for acl in try(profile.ipv4_acls, []) : {
           profile = profile
           acl     = acl
         }

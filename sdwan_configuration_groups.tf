@@ -221,6 +221,12 @@ locals {
           }
         },
         {
+          for feature in try(profile.route_policies, []) : feature.name => {
+            parcel_id   = sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "route-policy"
+          }
+        },
+        {
           for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
             parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
             parcel_type = "wan/vpn/interface/ethernet"
@@ -248,6 +254,12 @@ locals {
           for feature in try(profile.lan_vpns, []) : feature.name => {
             parcel_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${feature.name}"].id
             parcel_type = "lan/vpn"
+          }
+        },
+        {
+          for feature in try(profile.route_policies, []) : feature.name => {
+            parcel_id   = sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "route-policy"
           }
         }
       )

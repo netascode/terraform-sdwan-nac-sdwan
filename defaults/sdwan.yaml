@@ -409,6 +409,9 @@ defaults:
       policy_object_profile:
         name: policy_objects
       service_profiles:
+        ipv4_acls:
+          sequences:
+            name: acl
         lan_vpns:
           ipv4_static_routes:
             gateway: nexthop

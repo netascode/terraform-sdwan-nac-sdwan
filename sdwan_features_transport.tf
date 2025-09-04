@@ -62,8 +62,8 @@ resource "sdwan_transport_gps_feature" "transport_gps_feature" {
 resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
   for_each = {
     for acl_item in flatten([
-      for profile in lookup(local.feature_profiles, "transport_profiles", []) : [
-        for acl in lookup(profile, "ipv4_acls", []) : {
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for acl in try(profile.ipv4_acls, []) : {
           profile = profile
           acl     = acl
         }

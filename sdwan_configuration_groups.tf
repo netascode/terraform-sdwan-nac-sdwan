@@ -228,6 +228,12 @@ locals {
           }
         },
         {
+          for feature in try(profile.ospf_features, []) : feature.name => {
+            parcel_id   = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "routing/ospf"
+          }
+        },
+        {
           for feature in try(profile.route_policies, []) : feature.name => {
             parcel_id   = sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${feature.name}"].id
             parcel_type = "route-policy"
@@ -261,6 +267,12 @@ locals {
           for feature in try(profile.lan_vpns, []) : feature.name => {
             parcel_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${feature.name}"].id
             parcel_type = "lan/vpn"
+          }
+        },
+        {
+          for feature in try(profile.ospf_features, []) : feature.name => {
+            parcel_id   = sdwan_service_routing_ospf_feature.service_routing_ospf_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "routing/ospf"
           }
         },
         {

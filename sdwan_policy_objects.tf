@@ -135,7 +135,7 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, null)
+  description        = null # not supported in the UI
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
     app_probe_class_list_id               = try(sdwan_policy_object_app_probe_class.policy_object_app_probe_class[each.value.app_probe_class].id, null)

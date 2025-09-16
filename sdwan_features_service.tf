@@ -634,7 +634,7 @@ resource "sdwan_service_lan_vpn_feature_associate_routing_bgp_feature" "service_
         } if try(lan_vpn.bgp, null) != null
       ]
     ])
-    : "${lan_vpn_item.profile.name}-${lan_vpn_item.lan_vpn.name}-bgp" => lan_vpn_item
+    : "${lan_vpn_item.profile.name}-${lan_vpn_item.lan_vpn.name}-routing_bgp" => lan_vpn_item
   }
   feature_profile_id             = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
   service_lan_vpn_feature_id     = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id

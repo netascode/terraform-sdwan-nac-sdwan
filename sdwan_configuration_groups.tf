@@ -63,7 +63,8 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
     sdwan_policy_object_tloc_list.policy_object_tloc_list,
-    sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group
+    sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group,
+    sdwan_policy_object_sla_class_list.policy_object_sla_class_list
   ]
   lifecycle {
     create_before_destroy = true
@@ -137,12 +138,16 @@ locals {
       try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
+        try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
       ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [
         sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${profile.name}-${object_tracker_group.name}"].version
       ]],
       try(profile.object_trackers, null) == null ? [] : [for object_tracker in try(profile.object_trackers, []) : [
         sdwan_service_object_tracker_feature.service_object_tracker_feature["${profile.name}-${object_tracker.name}"].version
+      ]],
+      try(profile.ospf_features, null) == null ? [] : [for ospf_feature in try(profile.ospf_features, []) : [
+        sdwan_service_routing_ospf_feature.service_routing_ospf_feature["${profile.name}-${ospf_feature.name}"].version
       ]],
       try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
         sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${route_policy.name}"].version
@@ -223,6 +228,12 @@ locals {
           }
         },
         {
+          for feature in try(profile.ospf_features, []) : feature.name => {
+            parcel_id   = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "routing/ospf"
+          }
+        },
+        {
           for feature in try(profile.route_policies, []) : feature.name => {
             parcel_id   = sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${feature.name}"].id
             parcel_type = "route-policy"
@@ -256,6 +267,12 @@ locals {
           for feature in try(profile.lan_vpns, []) : feature.name => {
             parcel_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${feature.name}"].id
             parcel_type = "lan/vpn"
+          }
+        },
+        {
+          for feature in try(profile.ospf_features, []) : feature.name => {
+            parcel_id   = sdwan_service_routing_ospf_feature.service_routing_ospf_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "routing/ospf"
           }
         },
         {

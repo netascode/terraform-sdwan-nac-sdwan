@@ -1,10 +1,13 @@
 ## 1.3.0 (unreleased)
 
 - add support for policy object preferred color group
+- add support for policy object SLA class
 - add support for service BGP
 - add support for service IPv4 ACL
+- add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL
+- add support for transport OSPF
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 
 ## 1.2.0

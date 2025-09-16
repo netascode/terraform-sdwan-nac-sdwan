@@ -147,6 +147,7 @@ module "sdwan" {
 | [sdwan_policy_object_mirror.policy_object_mirror](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_mirror) | resource |
 | [sdwan_policy_object_policer.policy_object_policer](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_policer) | resource |
 | [sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_preferred_color_group) | resource |
+| [sdwan_policy_object_sla_class_list.policy_object_sla_class_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_sla_class_list) | resource |
 | [sdwan_policy_object_standard_community_list.policy_object_standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_standard_community_list) | resource |
 | [sdwan_policy_object_tloc_list.policy_object_tloc_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_tloc_list) | resource |
 | [sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/preferred_color_group_policy_object) | resource |
@@ -161,10 +162,12 @@ module "sdwan" {
 | [sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_ipv4_acl_feature) | resource |
 | [sdwan_service_lan_vpn_feature.service_lan_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature) | resource |
 | [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature_associate_routing_bgp_feature) | resource |
+| [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature_associate_routing_ospf_feature) | resource |
 | [sdwan_service_object_tracker_feature.service_object_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_object_tracker_feature) | resource |
 | [sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_object_tracker_group_feature) | resource |
 | [sdwan_service_route_policy_feature.service_route_policy_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_route_policy_feature) | resource |
 | [sdwan_service_routing_bgp_feature.service_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_routing_bgp_feature) | resource |
+| [sdwan_service_routing_ospf_feature.service_routing_ospf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_routing_ospf_feature) | resource |
 | [sdwan_service_tracker_feature.service_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_feature) | resource |
 | [sdwan_service_tracker_group_feature.service_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_group_feature) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
@@ -200,10 +203,12 @@ module "sdwan" {
 | [sdwan_transport_management_vpn_interface_ethernet_feature.transport_management_vpn_interface_ethernet_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_management_vpn_interface_ethernet_feature) | resource |
 | [sdwan_transport_route_policy_feature.transport_route_policy_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_route_policy_feature) | resource |
 | [sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_routing_bgp_feature) | resource |
+| [sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_routing_ospf_feature) | resource |
 | [sdwan_transport_tracker_feature.transport_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_tracker_feature) | resource |
 | [sdwan_transport_tracker_group_feature.transport_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_tracker_group_feature) | resource |
 | [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_feature) | resource |
 | [sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature.transport_wan_vpn_feature_associate_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_feature_associate_routing_bgp_feature) | resource |
+| [sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature.transport_wan_vpn_feature_associate_routing_ospf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_feature_associate_routing_ospf_feature) | resource |
 | [sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_interface_ethernet_feature) | resource |
 | [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature) | resource |
 | [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature) | resource |

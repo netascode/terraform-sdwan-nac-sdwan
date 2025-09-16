@@ -626,6 +626,102 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   tcp_mss_variable          = try("{{${each.value.interface.tcp_mss_variable}}}", null)
 }
 
+resource "sdwan_transport_routing_ospf_feature" "transport_routing_ospf_feature" {
+  for_each = {
+    for ospf_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for ospf in try(profile.ospf_features, []) : {
+          profile = profile
+          ospf    = ospf
+        }
+      ]
+    ])
+    : "${ospf_item.profile.name}-${ospf_item.ospf.name}" => ospf_item
+  }
+  name                                               = each.value.ospf.name
+  description                                        = try(each.value.ospf.description, null)
+  feature_profile_id                                 = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  router_id                                          = try(each.value.ospf.router_id, null)
+  router_id_variable                                 = try("{{${each.value.ospf.router_id_variable}}}", null)
+  reference_bandwidth                                = try(each.value.ospf.reference_bandwidth, null)
+  reference_bandwidth_variable                       = try("{{${each.value.ospf.reference_bandwidth_variable}}}", null)
+  rfc_1583_compatible                                = try(each.value.ospf.rfc1583_compatibility, null)
+  rfc_1583_compatible_variable                       = try("{{${each.value.ospf.rfc1583_compatibility_variable}}}", null)
+  default_information_originate                      = try(each.value.ospf.default_originate, null)
+  default_information_originate_always               = try(each.value.ospf.default_originate_always, null)
+  default_information_originate_always_variable      = try("{{${each.value.ospf.default_originate_always_variable}}}", null)
+  default_information_originate_metric               = try(each.value.ospf.default_originate_metric, null)
+  default_information_originate_metric_variable      = try("{{${each.value.ospf.default_originate_metric_variable}}}", null)
+  default_information_originate_metric_type          = try(each.value.ospf.default_originate_metric_type, null)
+  default_information_originate_metric_type_variable = try("{{${each.value.ospf.default_originate_metric_type_variable}}}", null)
+  distance_external                                  = try(each.value.ospf.distance_external, null)
+  distance_external_variable                         = try("{{${each.value.ospf.distance_external_variable}}}", null)
+  distance_inter_area                                = try(each.value.ospf.distance_inter_area, null)
+  distance_inter_area_variable                       = try("{{${each.value.ospf.distance_inter_area_variable}}}", null)
+  distance_intra_area                                = try(each.value.ospf.distance_intra_area, null)
+  distance_intra_area_variable                       = try("{{${each.value.ospf.distance_intra_area_variable}}}", null)
+  spf_calculation_delay                              = try(each.value.ospf.spf_calculation_delay, null)
+  spf_calculation_delay_variable                     = try("{{${each.value.ospf.spf_calculation_delay_variable}}}", null)
+  spf_initial_hold_time                              = try(each.value.ospf.spf_initial_hold_time, null)
+  spf_initial_hold_time_variable                     = try("{{${each.value.ospf.spf_initial_hold_time_variable}}}", null)
+  spf_maximum_hold_time                              = try(each.value.ospf.spf_maximum_hold_time, null)
+  spf_maximum_hold_time_variable                     = try("{{${each.value.ospf.spf_maximum_hold_time_variable}}}", null)
+  route_policy_id                                    = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${each.value.ospf.route_policy}"].id, null)
+  redistributes = try(length(each.value.ospf.redistributes) == 0, true) ? null : [for redistribute in each.value.ospf.redistributes : {
+    protocol          = try(redistribute.protocol, null)
+    protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id   = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+  }]
+  router_lsas = try(length(each.value.ospf.router_lsa_advertisement_type) == 0, true) ? null : [{
+    type          = try(each.value.ospf.router_lsa_advertisement_type, null)
+    type_variable = try("{{${each.value.ospf.router_lsa_advertisement_type_variable}}}", null)
+    time          = try(each.value.ospf.router_lsa_advertisement_time, null)
+    time_variable = try("{{${each.value.ospf.router_lsa_advertisement_time_variable}}}", null)
+  }]
+  areas = try(length(each.value.ospf.areas) == 0, true) ? null : [for area in each.value.ospf.areas : {
+    area_number          = try(area.number, null)
+    area_number_variable = try("{{${area.number_variable}}}", null)
+    area_type            = try(area.type, null)
+    area_type_variable   = try("{{${area.type_variable}}}", null)
+    no_summary           = try(area.no_summary, null)
+    no_summary_variable  = try("{{${area.no_summary_variable}}}", null)
+    interfaces = try(length(area.interfaces) == 0, true) ? null : [for interface in area.interfaces : {
+      name                                = try(interface.name, null)
+      name_variable                       = try("{{${interface.name_variable}}}", null)
+      hello_interval                      = try(interface.hello_interval, null)
+      hello_interval_variable             = try("{{${interface.hello_interval_variable}}}", null)
+      dead_interval                       = try(interface.dead_interval, null)
+      dead_interval_variable              = try("{{${interface.dead_interval_variable}}}", null)
+      lsa_retransmit_interval             = try(interface.lsa_retransmit_interval, null)
+      lsa_retransmit_interval_variable    = try("{{${interface.lsa_retransmit_interval_variable}}}", null)
+      cost                                = try(interface.cost, null)
+      cost_variable                       = try("{{${interface.cost_variable}}}", null)
+      designated_router_priority          = try(interface.designated_router_priority, null)
+      designated_router_priority_variable = try("{{${interface.designated_router_priority_variable}}}", null)
+      network_type                        = try(interface.network_type, null)
+      network_type_variable               = try("{{${interface.network_type_variable}}}", null)
+      passive_interface                   = try(interface.passive, null)
+      passive_interface_variable          = try("{{${interface.passive_variable}}}", null)
+      authentication_type                 = try(interface.authentication_type, null)
+      authentication_type_variable        = try("{{${interface.authentication_type_variable}}}", null)
+      message_digest_key_id               = try(interface.authentication_message_digest_key_id, null)
+      message_digest_key_id_variable      = try("{{${interface.authentication_message_digest_key_id_variable}}}", null)
+      message_digest_key                  = try(interface.authentication_message_digest_key, null)
+      message_digest_key_variable         = try("{{${interface.authentication_message_digest_key_variable}}}", null)
+    }]
+    ranges = try(length(area.ranges) == 0, true) ? null : [for range in area.ranges : {
+      ip_address            = try(range.network_address, null)
+      ip_address_variable   = try("{{${range.network_address_variable}}}", null)
+      subnet_mask           = try(range.subnet_mask, null)
+      subnet_mask_variable  = try("{{${range.subnet_mask_variable}}}", null)
+      cost                  = try(range.cost, null)
+      cost_variable         = try("{{${range.cost_variable}}}", null)
+      no_advertise          = try(range.no_advertise, null)
+      no_advertise_variable = try("{{${range.no_advertise_variable}}}", null)
+    }]
+  }]
+}
+
 resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   for_each = {
     for transport in try(local.feature_profiles.transport_profiles, {}) :
@@ -704,6 +800,17 @@ resource "sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature" "transp
   feature_profile_id               = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
   transport_wan_vpn_feature_id     = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.name}-wan_vpn"].id
   transport_routing_bgp_feature_id = sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${each.value.name}-${each.value.wan_vpn.bgp}"].id
+}
+
+resource "sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature" "transport_wan_vpn_feature_associate_routing_ospf_feature" {
+  for_each = {
+    for profile in try(local.feature_profiles.transport_profiles, {}) :
+    "${profile.name}-wan_vpn-routing_ospf" => profile
+    if try(profile.wan_vpn.ospf, null) != null
+  }
+  feature_profile_id                = sdwan_transport_feature_profile.transport_feature_profile[each.value.name].id
+  transport_wan_vpn_feature_id      = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.name}-wan_vpn"].id
+  transport_routing_ospf_feature_id = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${each.value.name}-${each.value.wan_vpn.ospf}"].id
 }
 
 resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_feature" {

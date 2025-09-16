@@ -136,7 +136,7 @@ locals {
       ]],
       try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
-        try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-bgp"].version],
+        try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
       ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [
         sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${profile.name}-${object_tracker_group.name}"].version
@@ -202,7 +202,7 @@ locals {
         sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${route_policy.name}"].version
       ]],
       try(profile.wan_vpn, null) == null ? [] : [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${profile.name}-wan_vpn"].version],
-      try(profile.wan_vpn.bgp, null) == null ? [] : [sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature.transport_wan_vpn_feature_associate_routing_bgp_feature["${profile.name}-wan_vpn-bgp"].version],
+      try(profile.wan_vpn.bgp, null) == null ? [] : [sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature.transport_wan_vpn_feature_associate_routing_bgp_feature["${profile.name}-wan_vpn-routing_bgp"].version],
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${interface.name}"].version,
         try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],

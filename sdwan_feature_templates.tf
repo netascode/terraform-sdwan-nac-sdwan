@@ -855,7 +855,7 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
     interface_pairs = try(length(each.value.high_availability_interface_pairs) == 0, true) ? null : [for pair in try(each.value.high_availability_interface_pairs, []) : {
       active_interface        = try(pair.active_interface, null)
       active_interface_weight = try(pair.active_interface_weight, null)
-      backup_interface        = try(pair.backup_interface, null)
+      backup_interface        = try(pair.backup_interface == "none" ? "None" : pair.backup_interface, null)
       backup_interface_weight = try(pair.backup_interface_weight, null)
     }]
   }]

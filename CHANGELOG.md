@@ -8,6 +8,7 @@
 - add support for transport BGP
 - add support for transport IPv4 ACL
 - add support for transport OSPF
+- fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 
 ## 1.2.0
 

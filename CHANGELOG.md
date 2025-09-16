@@ -5,6 +5,7 @@
 - add support for service IPv4 ACL
 - add support for transport BGP
 - add support for transport IPv4 ACL
+- add support for policy object SLA class
 
 ## 1.2.0
 

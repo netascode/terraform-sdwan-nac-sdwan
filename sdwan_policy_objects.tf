@@ -132,6 +132,23 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
   }]
 }
 
+resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [{
+    app_probe_class_list_id               = try(sdwan_policy_object_app_probe_class.policy_object_app_probe_class[each.value.app_probe_class].id, null)
+    jitter                                = try(each.value.jitter_ms, null)
+    latency                               = try(each.value.latency_ms, null)
+    loss                                  = try(each.value.loss_percentage, null)
+    fallback_best_tunnel_criteria         = try(each.value.fallback_best_tunnel_criteria, null)
+    fallback_best_tunnel_jitter_variance  = try(each.value.fallback_best_tunnel_jitter_variance, null)
+    fallback_best_tunnel_latency_variance = try(each.value.fallback_best_tunnel_latency_variance, null)
+    fallback_best_tunnel_loss_variance    = try(each.value.fallback_best_tunnel_loss_variance, null)
+  }]
+}
+
 resource "sdwan_policy_object_standard_community_list" "policy_object_standard_community_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.standard_community_lists, {}) : p.name => p }
   name               = each.value.name

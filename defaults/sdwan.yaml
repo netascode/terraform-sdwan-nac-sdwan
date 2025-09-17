@@ -420,6 +420,9 @@ defaults:
           sequences:
             name: acl
         lan_vpns:
+          ethernet_interfaces:
+            ipv4_configuration_type: static
+            ipv6_configuration_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:

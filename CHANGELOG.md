@@ -9,6 +9,7 @@
 - add support for transport IPv4 ACL
 - add support for transport OSPF
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
+- add support for service LAN VPN Ethernet Interface Feature
 
 ## 1.2.0
 

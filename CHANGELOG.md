@@ -9,6 +9,7 @@
 - add support for transport IPv4 ACL
 - add support for transport OSPF
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
+- fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 
 ## 1.2.0
 

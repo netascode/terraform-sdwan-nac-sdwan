@@ -264,10 +264,10 @@ resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
   autonomous_system_id          = try(each.value.eigrp.autonomous_system_id, null)
   autonomous_system_id_variable = try("{{${each.value.eigrp.autonomous_system_id_variable}}}", null)
   networks = try(length(each.value.eigrp.networks) == 0, true) ? null : [for network in each.value.eigrp.networks : {
-    ip_address          = try(network.ip_address, null)
-    ip_address_variable = try("{{${network.ip_address_variable}}}", null)
-    mask                = try(network.mask, null)
-    mask_variable       = try("{{${network.mask_variable}}}", null)
+    ip_address          = try(network.network_address, null)
+    ip_address_variable = try("{{${network.network_address_variable}}}", null)
+    mask                = try(network.subnet_mask, null)
+    mask_variable       = try("{{${network.subnet_mask_variable}}}", null)
   }]
   authentication_type              = try(each.value.eigrp.authentication_type, null)
   authentication_type_variable     = try("{{${each.value.eigrp.authentication_type_variable}}}", null)
@@ -285,10 +285,10 @@ resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
     shutdown          = try(interface.shutdown, null)
     shutdown_variable = try("{{${interface.shutdown_variable}}}", null)
     summary_addresses = try(length(interface.summary_addresses) == 0, true) ? null : [for summary in interface.summary_addresses : {
-      address          = try(summary.address, null)
-      address_variable = try("{{${summary.address_variable}}}", null)
-      mask             = try(summary.mask, null)
-      mask_variable    = try("{{${summary.mask_variable}}}", null)
+      address          = try(summary.network_address, null)
+      address_variable = try("{{${summary.network_address_variable}}}", null)
+      mask             = try(summary.subnet_mask, null)
+      mask_variable    = try("{{${summary.subnet_mask_variable}}}", null)
     }]
   }]
   md5_keys = try(length(each.value.eigrp.md5_keys) == 0, true) ? null : [for key in each.value.eigrp.md5_keys : {
@@ -698,6 +698,23 @@ resource "sdwan_service_lan_vpn_feature_associate_routing_bgp_feature" "service_
   feature_profile_id             = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
   service_lan_vpn_feature_id     = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
   service_routing_bgp_feature_id = sdwan_service_routing_bgp_feature.service_routing_bgp_feature["${each.value.profile.name}-${each.value.lan_vpn.bgp}"].id
+}
+
+resource "sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature" "service_lan_vpn_feature_associate_routing_eigrp_feature" {
+  for_each = {
+    for lan_vpn_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for lan_vpn in try(profile.lan_vpns, []) : {
+          profile = profile
+          lan_vpn = lan_vpn
+        } if try(lan_vpn.eigrp, null) != null
+      ]
+    ])
+    : "${lan_vpn_item.profile.name}-${lan_vpn_item.lan_vpn.name}-routing_eigrp" => lan_vpn_item
+  }
+  feature_profile_id              = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id      = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  service_routing_eigrp_feature_id = sdwan_service_routing_eigrp_feature.service_routing_eigrp_feature["${each.value.profile.name}-${each.value.lan_vpn.eigrp}"].id
 }
 
 resource "sdwan_service_lan_vpn_feature_associate_routing_ospf_feature" "service_lan_vpn_feature_associate_routing_ospf_feature" {

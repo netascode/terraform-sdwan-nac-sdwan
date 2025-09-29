@@ -246,6 +246,65 @@ resource "sdwan_service_dhcp_server_feature" "service_dhcp_server_feature" {
   }]
 }
 
+resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
+  for_each = {
+    for eigrp_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for eigrp in try(profile.eigrp_features, []) : {
+          profile = profile
+          eigrp   = eigrp
+        }
+      ]
+    ])
+    : "${eigrp_item.profile.name}-${eigrp_item.eigrp.name}" => eigrp_item
+  }
+  name                          = each.value.eigrp.name
+  description                   = try(each.value.eigrp.description, null)
+  feature_profile_id            = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  autonomous_system_id          = try(each.value.eigrp.autonomous_system_id, null)
+  autonomous_system_id_variable = try("{{${each.value.eigrp.autonomous_system_id_variable}}}", null)
+  networks = try(length(each.value.eigrp.networks) == 0, true) ? null : [for network in each.value.eigrp.networks : {
+    ip_address          = try(network.ip_address, null)
+    ip_address_variable = try("{{${network.ip_address_variable}}}", null)
+    mask                = try(network.mask, null)
+    mask_variable       = try("{{${network.mask_variable}}}", null)
+  }]
+  authentication_type              = try(each.value.eigrp.authentication_type, null)
+  authentication_type_variable     = try("{{${each.value.eigrp.authentication_type_variable}}}", null)
+  filter                           = try(each.value.eigrp.filter, null)
+  filter_variable                  = try("{{${each.value.eigrp.filter_variable}}}", null)
+  hello_interval                   = try(each.value.eigrp.hello_interval, null)
+  hello_interval_variable          = try("{{${each.value.eigrp.hello_interval_variable}}}", null)
+  hmac_authentication_key          = try(each.value.eigrp.hmac_authentication_key, null)
+  hmac_authentication_key_variable = try("{{${each.value.eigrp.hmac_authentication_key_variable}}}", null)
+  hold_time                        = try(each.value.eigrp.hold_time, null)
+  hold_time_variable               = try("{{${each.value.eigrp.hold_time_variable}}}", null)
+  interfaces = try(length(each.value.eigrp.interfaces) == 0, true) ? null : [for interface in each.value.eigrp.interfaces : {
+    name              = try(interface.name, null)
+    name_variable     = try("{{${interface.name_variable}}}", null)
+    shutdown          = try(interface.shutdown, null)
+    shutdown_variable = try("{{${interface.shutdown_variable}}}", null)
+    summary_addresses = try(length(interface.summary_addresses) == 0, true) ? null : [for summary in interface.summary_addresses : {
+      address          = try(summary.address, null)
+      address_variable = try("{{${summary.address_variable}}}", null)
+      mask             = try(summary.mask, null)
+      mask_variable    = try("{{${summary.mask_variable}}}", null)
+    }]
+  }]
+  md5_keys = try(length(each.value.eigrp.md5_keys) == 0, true) ? null : [for key in each.value.eigrp.md5_keys : {
+    key_id              = try(key.key_id, null)
+    key_id_variable     = try("{{${key.key_id_variable}}}", null)
+    key_string          = try(key.key_string, null)
+    key_string_variable = try("{{${key.key_string_variable}}}", null)
+  }]
+  redistributes = try(length(each.value.eigrp.redistributes) == 0, true) ? null : [for redistribute in each.value.eigrp.redistributes : {
+    protocol          = try(redistribute.protocol, null)
+    protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id   = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+  }]
+  route_policy_id     = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${each.value.eigrp.route_policy}"].id, null)
+}
+
 resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
   for_each = {
     for acl_item in flatten([

@@ -3,6 +3,7 @@
 - add support for policy object preferred color group
 - add support for policy object SLA class
 - add support for service BGP
+- add support for service EIGRP
 - add support for service IPv4 ACL
 - add support for service OSPF
 - add support for transport BGP

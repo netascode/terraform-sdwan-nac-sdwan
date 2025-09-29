@@ -302,7 +302,7 @@ resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
     protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
     route_policy_id   = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
   }]
-  route_policy_id     = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${each.value.eigrp.route_policy}"].id, null)
+  route_policy_id = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${each.value.eigrp.route_policy}"].id, null)
 }
 
 resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {

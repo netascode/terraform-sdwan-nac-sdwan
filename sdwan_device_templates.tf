@@ -174,6 +174,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
         can(st.igmp_template) ||
         can(st.ipsec_interface_templates) ||
         can(st.multicast_template) ||
+        can(st.pim_template) ||
         can(st.svi_interface_templates)) ? null : flatten([
           try(st.ospf_template, null) == null ? [] : [{
             id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[st.ospf_template].id
@@ -214,6 +215,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].id
             version = sdwan_cedge_multicast_feature_template.cedge_multicast_feature_template[st.multicast_template].version
             type    = "cedge_multicast"
+          }],
+          try(st.pim_template, null) == null ? [] : [{
+            id      = sdwan_cedge_pim_feature_template.cedge_pim_feature_template[st.pim_template].id
+            version = sdwan_cedge_pim_feature_template.cedge_pim_feature_template[st.pim_template].version
+            type    = "cedge_pim"
           }],
           try(st.svi_interface_templates, null) == null ? [] : [for sit in try(st.svi_interface_templates, []) : {
             id      = sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template[sit.name].id

@@ -752,6 +752,70 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
   depends_on = [sdwan_localized_policy.localized_policy]
 }
 
+resource "sdwan_cedge_pim_feature_template" "cedge_pim_feature_template" {
+  for_each               = { for t in try(local.edge_feature_templates.pim_templates, {}) : t.name => t }
+  name                   = each.value.name
+  description            = each.value.description
+  device_types           = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.pim_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
+  default                = try(each.value.ssm_default, null)
+  default_variable       = try(each.value.ssm_default_variable, null)
+  range                  = try(each.value.ssm_access_list_range, null)
+  range_variable         = try(each.value.ssm_access_list_range_variable, null)
+  auto_rp                = try(each.value.auto_rp, null)
+  auto_rp_variable       = try(each.value.auto_rp_variable, null)
+  spt_threshold          = try(each.value.spt_threshold, null)
+  spt_threshold_variable = try(each.value.spt_threshold_variable, null)
+  rp_announce_fields = try(length(each.value.rp_announces) == 0, true) ? null : [for key in each.value.rp_announces : {
+    interface_name          = try(key.interface_name, null)
+    interface_name_variable = try(key.interface_name_variable, null)
+    optional                = try(key.optional, null)
+    scope                   = try(key.scope, null)
+    scope_variable          = try(key.scope_variable, null)
+  }]
+  interface_name          = try(each.value.rp_discovery_interface, null)
+  interface_name_variable = try(each.value.rp_discovery_interface_variable, null)
+  scope                   = try(each.value.rp_discovery_scope, null)
+  scope_variable          = try(each.value.rp_discovery_scope_variable, null)
+  rp_addresses = try(length(each.value.rp_addresses) == 0, true) ? null : [for addr in each.value.rp_addresses : {
+    access_list          = try(addr.access_list, null)
+    access_list_variable = try(addr.access_list_variable, null)
+    ip_address           = try(addr.ip_address, null)
+    ip_address_variable  = try(addr.ip_address_variable, null)
+    optional             = try(addr.optional, null)
+    override             = try(addr.override, null)
+    override_variable    = try(addr.override_variable, null)
+  }]
+  rp_candidates = try(length(each.value.rp_candidates) == 0, true) ? null : [for candidate in each.value.rp_candidates : {
+    access_list          = try(candidate.access_list, null)
+    access_list_variable = try(candidate.access_list_variable, null)
+    interface            = try(candidate.interface_name, null)
+    interface_variable   = try(candidate.interface_name_variable, null)
+    interval             = try(candidate.interval, null)
+    interval_variable    = try(candidate.interval_variable, null)
+    optional             = try(candidate.optional, null)
+    priority             = try(candidate.priority, null)
+    priority_variable    = try(candidate.priority_variable, null)
+  }]
+  bsr_candidate                     = try(each.value.bsr_candidate_interface, null)
+  bsr_candidate_variable            = try(each.value.bsr_candidate_interface_variable, null)
+  hash_mask_length                  = try(each.value.bsr_candidate_hash_mask_length, null)
+  hash_mask_length_variable         = try(each.value.bsr_candidate_hash_mask_length_variable, null)
+  priority                          = try(each.value.bsr_candidate_priority, null)
+  priority_variable                 = try(each.value.bsr_candidate_priority_variable, null)
+  rp_candidate_access_list          = try(each.value.bsr_candidate_rp_access_list, null)
+  rp_candidate_access_list_variable = try(each.value.bsr_candidate_rp_access_list_variable, null)
+  interfaces = try(length(each.value.interfaces) == 0, true) ? null : [for i in each.value.interfaces : {
+    interface_name               = try(i.interface_name, null)
+    interface_name_variable      = try(i.interface_name_variable, null)
+    join_prune_interval          = try(i.join_prune_interval, null)
+    join_prune_interval_variable = try(i.join_prune_interval_variable, null)
+    optional                     = try(i.optional, null)
+    query_interval               = try(i.query_interval, null)
+    query_interval_variable      = try(i.query_interval_variable, null)
+  }]
+  depends_on = [sdwan_localized_policy.localized_policy]
+}
+
 resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_internet_gateway_feature_template" {
   for_each                   = { for t in try(local.edge_feature_templates.secure_internet_gateway_templates, {}) : t.name => t }
   name                       = each.value.name

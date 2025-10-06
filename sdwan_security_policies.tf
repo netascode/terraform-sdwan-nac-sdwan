@@ -3,13 +3,14 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
   name           = each.value.name
   description    = each.value.description
   default_action = try(each.value.default_action_type, null)
-  mode           = "security"
+  mode           = try(each.value.mode, "security")
   rules = [for r in each.value.rules : {
     rule_order  = r.id
     rule_name   = r.name
     base_action = r.base_action
     action_entries = (
-    try(r.actions.log, null) == true ? [{ type = "log" }] : null)
+    try(r.actions.log, null) == true ? ( try(each.value.mode, "security") == "unified" ? [{ type = "connectionEvents" }] : [{ type = "log" }] 
+    ) : null )
     match_entries = (
       try(r.match_criterias, null) == null ? null :
       flatten([
@@ -80,15 +81,15 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           value = join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p]))
         }],
         try(r.match_criterias.local_application_list, null) == null ? [] : [{
-          type      = "appList"
+          type      = try(each.value.mode, "security") == "security" ? "appList" : "appListFlat"
           policy_id = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
         }],
     ]))
   }]
-  apply_zone_pairs = [for zp in each.value.zone_pairs : {
+  apply_zone_pairs = try(each.value.mode, "security") == "security" ? [for zp in each.value.zone_pairs : {
     source_zone      = try(zp.source_zone, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.source_zone].id
     destination_zone = try(zp.destination_zone, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.destination_zone].id
-  }]
+  }] : null
 }
 
 
@@ -96,7 +97,7 @@ resource "sdwan_security_policy" "security_policy" {
   for_each    = { for p in try(local.security_policies.feature_policies, {}) : p.name => p }
   name        = each.value.name
   description = each.value.description
-  mode        = "security"
+  mode        = try(each.value.mode, "security")
   use_case    = each.value.use_case
   definitions = flatten([
     try(each.value.firewall_policies, null) == null ? [] :
@@ -104,6 +105,10 @@ resource "sdwan_security_policy" "security_policy" {
       type    = "zoneBasedFW"
       id      = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].id
       version = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].version
+      entries = try(each.value.mode, "security") == "unified" ? [ for zp in try(each.value.zones_unified, []) : {
+      source_zone = try(zp.source_zone_unified, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.source_zone_unified].id
+      destination_zone = try(zp.destination_zone_unified, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.destination_zone_unified].id
+      } if zp.firewall_policy == fp ] : null
     }],
     try(each.value.intrusion_prevention_policy, null) == null ? [] : [{
       type    = "intrusionPrevention"
@@ -111,24 +116,33 @@ resource "sdwan_security_policy" "security_policy" {
       version = sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition[each.value.intrusion_prevention_policy].version
     }]
   ])
-  direct_internet_applications = (
+  direct_internet_applications = try(each.value.mode, "security") == "security" ? (
     try(each.value.additional_settings.firewall.direct_internet_applications, null) == true ? "allow" :
-  try(each.value.additional_settings.firewall.direct_internet_applications, null) == false ? "deny" : null)
+    try(each.value.additional_settings.firewall.direct_internet_applications, null) == false ? "deny" : null) : null
   tcp_syn_flood_limit            = try(each.value.additional_settings.firewall.tcp_syn_flood_limit, null)
-  high_speed_logging_vpn         = try(each.value.additional_settings.firewall.high_speed_logging.vpn_id, null)
-  high_speed_logging_server_ip   = try(each.value.additional_settings.firewall.high_speed_logging.server_ip, null)
-  high_speed_logging_server_port = try(each.value.additional_settings.firewall.high_speed_logging.server_port, null)
+  high_speed_logging_vpn         = try(each.value.mode, "security") == "security" ? try(each.value.additional_settings.firewall.high_speed_logging.vpn_id, null) : null
+  high_speed_logging_server_ip   = try(each.value.mode, "security") == "security" ? try(each.value.additional_settings.firewall.high_speed_logging.server_ip, null) : null
+  high_speed_logging_server_port = try(each.value.mode, "security") == "security" ? try(each.value.additional_settings.firewall.high_speed_logging.server_port, null) : null
+  max_incomplete_icmp_limit = try(each.value.mode, "security") == "unified" ? try(each.value.additional_settings.firewall.max_incomplete_icmp_limit, null) : null
+  max_incomplete_tcp_limit = try(each.value.mode, "security") == "unified" ? try(each.value.additional_settings.firewall.max_incomplete_tcp_limit, null) : null
+  max_incomplete_udp_limit = try(each.value.mode, "security") == "unified" ? try(each.value.additional_settings.firewall.max_incomplete_udp_limit, null) : null
   audit_trail = (
     try(each.value.additional_settings.firewall.audit_trail, null) == true ? "on" :
   try(each.value.additional_settings.firewall.audit_trail, null) == false ? "off" : null)
-  match_statistics_per_filter = (
+  match_statistics_per_filter = try(each.value.mode, "security") == "security" ? (
     try(each.value.additional_settings.firewall.match_stats_per_filter, null) == true ? "on" :
-  try(each.value.additional_settings.firewall.match_stats_per_filter, null) == false ? "off" : null)
+    try(each.value.additional_settings.firewall.match_stats_per_filter, null) == false ? "off" : null) : null
   failure_mode = try(each.value.additional_settings.ips_url_amp.failure_mode, null)
   logging = try(each.value.additional_settings.ips_url_amp.external_syslog_server, null) == null ? null : [{
     external_syslog_server_ip  = each.value.additional_settings.ips_url_amp.external_syslog_server.server_ip
     external_syslog_server_vpn = each.value.additional_settings.ips_url_amp.external_syslog_server.vpn_id
   }]
+  unified_logging = try(each.value.mode, "security") == "unified" ? (
+    try(each.value.additional_settings.firewall.unified_logging, null) ) : null
+  session_reclassify_allow = try(each.value.mode, "security") == "unified" ? (
+    try(each.value.additional_settings.firewall.session_reclassify_allow, null) ) : null
+  imcp_unreachable_allow = try(each.value.mode, "security") == "unified" ? (
+    try(each.value.additional_settings.firewall.icmp_unreachable_allow, null) ) : null
 }
 
 

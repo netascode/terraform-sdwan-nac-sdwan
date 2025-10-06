@@ -284,6 +284,12 @@ locals {
             parcel_id   = sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${feature.name}"].id
             parcel_type = "route-policy"
           }
+        },
+        {
+          for feature in try(profile.switchport_features, []) : feature.name => {
+            parcel_id   = sdwan_service_switchport_feature.service_switchport_feature["${profile.name}-${feature.name}"].id
+            parcel_type = "service/switchport"
+          }
         }
       )
     }

@@ -428,7 +428,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
           community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
           community_list_ids        = null
           community_list_versions   = null
-        }] : [{
+          }] : [{
           type                      = "advancedCommunity"
           community_list_ids        = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
           community_list_versions   = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]

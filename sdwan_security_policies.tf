@@ -100,16 +100,21 @@ resource "sdwan_security_policy" "security_policy" {
   mode        = try(each.value.mode, "security")
   use_case    = each.value.use_case
   definitions = flatten([
+    try(each.value.mode,"security") == "security" ?
     try(each.value.firewall_policies, null) == null ? [] :
     [for fp in each.value.firewall_policies : {
       type    = "zoneBasedFW"
       id      = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].id
       version = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fp].version
-      entries = try(each.value.mode, "security") == "unified" ? [ for zp in try(each.value.zones_unified, []) : {
-      source_zone = try(zp.source_zone_unified, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.source_zone_unified].id
-      destination_zone = try(zp.destination_zone_unified, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.destination_zone_unified].id
-      } if zp.firewall_policy == fp ] : null
-    }],
+    }] : try(each.value.unified_firewall_policies, null) == null ? [] :
+    [for fpu in each.value.unified_firewall_policies : {
+      type    = "zoneBasedFW"
+      id      = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fpu.firewall_policy].id
+      version = sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition[fpu.firewall_policy].version
+      entries = [ for zp in try(fpu.zones, []) : {
+      source_zone = try(zp.source_zone, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.source_zone].id
+      destination_zone = try(zp.destination_zone, null) == "self_zone" ? "self" : sdwan_zone_list_policy_object.zone_list_policy_object[zp.destination_zone].id
+      } ] } ],
     try(each.value.intrusion_prevention_policy, null) == null ? [] : [{
       type    = "intrusionPrevention"
       id      = sdwan_intrusion_prevention_policy_definition.intrusion_prevention_policy_definition[each.value.intrusion_prevention_policy].id

@@ -126,6 +126,9 @@ locals {
       try(profile.dhcp_servers, null) == null ? [] : [for dhcp_server in try(profile.dhcp_servers, []) : [
         sdwan_service_dhcp_server_feature.service_dhcp_server_feature["${profile.name}-${dhcp_server.name}"].version
       ]],
+      try(profile.eigrp_features, null) == null ? [] : [for eigrp_feature in try(profile.eigrp_features, []) : [
+        sdwan_service_routing_eigrp_feature.service_routing_eigrp_feature["${profile.name}-${eigrp_feature.name}"].version
+      ]],
       try(profile.ipv4_acls, null) == null ? [] : [for ipv4_acl in try(profile.ipv4_acls, []) : [
         sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${profile.name}-${ipv4_acl.name}"].version
       ]],
@@ -138,6 +141,7 @@ locals {
       try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
+        try(lan_vpn.eigrp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature["${profile.name}-${lan_vpn.name}-routing_eigrp"].version],
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
       ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [

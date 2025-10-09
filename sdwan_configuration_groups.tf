@@ -268,12 +268,6 @@ locals {
           }
         },
         {
-          for feature in try(profile.eigrp_features, []) : feature.name => {
-            parcel_id   = sdwan_service_routing_eigrp_feature.service_routing_eigrp_feature["${profile.name}-${feature.name}"].id
-            parcel_type = "routing/eigrp"
-          }
-        },
-        {
           for feature in try(profile.lan_vpns, []) : feature.name => {
             parcel_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${feature.name}"].id
             parcel_type = "lan/vpn"

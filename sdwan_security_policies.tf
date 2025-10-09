@@ -9,7 +9,7 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
     rule_name   = r.name
     base_action = r.base_action
     action_entries = (
-    try(r.actions.log, null) == true ? ( try(each.value.mode, "security") == "unified" ? [{ type = "connectionEvents" }] : [{ type = "log" }] 
+    try(r.actions.log, null) == true ? ( try(each.value.mode, "security") == "unified" ? ( r.base_action == "inspect" ? [{ type = "connectionEvents" }] : [{ type = "log" }] ) : [{ type = "log" }] 
     ) : null )
     match_entries = (
       try(r.match_criterias, null) == null ? null :

@@ -1047,7 +1047,6 @@ resource "sdwan_service_switchport_feature" "service_switchport_feature" {
     mac_authentication_bypass        = try(interface.mac_authentication_bypass, null)
     mac_authentication_bypass_variable = try("{{${interface.mac_authentication_bypass_variable}}}", null)
     mode                             = try(interface.mode, null)
-    mode_variable                    = try("{{${interface.mode_variable}}}", null)
     mtu                              = try(interface.mtu, null)
     mtu_variable                     = try("{{${interface.mtu_variable}}}", null)
     name                             = try(interface.name, null)

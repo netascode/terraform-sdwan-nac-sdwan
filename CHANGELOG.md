@@ -27,6 +27,7 @@
 - add support for UX 1.0 unified security policy and unified firewall
 - use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
 - fix `vpn_name_variable` not being set in VPN feature template
+- add support for queue 0 in sdwan_qos_map_policy_definition which contains no class map id 
 
 ## 1.2.0
 

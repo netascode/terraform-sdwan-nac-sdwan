@@ -409,6 +409,16 @@ defaults:
       policy_object_profile:
         name: policy_objects
       service_profiles:
+        bgp_features:
+          ipv4_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
+          ipv6_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
+        ipv4_acls:
+          sequences:
+            name: acl
         lan_vpns:
           ipv4_static_routes:
             gateway: nexthop
@@ -456,8 +466,18 @@ defaults:
         snmp:
           name: snmp
       transport_profiles:
+        bgp_features:
+          ipv4_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
+          ipv6_neighbors:
+            address_families:
+              maximum_prefixes_reach_policy: off
         gps_features:
           gps_enable: true
+        ipv4_acls:
+          sequences:
+            name: acl
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

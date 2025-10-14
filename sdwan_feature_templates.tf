@@ -531,7 +531,7 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     logging_level_variable    = try(server.logging_level_variable, null)
     source_interface          = try(server.source_interface, null)
     source_interface_variable = try(server.source_interface_variable, null)
-    custom_profile            = try(server.tls_profile, null) == null ? false : true
+    custom_profile            = try(server.tls_profile, null) == null ? null : true
     profile                   = try(server.tls_profile, null)
     profile_variable          = try(server.tls_profile_variable, null)
     optional                  = try(server.optional, null)
@@ -547,7 +547,7 @@ resource "sdwan_cisco_logging_feature_template" "cisco_logging_feature_template"
     logging_level_variable    = try(server.logging_level_variable, null)
     source_interface          = try(server.source_interface, null)
     source_interface_variable = try(server.source_interface_variable, null)
-    custom_profile            = try(server.tls_profile, null) == null ? false : true
+    custom_profile            = try(server.tls_profile, null) == null ? null : true
     profile                   = try(server.tls_profile, null)
     profile_variable          = try(server.tls_profile_variable, null)
     optional                  = try(server.optional, null)
@@ -855,7 +855,7 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
     interface_pairs = try(length(each.value.high_availability_interface_pairs) == 0, true) ? null : [for pair in try(each.value.high_availability_interface_pairs, []) : {
       active_interface        = try(pair.active_interface, null)
       active_interface_weight = try(pair.active_interface_weight, null)
-      backup_interface        = try(pair.backup_interface, null)
+      backup_interface        = try(pair.backup_interface == "none" ? "None" : pair.backup_interface, null)
       backup_interface_weight = try(pair.backup_interface_weight, null)
     }]
   }]
@@ -1082,7 +1082,7 @@ resource "sdwan_cisco_system_feature_template" "cisco_system_feature_template" {
   transport_gateway                      = try(each.value.transport_gateway, null)
   transport_gateway_variable             = try(each.value.transport_gateway_variable, null)
   enhanced_app_aware_routing             = try(each.value.enhanced_app_aware_routing, null)
-  # enhanced_app_aware_routing_variable    = try(each.value.enhanced_app_aware_routing_variable, null)
+  enhanced_app_aware_routing_variable    = try(each.value.enhanced_app_aware_routing_variable, null)
   object_trackers = try(length(each.value.object_trackers) == 0, true) ? null : [for obj in each.value.object_trackers : {
     object_number          = try(obj.id, null)
     object_number_variable = try(obj.id_variable, null)

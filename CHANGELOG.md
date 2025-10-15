@@ -3,6 +3,7 @@
 - add support for policy object preferred color group
 - add support for policy object SLA class
 - add support for service BGP
+- add support for service EIGRP
 - add support for service IPv4 ACL
 - add support for service OSPF
 - add support for transport BGP
@@ -11,6 +12,7 @@
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 - fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
+- add support for classic policy object port list
 - add firewall policy support for unified security policy
 
 ## 1.2.0

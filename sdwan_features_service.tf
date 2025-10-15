@@ -1073,7 +1073,7 @@ resource "sdwan_service_switchport_feature" "service_switchport_feature" {
     mac_address             = try(mac.mac_address, null)
     mac_address_variable    = try("{{${mac.mac_address_variable}}}", null)
     optional                = try(mac.optional, null)
-    vlan                    = try(mac.vlan, null)
-    vlan_variable           = try("{{${mac.vlan_variable}}}", null)
+    vlan_id                    = try(mac.vlan_id, null)
+    vlan_id_variable           = try("{{${mac.vlan_id_variable}}}", null)
   }]
 }

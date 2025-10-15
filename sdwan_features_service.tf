@@ -757,6 +757,8 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   service_lan_vpn_feature_id = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
   acl_ipv4_egress_policy_id  = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
   acl_ipv4_ingress_policy_id = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
+  acl_ipv6_egress_policy_id  = null # to be added when ACL is supported in module
+  acl_ipv6_ingress_policy_id = null # to be added when ACL is supported in module
   acl_shaping_rate           = try(each.value.interface.shaping_rate, null)
   acl_shaping_rate_variable  = try("{{${each.value.interface.shaping_rate_variable}}}", null)
   arp_timeout                = try(each.value.interface.arp_timeout, null)

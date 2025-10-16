@@ -11,6 +11,7 @@
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 - fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
+- fix route policy `standard_community_lists` `type` to properly handle both single and multiple community list entries
 
 ## 1.2.0
 

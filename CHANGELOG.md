@@ -13,7 +13,8 @@
 - fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
 - add support for classic policy object port list
-- add support for service LAN VPN Ethernet Interface Feature
+- add support for service LAN VPN Ethernet Interface
+- fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 
 ## 1.2.0
 

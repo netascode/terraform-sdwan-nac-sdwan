@@ -43,6 +43,16 @@ resource "sdwan_policy_object_class_map" "policy_object_class_map" {
   }]
 }
 
+resource "sdwan_policy_object_color_list" "policy_object_color_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.color_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.colors, []) : {
+    color = e
+  }]
+}
+
 resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name

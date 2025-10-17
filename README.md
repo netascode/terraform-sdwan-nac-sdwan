@@ -137,6 +137,7 @@ module "sdwan" {
 | [sdwan_policy_object_application_list.policy_object_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_application_list) | resource |
 | [sdwan_policy_object_as_path_list.policy_object_as_path_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_as_path_list) | resource |
 | [sdwan_policy_object_class_map.policy_object_class_map](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_class_map) | resource |
+| [sdwan_policy_object_color_list.policy_object_color_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_color_list) | resource |
 | [sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_data_ipv4_prefix_list) | resource |
 | [sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_data_ipv6_prefix_list) | resource |
 | [sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_expanded_community_list) | resource |

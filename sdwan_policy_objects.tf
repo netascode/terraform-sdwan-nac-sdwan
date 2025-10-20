@@ -43,6 +43,16 @@ resource "sdwan_policy_object_class_map" "policy_object_class_map" {
   }]
 }
 
+resource "sdwan_policy_object_color_list" "policy_object_color_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.color_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.colors, []) : {
+    color = e
+  }]
+}
+
 resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name
@@ -129,6 +139,23 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
     burst_bytes   = each.value.burst_bytes
     exceed_action = each.value.exceed_action
     rate_bps      = each.value.rate_bps
+  }]
+}
+
+resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [{
+    app_probe_class_list_id               = try(sdwan_policy_object_app_probe_class.policy_object_app_probe_class[each.value.app_probe_class].id, null)
+    jitter                                = try(each.value.jitter_ms, null)
+    latency                               = try(each.value.latency_ms, null)
+    loss                                  = try(each.value.loss_percentage, null)
+    fallback_best_tunnel_criteria         = try(each.value.fallback_best_tunnel_criteria, null)
+    fallback_best_tunnel_jitter_variance  = try(each.value.fallback_best_tunnel_jitter_variance, null)
+    fallback_best_tunnel_latency_variance = try(each.value.fallback_best_tunnel_latency_variance, null)
+    fallback_best_tunnel_loss_variance    = try(each.value.fallback_best_tunnel_loss_variance, null)
   }]
 }
 

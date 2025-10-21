@@ -1,5 +1,8 @@
 ## 1.3.0 (unreleased)
 
+- add support for application priority feature profile
+- add support for application priority qos policy
+- add support for policy object color list
 - add support for policy object preferred color group
 - add support for policy object SLA class
 - add support for service BGP
@@ -10,10 +13,12 @@
 - add support for transport IPv4 ACL
 - add support for transport OSPF
 - fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
+- add support for UX 1.0 PIM feature template
 - fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
 - fix route policy `standard_community_lists` to properly handle both single and multiple community list entries
 - add support for classic policy object port list
+- add support for service LAN VPN Ethernet Interface
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 
 ## 1.2.0

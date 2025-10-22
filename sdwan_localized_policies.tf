@@ -421,14 +421,14 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
           as_path_list_id      = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].id
           as_path_list_version = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].version
         }],
-        try(s.match_criterias.standard_community_lists, null) == null ? [] : flatten([
-          length(s.match_criterias.standard_community_lists) == 1 ? [{
+        try(s.match_criterias.standard_community_lists, null) == null || try(s.match_criterias.standard_community_lists_criteria, null) == null ? [] : flatten([
+          (length(s.match_criterias.standard_community_lists) == 1 && s.match_criterias.standard_community_lists_criteria == "or") ? [{
             type                      = "community"
             community_list_id         = sdwan_standard_community_list_policy_object.standard_community_list_policy_object[s.match_criterias.standard_community_lists[0]].id
             community_list_version    = sdwan_standard_community_list_policy_object.standard_community_list_policy_object[s.match_criterias.standard_community_lists[0]].version
             community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
           }] : [],
-          length(s.match_criterias.standard_community_lists) > 1 ? [{
+          (length(s.match_criterias.standard_community_lists) > 1 || contains(["and", "exact"], s.match_criterias.standard_community_lists_criteria)) ? [{
             type                      = "advancedCommunity"
             community_list_ids        = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
             community_list_versions   = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]

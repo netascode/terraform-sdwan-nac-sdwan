@@ -901,7 +901,7 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server
         ]
       ]
     ])
-    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}-dhcp" => interface_item
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}-dhcp_server" => interface_item
     if try(interface_item.interface.dhcp_server, null) != null
   }
   feature_profile_id                            = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id

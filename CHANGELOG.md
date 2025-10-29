@@ -20,7 +20,8 @@
 - add support for classic policy object port list
 - add support for service LAN VPN Ethernet Interface
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
-- add firewall policy support for unified security policy
+- rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
+- add support for UX 1.0 unified security policy and unified firewall
 
 ## 1.2.0
 

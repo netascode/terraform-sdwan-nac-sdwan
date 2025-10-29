@@ -20,6 +20,7 @@
 - add support for classic policy object port list
 - add support for service LAN VPN Ethernet Interface
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
+- fix for LAN VPN interface feature associate DHCP feature brownfield import
 
 ## 1.2.0
 

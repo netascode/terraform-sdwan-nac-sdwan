@@ -535,5 +535,7 @@ defaults:
       definitions:
         zone_based_firewall:
           mode: security
+          rules:
+            ip_type: ipv4
       feature_policies:
         mode: security

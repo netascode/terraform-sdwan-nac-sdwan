@@ -8,9 +8,10 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
     rule_order  = r.id
     rule_name   = r.name
     base_action = r.base_action
+    ip_type   = try(each.value.mode, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.mode) == "unified" ? try(r.ip_type, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.rules.ip_type) : local.defaults.sdwan.security_policies.definitions.zone_based_firewall.rules.ip_type
     action_entries = (
-      try(r.actions.log, null) == true ? (try(each.value.mode, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.mode) == "unified" ? (r.base_action == "inspect" ? [{ type = "connectionEvents" }] : [{ type = "log" }]) : [{ type = "log" }]
-    ) : null)
+      try(r.actions.log, null) == true ? ( try(each.value.mode, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.mode) == "unified" ? ( r.base_action == "inspect" ? [{ type = "connectionEvents" }] : [{ type = "log" }] ) : [{ type = "log" }]
+    ) : null )
     match_entries = (
       try(r.match_criterias, null) == null ? null :
       flatten([

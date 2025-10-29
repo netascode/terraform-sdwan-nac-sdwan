@@ -34,12 +34,22 @@ resource "sdwan_policy_object_as_path_list" "policy_object_as_path_list" {
 }
 
 resource "sdwan_policy_object_class_map" "policy_object_class_map" {
-  for_each           = { for p in try(local.feature_profiles.policy_object_profile.class_maps, {}) : p.name => p }
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.forwarding_classes, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
     queue = each.value.queue
+  }]
+}
+
+resource "sdwan_policy_object_color_list" "policy_object_color_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.color_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.colors, []) : {
+    color = e
   }]
 }
 

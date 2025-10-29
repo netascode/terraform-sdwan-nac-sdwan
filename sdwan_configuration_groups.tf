@@ -143,6 +143,12 @@ locals {
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
         try(lan_vpn.eigrp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature["${profile.name}-${lan_vpn.name}-routing_eigrp"].version],
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
+        sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
+        try(lan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ethernet_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
+          try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
+          try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
+        ]],
       ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [
         sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${profile.name}-${object_tracker_group.name}"].version
@@ -284,7 +290,15 @@ locals {
             parcel_id   = sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${feature.name}"].id
             parcel_type = "route-policy"
           }
-        }
+        },
+        merge([
+          for lan_vpn in try(profile.lan_vpns, []) : {
+            for interface in try(lan_vpn.ethernet_interfaces, []) : interface.name => {
+              parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
+              parcel_type = "lan/vpn/interface/ethernet"
+            }
+          }
+        ]...)
       )
     }
   )

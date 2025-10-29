@@ -531,9 +531,3 @@ defaults:
             gateway: nexthop
           ipv6_static_routes:
             gateway: nexthop
-    security_policies:
-      definitions:
-        zone_based_firewall:
-          mode: security
-      feature_policies:
-        mode: security

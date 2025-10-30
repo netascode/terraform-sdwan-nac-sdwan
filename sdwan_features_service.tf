@@ -954,6 +954,55 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_gro
   service_tracker_group_feature_id              = sdwan_service_tracker_group_feature.service_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker_group}"].id
 }
 
+resource "sdwan_service_lan_vpn_interface_gre_feature" "service_lan_vpn_interface_gre_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, {}) : [
+        for lan_vpn in try(profile.lan_vpns, []) : [
+          for interface in try(lan_vpn.gre_interfaces, []) : {
+            profile   = profile
+            lan_vpn   = lan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}" => interface_item
+  }
+  name                                      = each.value.interface.name
+  description                               = try(each.value.interface.description, null)
+  feature_profile_id                        = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id                = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  application_tunnel_type                   = try(each.value.interface.application_tunnel_type, null)
+  application_tunnel_type_variable          = try("{{${each.value.interface.application_tunnel_type_variable}}}", null)
+  clear_dont_fragment                       = try(each.value.interface.clear_dont_fragment, null)
+  clear_dont_fragment_variable              = try("{{${each.value.interface.clear_dont_fragment_variable}}}", null)
+  interface_description                     = try(each.value.interface.interface_description, null)
+  interface_description_variable            = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_name                            = try(each.value.interface.interface_name, null)
+  interface_name_variable                   = try("{{${each.value.interface.interface_name_variable}}}", null)
+  ip_mtu                                    = try(each.value.interface.ipv4_mtu, null)
+  ip_mtu_variable                           = try("{{${each.value.interface.ipv4_mtu_variable}}}", null)
+  ipv4_address                              = try(each.value.interface.ipv4_address, null)
+  ipv4_address_variable                     = try("{{${each.value.interface.ipv4_address_variable}}}", null)
+  ipv4_subnet_mask                          = try(each.value.interface.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable                 = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
+  shutdown                                  = try(each.value.interface.shutdown, null)
+  shutdown_variable                         = try("{{${each.value.interface.shutdown_variable}}}", null)
+  tcp_mss                                   = try(each.value.interface.ipv4_tcp_mss, null)
+  tcp_mss_variable                          = try("{{${each.value.interface.ipv4_tcp_mss_variable}}}", null)
+  tunnel_destination_ipv4_address           = try(each.value.interface.tunnel_destination_ipv4_address, null)
+  tunnel_destination_ipv4_address_variable  = try("{{${each.value.interface.tunnel_destination_ipv4_address_variable}}}", null)
+  tunnel_route_via_loopback                 = try(each.value.interface.tunnel_route_via_loopback, null)
+  tunnel_route_via_loopback_variable        = try("{{${each.value.interface.tunnel_route_via_loopback_variable}}}", null)
+  tunnel_source_interface                   = try(each.value.interface.tunnel_source_interface, null)
+  tunnel_source_interface_variable          = try("{{${each.value.interface.tunnel_source_interface_variable}}}", null)
+  tunnel_source_interface_loopback          = try(each.value.interface.tunnel_source_interface_loopback, null)
+  tunnel_source_interface_loopback_variable = try("{{${each.value.interface.tunnel_source_interface_loopback_variable}}}", null)
+  tunnel_source_ipv4_address                = try(each.value.interface.tunnel_source_ipv4_address, null)
+  tunnel_source_ipv4_address_variable       = try("{{${each.value.interface.tunnel_source_ipv4_address_variable}}}", null)
+}
+
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {
   for_each = {
     for tracker_item in flatten([

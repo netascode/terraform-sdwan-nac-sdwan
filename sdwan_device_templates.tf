@@ -263,7 +263,7 @@ locals {
         tags                       = try(router.tags, [])
         device_template            = try(router.device_template, null)
         device_variables           = try(router.device_variables, null)
-        policy_variables           = try(router.policy_variables, {})
+        policy_variables           = try(router.policy_variables, null)
         model                      = try(router.model, null)
       }
     ]

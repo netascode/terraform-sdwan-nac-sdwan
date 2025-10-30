@@ -1,5 +1,6 @@
 ## 1.3.0 (unreleased)
 
+- add support for policy groups
 - add support for application priority feature profile
 - add support for application priority qos policy
 - add support for policy object color list

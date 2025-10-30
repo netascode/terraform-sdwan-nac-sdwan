@@ -8,6 +8,7 @@ locals {
   centralized_policies   = try(local.model.sdwan.centralized_policies, {})
   configuration_groups   = try(local.model.sdwan.configuration_groups, {})
   feature_profiles       = try(local.model.sdwan.feature_profiles, {})
+  policy_groups          = try(local.model.sdwan.policy_groups, {})
   device_type_map = {
     "C8000V" : "vedge-C8000V"
     "C8300-1N1S-4T2X" : "vedge-C8300-1N1S-4T2X"

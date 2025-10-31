@@ -43,8 +43,6 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       key_type_variable   = try("{{${server.key_type_variable}}}", null)
       retransmit          = try(server.retransmit, null)
       retransmit_variable = try("{{${server.retransmit_variable}}}", null)
-      secret_key          = try(server.secret_key, null)
-      secret_key_variable = try("{{${server.secret_key_variable}}}", null)
       timeout             = try(server.timeout, null)
       timeout_variable    = try("{{${server.timeout_variable}}}", null)
     }]
@@ -60,7 +58,6 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       key              = server.key
       port             = try(server.port, null)
       port_variable    = try("{{${server.port_variable}}}", null)
-      secret_key       = server.secret_key
       timeout          = try(server.timeout, null)
       timeout_variable = try("{{${server.timeout_variable}}}", null)
     }]

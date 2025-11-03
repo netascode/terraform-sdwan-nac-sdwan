@@ -507,6 +507,9 @@ defaults:
         ipv4_acls:
           sequences:
             name: acl
+        ipv6_acls:
+          sequences:
+            name: acl
         management_vpn:
           name: management_vpn
           ethernet_interfaces:

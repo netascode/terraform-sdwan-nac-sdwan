@@ -24,6 +24,7 @@
 - rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
 - remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
 - add support for transport IPv6 ACL
+- add support for UX 1.0 unified security policy and unified firewall
 
 ## 1.2.0
 

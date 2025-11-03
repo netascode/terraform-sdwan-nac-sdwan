@@ -423,6 +423,7 @@ defaults:
     sites:
       routers:
         configuration_group_deploy: true
+        policy_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -505,6 +506,9 @@ defaults:
         gps_features:
           gps_enable: true
         ipv4_acls:
+          sequences:
+            name: acl
+        ipv6_acls:
           sequences:
             name: acl
         management_vpn:

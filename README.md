@@ -136,6 +136,7 @@ module "sdwan" {
 | [sdwan_other_thousandeyes_feature.other_thousandeyes_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_thousandeyes_feature) | resource |
 | [sdwan_other_ucse_feature.other_ucse_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_ucse_feature) | resource |
 | [sdwan_policer_policy_object.policer_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policer_policy_object) | resource |
+| [sdwan_policy_group.policy_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group) | resource |
 | [sdwan_policy_object_app_probe_class.policy_object_app_probe_class](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_app_probe_class) | resource |
 | [sdwan_policy_object_application_list.policy_object_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_application_list) | resource |
 | [sdwan_policy_object_as_path_list.policy_object_as_path_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_as_path_list) | resource |
@@ -208,6 +209,7 @@ module "sdwan" {
 | [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
 | [sdwan_transport_gps_feature.transport_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_gps_feature) | resource |
 | [sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv4_acl_feature) | resource |
+| [sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_acl_feature) | resource |
 | [sdwan_transport_ipv6_tracker_feature.transport_ipv6_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_feature) | resource |
 | [sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_ipv6_tracker_group_feature) | resource |
 | [sdwan_transport_management_vpn_feature.transport_management_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_management_vpn_feature) | resource |

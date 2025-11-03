@@ -1,5 +1,6 @@
 ## 1.3.0 (unreleased)
 
+- add support for policy groups
 - add support for application priority feature profile
 - add support for application priority qos policy
 - add support for policy object color list
@@ -21,6 +22,8 @@
 - add support for service LAN VPN Ethernet Interface
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 - rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
+- remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
+- add support for transport IPv6 ACL
 - add support for UX 1.0 unified security policy and unified firewall
 
 ## 1.2.0

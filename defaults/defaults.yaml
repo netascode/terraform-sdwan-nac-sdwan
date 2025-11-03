@@ -423,6 +423,7 @@ defaults:
     sites:
       routers:
         configuration_group_deploy: true
+        policy_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:

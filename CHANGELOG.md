@@ -22,6 +22,7 @@
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 - rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
 - remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
+- add support for transport IPv6 ACL
 
 ## 1.2.0
 

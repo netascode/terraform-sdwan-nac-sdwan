@@ -834,8 +834,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
   acl_ipv4_egress_feature_id   = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
   acl_ipv4_ingress_feature_id  = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
-  acl_ipv6_egress_feature_id   = null # to be added when ACL is supported
-  acl_ipv6_ingress_feature_id  = null # to be added when ACL is supported
+  acl_ipv6_egress_feature_id   = try(sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_egress_acl}"].id, null)
+  acl_ipv6_ingress_feature_id  = try(sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_ingress_acl}"].id, null)
   arp_timeout                  = try(each.value.interface.arp_timeout, null)
   arp_timeout_variable         = try("{{${each.value.interface.arp_timeout_variable}}}", null)
   arps = try(length(each.value.interface.arp_entries) == 0, true) ? null : [for arp in each.value.interface.arp_entries : {
@@ -1154,4 +1154,55 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_trac
   transport_wan_vpn_feature_id                    = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
   transport_wan_vpn_interface_ethernet_feature_id = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
   transport_ipv6_tracker_group_feature_id         = sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv6_tracker_group}"].id
+}
+
+resource "sdwan_transport_ipv6_acl_feature" "transport_ipv6_acl_feature" {
+  for_each = {
+    for acl_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for acl in try(profile.ipv6_acls, []) : {
+          profile = profile
+          acl     = acl
+        }
+      ]
+    ])
+    : "${acl_item.profile.name}-${acl_item.acl.name}" => acl_item
+  }
+  name               = each.value.acl.name
+  description        = try(each.value.acl.description, null)
+  feature_profile_id = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  default_action     = try(each.value.acl.default_action, "drop")
+  sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
+    actions = length(keys(try(s.actions, {}))) > 0 ? [{
+      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_traffic_class  = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
+      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
+      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+    }] : null
+    base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
+    match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
+      destination_data_prefix         = try(s.match_entries.destination_data_prefix, null)
+      destination_data_prefix_list_id = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
+        port = p
+      }]
+      traffic_class              = try(s.match_entries.traffic_class, null)
+      icmp_messages              = try(s.match_entries.icmpv6_messages, null)
+      packet_length              = try(s.match_entries.packet_length, null)
+      source_data_prefix         = try(s.match_entries.source_data_prefix, null)
+      source_data_prefix_list_id = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
+        port = p
+      }]
+      tcp_state   = try(s.match_entries.tcp_state, null)
+      next_header = try(s.match_entries.next_header, null)
+    }] : null
+    sequence_id   = s.id
+    sequence_name = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.ipv6_acls.sequences.name)
+    }
+  ]
 }

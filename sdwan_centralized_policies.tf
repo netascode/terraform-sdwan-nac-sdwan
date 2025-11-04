@@ -575,19 +575,14 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
   for_each    = { for d in try(local.centralized_policies.definitions.data_policy.application_aware_routing, {}) : d.name => d }
   name        = each.value.name
   description = each.value.description
-  default_action = (
-    try(each.value.default_action_type.none, false) ? null :
-    try(each.value.default_action_type.sla_class_list, null) != null ? "slaClass" : null
-  )
+  default_action = (try(each.value.default_action_sla_class_list, null) != null ? "slaClass" : null)
   default_action_sla_class_list_id = (
-    try(each.value.default_action_type.none, false) ? null :
-    try(each.value.default_action_type.sla_class_list, null) != null ?
-    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_type.sla_class_list].id : null
+    try(each.value.default_action_sla_class_list, null) != null ?
+    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_sla_class_list].id : null
   )
   default_action_sla_class_list_version = (
-    try(each.value.default_action_type.none, false) ? null :
-    try(each.value.default_action_type.sla_class_list, null) != null ?
-    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_type.sla_class_list].version : null
+    try(each.value.default_action_sla_class_list, null) != null ?
+    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_sla_class_list].version : null
   )
   sequences = [for s in each.value.sequences : {
     id      = s.id

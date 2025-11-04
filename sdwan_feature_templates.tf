@@ -1241,6 +1241,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   omp_admin_distance_ipv6_variable = try(each.value.omp_admin_distance_ipv6_variable, null)
   vpn_id                           = try(each.value.vpn_id, null)
   vpn_name                         = try(each.value.vpn_name, null)
+  vpn_name_variable                = try(each.value.vpn_name_variable, null)
   dns_hosts = try(each.value.ipv4_dns_hosts, each.value.ipv6_dns_hosts, null) == null ? null : flatten([
     try(each.value.ipv4_dns_hosts, null) == null ? [] : [for host in each.value.ipv4_dns_hosts : {
       hostname          = try(host.hostname, null)

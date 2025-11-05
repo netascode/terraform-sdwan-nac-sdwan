@@ -6,8 +6,8 @@ resource "sdwan_qos_map_policy_definition" "qos_map_policy_definition" {
     bandwidth_percent = s.bandwidth_percent
     buffer_percent    = s.buffer_percent
     burst             = try(s.burst_bytes, null)
-    class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
-    class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
+    class_map_id      = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
+    class_map_version = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
     drop_type         = s.drop_type
     queue             = s.queue
     scheduling_type   = s.scheduling_type

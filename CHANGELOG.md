@@ -28,6 +28,7 @@
 - add support for UX 1.0 unified security policy and unified firewall
 - use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
 - fix `vpn_name_variable` not being set in VPN feature template
+- fix vpn feature template service route failing during device template push
 
 ## 1.2.0
 

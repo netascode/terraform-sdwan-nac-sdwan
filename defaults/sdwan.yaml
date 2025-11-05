@@ -6,6 +6,7 @@ defaults:
         route_policies:
           sequences:
             ip_type: ipv4
+            name: Route
       feature_policies:
         ipv4_application_visibility: false
         ipv6_application_visibility: false

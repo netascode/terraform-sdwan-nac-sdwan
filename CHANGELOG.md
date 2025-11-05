@@ -29,6 +29,7 @@
 - use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
 - fix `vpn_name_variable` not being set in VPN feature template
 - fix vpn feature template service route failing during device template push
+- move UX 1.0 route policy sequence name from hardcoded value to defaults
 - add support for queue 0 in sdwan_qos_map_policy_definition which contains no class map id 
 
 ## 1.2.0

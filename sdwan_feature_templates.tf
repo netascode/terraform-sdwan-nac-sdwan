@@ -1326,6 +1326,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     prefix          = try(route.prefix, null)
     prefix_variable = try(route.prefix_variable, null)
     service         = try(route.service, null)
+    vpn_id          = 0
   }]
   ipv6_static_routes = try(length(each.value.ipv6_static_routes) == 0, true) ? null : [for route in each.value.ipv6_static_routes : {
     nat             = try(route.nat, null)

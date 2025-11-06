@@ -23,10 +23,14 @@
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 - rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
 - remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
+- add `default_action` support to the `sdwan_application_aware_routing_policy_definition`
 - add support for transport IPv6 ACL
 - add support for UX 1.0 unified security policy and unified firewall
 - use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
 - fix `vpn_name_variable` not being set in VPN feature template
+- fix vpn feature template service route failing during device template push
+- move UX 1.0 route policy sequence name from hardcoded value to defaults
+- add support for queue 0 in sdwan_qos_map_policy_definition which contains no class map id 
 
 ## 1.2.0
 

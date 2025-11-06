@@ -6,8 +6,8 @@ resource "sdwan_qos_map_policy_definition" "qos_map_policy_definition" {
     bandwidth_percent = s.bandwidth_percent
     buffer_percent    = s.buffer_percent
     burst             = try(s.burst_bytes, null)
-    class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
-    class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
+    class_map_id      = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
+    class_map_version = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
     drop_type         = s.drop_type
     queue             = s.queue
     scheduling_type   = s.scheduling_type
@@ -395,7 +395,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
   sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
     ip_type     = try(s.ip_type, local.defaults.sdwan.localized_policies.definitions.route_policies.sequences.ip_type)
-    name        = try(s.name, "Route")
+    name        = try(s.name, local.defaults.sdwan.localized_policies.definitions.route_policies.sequences.name)
     base_action = s.base_action
     match_entries = !(can(s.match_criterias.prefix_list) ||
       can(s.match_criterias.prefix_list) ||

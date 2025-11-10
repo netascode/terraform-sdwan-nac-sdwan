@@ -31,7 +31,6 @@
 - fix vpn feature template service route failing during device template push
 - move UX 1.0 route policy sequence name from hardcoded value to defaults
 - add support for queue 0 in sdwan_qos_map_policy_definition which contains no class map id 
-- move sig credential's `device_types` and `description` to defaults
 
 ## 1.2.0
 

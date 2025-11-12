@@ -1,36 +1,37 @@
-## 1.3.0 (unreleased)
+## 1.3.0
 
-- add support for policy groups
 - add support for application priority feature profile
 - add support for application priority qos policy
+- add support for policy groups
 - add support for policy object color list
 - add support for policy object preferred color group
 - add support for policy object SLA class
 - add support for service BGP
 - add support for service EIGRP
 - add support for service IPv4 ACL
+- add support for service IPv6 ACL
+- add support for service LAN VPN Ethernet Interface
 - add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL
+- add support for transport IPv6 ACL
 - add support for transport OSPF
-- fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 - add support for UX 1.0 PIM feature template
-- fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
+- add support for UX 1.0 policy object port list
+- add support for UX 1.0 unified security policy and unified firewall
+- add support for `default_action` in UX 1.0 application aware routing policy
+- add support for queue 0 in UX 1.0 QoS Map which contains no class map id
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
-- fix route policy `standard_community_lists` to properly handle both single and multiple community list entries
-- add support for classic policy object port list
-- add support for service LAN VPN Ethernet Interface
-- fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 - rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
 - remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
-- add `default_action` support to the `sdwan_application_aware_routing_policy_definition`
-- add support for transport IPv6 ACL
-- add support for UX 1.0 unified security policy and unified firewall
+- fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
+- fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
+- fix route policy `standard_community_lists` to properly handle both single and multiple community list entries
+- fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
 - use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
 - fix `vpn_name_variable` not being set in VPN feature template
 - fix vpn feature template service route failing during device template push
 - move UX 1.0 route policy sequence name from hardcoded value to defaults
-- add support for queue 0 in sdwan_qos_map_policy_definition which contains no class map id 
 
 ## 1.2.0
 

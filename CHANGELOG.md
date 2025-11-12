@@ -1,3 +1,7 @@
+## 1.4.0
+
+- move device types to defaults for SIG credentials feature template
+
 ## 1.3.0
 
 - add support for application priority feature profile

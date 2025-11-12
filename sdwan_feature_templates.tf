@@ -987,7 +987,7 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
 resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_feature_template" {
   for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.name => t }
   name                              = each.value.name
-  description                       = each.value.name == local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.name_umbrella ? local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.description_umbrella : local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.description_zscaler
+  description                       = each.value.name == "Cisco-Umbrella-Global-Credentials" ? "Global credentials for umbrella" : "Global credentials for zscaler"
   device_types                      = local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types
   umbrella_api_key                  = try(each.value.umbrella_api_key, null)
   umbrella_api_key_variable         = try(each.value.umbrella_api_key_variable, null)

@@ -282,9 +282,6 @@ defaults:
           - C8200-1N-4T
           - C8200L-1N-4T
       sig_credentials_templates:
-        name_umbrella: Cisco-Umbrella-Global-Credentials
-        description_umbrella: Global credentials for umbrella
-        description_zscaler: Global credentials for zscaler
         device_types:
           - "vedge-CSR-1000v"
           - "vedge-ISR1100-6G-XE"

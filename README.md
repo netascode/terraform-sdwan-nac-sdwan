@@ -41,7 +41,7 @@ module "sdwan" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
 | <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.8.1 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
 
 ## Inputs
 
@@ -65,7 +65,7 @@ module "sdwan" {
 |------|---------|
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
 | <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.8.1 |
-| <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2 |
+| <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2, < 2.0.0 |
 
 ## Resources
 
@@ -166,6 +166,7 @@ module "sdwan" {
 | [sdwan_service_dhcp_server_feature.service_dhcp_server_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_dhcp_server_feature) | resource |
 | [sdwan_service_feature_profile.service_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_feature_profile) | resource |
 | [sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_ipv4_acl_feature) | resource |
+| [sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_ipv6_acl_feature) | resource |
 | [sdwan_service_lan_vpn_feature.service_lan_vpn_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature) | resource |
 | [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature_associate_routing_bgp_feature) | resource |
 | [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_feature_associate_routing_eigrp_feature) | resource |

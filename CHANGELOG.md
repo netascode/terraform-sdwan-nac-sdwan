@@ -1,6 +1,7 @@
 ## 1.4.0
 
 - move device types to defaults for SIG credentials feature template
+- add support for service OSPFv3 IPv6
 
 ## 1.3.0
 

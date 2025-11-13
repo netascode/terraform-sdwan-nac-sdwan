@@ -1229,7 +1229,7 @@ resource "sdwan_service_routing_ospfv3_ipv6_feature" "service_routing_ospfv3_ipv
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
     route_policy_id               = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
     translate_rib_metric          = try(redistribute.translate_rib_metric, null)
-    translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null)
+    # translate_rib_metric_variable = try("{{${redistribute.translate_rib_metric_variable}}}", null) # not supported in provider yet
   }]
   router_lsa_action                   = try(each.value.ospf.router_lsa_action, null)
   router_lsa_on_startup_time          = try(each.value.ospf.router_lsa_on_startup_time, null)

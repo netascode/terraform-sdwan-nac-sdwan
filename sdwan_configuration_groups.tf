@@ -138,6 +138,9 @@ locals {
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [
         sdwan_service_tracker_feature.service_tracker_feature["${profile.name}-${ipv4_tracker.name}"].version
       ]],
+      try(profile.ipv6_acls, null) == null ? [] : [for ipv6_acl in try(profile.ipv6_acls, []) : [
+        sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${profile.name}-${ipv6_acl.name}"].version
+      ]],
       try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
@@ -202,6 +205,9 @@ locals {
       ]],
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [
         sdwan_transport_tracker_feature.transport_tracker_feature["${profile.name}-${ipv4_tracker.name}"].version
+      ]],
+      try(profile.ipv6_acls, null) == null ? [] : [for ipv6_acl in try(profile.ipv6_acls, []) : [
+        sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${profile.name}-${ipv6_acl.name}"].version
       ]],
       try(profile.ipv6_tracker_groups, null) == null ? [] : [for ipv6_tracker_group in try(profile.ipv6_tracker_groups, []) : [
         sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature["${profile.name}-${ipv6_tracker_group.name}"].version

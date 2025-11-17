@@ -1,6 +1,7 @@
 ## 1.4.0
 
 - move device types to defaults for SIG credentials feature template
+- rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
 
 ## 1.3.0
 

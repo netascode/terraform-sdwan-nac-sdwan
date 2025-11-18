@@ -1260,7 +1260,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
       destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
         port = p
       }]
-      traffic_class              = try(s.match_entries.traffic_class, null)
+      traffic_class              = try(s.match_entries.traffic_classes, null)
       icmp_messages              = try(s.match_entries.icmpv6_messages, null)
       packet_length              = try(s.match_entries.packet_length, null)
       source_data_prefix         = try(s.match_entries.source_data_prefix, null)

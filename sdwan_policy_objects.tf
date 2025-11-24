@@ -196,3 +196,18 @@ resource "sdwan_policy_object_preferred_color_group" "policy_object_preferred_co
     tertiary_path_preference   = try(each.value.tertiary_path_preference, null)
   }]
 }
+
+resource "sdwan_policy_object_security_port_list" "policy_object_security_port_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_port_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = flatten([
+    [for port_value in try(each.value.ports, []) : {
+      port = port_value
+    }],
+    [for port_range in try(each.value.port_ranges, []) : {
+      port = "${port_range.from}-${port_range.to}"
+    }]
+  ])
+}

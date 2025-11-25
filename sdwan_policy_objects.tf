@@ -145,11 +145,11 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
 resource "sdwan_policy_object_security_data_ipv4_prefix_list" "policy_object_security_data_ipv4_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_data_ipv4_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = try(each.value.description, null)
+  description        = null # not supported in the UI
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
-  entries = [for e in try(each.value.entries, []) : {
-    ip_prefix          = try(e.prefix, null)
-    ip_prefix_variable = try("{{${e.prefix_variable}}}", null)
+  entries = [for e in try(each.value.prefixes, []) : {
+    ip_prefix          = try(e, null)
+    ip_prefix_variable = null # not supported in the UI
   }]
 }
 

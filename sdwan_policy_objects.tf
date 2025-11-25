@@ -202,12 +202,7 @@ resource "sdwan_policy_object_security_port_list" "policy_object_security_port_l
   name               = each.value.name
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
-  entries = flatten([
-    [for port_value in try(each.value.ports, []) : {
+  entries = [for port_value in try(each.value.ports, []) : {
       port = port_value
-    }],
-    [for port_range in try(each.value.port_ranges, []) : {
-      port = "${port_range.from}-${port_range.to}"
     }]
-  ])
 }

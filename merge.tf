@@ -26,7 +26,7 @@ data "utils_yaml_merge" "model" {
 }
 
 data "utils_yaml_merge" "defaults" {
-  input = [file("${path.module}/defaults/sdwan.yaml"), yamlencode(local.user_defaults)]
+  input = [file("${path.module}/defaults/defaults.yaml"), yamlencode(local.user_defaults)]
 }
 
 resource "local_sensitive_file" "defaults" {

@@ -3,6 +3,7 @@
 - move device types to defaults for SIG credentials feature template
 - rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
 - add support for policy object security data IP prefix
+- add support for policy object security fqdn list
 - add support for policy object security port list
 
 ## 1.3.0

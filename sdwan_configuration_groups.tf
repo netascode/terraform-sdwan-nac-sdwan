@@ -65,6 +65,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_tloc_list.policy_object_tloc_list,
     sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group,
     sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list,
+    sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list,
     sdwan_policy_object_security_port_list.policy_object_security_port_list,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list
   ]

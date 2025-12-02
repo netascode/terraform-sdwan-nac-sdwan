@@ -153,6 +153,7 @@ module "sdwan" {
 | [sdwan_policy_object_policer.policy_object_policer](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_policer) | resource |
 | [sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_preferred_color_group) | resource |
 | [sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_data_ipv4_prefix_list) | resource |
+| [sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_fqdn_list) | resource |
 | [sdwan_policy_object_security_port_list.policy_object_security_port_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_port_list) | resource |
 | [sdwan_policy_object_sla_class_list.policy_object_sla_class_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_sla_class_list) | resource |
 | [sdwan_policy_object_standard_community_list.policy_object_standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_standard_community_list) | resource |

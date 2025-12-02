@@ -226,3 +226,13 @@ resource "sdwan_policy_object_security_port_list" "policy_object_security_port_l
     port = port_value
   }]
 }
+
+resource "sdwan_policy_object_security_protocol_list" "policy_object_security_protocol_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_protocol_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for protocol in try(each.value.protocols, []) : {
+    protocol_name = protocol
+  }]
+}

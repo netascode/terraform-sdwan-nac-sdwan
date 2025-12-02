@@ -5,6 +5,7 @@
 - add support for policy object security data IP prefix
 - add support for policy object security fqdn list
 - add support for policy object security port list
+- add support for policy object security protocol list
 
 ## 1.3.0
 

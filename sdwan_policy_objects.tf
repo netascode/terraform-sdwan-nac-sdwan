@@ -162,6 +162,16 @@ resource "sdwan_policy_object_security_fqdn_list" "policy_object_security_fqdn_l
   }]
 }
 
+resource "sdwan_policy_object_security_local_application_list" "policy_object_security_local_application_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_local_application_lists, {}) : p.name => p }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
+    app        = try(e.application, null)
+    app_family = try(e.application_family, null)
+  }]
+}
+
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name

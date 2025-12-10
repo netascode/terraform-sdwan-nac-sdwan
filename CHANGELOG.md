@@ -7,6 +7,7 @@
 - add support for policy object security local application list
 - add support for policy object security port list
 - add support for policy object security protocol list
+- fix nat fallback default behaviour in centralized data policy
 
 ## 1.3.0
 

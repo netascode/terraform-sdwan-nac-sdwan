@@ -4,6 +4,7 @@
 - rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
 - add support for policy object security data IP prefix
 - add support for policy object security fqdn list
+- add support for policy object security local application list
 - add support for policy object security port list
 - add support for policy object security protocol list
 

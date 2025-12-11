@@ -577,8 +577,8 @@ resource "sdwan_localized_policy" "localized_policy" {
   log_frequency                 = try(each.value.log_frequency, null)
   ipv4_visibility_cache_entries = try(each.value.ipv4_visibility_cache_entries, null)
   ipv6_visibility_cache_entries = try(each.value.ipv6_visibility_cache_entries, null)
-  cloud_qos                     = false
-  cloud_qos_service_side        = false
+  cloud_qos                     = try(each.value.cloud_qos, local.defaults.sdwan.localized_policies.feature_policies.cloud_qos)
+  cloud_qos_service_side        = try(each.value.cloud_qos_service_side, local.defaults.sdwan.localized_policies.feature_policies.cloud_qos_service_side)
   definitions = flatten([
     try(each.value.definitions.qos_maps, null) == null ? [] : [for qosmap in each.value.definitions.qos_maps : [{
       type    = "qosMap"

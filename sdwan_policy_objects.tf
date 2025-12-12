@@ -162,6 +162,16 @@ resource "sdwan_policy_object_security_fqdn_list" "policy_object_security_fqdn_l
   }]
 }
 
+resource "sdwan_policy_object_security_ips_signature" "policy_object_security_ips_signature" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_ips_signature_lists, {}) : p.name => p }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.entries, []) : {
+    generator_id = e.generator_id
+    signature_id = e.signature_id
+  }]
+}
+
 resource "sdwan_policy_object_security_local_application_list" "policy_object_security_local_application_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_local_application_lists, {}) : p.name => p }
   name               = each.value.name

@@ -14,9 +14,9 @@ resource "sdwan_configuration_group" "configuration_group" {
   ])
   devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
-      id     = router.chassis_id
+      id             = router.chassis_id
       topology_label = try(router.topology_label, null)
-      deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
+      deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
         name       = name
         value      = try(tostring(value), null)

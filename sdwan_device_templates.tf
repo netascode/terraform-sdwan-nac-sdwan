@@ -261,6 +261,7 @@ locals {
         policy_group               = try(router.policy_group, null)
         policy_group_deploy        = try(router.policy_group_deploy, null)
         tags                       = try(router.tags, [])
+        topology_label             = try(router.topology_label, null)
         device_template            = try(router.device_template, null)
         device_variables           = try(router.device_variables, null)
         policy_variables           = try(router.policy_variables, null)

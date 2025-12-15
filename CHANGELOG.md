@@ -1,4 +1,4 @@
-## 1.4.0
+## 1.4.0 (unreleased)
 
 - move device types to defaults for SIG credentials feature template
 - rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
@@ -9,6 +9,7 @@
 - add support for policy object security port list
 - add support for policy object security protocol list
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
+- Add `topology_label` attribute to configuration group
 
 ## 1.3.0
 

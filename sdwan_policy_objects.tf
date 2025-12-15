@@ -167,8 +167,8 @@ resource "sdwan_policy_object_security_ips_signature" "policy_object_security_ip
   name               = each.value.name
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.entries, []) : {
-    generator_id = e.generator_id
-    signature_id = e.signature_id
+    generator_id = tostring(e.generator_id)
+    signature_id = tostring(e.signature_id)
   }]
 }
 

@@ -70,6 +70,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list,
     sdwan_policy_object_security_port_list.policy_object_security_port_list,
     sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list,
+    sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list
   ]
   lifecycle {

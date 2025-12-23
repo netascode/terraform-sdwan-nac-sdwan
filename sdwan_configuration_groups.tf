@@ -14,8 +14,9 @@ resource "sdwan_configuration_group" "configuration_group" {
   ])
   devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
-      id     = router.chassis_id
-      deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
+      id             = router.chassis_id
+      topology_label = try(router.topology_label, null)
+      deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
         name       = name
         value      = try(tostring(value), null)
@@ -62,6 +63,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_tag.tag,
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
+    sdwan_policy_object_color_list.policy_object_color_list,
     sdwan_policy_object_tloc_list.policy_object_tloc_list,
     sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group,
     sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list,

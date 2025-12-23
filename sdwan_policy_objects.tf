@@ -256,3 +256,17 @@ resource "sdwan_policy_object_security_protocol_list" "policy_object_security_pr
     protocol_name = protocol
   }]
 }
+
+resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_object_unified_advanced_malware_protection" {
+  for_each                      = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_malware_protection_profiles, {}) : p.name => p }
+  name                          = each.value.name
+  description                   = null # not supported in the UI
+  feature_profile_id            = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  alert_log_level               = each.value.alert_log_level
+  amp_cloud_region              = each.value.amp_cloud_region
+  amp_cloud_region_est_server   = each.value.amp_cloud_region
+  file_analysis                 = each.value.file_analysis
+  file_analysis_alert_log_level = try(each.value.file_analysis_alert_log_level, null)
+  file_analysis_cloud_region    = try(each.value.tg_cloud_region, null)
+  file_analysis_file_types      = try(each.value.file_analysis_file_types, [])
+}

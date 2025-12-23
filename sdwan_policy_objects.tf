@@ -258,7 +258,7 @@ resource "sdwan_policy_object_security_protocol_list" "policy_object_security_pr
 }
 
 resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_object_unified_advanced_malware_protection" {
-  for_each                      = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_malware_protections, {}) : p.name => p }
+  for_each                      = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_malware_protection_profiles, {}) : p.name => p }
   name                          = each.value.name
   description                   = null # not supported in the UI
   feature_profile_id            = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id

@@ -268,5 +268,5 @@ resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_objec
   file_analysis                 = each.value.file_analysis
   file_analysis_alert_log_level = try(each.value.file_analysis_alert_log_level, null)
   file_analysis_cloud_region    = try(each.value.tg_cloud_region, null)
-  file_analysis_file_types      = try(each.value.file_analysis_file_types, [])
+  file_analysis_file_types      = try(each.value.file_analysis_file_types, null)
 }

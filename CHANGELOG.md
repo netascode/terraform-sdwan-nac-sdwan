@@ -9,7 +9,7 @@
 - add support for policy object security port list
 - add support for policy object security protocol list
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
-- Add `topology_label` attribute to configuration group
+- add `topology_label` attribute to configuration group
 
 ## 1.3.0
 

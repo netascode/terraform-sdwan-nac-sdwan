@@ -270,3 +270,18 @@ resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_objec
   file_analysis_cloud_region    = try(each.value.tg_cloud_region, null)
   file_analysis_file_types      = try(each.value.file_analysis_file_types, null)
 }
+
+resource "sdwan_policy_object_security_geolocation_list" "policy_object_security_geolocation_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_geo_location_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = flatten([
+    [for country_code in try(each.value.country_codes, []) : {
+      country = country_code
+    }],
+    [for continent_code in try(each.value.continent_codes, []) : {
+      continent = continent_code
+    }]
+  ])
+}

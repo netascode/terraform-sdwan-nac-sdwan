@@ -277,11 +277,11 @@ resource "sdwan_policy_object_security_geolocation_list" "policy_object_security
   description        = null # not supported in the UI
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = flatten([
-    [for country_code in try(each.value.country_codes, []) : {
-      country = country_code
-    }],
     [for continent_code in try(each.value.continent_codes, []) : {
       continent = continent_code
+    }],
+    [for country_code in try(each.value.country_codes, []) : {
+      country = country_code
     }]
   ])
 }

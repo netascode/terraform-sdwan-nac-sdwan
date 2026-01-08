@@ -1276,3 +1276,322 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
     }
   ]
 }
+resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_interface_ethernet_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, {}) : [
+        for lan_vpn in try(profile.lan_vpns, []) : [
+          for interface in try(lan_vpn.ethernet_interfaces, []) : {
+            profile   = profile
+            lan_vpn   = lan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}" => interface_item
+  }
+  name                       = each.value.interface.name
+  description                = try(each.value.interface.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  acl_ipv4_egress_policy_id  = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
+  acl_ipv4_ingress_policy_id = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
+  acl_ipv6_egress_policy_id  = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_egress_acl}"].id, null)
+  acl_ipv6_ingress_policy_id = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_ingress_acl}"].id, null)
+  acl_shaping_rate           = try(each.value.interface.shaping_rate, null)
+  acl_shaping_rate_variable  = try("{{${each.value.interface.shaping_rate_variable}}}", null)
+  arp_timeout                = try(each.value.interface.arp_timeout, null)
+  arp_timeout_variable       = try("{{${each.value.interface.arp_timeout_variable}}}", null)
+  arps = try(length(each.value.interface.arp_entries) == 0, true) ? null : [for arp in each.value.interface.arp_entries : {
+    ip_address           = try(arp.ip_address, null)
+    ip_address_variable  = try("{{${arp.ip_address_variable}}}", null)
+    mac_address          = try(arp.mac_address, null)
+    mac_address_variable = try("{{${arp.mac_address_variable}}}", null)
+  }]
+  autonegotiate                  = try(each.value.interface.autonegotiate, null)
+  autonegotiate_variable         = try("{{${each.value.interface.autonegotiate_variable}}}", null)
+  duplex                         = try(each.value.interface.duplex, null)
+  duplex_variable                = try("{{${each.value.interface.duplex_variable}}}", null)
+  enable_dhcpv6                  = try(each.value.interface.ipv6_configuration_type, null) == "dynamic" ? true : null
+  icmp_redirect_disable          = try(each.value.interface.icmp_redirect_disable, null)
+  icmp_redirect_disable_variable = try("{{${each.value.interface.icmp_redirect_disable_variable}}}", null)
+  interface_description          = try(each.value.interface.interface_description, null)
+  interface_description_variable = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_mtu                  = try(each.value.interface.interface_mtu, null)
+  interface_mtu_variable         = try("{{${each.value.interface.interface_mtu_variable}}}", null)
+  interface_name                 = try(each.value.interface.interface_name, null)
+  interface_name_variable        = try("{{${each.value.interface.interface_name_variable}}}", null)
+  ip_directed_broadcast          = try(each.value.interface.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable = try("{{${each.value.interface.ip_directed_broadcast_variable}}}", null)
+  ip_mtu                         = try(each.value.interface.ip_mtu, null)
+  ip_mtu_variable                = try("{{${each.value.interface.ip_mtu_variable}}}", null)
+  ipv4_address                   = try(each.value.interface.ipv4_address, null)
+  ipv4_address_variable          = try("{{${each.value.interface.ipv4_address_variable}}}", null)
+  ipv4_configuration_type        = try(each.value.interface.ipv4_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv4_configuration_type)
+  ipv4_dhcp_distance             = try(each.value.interface.ipv4_dhcp_distance, null)
+  ipv4_dhcp_distance_variable    = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
+  ipv4_dhcp_helper               = try(each.value.interface.ipv4_dhcp_helpers, null)
+  ipv4_dhcp_helper_variable      = try("{{${each.value.interface.ipv4_dhcp_helpers_variable}}}", null)
+  ipv4_secondary_addresses = try(length(each.value.interface.ipv4_secondary_addresses) == 0, true) ? null : [for a in each.value.interface.ipv4_secondary_addresses : {
+    address              = try(a.address, null)
+    address_variable     = try("{{${a.address_variable}}}", null)
+    subnet_mask          = try(a.subnet_mask, null)
+    subnet_mask_variable = try("{{${a.subnet_mask_variable}}}", null)
+  }]
+  ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
+  ipv4_vrrps = try(length(each.value.interface.ipv4_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv4_vrrp_groups : {
+    address                = try(vrrp.address, null)
+    address_variable       = try("{{${vrrp.address_variable}}}", null)
+    group_id               = try(vrrp.id, null)
+    group_id_variable      = try("{{${vrrp.id_variable}}}", null)
+    priority               = try(vrrp.priority, null)
+    priority_variable      = try("{{${vrrp.priority_variable}}}", null)
+    timer                  = try(vrrp.timer, null)
+    timer_variable         = try("{{${vrrp.timer_variable}}}", null)
+    tloc_prefix_change     = try(vrrp.tloc_preference_change, null)
+    tloc_pref_change_value = try(vrrp.tloc_preference_change_value, null)
+    track_omp              = try(vrrp.track_omp, null)
+    secondary_addresses = try(length(vrrp.secondary_addresses) == 0, true) ? null : [for addr in vrrp.secondary_addresses : {
+      address              = try(addr.address, null)
+      address_variable     = try("{{${addr.address_variable}}}", null)
+      subnet_mask          = try(addr.subnet_mask, null)
+      subnet_mask_variable = try("{{${addr.subnet_mask_variable}}}", null)
+    }]
+    tracking_objects = try(length(vrrp.tracking_objects) == 0, true) ? null : [for obj in vrrp.tracking_objects : {
+      tracker_id = try(
+        sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
+        try(
+          sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
+          null
+        )
+      )
+      tracker_action           = try(obj.action == "shutdown" ? "Shutdown" : try(obj.action == "decrement" ? "Decrement" : null), null)
+      tracker_action_variable  = try("{{${obj.action_variable}}}", null)
+      decrement_value          = try(obj.decrement_value, null)
+      decrement_value_variable = try("{{${obj.decrement_value_variable}}}", null)
+    }]
+  }]
+  ipv6_address            = try(each.value.interface.ipv6_address, null)
+  ipv6_address_variable   = try("{{${each.value.interface.ipv6_address_variable}}}", null)
+  ipv6_configuration_type = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type)
+  ipv6_dhcp_helpers = try(length(each.value.interface.ipv6_dhcp_helpers) == 0, true) ? null : [for helper in each.value.interface.ipv6_dhcp_helpers : {
+    address                    = try(helper.address, null)
+    address_variable           = try("{{${helper.address_variable}}}", null)
+    dhcpv6_helper_vpn          = try(helper.vpn_id, null)
+    dhcpv6_helper_vpn_variable = try("{{${helper.vpn_id_variable}}}", null)
+  }]
+  ipv6_dhcp_secondary_addresses = try(length(each.value.interface.ipv6_dhcp_secondary_addresses) == 0, true) ? null : [for addr in each.value.interface.ipv6_dhcp_secondary_addresses : {
+    address          = try(addr.address, null)
+    address_variable = try("{{${addr.address_variable}}}", null)
+  }]
+  ipv6_secondary_addresses = try(length(each.value.interface.ipv6_secondary_addresses) == 0, true) ? null : [for addr in each.value.interface.ipv6_secondary_addresses : {
+    address          = try(addr.address, null)
+    address_variable = try("{{${addr.address_variable}}}", null)
+  }]
+  ipv6_vrrps = try(length(each.value.interface.ipv6_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv6_vrrp_groups : {
+    group_id          = try(vrrp.id, null)
+    group_id_variable = try("{{${vrrp.id_variable}}}", null)
+    priority          = try(vrrp.priority, null)
+    priority_variable = try("{{${vrrp.priority_variable}}}", null)
+    timer             = try(vrrp.timer, null)
+    timer_variable    = try("{{${vrrp.timer_variable}}}", null)
+    track_omp         = try(vrrp.track_omp, null)
+    ipv6_addresses = try(vrrp.link_local_address, null) != null || try(vrrp.link_local_address_variable, null) != null || try(vrrp.global_prefix, null) != null || try(vrrp.global_prefix_variable, null) != null ? [{
+      link_local_address          = try(vrrp.link_local_address, null)
+      link_local_address_variable = try("{{${vrrp.link_local_address_variable}}}", null)
+      global_address              = try(vrrp.global_prefix, null)
+      global_address_variable     = try("{{${vrrp.global_prefix_variable}}}", null)
+    }] : null
+  }]
+  load_interval                                 = try(each.value.interface.load_interval, null)
+  load_interval_variable                        = try("{{${each.value.interface.load_interval_variable}}}", null)
+  mac_address                                   = try(each.value.interface.mac_address, null)
+  mac_address_variable                          = try("{{${each.value.interface.mac_address_variable}}}", null)
+  media_type                                    = try(each.value.interface.media_type, null)
+  media_type_variable                           = try("{{${each.value.interface.media_type_variable}}}", null)
+  shutdown                                      = try(each.value.interface.shutdown, null)
+  shutdown_variable                             = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                                         = try(each.value.interface.speed, null)
+  speed_variable                                = try("{{${each.value.interface.speed_variable}}}", null)
+  tcp_mss                                       = try(each.value.interface.tcp_mss, null)
+  tcp_mss_variable                              = try("{{${each.value.interface.tcp_mss_variable}}}", null)
+  trustsec_enable_enforced_propogation          = try(each.value.interface.trustsec_enable_enforced_propogation, null)
+  trustsec_enable_sgt_propogation               = try(each.value.interface.trustsec_enable_sgt_propogation, null)
+  trustsec_enforced_security_group_tag          = try(each.value.interface.trustsec_enforced_sgt, null)
+  trustsec_enforced_security_group_tag_variable = try("{{${each.value.interface.trustsec_enforced_sgt_variable}}}", null)
+  trustsec_propogate                            = try(each.value.interface.trustsec_propogate, null)
+  trustsec_security_group_tag                   = try(each.value.interface.trustsec_sgt, null)
+  trustsec_security_group_tag_variable          = try("{{${each.value.interface.trustsec_sgt_variable}}}", null)
+  xconnect                                      = try(each.value.interface.xconnect, null)
+  xconnect_variable                             = try("{{${each.value.interface.xconnect_variable}}}", null)
+}
+
+resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interface_svi_feature" {
+  for_each = {
+    for svi_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, {}) : [
+        for lan_vpn in try(profile.lan_vpns, []) : [
+          for svi in try(lan_vpn.svi_interfaces, []) : {
+            profile = profile
+            lan_vpn = lan_vpn
+            svi     = svi
+          }
+        ]
+      ]
+    ])
+    : "${svi_item.profile.name}-${svi_item.lan_vpn.name}-${svi_item.svi.name}" => svi_item
+  }
+  
+  name                       = each.value.svi.name
+  description                = try(each.value.svi.description, null)
+  feature_profile_id         = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  
+  # ACL References
+  acl_ipv4_egress_policy_id  = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.svi.ipv4_egress_acl}"].id, null)
+  acl_ipv4_ingress_policy_id = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.svi.ipv4_ingress_acl}"].id, null)
+  acl_ipv6_egress_policy_id  = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.svi.ipv6_egress_acl}"].id, null)
+  acl_ipv6_ingress_policy_id = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.svi.ipv6_ingress_acl}"].id, null)
+  
+  # ARP Configuration
+  arp_timeout          = try(each.value.svi.arp_timeout, null)
+  arp_timeout_variable = try("{{${each.value.svi.arp_timeout_variable}}}", null)
+  arps = try(length(each.value.svi.arp_entries) == 0, true) ? null : [for arp in each.value.svi.arp_entries : {
+    ip_address           = try(arp.ip_address, null)
+    ip_address_variable  = try("{{${arp.ip_address_variable}}}", null)
+    mac_address          = try(arp.mac_address, null)
+    mac_address_variable = try("{{${arp.mac_address_variable}}}", null)
+  }]
+  
+  # DHCPv6
+  enable_dhcpv6 = try(each.value.svi.ipv6_configuration_type, null) == "dynamic" ? true : null
+  
+  # ICMP Redirect
+  icmp_redirect_disable          = try(each.value.svi.icmp_redirect_disable, null)
+  icmp_redirect_disable_variable = try("{{${each.value.svi.icmp_redirect_disable_variable}}}", null)
+  
+  # Interface Description
+  interface_description          = try(each.value.svi.interface_description, null)
+  interface_description_variable = try("{{${each.value.svi.interface_description_variable}}}", null)
+  
+  # Interface MTU
+  interface_mtu          = try(each.value.svi.interface_mtu, null)
+  interface_mtu_variable = try("{{${each.value.svi.interface_mtu_variable}}}", null)
+  
+  # Interface Name (VLAN)
+  interface_name          = try(each.value.svi.interface_name, null)
+  interface_name_variable = try("{{${each.value.svi.interface_name_variable}}}", null)
+  
+  # IP Directed Broadcast
+  ip_directed_broadcast          = try(each.value.svi.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable = try("{{${each.value.svi.ip_directed_broadcast_variable}}}", null)
+  
+  # IP MTU
+  ip_mtu          = try(each.value.svi.ip_mtu, null)
+  ip_mtu_variable = try("{{${each.value.svi.ip_mtu_variable}}}", null)
+  
+  # IPv4 Primary Address
+  ipv4_address          = try(each.value.svi.ipv4_address, null)
+  ipv4_address_variable = try("{{${each.value.svi.ipv4_address_variable}}}", null)
+  
+  # IPv4 Subnet Mask
+  ipv4_subnet_mask          = try(each.value.svi.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable = try("{{${each.value.svi.ipv4_subnet_mask_variable}}}", null)
+  
+  # IPv4 Secondary Addresses
+  ipv4_secondary_addresses = try(length(each.value.svi.ipv4_secondary_addresses) == 0, true) ? null : [for a in each.value.svi.ipv4_secondary_addresses : {
+    address              = try(a.address, null)
+    address_variable     = try("{{${a.address_variable}}}", null)
+    subnet_mask          = try(a.subnet_mask, null)
+    subnet_mask_variable = try("{{${a.subnet_mask_variable}}}", null)
+  }]
+  
+  # IPv4 DHCP Helpers
+  ipv4_dhcp_helpers = try(each.value.svi.ipv4_dhcp_helpers, null)
+  
+  # IPv4 VRRP Groups
+  ipv4_vrrps = try(length(each.value.svi.ipv4_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.svi.ipv4_vrrp_groups : {
+    address                  = try(vrrp.address, null)
+    address_variable         = try("{{${vrrp.address_variable}}}", null)
+    group_id                 = try(vrrp.id, vrrp.group_id, null)
+    group_id_variable        = try("{{${vrrp.id_variable}}}", try("{{${vrrp.group_id_variable}}}", null))
+    priority                 = try(vrrp.priority, null)
+    priority_variable        = try("{{${vrrp.priority_variable}}}", null)
+    timer                    = try(vrrp.timer, null)
+    timer_variable           = try("{{${vrrp.timer_variable}}}", null)
+    track_omp                = try(vrrp.track_omp, null)
+    prefix_list              = try(vrrp.prefix_list, null)
+    prefix_list_variable     = try("{{${vrrp.prefix_list_variable}}}", null)
+    tloc_prefix_change       = try(vrrp.tloc_preference_change, null)
+    tloc_prefix_change_value = try(vrrp.tloc_preference_change_value, null)
+    secondary_addresses = try(length(vrrp.secondary_addresses) == 0, true) ? null : [for addr in vrrp.secondary_addresses : {
+      address              = try(addr.address, null)
+      address_variable     = try("{{${addr.address_variable}}}", null)
+      subnet_mask          = try(addr.subnet_mask, null)
+      subnet_mask_variable = try("{{${addr.subnet_mask_variable}}}", null)
+    }]
+    tracking_objects = try(length(vrrp.tracking_objects) == 0, true) ? null : [for obj in vrrp.tracking_objects : {
+      tracker_id = try(
+        sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
+        try(
+          sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
+          null
+        )
+      )
+      track_action         = try(obj.action == "shutdown" ? "Shutdown" : try(obj.action == "decrement" ? "Decrement" : null), null)
+      decrement_value      = try(obj.decrement_value, null)
+      decrement_value_variable = try("{{${obj.decrement_value_variable}}}", null)
+    }]
+  }]
+  
+  # IPv6 Address
+  ipv6_address          = try(each.value.svi.ipv6_address, null)
+  ipv6_address_variable = try("{{${each.value.svi.ipv6_address_variable}}}", null)
+  
+  # IPv6 DHCP Helpers
+  ipv6_dhcp_helpers = try(length(each.value.svi.ipv6_dhcp_helpers) == 0, true) ? null : [for helper in each.value.svi.ipv6_dhcp_helpers : {
+    address          = try(helper.address, null)
+    address_variable = try("{{${helper.address_variable}}}", null)
+    vpn              = try(helper.vpn_id, null)
+    vpn_variable     = try("{{${helper.vpn_id_variable}}}", null)
+  }]
+  
+  # IPv6 Secondary Addresses
+  ipv6_secondary_addresses = try(length(each.value.svi.ipv6_secondary_addresses) == 0, true) ? null : [for addr in each.value.svi.ipv6_secondary_addresses : {
+    address          = try(addr.address, null)
+    address_variable = try("{{${addr.address_variable}}}", null)
+  }]
+  
+  # IPv6 VRRP Groups
+  ipv6_vrrps = try(length(each.value.svi.ipv6_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.svi.ipv6_vrrp_groups : {
+    group_id               = try(vrrp.id, vrrp.group_id, null)
+    group_id_variable      = try("{{${vrrp.id_variable}}}", try("{{${vrrp.group_id_variable}}}", null))
+    priority               = try(vrrp.priority, null)
+    priority_variable      = try("{{${vrrp.priority_variable}}}", null)
+    timer                  = try(vrrp.timer, null)
+    timer_variable         = try("{{${vrrp.timer_variable}}}", null)
+    track_omp              = try(vrrp.track_omp, null)
+    track_prefix_list      = try(vrrp.track_prefix_list, null)
+    track_prefix_list_variable = try("{{${vrrp.track_prefix_list_variable}}}", null)
+    addresses = try(vrrp.link_local_address, null) != null || try(vrrp.link_local_address_variable, null) != null || try(vrrp.global_prefix, null) != null || try(vrrp.global_prefix_variable, null) != null ? [{
+      link_local_address          = try(vrrp.link_local_address, null)
+      link_local_address_variable = try("{{${vrrp.link_local_address_variable}}}", null)
+      global_address              = try(vrrp.global_prefix, null)
+      global_address_variable     = try("{{${vrrp.global_prefix_variable}}}", null)
+    }] : null
+    secondary_addresses = try(length(vrrp.secondary_addresses) == 0, true) ? null : [for addr in vrrp.secondary_addresses : {
+      prefix          = try(addr.prefix, null)
+      prefix_variable = try("{{${addr.prefix_variable}}}", null)
+    }]
+  }]
+  
+  # Shutdown
+  shutdown          = try(each.value.svi.shutdown, null)
+  shutdown_variable = try("{{${each.value.svi.shutdown_variable}}}", null)
+  
+  # TCP MSS
+  tcp_mss          = try(each.value.svi.tcp_mss, null)
+  tcp_mss_variable = try("{{${each.value.svi.tcp_mss_variable}}}", null)
+}

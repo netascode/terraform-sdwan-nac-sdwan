@@ -12,6 +12,7 @@
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
 - add `topology_label` attribute to configuration group
 - fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
+- fix nat fallback default behaviour in centralized data policy
 
 ## 1.3.0
 

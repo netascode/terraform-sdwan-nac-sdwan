@@ -8,7 +8,9 @@
 - add support for policy object security local application list
 - add support for policy object security port list
 - add support for policy object security protocol list
+- add support for policy object security Advanced Malware Protection Profile
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
+- fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
 - Add `topology_label` attribute to configuration group
 
 ## 1.3.0

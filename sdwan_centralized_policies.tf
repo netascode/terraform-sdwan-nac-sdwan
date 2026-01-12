@@ -471,9 +471,9 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
             type   = "useVpn"
             vpn_id = s.actions.nat_vpn.vpn_id
           }],
-          try(s.actions.nat_vpn.nat_vpn_fallback, null) == null ? [] : [{
+          try(s.actions.nat_vpn.vpn_id, null) == null ? [] : [{
             type     = "fallback"
-            fallback = s.actions.nat_vpn.nat_vpn_fallback
+            fallback = try(s.actions.nat_vpn.nat_vpn_fallback, false)
           }]
         ])
       }],

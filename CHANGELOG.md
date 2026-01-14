@@ -14,6 +14,7 @@
 - fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
 - fix nat fallback default behaviour in centralized data policy
 - add support for policy object security geolocation list
+- add support for policy_version field in zone based firewall policy definition resource
 
 ## 1.3.0
 

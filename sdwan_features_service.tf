@@ -122,16 +122,22 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     address          = try(neighbor.address, null)
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
-      family_type                     = address_family.family_type
-      in_route_policy_id              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
-      max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
-      max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      out_route_policy_id             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
-      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
-      restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
-      restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
-      threshold                       = try(address_family.maximum_prefixes_threshold, null)
-      threshold_variable              = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
+      family_type                                     = address_family.family_type
+      in_route_policy_id                              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      max_number_of_prefixes                          = try(address_family.maximum_prefixes_number, null)
+      max_number_of_prefixes_variable                 = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
+      out_route_policy_id                             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
+      restart_interval                                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable                       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      restart_max_number_of_prefixes                  = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number : null, null)
+      restart_max_number_of_prefixes_variable         = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number_variable : null, null)
+      restart_threshold                               = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold : null, null)
+      restart_threshold_variable                      = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold_variable : null, null)
+      warning_message_max_number_of_prefixes          = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number : null, null)
+      warning_message_max_number_of_prefixes_variable = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number_variable : null, null)
+      warning_message_threshold                       = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold : null, null)
+      warning_message_threshold_variable              = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold_variable : null, null)
     }]
     allowas_in_number                = try(neighbor.allowas_in_number, null)
     allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
@@ -1373,7 +1379,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
       destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
         port = p
       }]
-      traffic_class              = try(s.match_entries.traffic_class, null)
+      traffic_class              = try(s.match_entries.traffic_classes, null)
       icmp_messages              = try(s.match_entries.icmpv6_messages, null)
       packet_length              = try(s.match_entries.packet_length, null)
       source_data_prefix         = try(s.match_entries.source_data_prefix, null)

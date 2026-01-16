@@ -18,7 +18,7 @@ resource "sdwan_configuration_group" "configuration_group" {
       topology_label = try(router.topology_label, null)
       deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
-        name       = name
+        name       = name == "region_id" ? "region-id" : name
         value      = try(tostring(value), null)
         list_value = try(tolist(value), null)
       }]

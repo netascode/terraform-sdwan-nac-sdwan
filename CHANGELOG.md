@@ -14,6 +14,7 @@
 - fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
 - fix nat fallback default behaviour in centralized data policy
 - add support for policy object security geolocation list
+- add support for UX 2.0 MRF in versions 20.13 and higher
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
 
 ## 1.3.0

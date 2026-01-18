@@ -6,12 +6,23 @@ defaults:
         route_policies:
           sequences:
             ip_type: ipv4
+            name: Route
       feature_policies:
         ipv4_application_visibility: false
         ipv6_application_visibility: false
         ipv4_flow_visibility: false
         ipv6_flow_visibility: false
         implicit_acl_logging: false
+        cloud_qos: false
+        cloud_qos_service_side: false
+    security_policies:
+      definitions:
+        zone_based_firewall:
+          mode: security
+          rules:
+            ip_type: ipv4
+      feature_policies:
+        mode: security
     centralized_policies:
       definitions:
         control_policy:
@@ -423,6 +434,7 @@ defaults:
     sites:
       routers:
         configuration_group_deploy: true
+        policy_group_deploy: true
     feature_profiles:
       cli_profiles:
         config:
@@ -443,6 +455,9 @@ defaults:
             address_families:
               maximum_prefixes_reach_policy: off
         ipv4_acls:
+          sequences:
+            name: acl
+        ipv6_acls:
           sequences:
             name: acl
         lan_vpns:
@@ -505,6 +520,9 @@ defaults:
         gps_features:
           gps_enable: true
         ipv4_acls:
+          sequences:
+            name: acl
+        ipv6_acls:
           sequences:
             name: acl
         management_vpn:

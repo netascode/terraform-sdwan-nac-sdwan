@@ -122,16 +122,22 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     address          = try(neighbor.address, null)
     address_variable = try("{{${neighbor.address_variable}}}", null)
     address_families = try(length(neighbor.address_families) == 0, true) ? null : [for address_family in neighbor.address_families : {
-      family_type                     = address_family.family_type
-      in_route_policy_id              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
-      max_number_of_prefixes          = try(address_family.maximum_prefixes_number, null)
-      max_number_of_prefixes_variable = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
-      out_route_policy_id             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
-      policy_type                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
-      restart_interval                = try(address_family.maximum_prefixes_restart_interval, null)
-      restart_interval_variable       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
-      threshold                       = try(address_family.maximum_prefixes_threshold, null)
-      threshold_variable              = try("{{${address_family.maximum_prefixes_threshold_variable}}}", null)
+      family_type                                     = address_family.family_type
+      in_route_policy_id                              = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_in}"].id, null)
+      max_number_of_prefixes                          = try(address_family.maximum_prefixes_number, null)
+      max_number_of_prefixes_variable                 = try("{{${address_family.maximum_prefixes_number_variable}}}", null)
+      out_route_policy_id                             = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${address_family.route_policy_out}"].id, null)
+      policy_type                                     = try(address_family.maximum_prefixes_reach_policy, local.defaults.sdwan.feature_profiles.service_profiles.bgp_features.ipv6_neighbors.address_families.maximum_prefixes_reach_policy)
+      restart_interval                                = try(address_family.maximum_prefixes_restart_interval, null)
+      restart_interval_variable                       = try("{{${address_family.maximum_prefixes_restart_interval_variable}}}", null)
+      restart_max_number_of_prefixes                  = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number : null, null)
+      restart_max_number_of_prefixes_variable         = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_number_variable : null, null)
+      restart_threshold                               = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold : null, null)
+      restart_threshold_variable                      = try(address_family.maximum_prefixes_reach_policy == "restart" ? address_family.maximum_prefixes_threshold_variable : null, null)
+      warning_message_max_number_of_prefixes          = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number : null, null)
+      warning_message_max_number_of_prefixes_variable = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_number_variable : null, null)
+      warning_message_threshold                       = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold : null, null)
+      warning_message_threshold_variable              = try(address_family.maximum_prefixes_reach_policy == "warning-only" ? address_family.maximum_prefixes_threshold_variable : null, null)
     }]
     allowas_in_number                = try(neighbor.allowas_in_number, null)
     allowas_in_number_variable       = try("{{${neighbor.allowas_in_number_variable}}}", null)
@@ -757,8 +763,8 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   service_lan_vpn_feature_id = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
   acl_ipv4_egress_policy_id  = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
   acl_ipv4_ingress_policy_id = try(sdwan_service_ipv4_acl_feature.service_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
-  acl_ipv6_egress_policy_id  = null # to be added when ACL is supported in module
-  acl_ipv6_ingress_policy_id = null # to be added when ACL is supported in module
+  acl_ipv6_egress_policy_id  = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_egress_acl}"].id, null)
+  acl_ipv6_ingress_policy_id = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_ingress_acl}"].id, null)
   acl_shaping_rate           = try(each.value.interface.shaping_rate, null)
   acl_shaping_rate_variable  = try("{{${each.value.interface.shaping_rate_variable}}}", null)
   arp_timeout                = try(each.value.interface.arp_timeout, null)
@@ -901,7 +907,7 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server
         ]
       ]
     ])
-    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}-dhcp" => interface_item
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}-dhcp_server" => interface_item
     if try(interface_item.interface.dhcp_server, null) != null
   }
   feature_profile_id                            = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
@@ -1226,74 +1232,53 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
   }]
 }
 
-resource "sdwan_service_switchport_feature" "service_switchport_feature" {
+resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
   for_each = {
-    for switchport_item in flatten([
+    for acl_item in flatten([
       for profile in try(local.feature_profiles.service_profiles, []) : [
-        for switchport in try(profile.switchport_features, []) : {
-          profile    = profile
-          switchport = switchport
+        for acl in try(profile.ipv6_acls, []) : {
+          profile = profile
+          acl     = acl
         }
       ]
     ])
-    : "${switchport_item.profile.name}-${switchport_item.switchport.name}" => switchport_item
+    : "${acl_item.profile.name}-${acl_item.acl.name}" => acl_item
   }
-  name                     = each.value.switchport.name
-  description              = try(each.value.switchport.description, null)
-  feature_profile_id       = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
-  age_out_time             = try(each.value.switchport.age_out_time, null)
-  age_out_time_variable    = try("{{${each.value.switchport.age_out_time_variable}}}", null)
-  interfaces = try(length(each.value.switchport.interfaces) == 0, true) ? null : [for interface in each.value.switchport.interfaces : {
-    access_vlan                      = try(interface.access_vlan, null)
-    access_vlan_variable             = try("{{${interface.access_vlan_variable}}}", null)
-    control_direction                = try(interface.control_direction, null)
-    control_direction_variable       = try("{{${interface.control_direction_variable}}}", null)
-    critical_vlan                    = try(interface.critical_vlan, null)
-    critical_vlan_variable           = try("{{${interface.critical_vlan_variable}}}", null)
-    duplex                           = try(interface.duplex, null)
-    duplex_variable                  = try("{{${interface.duplex_variable}}}", null)
-    enable_periodic_reauth           = try(interface.enable_periodic_reauth, null)
-    enable_periodic_reauth_variable  = try("{{${interface.enable_periodic_reauth_variable}}}", null)
-    enable_voice                     = try(interface.enable_voice, null)
-    enable_voice_variable            = try("{{${interface.enable_voice_variable}}}", null)
-    guest_vlan                       = try(interface.guest_vlan, null)
-    guest_vlan_variable              = try("{{${interface.guest_vlan_variable}}}", null)
-    host_mode                        = try(interface.host_mode, null)
-    host_mode_variable               = try("{{${interface.host_mode_variable}}}", null)
-    inactivity                       = try(interface.inactivity, null)
-    inactivity_variable              = try("{{${interface.inactivity_variable}}}", null)
-    interface_name                   = try(interface.interface_name, null)
-    interface_name_variable          = try("{{${interface.interface_name_variable}}}", null)
-    mac_authentication_bypass        = try(interface.mac_authentication_bypass, null)
-    mac_authentication_bypass_variable = try("{{${interface.mac_authentication_bypass_variable}}}", null)
-    mode                             = try(interface.mode, null)
-    mtu                              = try(interface.mtu, null)
-    mtu_variable                     = try("{{${interface.mtu_variable}}}", null)
-    name                             = try(interface.name, null)
-    name_variable                    = try("{{${interface.name_variable}}}", null)
-    optional                         = try(interface.optional, null)
-    shutdown                         = try(interface.shutdown, null)
-    shutdown_variable                = try("{{${interface.shutdown_variable}}}", null)
-    speed                            = try(interface.speed, null)
-    speed_variable                   = try("{{${interface.speed_variable}}}", null)
-    trunk_allowed_vlans              = try(interface.trunk_allowed_vlans, null)
-    trunk_allowed_vlans_variable     = try("{{${interface.trunk_allowed_vlans_variable}}}", null)
-    trunk_allowed_vlans_ranges = try(length(interface.trunk_allowed_vlans_ranges) == 0, true) ? null : [for range in interface.trunk_allowed_vlans_ranges : {
-      from = range.from
-      to   = range.to
-    }]
-    trunk_native_vlan                = try(interface.trunk_native_vlan, null)
-    trunk_native_vlan_variable       = try("{{${interface.trunk_native_vlan_variable}}}", null)
-    voice_vlan                       = try(interface.voice_vlan, null)
-    voice_vlan_variable              = try("{{${interface.voice_vlan_variable}}}", null)
-  }]
-  static_mac_addresses = try(length(each.value.switchport.static_mac_addresses) == 0, true) ? null : [for mac in each.value.switchport.static_mac_addresses : {
-    interface_name          = try(mac.interface_name, null)
-    interface_name_variable = try("{{${mac.interface_name_variable}}}", null)
-    mac_address             = try(mac.mac_address, null)
-    mac_address_variable    = try("{{${mac.mac_address_variable}}}", null)
-    optional                = try(mac.optional, null)
-    vlan_id                    = try(mac.vlan_id, null)
-    vlan_id_variable           = try("{{${mac.vlan_id_variable}}}", null)
-  }]
+  name               = each.value.acl.name
+  description        = try(each.value.acl.description, null)
+  feature_profile_id = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  default_action     = try(each.value.acl.default_action, "drop")
+  sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
+    actions = length(keys(try(s.actions, {}))) > 0 ? [{
+      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_traffic_class  = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
+      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
+      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+    }] : null
+    base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
+    match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
+      destination_data_prefix         = try(s.match_entries.destination_data_prefix, null)
+      destination_data_prefix_list_id = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
+        port = p
+      }]
+      traffic_class              = try(s.match_entries.traffic_classes, null)
+      icmp_messages              = try(s.match_entries.icmpv6_messages, null)
+      packet_length              = try(s.match_entries.packet_length, null)
+      source_data_prefix         = try(s.match_entries.source_data_prefix, null)
+      source_data_prefix_list_id = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
+        port = p
+      }]
+      tcp_state   = try(s.match_entries.tcp_state, null)
+      next_header = try(s.match_entries.next_header, null)
+    }] : null
+    sequence_id   = s.id
+    sequence_name = try(s.name, local.defaults.sdwan.feature_profiles.service_profiles.ipv6_acls.sequences.name)
+    }
+  ]
 }

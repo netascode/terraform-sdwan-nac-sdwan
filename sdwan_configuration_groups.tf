@@ -14,10 +14,11 @@ resource "sdwan_configuration_group" "configuration_group" {
   ])
   devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
-      id     = router.chassis_id
-      deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
+      id             = router.chassis_id
+      topology_label = try(router.topology_label, null)
+      deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
-        name       = name
+        name       = name == "region_id" ? "region-id" : name
         value      = try(tostring(value), null)
         list_value = try(tolist(value), null)
       }]
@@ -62,9 +63,17 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_tag.tag,
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
+    sdwan_policy_object_color_list.policy_object_color_list,
     sdwan_policy_object_tloc_list.policy_object_tloc_list,
     sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group,
-    sdwan_policy_object_sla_class_list.policy_object_sla_class_list
+    sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list,
+    sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list,
+    sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature,
+    sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list,
+    sdwan_policy_object_security_port_list.policy_object_security_port_list,
+    sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list,
+    sdwan_policy_object_sla_class_list.policy_object_sla_class_list,
+    sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection
   ]
   lifecycle {
     create_before_destroy = true
@@ -138,6 +147,9 @@ locals {
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [
         sdwan_service_tracker_feature.service_tracker_feature["${profile.name}-${ipv4_tracker.name}"].version
       ]],
+      try(profile.ipv6_acls, null) == null ? [] : [for ipv6_acl in try(profile.ipv6_acls, []) : [
+        sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${profile.name}-${ipv6_acl.name}"].version
+      ]],
       try(profile.lan_vpns, null) == null ? [] : [for lan_vpn in try(profile.lan_vpns, []) : [
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
@@ -205,6 +217,9 @@ locals {
       ]],
       try(profile.ipv4_trackers, null) == null ? [] : [for ipv4_tracker in try(profile.ipv4_trackers, []) : [
         sdwan_transport_tracker_feature.transport_tracker_feature["${profile.name}-${ipv4_tracker.name}"].version
+      ]],
+      try(profile.ipv6_acls, null) == null ? [] : [for ipv6_acl in try(profile.ipv6_acls, []) : [
+        sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${profile.name}-${ipv6_acl.name}"].version
       ]],
       try(profile.ipv6_tracker_groups, null) == null ? [] : [for ipv6_tracker_group in try(profile.ipv6_tracker_groups, []) : [
         sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature["${profile.name}-${ipv6_tracker_group.name}"].version

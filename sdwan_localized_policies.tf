@@ -6,8 +6,8 @@ resource "sdwan_qos_map_policy_definition" "qos_map_policy_definition" {
     bandwidth_percent = s.bandwidth_percent
     buffer_percent    = s.buffer_percent
     burst             = try(s.burst_bytes, null)
-    class_map_id      = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
-    class_map_version = sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
+    class_map_id      = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].id
+    class_map_version = s.queue == 0 ? try(sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version, null) : sdwan_class_map_policy_object.class_map_policy_object[s.class_map].version
     drop_type         = s.drop_type
     queue             = s.queue
     scheduling_type   = s.scheduling_type
@@ -395,7 +395,7 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
   sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
     ip_type     = try(s.ip_type, local.defaults.sdwan.localized_policies.definitions.route_policies.sequences.ip_type)
-    name        = try(s.name, "Route")
+    name        = try(s.name, local.defaults.sdwan.localized_policies.definitions.route_policies.sequences.name)
     base_action = s.base_action
     match_entries = !(can(s.match_criterias.prefix_list) ||
       can(s.match_criterias.prefix_list) ||
@@ -421,12 +421,20 @@ resource "sdwan_route_policy_definition" "route_policy_definition" {
           as_path_list_id      = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].id
           as_path_list_version = sdwan_as_path_list_policy_object.as_path_list_policy_object[s.match_criterias.as_path_list].version
         }],
-        try(s.match_criterias.standard_community_lists, null) == null ? [] : [{
-          type                      = "advancedCommunity"
-          community_list_ids        = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
-          community_list_versions   = [for com_list in try(s.match_criterias.standard_community_lists, null) : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]
-          community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
-        }],
+        try(s.match_criterias.standard_community_lists, null) == null || try(s.match_criterias.standard_community_lists_criteria, null) == null ? [] : flatten([
+          (length(s.match_criterias.standard_community_lists) == 1 && s.match_criterias.standard_community_lists_criteria == "or") ? [{
+            type                      = "community"
+            community_list_id         = sdwan_standard_community_list_policy_object.standard_community_list_policy_object[s.match_criterias.standard_community_lists[0]].id
+            community_list_version    = sdwan_standard_community_list_policy_object.standard_community_list_policy_object[s.match_criterias.standard_community_lists[0]].version
+            community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
+          }] : [],
+          (length(s.match_criterias.standard_community_lists) > 1 || contains(["and", "exact"], s.match_criterias.standard_community_lists_criteria)) ? [{
+            type                      = "advancedCommunity"
+            community_list_ids        = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].id]
+            community_list_versions   = [for com_list in s.match_criterias.standard_community_lists : sdwan_standard_community_list_policy_object.standard_community_list_policy_object[com_list].version]
+            community_list_match_flag = try(s.match_criterias.standard_community_lists_criteria, null)
+          }] : []
+        ]),
         try(s.match_criterias.expanded_community_list, null) == null ? [] : [{
           type                            = "expandedCommunity"
           expanded_community_list_id      = sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object[s.match_criterias.expanded_community_list].id
@@ -569,8 +577,8 @@ resource "sdwan_localized_policy" "localized_policy" {
   log_frequency                 = try(each.value.log_frequency, null)
   ipv4_visibility_cache_entries = try(each.value.ipv4_visibility_cache_entries, null)
   ipv6_visibility_cache_entries = try(each.value.ipv6_visibility_cache_entries, null)
-  cloud_qos                     = false
-  cloud_qos_service_side        = false
+  cloud_qos                     = try(each.value.cloud_qos, local.defaults.sdwan.localized_policies.feature_policies.cloud_qos)
+  cloud_qos_service_side        = try(each.value.cloud_qos_service_side, local.defaults.sdwan.localized_policies.feature_policies.cloud_qos_service_side)
   definitions = flatten([
     try(each.value.definitions.qos_maps, null) == null ? [] : [for qosmap in each.value.definitions.qos_maps : [{
       type    = "qosMap"

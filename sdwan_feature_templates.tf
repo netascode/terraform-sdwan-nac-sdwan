@@ -985,11 +985,10 @@ resource "sdwan_cisco_security_feature_template" "cisco_security_feature_templat
 }
 
 resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_feature_template" {
-  for_each    = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.name => t }
-  name        = each.value.name == "umbrella" ? "Cisco-Umbrella-Global-Credentials" : "Cisco-Zscaler-Global-Credentials"
-  description = each.value.name == "umbrella" ? "Global credentials for umbrella" : "Global credentials for zscaler"
-  #device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
-  device_types                      = ["vedge-CSR-1000v", "vedge-ISR1100-6G-XE", "vedge-ISR1100X-6G-XE", "vedge-IR-1101", "vedge-IR-1821", "vedge-IR-1831", "vedge-IR-1833", "vedge-IR-1835", "vedge-IR-8140H", "vedge-IR-8140H-P", "vedge-IR-8340", "vedge-ESR-6300", "vedge-ESR-6300-NCP", "vedge-ISR-4331", "vedge-ISR-4321", "vedge-ISR-4351", "vedge-ISR-4221", "vedge-ISR-4221X", "vedge-ISR-4431", "vedge-ISR-4461", "vedge-ISR-4451-X", "vedge-ASR-1001-HX", "vedge-ASR-1002-X", "vedge-ASR-1002-HX", "vedge-ASR-1006-X", "vedge-C1111-8P", "vedge-C1121X-8P", "vedge-C1111X-8P", "vedge-C1111-8PLTEEA", "vedge-C1121-8PLTEPW", "vedge-C1111-8PLTEEAW", "vedge-C1111-8PLTELA", "vedge-C1117-4PLTEEA", "vedge-C1126X-8PLTEP", "vedge-C1127X-8PLTEP", "vedge-C1127X-8PMLTEP", "vedge-C1127-8PMLTEP", "vedge-C1117-4PLTELA", "vedge-ISRv", "vedge-C8000V", "vedge-ASR-1001-X", "vedge-C1101-4P", "vedge-C1101-4PLTEP", "vedge-C1111-4P", "vedge-C1111-8PW", "vedge-C1111-4PLTEEA", "vedge-C1131-8PW", "vedge-C1131X-8PW", "vedge-C1131-8PLTEPW", "vedge-C1131X-8PLTEPW", "vedge-C1101-4PLTEPW", "vedge-C1109-4PLTE2PW", "vedge-C1111-8PLTELAW", "vedge-C1109-4PLTE2P", "vedge-C1121X-8PLTEP", "vedge-C1161X-8PLTEP", "vedge-C1113-8PMLTEEA", "vedge-C1111-4PLTELA", "vedge-C1116-4P", "vedge-C1116-4PLTEEA", "vedge-C1117-4P", "vedge-C1117-4PM", "vedge-C1117-4PMLTEEA", "vedge-C8300-1N1S-4T2X", "vedge-C8300-1N1S-6T", "vedge-C8300-2N2S-6T", "vedge-C8300-2N2S-4T2X", "vedge-C8500-12X4QC", "vedge-C8500-12X", "vedge-C8500-20X6C", "vedge-C1161X-8P", "vedge-ISR1100-4G-XE", "vedge-ISR1100X-4G-XE", "vedge-ISR1100-4GLTENA-XE", "vedge-ISR1100-4GLTEGB-XE", "vedge-C8500L-8S4X", "vedge-C1161-8P", "vedge-C1126-8PLTEP", "vedge-C1127-8PLTEP", "vedge-C1121-4P", "vedge-C1121-4PLTEP", "vedge-C1128-8PLTEP", "vedge-C1121X-8PLTEPW", "vedge-C1121-8PLTEP", "vedge-C1121-8P", "vedge-C1161-8PLTEP", "vedge-C1113-8PLTEEA", "vedge-C1113-8PLTEW", "vedge-C1111-4PW", "vedge-C1112-8P", "vedge-C1112-8PLTEEA", "vedge-C1112-8PLTEEAWE", "vedge-C1112-8PWE", "vedge-C1113-8P", "vedge-C1113-8PLTEEAW", "vedge-C1113-8PLTELA", "vedge-C1113-8PLTELAWZ", "vedge-C1113-8PM", "vedge-C1113-8PMWE", "vedge-C1113-8PW", "vedge-C1116-4PLTEEAWE", "vedge-C1116-4PWE", "vedge-C1117-4PLTEEAW", "vedge-C1117-4PLTELAWZ", "vedge-C1117-4PMLTEEAWE", "vedge-C1117-4PMWE", "vedge-C1117-4PW", "vedge-C1118-8P", "vedge-C1109-2PLTEGB", "vedge-C1109-2PLTEUS", "vedge-C1109-2PLTEVZ", "vedge-C8200-1N-4T", "vedge-C8200L-1N-4T", "cellular-gateway-CG418-E", "cellular-gateway-CG522MW-IO-NA", "cellular-gateway-CG522MW-IO-GL", "cellular-gateway-CG113-4GW6A", "cellular-gateway-CG113-4GW6B", "cellular-gateway-CG113-4GW6E", "cellular-gateway-CG113-4GW6H", "cellular-gateway-CG113-4GW6Z", "cellular-gateway-CG113-4GW6Q", "cellular-gateway-CG113-W6A", "cellular-gateway-CG113-W6B", "cellular-gateway-CG113-W6E", "cellular-gateway-CG113-W6H", "cellular-gateway-CG113-W6Z", "cellular-gateway-CG113-W6Q", "cellular-gateway-CG522-E"]
+  for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.name => t }
+  name                              = each.value.name
+  description                       = each.value.name == "Cisco-Umbrella-Global-Credentials" ? "Global credentials for umbrella" : "Global credentials for zscaler"
+  device_types                      = local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types
   umbrella_api_key                  = try(each.value.umbrella_api_key, null)
   umbrella_api_key_variable         = try(each.value.umbrella_api_key_variable, null)
   umbrella_api_secret               = try(each.value.umbrella_api_secret, null)
@@ -1241,6 +1240,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   omp_admin_distance_ipv6_variable = try(each.value.omp_admin_distance_ipv6_variable, null)
   vpn_id                           = try(each.value.vpn_id, null)
   vpn_name                         = try(each.value.vpn_name, null)
+  vpn_name_variable                = try(each.value.vpn_name_variable, null)
   dns_hosts = try(each.value.ipv4_dns_hosts, each.value.ipv6_dns_hosts, null) == null ? null : flatten([
     try(each.value.ipv4_dns_hosts, null) == null ? [] : [for host in each.value.ipv4_dns_hosts : {
       hostname          = try(host.hostname, null)
@@ -1325,6 +1325,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
     prefix          = try(route.prefix, null)
     prefix_variable = try(route.prefix_variable, null)
     service         = try(route.service, null)
+    vpn_id          = 0
   }]
   ipv6_static_routes = try(length(each.value.ipv6_static_routes) == 0, true) ? null : [for route in each.value.ipv6_static_routes : {
     nat             = try(route.nat, null)

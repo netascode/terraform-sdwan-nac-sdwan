@@ -189,6 +189,7 @@ module "sdwan" {
 | [sdwan_service_routing_bgp_feature.service_routing_bgp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_routing_bgp_feature) | resource |
 | [sdwan_service_routing_eigrp_feature.service_routing_eigrp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_routing_eigrp_feature) | resource |
 | [sdwan_service_routing_ospf_feature.service_routing_ospf_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_routing_ospf_feature) | resource |
+| [sdwan_service_switchport_feature.service_switchport_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_switchport_feature) | resource |
 | [sdwan_service_tracker_feature.service_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_feature) | resource |
 | [sdwan_service_tracker_group_feature.service_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_group_feature) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |

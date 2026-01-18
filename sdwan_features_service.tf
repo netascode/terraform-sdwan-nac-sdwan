@@ -1232,6 +1232,76 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
   }]
 }
 
+resource "sdwan_service_switchport_feature" "service_switchport_feature" {
+  for_each = {
+    for switchport_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for switchport in try(profile.switchport_features, []) : {
+          profile    = profile
+          switchport = switchport
+        }
+      ]
+    ])
+    : "${switchport_item.profile.name}-${switchport_item.switchport.name}" => switchport_item
+  }
+  name                  = each.value.switchport.name
+  description           = try(each.value.switchport.description, null)
+  feature_profile_id    = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  age_out_time          = try(each.value.switchport.age_out_time, null)
+  age_out_time_variable = try("{{${each.value.switchport.age_out_time_variable}}}", null)
+  interfaces = try(length(each.value.switchport.interfaces) == 0, true) ? null : [for interface in each.value.switchport.interfaces : {
+    switchport_access_vlan                  = try(interface.access_vlan, null)
+    switchport_access_vlan_variable         = try("{{${interface.access_vlan_variable}}}", null)
+    control_direction                       = try(interface.control_direction, null)
+    control_direction_variable              = try("{{${interface.control_direction_variable}}}", null)
+    critical_vlan                           = try(interface.critical_vlan, null)
+    critical_vlan_variable                  = try("{{${interface.critical_vlan_variable}}}", null)
+    duplex                                  = try(interface.duplex, null)
+    duplex_variable                         = try("{{${interface.duplex_variable}}}", null)
+    enable_periodic_reauth                  = try(interface.enable_periodic_reauth, null)
+    enable_periodic_reauth_variable         = try("{{${interface.enable_periodic_reauth_variable}}}", null)
+    enable_voice                            = try(interface.enable_voice, null)
+    enable_voice_variable                   = try("{{${interface.enable_voice_variable}}}", null)
+    guest_vlan                              = try(interface.guest_vlan, null)
+    guest_vlan_variable                     = try("{{${interface.guest_vlan_variable}}}", null)
+    host_mode                               = try(interface.host_mode, null)
+    host_mode_variable                      = try("{{${interface.host_mode_variable}}}", null)
+    inactivity                              = try(interface.inactivity, null)
+    inactivity_variable                     = try("{{${interface.inactivity_variable}}}", null)
+    interface_name                          = try(interface.name, null)
+    interface_name_variable                 = try("{{${interface.name_variable}}}", null)
+    mac_authentication_bypass               = try(interface.mac_authentication_bypass, null)
+    mac_authentication_bypass_variable      = try("{{${interface.mac_authentication_bypass_variable}}}", null)
+    mode                                    = try(interface.mode, null)
+    pae_enable                              = try(interface.pae_enable, null)
+    pae_enable_variable                     = try("{{${interface.pae_enable_variable}}}", null)
+    port_control                            = try(interface.port_control, null)
+    port_control_variable                   = try("{{${interface.port_control_variable}}}", null)
+    reauthentication                        = try(interface.reauthentication, null)
+    reauthentication_variable               = try("{{${interface.reauthentication_variable}}}", null)
+    restricted_vlan                         = try(interface.restricted_vlan, null)
+    restricted_vlan_variable                = try("{{${interface.restricted_vlan_variable}}}", null)
+    shutdown                                = try(interface.shutdown, null)
+    shutdown_variable                       = try("{{${interface.shutdown_variable}}}", null)
+    speed                                   = try(interface.speed, null)
+    speed_variable                          = try("{{${interface.speed_variable}}}", null)
+    switchport_trunk_allowed_vlans          = length(concat(try(interface.trunk_allowed_vlans, []), try(interface.trunk_allowed_vlans_ranges, []))) > 0 ? join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"])) : null
+    switchport_trunk_allowed_vlans_variable = try("{{${interface.trunk_allowed_vlans_variable}}}", null)
+    switchport_trunk_native_vlan            = try(interface.trunk_native_vlan, null)
+    switchport_trunk_native_vlan_variable   = try("{{${interface.trunk_native_vlan_variable}}}", null)
+    voice_vlan                              = try(interface.voice_vlan, null)
+    voice_vlan_variable                     = try("{{${interface.voice_vlan_variable}}}", null)
+  }]
+  static_mac_addresses = try(length(each.value.switchport.static_mac_addresses) == 0, true) ? null : [for mac in each.value.switchport.static_mac_addresses : {
+    interface_name          = try(mac.interface_name, null)
+    interface_name_variable = try("{{${mac.interface_name_variable}}}", null)
+    mac_address             = try(mac.mac_address, null)
+    mac_address_variable    = try("{{${mac.mac_address_variable}}}", null)
+    vlan_id                 = try(mac.vlan_id, null)
+    vlan_id_variable        = try("{{${mac.vlan_id_variable}}}", null)
+  }]
+}
+
 resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
   for_each = {
     for acl_item in flatten([

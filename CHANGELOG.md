@@ -15,6 +15,7 @@
 - fix nat fallback default behaviour in centralized data policy
 - add support for policy object security geolocation list
 - add support for UX 2.0 MRF in versions 20.13 and higher
+- align `cisco_sig_credentials_feature_template` device types creation logic with other features
 
 ## 1.3.0
 

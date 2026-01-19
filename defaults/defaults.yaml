@@ -13,6 +13,8 @@ defaults:
         ipv4_flow_visibility: false
         ipv6_flow_visibility: false
         implicit_acl_logging: false
+        cloud_qos: false
+        cloud_qos_service_side: false
     security_policies:
       definitions:
         zone_based_firewall:

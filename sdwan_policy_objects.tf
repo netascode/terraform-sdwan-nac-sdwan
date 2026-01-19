@@ -232,6 +232,15 @@ resource "sdwan_policy_object_security_protocol_list" "policy_object_security_pr
   }]
 }
 
+resource "sdwan_policy_object_security_url_allow_list" "policy_object_security_url_allow_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_url_allow_lists, {}) : p.name => p }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.urls, []) : {
+    pattern = e
+  }]
+}
+
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name

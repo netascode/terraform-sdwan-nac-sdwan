@@ -41,7 +41,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
   description        = null # not supported in the UI
   feature_profile_id = sdwan_application_priority_feature_profile.application_priority_feature_profile[each.value.profile.name].id
   default_action     = each.value.traffic_policy.default_action
-  vpns               = try(each.value.traffic_policy.vpns, null)
+  vpns               = each.value.traffic_policy.vpns
   direction          = each.value.traffic_policy.direction
   sequences = [for seq in each.value.traffic_policy.sequences : {
     # Transform user-friendly sequence IDs (1,2,3,4) to API sequence IDs (1,11,21,31)
@@ -49,7 +49,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
     sequence_id   = (seq.sequence_id - 1) * 10 + 1
     sequence_name = seq.sequence_name
     base_action   = seq.base_action
-    protocol      = seq.protocol
+    protocol      = try(seq.protocol, local.defaults.sdwan.feature_profiles.application_priority_profiles.traffic_policies.sequences.protocol)
     match_entries = try(seq.match_criterias, null) == null ? null : flatten([
       # Application matching
       try(seq.match_criterias.application_list, null) != null ? [{

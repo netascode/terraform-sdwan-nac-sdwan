@@ -18,6 +18,7 @@
 - add support for policy object security geolocation list
 - add support for UX 2.0 MRF in versions 20.13 and higher
 - align `cisco_sig_credentials_feature_template` device types creation logic with other features
+- add support for application priority traffic policy
 
 ## 1.3.0
 

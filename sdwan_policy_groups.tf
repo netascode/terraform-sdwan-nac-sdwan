@@ -185,13 +185,13 @@ locals {
   # ============================================================================
 
   application_priority_policies_versions = {
-    for profile in try(local.feature_profiles.application_priority_profiles, []) : profile.name => flatten([
+    for profile in try(local.feature_profiles.application_priority_profiles, []) : profile.name => sort(flatten([
 
       # Policy versions (the policies themselves)
       try(local.application_priority_policy_versions[profile.name], []),
 
       # Referenced object versions
       try(local.application_priority_object_versions[profile.name], [])
-    ])
+    ]))
   }
 }

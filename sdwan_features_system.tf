@@ -202,6 +202,23 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
   poll_interval_variable = try("{{${each.value.bfd.poll_interval_variable}}}", null)
 }
 
+resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ca_certificate" => sys
+    if try(sys.ca_certificate, null) != null
+  }
+  name               = each.value.ca_certificate.name
+  description        = try(each.value.ca_certificate.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  certificates = [for cert in each.value.ca_certificate.certificates :
+    {
+      trust_point_name  = try(cert.trustpoint_name, null)
+      ca_certificate_id = try(cert.certificate_id, null)
+    }
+  ]
+}
+
 resource "sdwan_system_flexible_port_speed_feature" "system_flexible_port_speed_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
@@ -634,21 +651,4 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
       id_variable      = try("{{${oid.id_variable}}}", null)
     }]
   }]
-}
-
-resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
-  for_each = {
-    for sys in try(local.feature_profiles.system_profiles, {}) :
-    "${sys.name}-ca_certificate" => sys
-    if try(sys.ca_certificate, null) != null
-  }
-  name               = each.value.ca_certificate.name
-  description        = try(each.value.ca_certificate.description, null)
-  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
-  certificates = [for cert in each.value.ca_certificate.certificates :
-    {
-      trust_point_name  = try(cert.trustpoint_name, null)
-      ca_certificate_id = try(cert.certificate_id, null)
-    }
-  ]
 }

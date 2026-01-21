@@ -198,6 +198,7 @@ locals {
       try(profile.performance_monitoring, null) == null ? [] : [sdwan_system_performance_monitoring_feature.system_performance_monitoring_feature["${profile.name}-perfmonitor"].version],
       try(profile.security, null) == null ? [] : [sdwan_system_security_feature.system_security_feature["${profile.name}-security"].version],
       try(profile.snmp, null) == null ? [] : [sdwan_system_snmp_feature.system_snmp_feature["${profile.name}-snmp"].version],
+      try(profile.ca_certificate, null) == null ? [] : [sdwan_system_ca_certificate_feature.system_ca_certificate_feature["${profile.name}-ca_certificate"].version],
     ])
   }
   transport_profile_features_versions = {

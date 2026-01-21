@@ -635,3 +635,20 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
     }]
   }]
 }
+
+resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ca_certificate" => sys
+    if try(sys.ca_certificate, null) != null
+  }
+  name               = each.value.ca_certificate.name
+  description        = try(each.value.ca_certificate.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  certificates = [for cert in each.value.ca_certificate.certificates :
+    {
+      trust_point_name  = try(cert.trustpoint_name, null)
+      ca_certificate_id = try(cert.certificate_id, null)
+    }
+  ]
+}

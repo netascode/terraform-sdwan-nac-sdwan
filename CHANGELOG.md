@@ -8,13 +8,16 @@
 - add support for policy object security local application list
 - add support for policy object security port list
 - add support for policy object security protocol list
+- add support for policy object security url allow list
 - add support for policy object security Advanced Malware Protection Profile
+- add support for service OSPFv3 IPv6
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
 - add `topology_label` attribute to configuration group
 - fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
 - fix nat fallback default behaviour in centralized data policy
 - add support for policy object security geolocation list
 - add support for UX 2.0 MRF in versions 20.13 and higher
+- align `cisco_sig_credentials_feature_template` device types creation logic with other features
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
 
 ## 1.3.0

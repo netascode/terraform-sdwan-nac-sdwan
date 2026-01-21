@@ -72,6 +72,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list,
     sdwan_policy_object_security_port_list.policy_object_security_port_list,
     sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list,
+    sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list,
     sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection
   ]
@@ -155,6 +156,7 @@ locals {
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
         try(lan_vpn.eigrp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature["${profile.name}-${lan_vpn.name}-routing_eigrp"].version],
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
+        try(lan_vpn.ospfv3_ipv6, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv6"].version],
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ethernet_interfaces, []) : [
           sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
@@ -170,6 +172,9 @@ locals {
       ]],
       try(profile.ospf_features, null) == null ? [] : [for ospf_feature in try(profile.ospf_features, []) : [
         sdwan_service_routing_ospf_feature.service_routing_ospf_feature["${profile.name}-${ospf_feature.name}"].version
+      ]],
+      try(profile.ospfv3_ipv6_features, null) == null ? [] : [for ospfv3_ipv6_feature in try(profile.ospfv3_ipv6_features, []) : [
+        sdwan_service_routing_ospfv3_ipv6_feature.service_routing_ospfv3_ipv6_feature["${profile.name}-${ospfv3_ipv6_feature.name}"].version
       ]],
       try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
         sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${route_policy.name}"].version

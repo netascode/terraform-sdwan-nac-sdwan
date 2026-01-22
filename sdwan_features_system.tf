@@ -205,7 +205,7 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
 resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :
-    "${sys.name}-ca_certificate" => sys
+    "${sys.name}-ca_cert" => sys
     if try(sys.ca_certificate, null) != null
   }
   name               = each.value.ca_certificate.name

@@ -187,7 +187,7 @@ locals {
       try(profile.banner, null) == null ? [] : [sdwan_system_banner_feature.system_banner_feature["${profile.name}-banner"].version],
       try(profile.basic, null) == null ? [] : [sdwan_system_basic_feature.system_basic_feature["${profile.name}-basic"].version],
       try(profile.bfd, null) == null ? [] : [sdwan_system_bfd_feature.system_bfd_feature["${profile.name}-bfd"].version],
-      try(profile.ca_certificate, null) == null ? [] : [sdwan_system_ca_certificate_feature.system_ca_certificate_feature["${profile.name}-ca_certificate"].version],
+      try(profile.ca_certificate, null) == null ? [] : [sdwan_system_ca_certificate_feature.system_ca_certificate_feature["${profile.name}-ca_cert"].version],
       try(profile.flexible_port_speed, null) == null ? [] : [sdwan_system_flexible_port_speed_feature.system_flexible_port_speed_feature["${profile.name}-flexible_port_speed"].version],
       try(profile.global, null) == null ? [] : [sdwan_system_global_feature.system_global_feature["${profile.name}-global"].version],
       try(profile.ipv4_device_access_policy, null) == null ? [] : [sdwan_system_ipv4_device_access_feature.system_ipv4_device_access_feature["${profile.name}-ipv4_device_access_policy"].version],

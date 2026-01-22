@@ -155,6 +155,7 @@ locals {
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.bgp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_bgp_feature.service_lan_vpn_feature_associate_routing_bgp_feature["${profile.name}-${lan_vpn.name}-routing_bgp"].version],
         try(lan_vpn.eigrp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature["${profile.name}-${lan_vpn.name}-routing_eigrp"].version],
+        try(lan_vpn.multicast, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_multicast_feature.service_lan_vpn_feature_associate_multicast_feature["${profile.name}-${lan_vpn.name}-routing_multicast"].version],
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
         try(lan_vpn.ospfv3_ipv6, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv6"].version],
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
@@ -163,6 +164,9 @@ locals {
           try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
           try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
         ]],
+      ]],
+      try(profile.multicast_features, null) == null ? [] : [for multicast_feature in try(profile.multicast_features, []) : [
+        sdwan_service_multicast_feature.service_multicast_feature["${profile.name}-${multicast_feature.name}"].version
       ]],
       try(profile.object_tracker_groups, null) == null ? [] : [for object_tracker_group in try(profile.object_tracker_groups, []) : [
         sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${profile.name}-${object_tracker_group.name}"].version

@@ -213,8 +213,8 @@ resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   certificates = [for cert in each.value.ca_certificate.certificates :
     {
-      trust_point_name  = try(cert.trustpoint_name, null)
-      ca_certificate_id = try(cert.certificate_id, null)
+      trust_point_name  = cert.trustpoint_name
+      ca_certificate_id = cert.certificate_id
     }
   ]
 }

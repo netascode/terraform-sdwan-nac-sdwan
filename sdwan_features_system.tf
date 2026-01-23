@@ -208,7 +208,7 @@ resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
     "${sys.name}-ca_cert" => sys
     if try(sys.ca_certificate, null) != null
   }
-  name               = each.value.ca_certificate.name
+  name               = try(each.value.ca_certificate.name, local.defaults.sdwan.feature_profiles.system_profiles.ca_certificate.name)
   description        = try(each.value.ca_certificate.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   certificates = [for cert in each.value.ca_certificate.certificates :

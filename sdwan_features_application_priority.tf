@@ -50,87 +50,87 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
     sequence_name = seq.sequence_name
     base_action   = seq.base_action
     protocol      = try(seq.protocol, local.defaults.sdwan.feature_profiles.application_priority_profiles.traffic_policies.sequences.protocol)
-    match_entries = try(seq.match_criterias, null) == null ? null : flatten([
+    match_entries = try(seq.match_entries, null) == null ? null : flatten([
       # Application matching
-      try(seq.match_criterias.application_list, null) != null ? [{
-        application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_criterias.application_list].id
+      try(seq.match_entries.application_list, null) != null ? [{
+        application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.application_list].id
       }] : [],
-      try(seq.match_criterias.dns, null) != null ? [{
-        dns = seq.match_criterias.dns
+      try(seq.match_entries.dns, null) != null ? [{
+        dns = seq.match_entries.dns
       }] : [],
-      try(seq.match_criterias.dns_application_list, null) != null ? [{
-        dns_application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_criterias.dns_application_list].id
+      try(seq.match_entries.dns_application_list, null) != null ? [{
+        dns_application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.dns_application_list].id
       }] : [],
       # Destination criteria
-      try(seq.match_criterias.destination_data_ipv4_prefix_list, null) != null ? [{
-        destination_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_criterias.destination_data_ipv4_prefix_list].id
+      try(seq.match_entries.destination_data_ipv4_prefix_list, null) != null ? [{
+        destination_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.destination_data_ipv4_prefix_list].id
       }] : [],
-      try(seq.match_criterias.destination_data_ipv6_prefix_list, null) != null ? [{
-        destination_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_criterias.destination_data_ipv6_prefix_list].id
+      try(seq.match_entries.destination_data_ipv6_prefix_list, null) != null ? [{
+        destination_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.destination_data_ipv6_prefix_list].id
       }] : [],
-      try(seq.match_criterias.destination_ipv4_prefix, null) != null ? [{
-        destination_ipv4_prefix = seq.match_criterias.destination_ipv4_prefix
+      try(seq.match_entries.destination_ipv4_prefix, null) != null ? [{
+        destination_ipv4_prefix = seq.match_entries.destination_ipv4_prefix
       }] : [],
-      try(seq.match_criterias.destination_ipv6_prefix, null) != null ? [{
-        destination_ipv6_prefix = seq.match_criterias.destination_ipv6_prefix
+      try(seq.match_entries.destination_ipv6_prefix, null) != null ? [{
+        destination_ipv6_prefix = seq.match_entries.destination_ipv6_prefix
       }] : [],
-      try(length(seq.match_criterias.destination_ports) == 0, true) ? [] : [{
-        destination_ports = [for p in seq.match_criterias.destination_ports : tostring(p)]
+      try(length(seq.match_entries.destination_ports) == 0, true) ? [] : [{
+        destination_ports = [for p in seq.match_entries.destination_ports : tostring(p)]
       }],
-      try(seq.match_criterias.destination_region, null) != null ? [{
-        destination_region = seq.match_criterias.destination_region
+      try(seq.match_entries.destination_region, null) != null ? [{
+        destination_region = seq.match_entries.destination_region
       }] : [],
-      try(seq.match_criterias.dscps, null) != null ? [{
-        dscps = seq.match_criterias.dscps
+      try(seq.match_entries.dscps, null) != null ? [{
+        dscps = seq.match_entries.dscps
       }] : [],
-      try(seq.match_criterias.icmp_messages, null) != null ? [{
-        icmp_messages = seq.match_criterias.icmp_messages
+      try(seq.match_entries.icmp_messages, null) != null ? [{
+        icmp_messages = seq.match_entries.icmp_messages
       }] : [],
-      try(seq.match_criterias.icmp6_messages, null) != null ? [{
-        icmp6_messages = seq.match_criterias.icmp6_messages
+      try(seq.match_entries.icmp6_messages, null) != null ? [{
+        icmp6_messages = seq.match_entries.icmp6_messages
       }] : [],
-      try(seq.match_criterias.packet_length, null) != null ? [{
-        packet_length = seq.match_criterias.packet_length
+      try(seq.match_entries.packet_length, null) != null ? [{
+        packet_length = seq.match_entries.packet_length
       }] : [],
-      try(seq.match_criterias.protocols, null) != null ? [{
-        protocols = seq.match_criterias.protocols
+      try(seq.match_entries.protocols, null) != null ? [{
+        protocols = seq.match_entries.protocols
       }] : [],
       # SaaS
-      try(seq.match_criterias.saas_application_list, null) != null ? [{
-        saas_application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_criterias.saas_application_list].id
+      try(seq.match_entries.saas_application_list, null) != null ? [{
+        saas_application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.saas_application_list].id
       }] : [],
-      try(seq.match_criterias.service_areas, null) != null ? [{
-        service_areas = seq.match_criterias.service_areas
+      try(seq.match_entries.service_areas, null) != null ? [{
+        service_areas = seq.match_entries.service_areas
       }] : [],
       # Source criteria
-      try(seq.match_criterias.source_data_ipv4_prefix_list, null) != null ? [{
-        source_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_criterias.source_data_ipv4_prefix_list].id
+      try(seq.match_entries.source_data_ipv4_prefix_list, null) != null ? [{
+        source_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.source_data_ipv4_prefix_list].id
       }] : [],
-      try(seq.match_criterias.source_data_ipv6_prefix_list, null) != null ? [{
-        source_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_criterias.source_data_ipv6_prefix_list].id
+      try(seq.match_entries.source_data_ipv6_prefix_list, null) != null ? [{
+        source_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.source_data_ipv6_prefix_list].id
       }] : [],
-      try(seq.match_criterias.source_ipv4_prefix, null) != null ? [{
-        source_ipv4_prefix = seq.match_criterias.source_ipv4_prefix
+      try(seq.match_entries.source_ipv4_prefix, null) != null ? [{
+        source_ipv4_prefix = seq.match_entries.source_ipv4_prefix
       }] : [],
-      try(seq.match_criterias.source_ipv6_prefix, null) != null ? [{
-        source_ipv6_prefix = seq.match_criterias.source_ipv6_prefix
+      try(seq.match_entries.source_ipv6_prefix, null) != null ? [{
+        source_ipv6_prefix = seq.match_entries.source_ipv6_prefix
       }] : [],
-      try(length(seq.match_criterias.source_ports) == 0, true) ? [] : [{
-        source_ports = [for p in seq.match_criterias.source_ports : tostring(p)]
+      try(length(seq.match_entries.source_ports) == 0, true) ? [] : [{
+        source_ports = [for p in seq.match_entries.source_ports : tostring(p)]
       }],
-      try(seq.match_criterias.tcp, null) != null ? [{
-        tcp = seq.match_criterias.tcp
+      try(seq.match_entries.tcp, null) != null ? [{
+        tcp = seq.match_entries.tcp
       }] : [],
-      try(seq.match_criterias.traffic_category, null) != null ? [{
+      try(seq.match_entries.traffic_category, null) != null ? [{
         traffic_category = lookup({
           "optimize-allow" = "optimizeAllow"
-        }, seq.match_criterias.traffic_category, seq.match_criterias.traffic_category)
+        }, seq.match_entries.traffic_category, seq.match_entries.traffic_category)
       }] : [],
-      try(seq.match_criterias.traffic_class, null) != null ? [{
-        traffic_class = seq.match_criterias.traffic_class
+      try(seq.match_entries.traffic_class, null) != null ? [{
+        traffic_class = seq.match_entries.traffic_class
       }] : [],
-      try(seq.match_criterias.traffic_to, null) != null ? [{
-        traffic_to = seq.match_criterias.traffic_to
+      try(seq.match_entries.traffic_to, null) != null ? [{
+        traffic_to = seq.match_entries.traffic_to
       }] : []
     ])
     actions = try(seq.actions, null) == null ? null : flatten([
@@ -138,7 +138,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
         sla_classes = flatten([
           try(seq.actions.sla_class.sla_class_list, null) != null ? [{ sla_class_list_id = sdwan_policy_object_sla_class_list.policy_object_sla_class_list[seq.actions.sla_class.sla_class_list].id }] : [],
           try(seq.actions.sla_class.preferred_colors, null) != null ? [{ preferred_colors = seq.actions.sla_class.preferred_colors }] : [],
-          try(seq.actions.sla_class.preferred_color_group_list, null) != null ? [{ preferred_color_group_list_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.sla_class.preferred_color_group_list].id }] : [],
+          try(seq.actions.sla_class.preferred_color_group, null) != null ? [{ preferred_color_group_list_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.sla_class.preferred_color_group].id }] : [],
           try(seq.actions.sla_class.strict, null) != null ? [{ strict = seq.actions.sla_class.strict }] : [],
           try(seq.actions.sla_class.fallback_to_best_path, null) != null ? [{ fallback_to_best_path = seq.actions.sla_class.fallback_to_best_path }] : [],
           try(seq.actions.sla_class.preferred_remote_colors, null) != null ? [{ preferred_remote_colors = seq.actions.sla_class.preferred_remote_colors }] : [],
@@ -151,8 +151,8 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       try(seq.actions.log, null) != null ? [{
         log = seq.actions.log
       }] : [],
-      try(seq.actions.count, null) != null ? [{
-        count = seq.actions.count
+      try(seq.actions.counter_name, null) != null ? [{
+        count = seq.actions.counter_name
       }] : [],
       try(seq.actions.nat_vpn, null) != null ? [{
         nat_vpn            = try(seq.actions.nat_vpn.nat_vpn_0, null)
@@ -179,9 +179,9 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
         secure_service_edge_instance = try(seq.actions.sig_sse.service_edge_instance, null) != null ? (seq.actions.sig_sse.service_edge_instance == "cisco-secure-access" ? "Cisco-Secure-Access" : seq.actions.sig_sse.service_edge_instance == "zscaler" ? "zScaler" : seq.actions.sig_sse.service_edge_instance) : null
         fallback_to_routing          = try(seq.actions.sig_sse.fallback_to_routing, null)
       }] : [],
-      try(seq.actions.redirect_dns_field, null) != null && try(seq.actions.redirect_dns_value, null) != null ? [{
-        redirect_dns_field = seq.actions.redirect_dns_field == "ip-address" ? "ipAddress" : seq.actions.redirect_dns_field == "dns-host" ? "dnsHost" : seq.actions.redirect_dns_field
-        redirect_dns_value = seq.actions.redirect_dns_value
+      try(seq.actions.redirect_dns_type, null) != null && try(seq.actions.redirect_dns_target, null) != null ? [{
+        redirect_dns_field = seq.actions.redirect_dns_type == "ip-address" ? "ipAddress" : seq.actions.redirect_dns_type == "dns-host" ? "dnsHost" : seq.actions.redirect_dns_type
+        redirect_dns_value = seq.actions.redirect_dns_target
       }] : [],
       try(seq.actions.appqoe_optimization, null) != null ? [{
         appqoe_dre_optimization   = try(seq.actions.appqoe_optimization.dre_optimization, null)
@@ -201,13 +201,13 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       # =======================================================================
       anytrue([
         try(seq.actions.dscp, null) != null,
-        try(seq.actions.forwarding_class_list, null) != null,
+        try(seq.actions.forwarding_class, null) != null,
         try(seq.actions.local_tloc, null) != null,
         try(seq.actions.next_hop_ipv4, null) != null,
         try(seq.actions.next_hop_ipv6, null) != null,
         try(seq.actions.next_hop_loose, null) != null,
         try(seq.actions.policer_list, null) != null,
-        try(seq.actions.preferred_color_group_list, null) != null,
+        try(seq.actions.preferred_color_group, null) != null,
         try(seq.actions.preferred_remote_colors, null) != null,
         try(seq.actions.preferred_remote_color_restrict, null) != null,
         try(seq.actions.service, null) != null,
@@ -219,8 +219,8 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
           try(seq.actions.dscp, null) != null ? [{
             dscp = seq.actions.dscp
           }] : [],
-          try(seq.actions.forwarding_class_list, null) != null ? [{
-            forwarding_class_list_id = sdwan_policy_object_class_map.policy_object_class_map[seq.actions.forwarding_class_list].id
+          try(seq.actions.forwarding_class, null) != null ? [{
+            forwarding_class_list_id = sdwan_policy_object_class_map.policy_object_class_map[seq.actions.forwarding_class].id
           }] : [],
           try(seq.actions.local_tloc, null) != null ? [{
             local_tloc_list_colors        = try(seq.actions.local_tloc.colors, null)
@@ -240,8 +240,8 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
           try(seq.actions.policer_list, null) != null ? [{
             policer_id = sdwan_policy_object_policer.policy_object_policer[seq.actions.policer_list].id
           }] : [],
-          try(seq.actions.preferred_color_group_list, null) != null ? [{
-            preferred_color_group_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.preferred_color_group_list].id
+          try(seq.actions.preferred_color_group, null) != null ? [{
+            preferred_color_group_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.preferred_color_group].id
           }] : [],
           try(seq.actions.preferred_remote_colors, null) != null || try(seq.actions.preferred_remote_color_restrict, null) != null ? [{
             preferred_remote_colors         = try(seq.actions.preferred_remote_colors, null)

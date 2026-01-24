@@ -50,25 +50,25 @@ locals {
       application_lists = distinct(compact(flatten([
         for traffic_policy in try(profile.traffic_policies, []) : [
           for seq in try(traffic_policy.sequences, []) : [
-            try(seq.match_criterias.application_list, null),
-            try(seq.match_criterias.dns_application_list, null),
-            try(seq.match_criterias.saas_application_list, null),
+            try(seq.match_entries.application_list, null),
+            try(seq.match_entries.dns_application_list, null),
+            try(seq.match_entries.saas_application_list, null),
           ]
         ]
       ])))
       data_ipv4_prefix_lists = distinct(compact(flatten([
         for traffic_policy in try(profile.traffic_policies, []) : [
           for seq in try(traffic_policy.sequences, []) : [
-            try(seq.match_criterias.destination_data_ipv4_prefix_list, null),
-            try(seq.match_criterias.source_data_ipv4_prefix_list, null),
+            try(seq.match_entries.destination_data_ipv4_prefix_list, null),
+            try(seq.match_entries.source_data_ipv4_prefix_list, null),
           ]
         ]
       ])))
       data_ipv6_prefix_lists = distinct(compact(flatten([
         for traffic_policy in try(profile.traffic_policies, []) : [
           for seq in try(traffic_policy.sequences, []) : [
-            try(seq.match_criterias.destination_data_ipv6_prefix_list, null),
-            try(seq.match_criterias.source_data_ipv6_prefix_list, null),
+            try(seq.match_entries.destination_data_ipv6_prefix_list, null),
+            try(seq.match_entries.source_data_ipv6_prefix_list, null),
           ]
         ]
       ])))
@@ -81,15 +81,15 @@ locals {
       preferred_color_groups = distinct(compact(flatten([
         for traffic_policy in try(profile.traffic_policies, []) : [
           for seq in try(traffic_policy.sequences, []) : [
-            try(seq.actions.sla_class.preferred_color_group_list, null),
-            try(seq.actions.preferred_color_group_list, null),
+            try(seq.actions.sla_class.preferred_color_group, null),
+            try(seq.actions.preferred_color_group, null),
           ]
         ]
       ])))
       action_class_maps = distinct(compact(flatten([
         for traffic_policy in try(profile.traffic_policies, []) : [
           for seq in try(traffic_policy.sequences, []) :
-          try(seq.actions.forwarding_class_list, null)
+          try(seq.actions.forwarding_class, null)
         ]
       ])))
 

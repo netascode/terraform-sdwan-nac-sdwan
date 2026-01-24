@@ -202,6 +202,23 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
   poll_interval_variable = try("{{${each.value.bfd.poll_interval_variable}}}", null)
 }
 
+resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ca_cert" => sys
+    if try(sys.ca_certificate, null) != null
+  }
+  name               = try(each.value.ca_certificate.name, local.defaults.sdwan.feature_profiles.system_profiles.ca_certificate.name)
+  description        = try(each.value.ca_certificate.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  certificates = [for cert in each.value.ca_certificate.certificates :
+    {
+      trust_point_name  = cert.trustpoint_name
+      ca_certificate_id = cert.certificate_id
+    }
+  ]
+}
+
 resource "sdwan_system_flexible_port_speed_feature" "system_flexible_port_speed_feature" {
   for_each = {
     for sys in try(local.feature_profiles.system_profiles, {}) :

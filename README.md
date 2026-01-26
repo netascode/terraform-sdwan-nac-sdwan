@@ -203,6 +203,7 @@ module "sdwan" {
 | [sdwan_system_banner_feature.system_banner_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_banner_feature) | resource |
 | [sdwan_system_basic_feature.system_basic_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_basic_feature) | resource |
 | [sdwan_system_bfd_feature.system_bfd_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_bfd_feature) | resource |
+| [sdwan_system_ca_certificate_feature.system_ca_certificate_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_ca_certificate_feature) | resource |
 | [sdwan_system_feature_profile.system_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_feature_profile) | resource |
 | [sdwan_system_flexible_port_speed_feature.system_flexible_port_speed_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_flexible_port_speed_feature) | resource |
 | [sdwan_system_global_feature.system_global_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_global_feature) | resource |

@@ -16,8 +16,9 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
       try(r.match_criterias, null) == null ? null :
       flatten([
         try(r.match_criterias.source_data_prefix_lists, null) == null ? [] : [{
-          type      = "sourceDataPrefixList"
-          policy_id = join(" ", [for x in try(r.match_criterias.source_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].id])
+          type           = "sourceDataPrefixList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.source_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.source_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].version])
         }],
         try(r.match_criterias.source_ip_prefix, null) == null ? [] : [{
           type  = "sourceIp"
@@ -40,12 +41,14 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           value = join(" ", concat([for p in try(r.match_criterias.source_ports, []) : p], [for s in try(r.match_criterias.source_port_ranges, []) : "${s.from}-${s.to}"]))
         }],
         try(r.match_criterias.source_fqdn_lists, null) == null ? [] : [{
-          type      = "sourceFqdnList"
-          policy_id = join(" ", [for x in try(r.match_criterias.source_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].id])
+          type           = "sourceFqdnList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.source_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.source_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].version])
         }],
         try(r.match_criterias.destination_data_prefix_lists, null) == null ? [] : [{
-          type      = "destinationDataPrefixList"
-          policy_id = join(" ", [for x in try(r.match_criterias.destination_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].id])
+          type           = "destinationDataPrefixList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.destination_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.destination_data_prefix_lists, []) : sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object[x].version])
         }],
         try(r.match_criterias.destination_ip_prefix, null) == null ? [] : [{
           type  = "destinationIp"
@@ -69,8 +72,9 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           protocol_type = try(r.match_criterias.protocol_names, null) != null ? join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p])) : null
         }],
         try(r.match_criterias.destination_fqdn_lists, null) == null ? [] : [{
-          type      = "destinationFqdnList"
-          policy_id = join(" ", [for x in try(r.match_criterias.destination_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].id])
+          type           = "destinationFqdnList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.destination_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.destination_fqdn_lists, []) : sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object[x].version])
         }],
         try(r.match_criterias.protocols, null) == null ? [] : [{
           type          = "protocol"
@@ -82,16 +86,19 @@ resource "sdwan_zone_based_firewall_policy_definition" "zone_based_firewall_poli
           value = join(" ", concat([for p in try(r.match_criterias.protocol_names, []) : p]))
         }],
         try(r.match_criterias.local_application_list, null) == null ? [] : [{
-          type      = try(each.value.mode, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.mode) == "security" ? "appList" : "appListFlat"
-          policy_id = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
+          type           = try(each.value.mode, local.defaults.sdwan.security_policies.definitions.zone_based_firewall.mode) == "security" ? "appList" : "appListFlat"
+          policy_id      = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].id
+          policy_version = sdwan_local_application_list_policy_object.local_application_list_policy_object[r.match_criterias.local_application_list].version
         }],
         try(r.match_criterias.source_port_lists, null) == null ? [] : [{
-          type      = "sourcePortList"
-          policy_id = join(" ", [for x in try(r.match_criterias.source_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+          type           = "sourcePortList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.source_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.source_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].version])
         }],
         try(r.match_criterias.destination_port_lists, null) == null ? [] : [{
-          type      = "destinationPortList"
-          policy_id = join(" ", [for x in try(r.match_criterias.destination_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+          type           = "destinationPortList"
+          policy_id      = join(" ", [for x in try(r.match_criterias.destination_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].id])
+          policy_version = join(" ", [for x in try(r.match_criterias.destination_port_lists, []) : sdwan_port_list_policy_object.port_list_policy_object[x].version])
         }],
       ])
     )

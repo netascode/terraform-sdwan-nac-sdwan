@@ -487,6 +487,8 @@ defaults:
           name: basic
         bfd:
           name: bfd
+        ca_certificate:
+          name: ca_certificate
         flexible_port_speed:
           name: flexible_port_speed
         global:

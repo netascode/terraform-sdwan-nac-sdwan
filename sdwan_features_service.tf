@@ -779,6 +779,23 @@ resource "sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature" "servic
   service_routing_eigrp_feature_id = sdwan_service_routing_eigrp_feature.service_routing_eigrp_feature["${each.value.profile.name}-${each.value.lan_vpn.eigrp}"].id
 }
 
+resource "sdwan_service_lan_vpn_feature_associate_multicast_feature" "service_lan_vpn_feature_associate_multicast_feature" {
+  for_each = {
+    for lan_vpn_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for lan_vpn in try(profile.lan_vpns, []) : {
+          profile = profile
+          lan_vpn = lan_vpn
+        } if try(lan_vpn.multicast, null) != null
+      ]
+    ])
+    : "${lan_vpn_item.profile.name}-${lan_vpn_item.lan_vpn.name}-routing_multicast" => lan_vpn_item
+  }
+  feature_profile_id           = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id   = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  service_multicast_feature_id = sdwan_service_multicast_feature.service_multicast_feature["${each.value.profile.name}-${each.value.lan_vpn.multicast}"].id
+}
+
 resource "sdwan_service_lan_vpn_feature_associate_routing_ospf_feature" "service_lan_vpn_feature_associate_routing_ospf_feature" {
   for_each = {
     for lan_vpn_item in flatten([
@@ -1029,6 +1046,122 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_gro
   service_lan_vpn_feature_id                    = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
   service_lan_vpn_interface_ethernet_feature_id = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${each.value.profile.name}-${each.value.lan_vpn.name}-${each.value.interface.name}"].id
   service_tracker_group_feature_id              = sdwan_service_tracker_group_feature.service_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker_group}"].id
+}
+
+resource "sdwan_service_multicast_feature" "service_multicast_feature" {
+  for_each = {
+    for multicast_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for multicast in try(profile.multicast_features, []) : {
+          profile   = profile
+          multicast = multicast
+        }
+      ]
+    ])
+    : "${multicast_item.profile.name}-${multicast_item.multicast.name}" => multicast_item
+  }
+  name                                 = each.value.multicast.name
+  description                          = try(each.value.multicast.description, null)
+  feature_profile_id                   = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  pim_source_specific_multicast_enable = each.value.multicast.pim_source_specific_multicast
+  auto_rp_announces = try(length(each.value.multicast.auto_rp_announces) == 0, true) ? null : [for auto_rp_announce in each.value.multicast.auto_rp_announces : {
+    interface_name          = try(auto_rp_announce.interface_name, null)
+    interface_name_variable = try("{{${auto_rp_announce.interface_name_variable}}}", null)
+    scope                   = try(auto_rp_announce.scope, null)
+    scope_variable          = try("{{${auto_rp_announce.scope_variable}}}", null)
+  }]
+  auto_rp_discoveries = try(length(each.value.multicast.auto_rp_discoveries) == 0, true) ? null : [for auto_rp_discovery in each.value.multicast.auto_rp_discoveries : {
+    interface_name          = try(auto_rp_discovery.interface_name, null)
+    interface_name_variable = try("{{${auto_rp_discovery.interface_name_variable}}}", null)
+    scope                   = try(auto_rp_discovery.scope, null)
+    scope_variable          = try("{{${auto_rp_discovery.scope_variable}}}", null)
+  }]
+  enable_auto_rp          = try(each.value.multicast.auto_rp, null)
+  enable_auto_rp_variable = try("{{${each.value.multicast.auto_rp_variable}}}", null)
+  igmp_interfaces = try(length(each.value.multicast.igmp_interfaces) == 0, true) ? null : [for igmp_interface in each.value.multicast.igmp_interfaces : {
+    interface_name          = try(igmp_interface.interface_name, null)
+    interface_name_variable = try("{{${igmp_interface.interface_name_variable}}}", null)
+    join_groups = try(length(igmp_interface.join_groups) == 0, true) ? null : [for join_group in igmp_interface.join_groups : {
+      group_address           = try(join_group.group_address, null)
+      group_address_variable  = try("{{${join_group.group_address_variable}}}", null)
+      source_address          = try(join_group.source_address, null)
+      source_address_variable = try("{{${join_group.source_address_variable}}}", null)
+    }]
+    version          = try(igmp_interface.version, null)
+    version_variable = try("{{${igmp_interface.version_variable}}}", null)
+  }]
+  local_replicator                        = try(each.value.multicast.local_replicator, null)
+  local_replicator_variable               = try(each.value.multicast.local_replicator_variable, null)
+  local_replicator_threshold              = try(each.value.multicast.threshold, null)
+  local_replicator_threshold_variable     = try(each.value.multicast.threshold_variable, null)
+  msdp_connection_retry_interval          = try(each.value.multicast.msdp_connection_retry_interval, null)
+  msdp_connection_retry_interval_variable = try("{{${each.value.multicast.msdp_connection_retry_interval_variable}}}", null)
+  msdp_groups = try(length(each.value.multicast.msdp_mesh_groups) == 0, true) ? null : [for msdp_group in each.value.multicast.msdp_mesh_groups : {
+    mesh_group_name          = try(msdp_group.name, null)
+    mesh_group_name_variable = try("{{${msdp_group.name_variable}}}", null)
+    peers = try(length(msdp_group.peers) == 0, true) ? null : [for peer in msdp_group.peers : {
+      connection_source_interface           = try(peer.connection_source_interface, null)
+      connection_source_interface_variable  = try("{{${peer.connection_source_interface_variable}}}", null)
+      default_peer                          = try(peer.default_peer, null)
+      keepalive_hold_time                   = try(peer.keepalive_hold_time, null)
+      keepalive_hold_time_variable          = try("{{${peer.keepalive_hold_time_variable}}}}", null)
+      keepalive_interval                    = try(peer.keepalive_interval, null)
+      keepalive_interval_variable           = try("{{${peer.keepalive_interval_variable}}}", null)
+      peer_authentication_password          = try(peer.peer_authentication_password, null)
+      peer_authentication_password_variable = try("{{${peer.peer_authentication_password_variable}}}", null)
+      peer_ip                               = try(peer.peer_ip, null)
+      peer_ip_variable                      = try("{{${peer.peer_ip_variable}}}", null)
+      prefix_list_id                        = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[peer.prefix_list].id, null)
+      remote_as                             = try(peer.remote_as, null)
+      remote_as_variable                    = try("{{${peer.remote_as_variable}}}", null)
+      sa_limit                              = try(peer.sa_limit, null)
+      sa_limit_variable                     = try("{{${peer.sa_limit_variable}}}", null)
+    }]
+  }]
+  msdp_originator_id          = try(each.value.multicast.msdp_originator_id, null)
+  msdp_originator_id_variable = try("{{${each.value.multicast.msdp_originator_id_variable}}}", null)
+  pim_bsr_candidates = try(length(each.value.multicast.pim_bsr_candidates) == 0, true) ? null : [for bsr_candidate in each.value.multicast.pim_bsr_candidates : {
+    interface_name                        = try(bsr_candidate.interface_name, null)
+    interface_name_variable               = try("{{${bsr_candidate.interface_name_variable}}}", null)
+    accept_candidate_access_list          = try(bsr_candidate.accept_candidate_access_list, null)
+    accept_candidate_access_list_variable = try("{{${bsr_candidate.accept_candidate_access_list_variable}}}", null)
+    hash_mask_length                      = try(bsr_candidate.hash_mask_length, null)
+    hash_mask_length_variable             = try("{{${bsr_candidate.hash_mask_length_variable}}}", null)
+    priority                              = try(bsr_candidate.priority, null)
+    priority_variable                     = try("{{${bsr_candidate.priority_variable}}}", null)
+  }]
+  pim_bsr_rp_candidates = try(length(each.value.multicast.pim_bsr_rp_candidates) == 0, true) ? null : [for bsr_rp_candidate in each.value.multicast.pim_bsr_rp_candidates : {
+    interface_name          = try(bsr_rp_candidate.interface_name, null)
+    interface_name_variable = try("{{${bsr_rp_candidate.interface_name_variable}}}", null)
+    access_list_id          = try(bsr_rp_candidate.access_list, null)
+    access_list_id_variable = try("{{${bsr_rp_candidate.access_list_id_variable}}}", null)
+    interval                = try(bsr_rp_candidate.interval, null)
+    interval_variable       = try("{{${bsr_rp_candidate.interval_variable}}}", null)
+    priority                = try(bsr_rp_candidate.priority, null)
+    priority_variable       = try("{{${bsr_rp_candidate.priority_variable}}}", null)
+  }]
+  pim_interfaces = try(length(each.value.multicast.pim_interfaces) == 0, true) ? null : [for pim_interface in each.value.multicast.pim_interfaces : {
+    interface_name               = try(pim_interface.interface_name, null)
+    interface_name_variable      = try("{{${pim_interface.interface_name_variable}}}", null)
+    join_prune_interval          = try(pim_interface.join_prune_interval, null)
+    join_prune_interval_variable = try("{{${pim_interface.join_prune_interval_variable}}}", null)
+    query_interval               = try(pim_interface.query_interval, null)
+    query_interval_variable      = try("{{${pim_interface.query_interval_variable}}}", null)
+  }]
+  pim_source_specific_multicast_access_list          = try(each.value.multicast.pim_source_specific_multicast_access_list, null)
+  pim_source_specific_multicast_access_list_variable = try("{{${each.value.multicast.pim_source_specific_multicast_access_list_variable}}}", null)
+  pim_spt_threshold                                  = try(each.value.multicast.pim_spt_threshold, null)
+  pim_spt_threshold_variable                         = try("{{${each.value.multicast.pim_spt_threshold_variable}}}", null)
+  spt_only                                           = try(each.value.multicast.spt_only, null)
+  spt_only_variable                                  = try(each.value.multicast.spt_only_variable, null)
+  static_rp_addresses = try(length(each.value.multicast.static_rp_addresses) == 0, true) ? null : [for static_rp in each.value.multicast.static_rp_addresses : {
+    ip_address           = try(static_rp.ip_address, null)
+    ip_address_variable  = try("{{${static_rp.ip_address_variable}}}", null)
+    access_list          = try(static_rp.access_list, null)
+    access_list_variable = try("{{${static_rp.access_list_variable}}}", null)
+    override             = try(static_rp.override, null)
+    override_variable    = try("{{${static_rp.override_variable}}}", null)
+  }]
 }
 
 resource "sdwan_service_tracker_group_feature" "service_tracker_group_feature" {

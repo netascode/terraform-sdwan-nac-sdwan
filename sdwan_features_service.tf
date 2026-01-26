@@ -497,10 +497,16 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       network_address_variable = try("{{${route.network_address_variable}}}", null)
       subnet_mask              = try(route.subnet_mask, null)
       subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
-      gateway                  = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway)
-      dhcp                     = try(route.gateway == "dhcp" ? true : null, null)
-      null0                    = try(route.gateway == "null0" ? true : null, null)
-      vpn                      = try(route.gateway == "vpn" ? true : null, null)
+      gateway = (
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway) == "nexthop" ? "nextHop" :
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway) == "interface" ? "staticRouteInterface" :
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv4_static_routes.gateway)
+      )
+      dhcp                             = try(route.gateway == "dhcp" ? true : null, null)
+      null0                            = try(route.gateway == "null0" ? true : null, null)
+      vpn                              = try(route.gateway == "vpn" ? true : null, null)
+      administrative_distance          = try(route.gateway == "null0" ? route.administrative_distance : null, null)
+      administrative_distance_variable = try(route.gateway == "null0" ? "{{${route.administrative_distance_variable}}}" : null, null)
       next_hops = try(length(route.next_hops) == 0, true) ? null : [
         for nh in route.next_hops : {
           address                          = try(nh.address, null)
@@ -523,17 +529,33 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
             )
           )
         }
-      ]
+      ],
+      ip_static_route_interface = try(route.static_route_interface, null) != null ? [{
+        interface_name          = try(route.static_route_interface.interface_name, null)
+        interface_name_variable = try("{{${route.static_route_interface.interface_name_variable}}}", null)
+        next_hop = try(length(route.static_route_interface.next_hops) == 0, true) ? null : [
+          for nh in route.static_route_interface.next_hops : {
+            address                          = try(nh.address, null)
+            address_variable                 = try("{{${nh.address_variable}}}", null)
+            administrative_distance          = try(nh.administrative_distance, null)
+            administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+          }
+        ]
+      }] : null
     }
   ]
   ipv6_static_routes = try(length(each.value.lan_vpn.ipv6_static_routes) == 0, true) ? null : [
     for route in each.value.lan_vpn.ipv6_static_routes : {
       prefix          = try(route.prefix, null)
       prefix_variable = try("{{${route.prefix_variable}}}", null)
-      gateway         = try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" : try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway)
-      nat             = try(route.gateway == "nat" ? upper(route.nat) : null, null)
-      nat_variable    = try(route.gateway == "nat" ? "{{${route.nat_variable}}}" : null, null)
-      null0           = try(route.gateway == "null0" ? true : null, null)
+      gateway = (
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "nexthop" ? "nextHop" :
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "interface" ? "staticRouteInterface" :
+        try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway)
+      )
+      nat          = try(route.gateway == "nat" ? upper(route.nat) : null, null)
+      nat_variable = try(route.gateway == "nat" ? "{{${route.nat_variable}}}" : null, null)
+      null0        = try(route.gateway == "null0" ? true : null, null)
       next_hops = try(length(route.next_hops) == 0, true) ? null : [
         for nh in route.next_hops : {
           address                          = try(nh.address, null)
@@ -541,7 +563,19 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
           administrative_distance          = try(nh.administrative_distance, null)
           administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
         }
-      ]
+      ],
+      ipv6_static_route_interface = try(route.static_route_interface, null) != null ? [{
+        interface_name          = try(route.static_route_interface.interface_name, null)
+        interface_name_variable = try("{{${route.static_route_interface.interface_name_variable}}}", null)
+        next_hop = try(length(route.static_route_interface.next_hops) == 0, true) ? null : [
+          for nh in route.static_route_interface.next_hops : {
+            address                          = try(nh.address, null)
+            address_variable                 = try("{{${nh.address_variable}}}", null)
+            administrative_distance          = try(nh.administrative_distance, null)
+            administrative_distance_variable = try("{{${nh.administrative_distance_variable}}}", null)
+          }
+        ]
+      }] : null
     }
   ]
   nat_pools = try(length(each.value.lan_vpn.nat_pools) == 0, true) ? null : [
@@ -656,6 +690,12 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       service                  = try(upper(route.service), null)
       service_variable         = try("{{${route.service_variable}}}", null)
       vpn                      = 0
+      sse_instance = (
+        try(route.sse_instance) == "cisco-secure-access" ? "Cisco-Secure-Access" :
+        try(route.sse_instance) == "zscaler" ? "zScaler" :
+        null
+      )
+      sse_instance_variable = try("{{${route.sse_instance_variable}}}", null)
     }
   ]
   # Services
@@ -685,6 +725,20 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       static_nat_direction          = try(nat.direction, null)
       tracker_object_id = try(sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${nat.tracker_object}"].id,
       try(sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${nat.tracker_object}"].id, null))
+    }
+  ]
+  static_nat_subnets = try(length(each.value.lan_vpn.static_nat_subnets) == 0, true) ? null : [
+    for subnet in each.value.lan_vpn.static_nat_subnets : {
+      source_ip_subnet                     = try(subnet.source_ip_subnet, null)
+      source_ip_subnet_variable            = try("{{${subnet.source_ip_subnet_variable}}}", null)
+      translated_source_ip_subnet          = try(subnet.translated_source_ip_subnet, null)
+      translated_source_ip_subnet_variable = try("{{${subnet.translated_source_ip_subnet_variable}}}", null)
+      prefix_length                        = try(subnet.prefix_length, null)
+      prefix_length_variable               = try("{{${subnet.prefix_length_variable}}}", null)
+      static_nat_direction                 = try(subnet.direction, null)
+      static_nat_direction_variable        = try("{{${subnet.direction_variable}}}", null)
+      tracker_object_id = try(sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${subnet.tracker_object}"].id,
+      try(sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${subnet.tracker_object}"].id, null))
     }
   ]
   vpn          = try(each.value.lan_vpn.vpn_id, null)

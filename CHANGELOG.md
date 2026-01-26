@@ -22,6 +22,7 @@
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
 - add support for system CA certificate feature
 - add support for application priority traffic policy
+- add support for new 20.15 service LAN VPN attributes
 
 ## 1.3.0
 

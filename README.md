@@ -78,6 +78,7 @@ module "sdwan" {
 | [sdwan_application_list_policy_object.application_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_list_policy_object) | resource |
 | [sdwan_application_priority_feature_profile.application_priority_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_feature_profile) | resource |
 | [sdwan_application_priority_qos_policy.application_priority_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_qos_policy) | resource |
+| [sdwan_application_priority_traffic_policy_policy.application_priority_traffic_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_traffic_policy_policy) | resource |
 | [sdwan_as_path_list_policy_object.as_path_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/as_path_list_policy_object) | resource |
 | [sdwan_attach_feature_device_template.attach_feature_device_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/attach_feature_device_template) | resource |
 | [sdwan_cedge_aaa_feature_template.cedge_aaa_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cedge_aaa_feature_template) | resource |

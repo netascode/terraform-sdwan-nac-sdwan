@@ -436,6 +436,10 @@ defaults:
         configuration_group_deploy: true
         policy_group_deploy: true
     feature_profiles:
+      application_priority_profiles:
+        traffic_policies:
+          sequences:
+            protocol: ipv4    
       cli_profiles:
         config:
           name: config

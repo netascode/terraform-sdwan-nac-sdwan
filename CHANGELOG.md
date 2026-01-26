@@ -21,6 +21,7 @@
 - align `cisco_sig_credentials_feature_template` device types creation logic with other features
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
 - add support for system CA certificate feature
+- add support for application priority traffic policy
 
 ## 1.3.0
 

@@ -200,6 +200,14 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
       try(s.match_criterias.group_id, null) == null ? [] : [{
         type     = "groupId"
         group_id = s.match_criterias.group_id
+      }],
+      try(s.match_criterias.region_id, null) == null ? [] : [{
+        type      = "regionId"
+        region_id = s.match_criterias.region_id
+      }],
+      try(s.match_criterias.role, null) == null ? [] : [{
+        type = "role"
+        role = s.match_criterias.role
       }]
     ])
     action_entries = try(s.actions, null) == null ? null : flatten([

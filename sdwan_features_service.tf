@@ -691,8 +691,8 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       service_variable         = try("{{${route.service_variable}}}", null)
       vpn                      = 0
       sse_instance = (
-        try(route.sse_instance) == "cisco-secure-access" ? "Cisco-Secure-Access" :
-        try(route.sse_instance) == "zscaler" ? "zScaler" :
+        try(route.sse_instance, null) == "cisco-secure-access" ? "Cisco-Secure-Access" :
+        try(route.sse_instance, null) == "zscaler" ? "zScaler" :
         null
       )
       sse_instance_variable = try("{{${route.sse_instance_variable}}}", null)

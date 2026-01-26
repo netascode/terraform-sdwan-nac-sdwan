@@ -1009,7 +1009,7 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
   name                                 = each.value.multicast.name
   description                          = try(each.value.multicast.description, null)
   feature_profile_id                   = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
-  pim_source_specific_multicast_enable = each.value.multicast.pim_source_specific_multicast_enable
+  pim_source_specific_multicast_enable = each.value.multicast.pim_source_specific_multicast
   auto_rp_announces = try(length(each.value.multicast.auto_rp_announces) == 0, true) ? null : [for auto_rp_announce in each.value.multicast.auto_rp_announces : {
     interface_name          = try(auto_rp_announce.interface_name, null)
     interface_name_variable = try("{{${auto_rp_announce.interface_name_variable}}}", null)
@@ -1022,8 +1022,8 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
     scope                   = try(auto_rp_discovery.scope, null)
     scope_variable          = try("{{${auto_rp_discovery.scope_variable}}}", null)
   }]
-  enable_auto_rp          = try(each.value.multicast.enable_auto_rp, null)
-  enable_auto_rp_variable = try("{{${each.value.multicast.enable_auto_rp_variable}}}", null)
+  enable_auto_rp          = try(each.value.multicast.auto_rp, null)
+  enable_auto_rp_variable = try("{{${each.value.multicast.auto_rp_variable}}}", null)
   igmp_interfaces = try(length(each.value.multicast.igmp_interfaces) == 0, true) ? null : [for igmp_interface in each.value.multicast.igmp_interfaces : {
     interface_name          = try(igmp_interface.interface_name, null)
     interface_name_variable = try("{{${igmp_interface.interface_name_variable}}}", null)
@@ -1042,9 +1042,9 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
   local_replicator_threshold_variable     = try(each.value.multicast.threshold_variable, null)
   msdp_connection_retry_interval          = try(each.value.multicast.msdp_connection_retry_interval, null)
   msdp_connection_retry_interval_variable = try("{{${each.value.multicast.msdp_connection_retry_interval_variable}}}", null)
-  msdp_groups = try(length(each.value.multicast.msdp_groups) == 0, true) ? null : [for msdp_group in each.value.multicast.msdp_groups : {
-    mesh_group_name          = try(msdp_group.mesh_group_name, null)
-    mesh_group_name_variable = try("{{${msdp_group.mesh_group_name_variable}}}", null)
+  msdp_groups = try(length(each.value.multicast.msdp_mesh_groups) == 0, true) ? null : [for msdp_group in each.value.multicast.msdp_mesh_groups : {
+    mesh_group_name          = try(msdp_group.name, null)
+    mesh_group_name_variable = try("{{${msdp_group.name_variable}}}", null)
     peers = try(length(msdp_group.peers) == 0, true) ? null : [for peer in msdp_group.peers : {
       connection_source_interface           = try(peer.connection_source_interface, null)
       connection_source_interface_variable  = try("{{${peer.connection_source_interface_variable}}}", null)

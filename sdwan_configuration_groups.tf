@@ -320,12 +320,6 @@ locals {
             parcel_type = "route-policy"
           }
         },
-        {
-          for feature in try(profile.switchport_features, []) : feature.name => {
-            parcel_id   = sdwan_service_switchport_feature.service_switchport_feature["${profile.name}-${feature.name}"].id
-            parcel_type = "service/switchport"
-          }
-        },
         merge([
           for lan_vpn in try(profile.lan_vpns, []) : {
             for interface in try(lan_vpn.ethernet_interfaces, []) : interface.name => {

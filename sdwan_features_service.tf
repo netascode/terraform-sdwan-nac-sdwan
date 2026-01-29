@@ -1585,7 +1585,7 @@ resource "sdwan_service_switchport_feature" "service_switchport_feature" {
     shutdown_variable                       = try("{{${interface.shutdown_variable}}}", null)
     speed                                   = try(interface.speed, null)
     speed_variable                          = try("{{${interface.speed_variable}}}", null)
-    switchport_trunk_allowed_vlans          = length(concat(try(interface.trunk_allowed_vlans, []), try(interface.trunk_allowed_vlans_ranges, []))) > 0 ? join(",", concat([for p in try(interface.trunk_allowed_vlans, []) : p], [for r in try(interface.trunk_allowed_vlans_ranges, []) : "${r.from}-${r.to}"])) : null
+    switchport_trunk_allowed_vlans          = length(try(interface.trunk_allowed_vlans, [])) > 0 ? join(",", try(interface.trunk_allowed_vlans, [])) : null
     switchport_trunk_allowed_vlans_variable = try("{{${interface.trunk_allowed_vlans_variable}}}", null)
     switchport_trunk_native_vlan            = try(interface.trunk_native_vlan, null)
     switchport_trunk_native_vlan_variable   = try("{{${interface.trunk_native_vlan_variable}}}", null)

@@ -1558,6 +1558,7 @@ resource "sdwan_service_switchport_feature" "service_switchport_feature" {
     critical_vlan_variable                  = try("{{${interface.critical_vlan_variable}}}", null)
     duplex                                  = try(interface.duplex, null)
     duplex_variable                         = try("{{${interface.duplex_variable}}}", null)
+    enable_dot1x                            = try(interface.enable_dot1x, null)
     enable_periodic_reauth                  = try(interface.enable_periodic_reauth, null)
     enable_periodic_reauth_variable         = try("{{${interface.enable_periodic_reauth_variable}}}", null)
     enable_voice                            = try(interface.enable_voice, null)

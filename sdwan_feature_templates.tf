@@ -744,7 +744,7 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     nat_dia_variable      = try(r.nat_dia_variable, null)
     optional              = try(r.optional, null)
   }]
-  route_policies = try(each.value.route_policy, null) == null ? null : [{
+  route_policies = try(each.value.route_policy, each.value.route_policy_variable, null) == null ? null : [{
     direction            = "in"
     policy_name          = try(each.value.route_policy, null)
     policy_name_variable = try(each.value.route_policy_variable, null)

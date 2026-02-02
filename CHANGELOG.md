@@ -24,6 +24,7 @@
 - add support for system CA certificate feature
 - add support for application priority traffic policy
 - add support for new 20.15 service LAN VPN attributes
+- fix `route_policy_variable` not pushing issue
 
 ## 1.3.0
 

@@ -1411,6 +1411,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   route_global_exports = try(length(each.value.route_global_exports) == 0, true) ? null : [for exp in each.value.route_global_exports : {
     protocol          = try(exp.protocol, null)
     protocol_variable = try(exp.protocol_variable, null)
+    protocol_sub_type = try(exp.protocol, null) != null ? ["external"] : null
     route_policy      = try(exp.route_policy, null)
     redistributes = try(length(exp.redistributes) == 0, true) ? null : [for r in exp.redistributes : {
       protocol          = try(r.protocol, null)
@@ -1421,6 +1422,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   route_global_imports = try(length(each.value.route_global_imports) == 0, true) ? null : [for imp in each.value.route_global_imports : {
     protocol          = try(imp.protocol, null)
     protocol_variable = try(imp.protocol_variable, null)
+    protocol_sub_type = try(imp.protocol, null) != null ? ["external"] : null
     route_policy      = try(imp.route_policy, null)
     redistributes = try(length(imp.redistributes) == 0, true) ? null : [for r in imp.redistributes : {
       protocol          = try(r.protocol, null)

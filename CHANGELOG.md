@@ -25,6 +25,7 @@
 - add support for application priority traffic policy
 - add support for new 20.15 service LAN VPN attributes
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
+- fix an issue where `terraform destroy` will fail if `sdwan_cisco_sig_credentials_feature_template` is destroyed before `sdwan_cisco_secure_internet_gateway_feature_template`
 
 ## 1.3.0
 

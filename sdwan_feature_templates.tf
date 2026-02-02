@@ -923,7 +923,10 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
       backup_interface_weight = try(pair.backup_interface_weight, null)
     }]
   }]
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on = [
+    sdwan_localized_policy.localized_policy,
+    sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template
+  ]
 }
 
 resource "sdwan_cisco_security_feature_template" "cisco_security_feature_template" {

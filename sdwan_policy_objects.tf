@@ -294,3 +294,15 @@ resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_objec
   file_analysis_cloud_region    = try(each.value.tg_cloud_region, null)
   file_analysis_file_types      = try(each.value.file_analysis_file_types, null)
 }
+
+resource "sdwan_policy_object_unified_intrusion_prevention" "policy_object_unified_intrusion_prevention" {
+  for_each                    = { for p in try(local.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles, {}) : p.name => p }
+  name                        = each.value.name
+  description                 = null # not supported in the UI
+  feature_profile_id          = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  custom_signature            = try(each.value.custom_signature_set, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.custom_signature_set)
+  inspection_mode             = each.value.inspection_mode
+  ips_signature_allow_list_id = try(sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature[each.value.signature_allow_list].id, null)
+  log_level                   = each.value.alert_log_level
+  signature_set               = each.value.signature_set
+}

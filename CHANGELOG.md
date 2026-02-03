@@ -9,6 +9,7 @@
 - add support for policy object security port list
 - add support for policy object security protocol list
 - add support for policy object security url allow list
+- add support for policy object security url block list
 - add support for policy object security Advanced Malware Protection Profile
 - add support for service OSPFv3 IPv6
 - add support for service Multicast

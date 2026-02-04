@@ -450,6 +450,9 @@ defaults:
           name: ucse
       policy_object_profile:
         name: policy_objects
+        security_intrusion_prevention_profiles:
+          alert_log_level: error
+          custom_signature_set: false
       service_profiles:
         bgp_features:
           ipv4_neighbors:

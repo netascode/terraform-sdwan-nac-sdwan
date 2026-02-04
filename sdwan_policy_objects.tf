@@ -303,6 +303,6 @@ resource "sdwan_policy_object_unified_intrusion_prevention" "policy_object_unifi
   custom_signature            = try(each.value.custom_signature_set, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.custom_signature_set)
   inspection_mode             = each.value.inspection_mode
   ips_signature_allow_list_id = try(sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature[each.value.signature_allow_list].id, null)
-  log_level                   = each.value.alert_log_level
+  log_level                   = try(each.value.alert_log_level, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.alert_log_level)
   signature_set               = each.value.signature_set
 }

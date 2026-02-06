@@ -433,7 +433,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
         type                    = "sig"
         secure_internet_gateway = s.actions.sig.enabled
       }],
-      try(s.actions.sig.fallback_to_routing, null) == null ? [] : [{
+      try(s.actions.sig.enabled, false) == false ? [] : try(s.actions.sig.fallback_to_routing, false) == false ? [] : [{
         type                = "fallbackToRouting"
         fallback_to_routing = s.actions.sig.fallback_to_routing
       }],

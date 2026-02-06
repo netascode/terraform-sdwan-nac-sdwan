@@ -257,10 +257,14 @@ locals {
       for router in try(site.routers, []) : {
         chassis_id                 = router.chassis_id
         configuration_group        = try(router.configuration_group, null)
-        configuration_group_deploy = try(router.configuration_group_deploy, null)
+        configuration_group_deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
+        policy_group               = try(router.policy_group, null)
+        policy_group_deploy        = try(router.policy_group_deploy, local.defaults.sdwan.sites.routers.policy_group_deploy)
         tags                       = try(router.tags, [])
+        topology_label             = try(router.topology_label, null)
         device_template            = try(router.device_template, null)
         device_variables           = try(router.device_variables, null)
+        policy_variables           = try(router.policy_variables, null)
         model                      = try(router.model, null)
       }
     ]

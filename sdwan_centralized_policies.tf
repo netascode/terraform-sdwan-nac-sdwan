@@ -200,6 +200,14 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
       try(s.match_criterias.group_id, null) == null ? [] : [{
         type     = "groupId"
         group_id = s.match_criterias.group_id
+      }],
+      try(s.match_criterias.region_id, null) == null ? [] : [{
+        type      = "regionId"
+        region_id = s.match_criterias.region_id
+      }],
+      try(s.match_criterias.role, null) == null ? [] : [{
+        type = "role"
+        role = s.match_criterias.role
       }]
     ])
     action_entries = try(s.actions, null) == null ? null : flatten([
@@ -471,9 +479,9 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
             type   = "useVpn"
             vpn_id = s.actions.nat_vpn.vpn_id
           }],
-          try(s.actions.nat_vpn.nat_vpn_fallback, null) == null ? [] : [{
+          try(s.actions.nat_vpn.vpn_id, null) == null ? [] : [{
             type     = "fallback"
-            fallback = s.actions.nat_vpn.nat_vpn_fallback
+            fallback = try(s.actions.nat_vpn.nat_vpn_fallback, false)
           }]
         ])
       }],
@@ -572,10 +580,18 @@ resource "sdwan_cflowd_policy_definition" "cflowd_policy_definition" {
 }
 
 resource "sdwan_application_aware_routing_policy_definition" "application_aware_routing_policy_definition" {
-  for_each    = { for d in try(local.centralized_policies.definitions.data_policy.application_aware_routing, {}) : d.name => d }
-  name        = each.value.name
-  description = each.value.description
-  # default_action = try(each.value.default_action_type, null) // not available in provider but available in GUI uncomment and expand when available in Provider
+  for_each       = { for d in try(local.centralized_policies.definitions.data_policy.application_aware_routing, {}) : d.name => d }
+  name           = each.value.name
+  description    = each.value.description
+  default_action = (try(each.value.default_action_sla_class_list, null) != null ? "slaClass" : null)
+  default_action_sla_class_list_id = (
+    try(each.value.default_action_sla_class_list, null) != null ?
+    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_sla_class_list].id : null
+  )
+  default_action_sla_class_list_version = (
+    try(each.value.default_action_sla_class_list, null) != null ?
+    sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_sla_class_list].version : null
+  )
   sequences = [for s in each.value.sequences : {
     id      = s.id
     name    = s.name

@@ -43,8 +43,6 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       key_type_variable   = try("{{${server.key_type_variable}}}", null)
       retransmit          = try(server.retransmit, null)
       retransmit_variable = try("{{${server.retransmit_variable}}}", null)
-      secret_key          = try(server.secret_key, null)
-      secret_key_variable = try("{{${server.secret_key_variable}}}", null)
       timeout             = try(server.timeout, null)
       timeout_variable    = try("{{${server.timeout_variable}}}", null)
     }]
@@ -60,7 +58,6 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       key              = server.key
       port             = try(server.port, null)
       port_variable    = try("{{${server.port_variable}}}", null)
-      secret_key       = server.secret_key
       timeout          = try(server.timeout, null)
       timeout_variable = try("{{${server.timeout_variable}}}", null)
     }]
@@ -203,6 +200,23 @@ resource "sdwan_system_bfd_feature" "system_bfd_feature" {
   multiplier_variable    = try("{{${each.value.bfd.multiplier_variable}}}", null)
   poll_interval          = try(each.value.bfd.poll_interval, null)
   poll_interval_variable = try("{{${each.value.bfd.poll_interval_variable}}}", null)
+}
+
+resource "sdwan_system_ca_certificate_feature" "system_ca_certificate_feature" {
+  for_each = {
+    for sys in try(local.feature_profiles.system_profiles, {}) :
+    "${sys.name}-ca_cert" => sys
+    if try(sys.ca_certificate, null) != null
+  }
+  name               = try(each.value.ca_certificate.name, local.defaults.sdwan.feature_profiles.system_profiles.ca_certificate.name)
+  description        = try(each.value.ca_certificate.description, null)
+  feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
+  certificates = [for cert in each.value.ca_certificate.certificates :
+    {
+      trust_point_name  = cert.trustpoint_name
+      ca_certificate_id = cert.certificate_id
+    }
+  ]
 }
 
 resource "sdwan_system_flexible_port_speed_feature" "system_flexible_port_speed_feature" {

@@ -1,26 +1,68 @@
-## 1.3.0 (unreleased)
+## 1.4.0 (unreleased)
+
+- move device types to defaults for SIG credentials feature template
+- rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
+- add support for policy object security data IP prefix
+- add support for policy object security fqdn list
+- add support for policy object security ips signature list
+- add support for policy object security local application list
+- add support for policy object security port list
+- add support for policy object security protocol list
+- add support for policy object security url allow list
+- add support for policy object security url block list
+- add support for policy object security Advanced Malware Protection Profile
+- add support for policy object security Intrusion Prevention Profile
+- add support for service OSPFv3 IPv6
+- add support for service Multicast
+- add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
+- add `topology_label` attribute to configuration group
+- fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
+- fix nat fallback default behaviour in centralized data policy
+- fix match region_id bug in custom control policy
+- add support for policy object security geolocation list
+- add support for UX 2.0 MRF in versions 20.13 and higher
+- align `cisco_sig_credentials_feature_template` device types creation logic with other features
+- add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
+- add support for system CA certificate feature
+- add support for application priority traffic policy
+- add support for new 20.15 service LAN VPN attributes
+- fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
+
+## 1.3.0
 
 - add support for application priority feature profile
 - add support for application priority qos policy
+- add support for policy groups
 - add support for policy object color list
 - add support for policy object preferred color group
 - add support for policy object SLA class
 - add support for service BGP
 - add support for service EIGRP
 - add support for service IPv4 ACL
+- add support for service IPv6 ACL
+- add support for service LAN VPN Ethernet Interface
+- add support for service LAN VPN GRE Interface
 - add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL
+- add support for transport IPv6 ACL
 - add support for transport OSPF
-- fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
 - add support for UX 1.0 PIM feature template
-- fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
+- add support for UX 1.0 policy object port list
+- add support for UX 1.0 unified security policy and unified firewall
+- add support for `default_action` in UX 1.0 application aware routing policy
+- add support for queue 0 in UX 1.0 QoS Map which contains no class map id
 - add support for `enhanced_app_aware_routing_variable` parameter in system feature template
+- rename LAN VPN etherent interface DHCP server association from `...dhcp` to `...dhcp_server`
+- remove `secret_key` from `tacacs` and `radius` server configuration in AAA feature
+- fix `backup_interface` to consider `none` as `None` in Secure Internet Gateway feature template
+- fix logging_feature_template `custom_profile` attribute logic (`null` in case tls_profile is not configured)
 - fix route policy `standard_community_lists` to properly handle both single and multiple community list entries
-- add support for classic policy object port list
-- add support for service LAN VPN Ethernet Interface
-- add support for service LAN VPN GRE Interface
 - fix `trunk_allowed_vlans_variable` not being set correctly in switchport feature template
+- use default names `Cisco-Umbrella-Global-Credentials` and `Cisco-Zscaler-Global-Credentials` for SIG credentials feature template
+- fix `vpn_name_variable` not being set in VPN feature template
+- fix vpn feature template service route failing during device template push
+- move UX 1.0 route policy sequence name from hardcoded value to defaults
 
 ## 1.2.0
 

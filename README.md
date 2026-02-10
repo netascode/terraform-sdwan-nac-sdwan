@@ -161,10 +161,12 @@ module "sdwan" {
 | [sdwan_policy_object_security_port_list.policy_object_security_port_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_port_list) | resource |
 | [sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_protocol_list) | resource |
 | [sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_allow_list) | resource |
+| [sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_block_list) | resource |
 | [sdwan_policy_object_sla_class_list.policy_object_sla_class_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_sla_class_list) | resource |
 | [sdwan_policy_object_standard_community_list.policy_object_standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_standard_community_list) | resource |
 | [sdwan_policy_object_tloc_list.policy_object_tloc_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_tloc_list) | resource |
 | [sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_advanced_malware_protection) | resource |
+| [sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_intrusion_prevention) | resource |
 | [sdwan_port_list_policy_object.port_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/port_list_policy_object) | resource |
 | [sdwan_preferred_color_group_policy_object.preferred_color_group_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/preferred_color_group_policy_object) | resource |
 | [sdwan_qos_map_policy_definition.qos_map_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/qos_map_policy_definition) | resource |

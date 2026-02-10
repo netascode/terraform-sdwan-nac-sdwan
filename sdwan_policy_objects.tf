@@ -241,6 +241,15 @@ resource "sdwan_policy_object_security_url_allow_list" "policy_object_security_u
   }]
 }
 
+resource "sdwan_policy_object_security_url_block_list" "policy_object_security_url_block_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_url_block_lists, {}) : p.name => p }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.urls, []) : {
+    pattern = e
+  }]
+}
+
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name
@@ -293,4 +302,16 @@ resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_objec
   file_analysis_alert_log_level = try(each.value.file_analysis_alert_log_level, null)
   file_analysis_cloud_region    = try(each.value.tg_cloud_region, null)
   file_analysis_file_types      = try(each.value.file_analysis_file_types, null)
+}
+
+resource "sdwan_policy_object_unified_intrusion_prevention" "policy_object_unified_intrusion_prevention" {
+  for_each                    = { for p in try(local.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles, {}) : p.name => p }
+  name                        = each.value.name
+  description                 = null # not supported in the UI
+  feature_profile_id          = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  custom_signature            = try(each.value.custom_signature_set, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.custom_signature_set)
+  inspection_mode             = each.value.inspection_mode
+  ips_signature_allow_list_id = try(sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature[each.value.signature_allow_list].id, null)
+  log_level                   = try(each.value.alert_log_level, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.alert_log_level)
+  signature_set               = each.value.signature_set
 }

@@ -4,13 +4,14 @@ resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
   description        = null # not supported in the UI
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
-    forwarding_class = each.value.forwarding_class
+    forwarding_class_id = sdwan_policy_object_class_map.policy_object_class_map[each.value.forwarding_class].id
     map = [for m in try(each.value.mappings, []) : {
       color = m.color
       dscp  = try(m.dscp, null)
     }]
   }]
 }
+
 resource "sdwan_policy_object_application_list" "policy_object_application_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.application_lists, {}) : p.name => p }
   name               = each.value.name

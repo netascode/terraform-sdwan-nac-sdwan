@@ -27,6 +27,7 @@
 - add support for application priority traffic policy
 - add support for new 20.15 service LAN VPN attributes
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
+- add support for new 20.15 policy object App Probe Class attribute
 
 ## 1.3.0
 

@@ -253,6 +253,9 @@ locals {
         try(interface.ipv6_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_tracker"].version],
         try(interface.ipv6_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_trackergroup"].version],
       ]],
+      try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+      ]],
     ])
   }
 

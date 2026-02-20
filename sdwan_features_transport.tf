@@ -1161,6 +1161,95 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_trac
   transport_ipv6_tracker_group_feature_id         = sdwan_transport_ipv6_tracker_group_feature.transport_ipv6_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv6_tracker_group}"].id
 }
 
+resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_interface_ipsec_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.ipsec_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item
+  }
+  name                                     = each.value.interface.name
+  description                              = try(each.value.interface.description, null)
+  feature_profile_id                       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id             = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  application_tunnel_type                  = try(each.value.interface.application_tunnel_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipsec_interfaces.application_tunnel_type)
+  application_tunnel_type_variable         = try("{{${each.value.interface.application_tunnel_type_variable}}}", null)
+  clear_dont_fragment                      = try(each.value.interface.clear_dont_fragment, null)
+  clear_dont_fragment_variable             = try("{{${each.value.interface.clear_dont_fragment_variable}}}", null)
+  dpd_interval                             = try(each.value.interface.dpd_interval, null)
+  dpd_interval_variable                    = try("{{${each.value.interface.dpd_interval_variable}}}", null)
+  dpd_retries                              = try(each.value.interface.dpd_retries, null)
+  dpd_retries_variable                     = try("{{${each.value.interface.dpd_retries_variable}}}", null)
+  ike_ciphersuite                          = try(each.value.interface.ike_cipher_suite, null)
+  ike_ciphersuite_variable                 = try("{{${each.value.interface.ike_cipher_suite_variable}}}", null)
+  ike_diffie_hellman_group                 = try(each.value.interface.ike_diffie_hellman_group, null)
+  ike_diffie_hellman_group_variable        = try("{{${each.value.interface.ike_diffie_hellman_group_variable}}}", null)
+  ike_integrity_protocol                   = try(each.value.interface.ike_integrity_protocol, null)
+  ike_integrity_protocol_variable          = try("{{${each.value.interface.ike_integrity_protocol_variable}}}", null)
+  ike_id_local_end_point                   = try(each.value.interface.ike_local_endpoint_id, null)
+  ike_id_local_end_point_variable          = try("{{${each.value.interface.ike_local_endpoint_id_variable}}}", null)
+  ike_preshared_key                        = try(each.value.interface.ike_preshared_key, null)
+  ike_preshared_key_variable               = try("{{${each.value.interface.ike_preshared_key_variable}}}", null)
+  ike_rekey_interval                       = try(each.value.interface.ike_rekey_interval, null)
+  ike_rekey_interval_variable              = try("{{${each.value.interface.ike_rekey_interval_variable}}}", null)
+  ike_id_remote_end_point                  = try(each.value.interface.ike_remote_endpoint_id, null)
+  ike_id_remote_end_point_variable         = try("{{${each.value.interface.ike_remote_endpoint_id_variable}}}", null)
+  ike_version                              = try(each.value.interface.ike_version, null)
+  interface_description                    = try(each.value.interface.interface_description, null)
+  interface_description_variable           = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_name                           = try(each.value.interface.interface_name, null)
+  interface_name_variable                  = try("{{${each.value.interface.interface_name_variable}}}", null)
+  ipsec_ciphersuite                        = try(each.value.interface.ipsec_cipher_suite, null)
+  ipsec_ciphersuite_variable               = try("{{${each.value.interface.ipsec_cipher_suite_variable}}}", null)
+  perfect_forward_secrecy                  = try(each.value.interface.ipsec_perfect_forward_secrecy, null)
+  perfect_forward_secrecy_variable         = try("{{${each.value.interface.ipsec_perfect_forward_secrecy_variable}}}", null)
+  ipsec_rekey_interval                     = try(each.value.interface.ipsec_rekey_interval, null)
+  ipsec_rekey_interval_variable            = try("{{${each.value.interface.ipsec_rekey_interval_variable}}}", null)
+  ipsec_replay_window                      = try(each.value.interface.ipsec_replay_window, null)
+  ipsec_replay_window_variable             = try("{{${each.value.interface.ipsec_replay_window_variable}}}", null)
+  ipv4_address                             = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try(each.value.interface.ipv4_address, null) : null
+  ipv4_address_variable                    = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try("{{${each.value.interface.ipv4_address_variable}}}", null) : null
+  ipv4_mtu                                 = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try(each.value.interface.ipv4_mtu, null) : null
+  ipv4_mtu_variable                        = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try("{{${each.value.interface.ipv4_mtu_variable}}}", null) : null
+  ipv4_subnet_mask                         = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try(each.value.interface.ipv4_subnet_mask, null) : null
+  ipv4_subnet_mask_variable                = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null) : null
+  ipv4_tcp_mss                             = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try(each.value.interface.ipv4_tcp_mss, null) : null
+  ipv4_tcp_mss_variable                    = try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" ? try("{{${each.value.interface.ipv4_tcp_mss_variable}}}", null) : null
+  ipv6_address                             = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try(each.value.interface.ipv6_address, null) : null
+  ipv6_address_variable                    = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try("{{${each.value.interface.ipv6_address_variable}}}", null) : null
+  ipv6_mtu                                 = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try(each.value.interface.ipv6_mtu, null) : null
+  ipv6_mtu_variable                        = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try("{{${each.value.interface.ipv6_mtu_variable}}}", null) : null
+  ipv6_tcp_mss                             = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try(each.value.interface.ipv6_tcp_mss, null) : null
+  ipv6_tcp_mss_variable                    = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay" ? try("{{${each.value.interface.ipv6_tcp_mss_variable}}}", null) : null
+  multiplexing                             = try(each.value.interface.multiplexing, null)
+  multiplexing_variable                    = try("{{${each.value.interface.multiplexing_variable}}}", null)
+  shutdown                                 = try(each.value.interface.shutdown, null)
+  shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
+  tracker_id                               = try(each.value.interface.tracker_id, null)
+  tracker_id_variable                      = try("{{${each.value.interface.tracker_id_variable}}}", null)
+  tunnel_destination_ipv4_address          = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try(each.value.interface.tunnel_destination_ipv4_address, null) : null
+  tunnel_destination_ipv4_address_variable = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try("{{${each.value.interface.tunnel_destination_ipv4_address_variable}}}", null) : null
+  tunnel_destination_ipv6_address          = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try(each.value.interface.tunnel_destination_ipv6_address, null) : null
+  tunnel_destination_ipv6_address_variable = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try("{{${each.value.interface.tunnel_destination_ipv6_address_variable}}}", null) : null
+  tunnel_mode                              = try(each.value.interface.tunnel_mode, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipsec_interfaces.tunnel_mode)
+  tunnel_route_via                         = try(each.value.interface.tunnel_route_via, null)
+  tunnel_route_via_variable                = try("{{${each.value.interface.tunnel_route_via_variable}}}", null)
+  tunnel_source_interface                  = try(each.value.interface.tunnel_source_interface, null)
+  tunnel_source_interface_variable         = try("{{${each.value.interface.tunnel_source_interface_variable}}}", null)
+  tunnel_source_ipv4_address               = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try(each.value.interface.tunnel_source_ipv4_address, null) : null
+  tunnel_source_ipv4_address_variable      = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try("{{${each.value.interface.tunnel_source_ipv4_address_variable}}}", null) : null
+  tunnel_source_ipv6_address               = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try(each.value.interface.tunnel_source_ipv6_address, null) : null
+  tunnel_source_ipv6_address_variable      = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try("{{${each.value.interface.tunnel_source_ipv6_address_variable}}}", null) : null
+}
+
 resource "sdwan_transport_ipv6_acl_feature" "transport_ipv6_acl_feature" {
   for_each = {
     for acl_item in flatten([

@@ -20,6 +20,7 @@
 - fix nat fallback default behaviour in centralized data policy
 - fix match region_id bug in custom control policy
 - add support for policy object security geolocation list
+- add support for Service Switchport
 - add support for UX 2.0 MRF in versions 20.13 and higher
 - align `cisco_sig_credentials_feature_template` device types creation logic with other features
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`

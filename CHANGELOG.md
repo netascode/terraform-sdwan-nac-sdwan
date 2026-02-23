@@ -28,6 +28,7 @@
 - add support for new 20.15 service LAN VPN attributes
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
 - fix an issue where the SIG `fallback_to_routing` set to false was still getting applied in `sdwan_traffic_data_policy_definition`
+- add support for new 20.15 policy object App Probe Class attribute
 - add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
 
 ## 1.3.0

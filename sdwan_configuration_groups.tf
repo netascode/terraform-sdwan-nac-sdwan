@@ -189,6 +189,9 @@ locals {
       try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
         sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${route_policy.name}"].version
       ]],
+      try(profile.switchport_features, null) == null ? [] : [for switchport_feature in try(profile.switchport_features, []) : [
+        sdwan_service_switchport_feature.service_switchport_feature["${profile.name}-${switchport_feature.name}"].version
+      ]],
     ])
   }
   system_profile_features_versions = {

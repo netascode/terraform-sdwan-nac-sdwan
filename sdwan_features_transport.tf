@@ -932,7 +932,6 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   nat_udp_timeout            = try(each.value.interface.ipv4_nat_udp_timeout, null)
   nat_udp_timeout_variable   = try("{{${each.value.interface.ipv4_nat_udp_timeout_variable}}}", null)
   nat_type                   = try(each.value.interface.ipv4_nat_type, null)
-  nat_type_variable          = try("{{${each.value.interface.ipv4_nat_type_variable}}}", null)
   new_static_nats = try(length(each.value.interface.ipv4_nat_static_entries) == 0, true) ? null : [for nat in each.value.interface.ipv4_nat_static_entries : {
     direction              = try(nat.direction, null)
     source_ip              = try(nat.source_ip, null)

@@ -162,6 +162,7 @@ module "sdwan" {
 | [sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_protocol_list) | resource |
 | [sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_allow_list) | resource |
 | [sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_block_list) | resource |
+| [sdwan_policy_object_security_zone.policy_object_security_zone](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_zone) | resource |
 | [sdwan_policy_object_sla_class_list.policy_object_sla_class_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_sla_class_list) | resource |
 | [sdwan_policy_object_standard_community_list.policy_object_standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_standard_community_list) | resource |
 | [sdwan_policy_object_tloc_list.policy_object_tloc_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_tloc_list) | resource |

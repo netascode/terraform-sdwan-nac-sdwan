@@ -819,6 +819,63 @@ resource "sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature" "trans
   transport_routing_ospf_feature_id = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${each.value.name}-${each.value.wan_vpn.ospf}"].id
 }
 
+resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.ethernet_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          } if try(interface.port_channel_member_interface, false) == true
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item 
+  }
+  name                         = each.value.interface.name
+  description                  = try(each.value.interface.description, null)
+  feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  autonegotiate                  = try(each.value.interface.autonegotiate, null)
+  autonegotiate_variable         = try("{{${each.value.interface.autonegotiate_variable}}}", null)
+  duplex                         = try(each.value.interface.duplex, null)
+  duplex_variable                = try("{{${each.value.interface.duplex_variable}}}", null)
+  interface_description          = try(each.value.interface.interface_description, null)
+  interface_description_variable = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_name                 = try(each.value.interface.interface_name, null)
+  interface_name_variable        = try("{{${each.value.interface.interface_name_variable}}}", null)
+  load_interval              = try(each.value.interface.load_interval, null)
+  load_interval_variable     = try("{{${each.value.interface.load_interval_variable}}}", null)
+  media_type                 = try(each.value.interface.media_type, null)
+  media_type_variable        = try("{{${each.value.interface.media_type_variable}}}", null)
+  port_channel_interface                     = try(each.value.interface.port_channel_interface, null)
+  port_channel_lacp_fast_switchover          = try(each.value.interface.port_channel_lacp_fast_switchover, null)
+  port_channel_lacp_fast_switchover_variable = try("{{${each.value.interface.port_channel_lacp_fast_switchover_variable}}}", null)
+  port_channel_lacp_load_balance             = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_load_balance, null) : null
+  port_channel_lacp_load_balance_variable    = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
+  port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
+  port_channel_lacp_max_bundle_variable      = try(each.value.interface.port_channel_lacp_max_bundle_variable, null)
+  port_channel_lacp_member_links             = null
+  port_channel_lacp_min_bundle               = try(each.value.interface.port_channel_lacp_min_bundle, null)
+  port_channel_lacp_min_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_min_bundle_variable}}}", null)
+  port_channel_lacp_qos_aggregate            = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_lacp_qos_aggregate, null) : null
+  port_channel_lacp_qos_aggregate_variable   = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_lacp_qos_aggregate_variable}}}", null) : null
+  port_channel_member_interface              = try(each.value.interface.port_channel_member_interface, null)
+  port_channel_mode                          = try(each.value.interface.port_channel_mode, null)
+  port_channel_static_load_balance           = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_load_balance, null) : null 
+  port_channel_static_load_balance_variable  = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null   
+  port_channel_static_member_links           = null
+  port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_qos_aggregate, null) : null 
+  port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null
+  port_channel_subinterface                  = try(each.value.interface.port_channel_subinterface, null)
+  shutdown                                 = try(each.value.interface.shutdown, null)
+  shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                                    = try(each.value.interface.speed, null)
+  speed_variable                           = try("{{${each.value.interface.speed_variable}}}", null)
+}
+
 resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_feature" {
   for_each = {
     for interface_item in flatten([
@@ -828,11 +885,11 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
             profile   = profile
             wan_vpn   = wan_vpn
             interface = interface
-          }
+          } if try(interface.port_channel_member_interface, false) == false
         ]
       ]
     ])
-    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item 
   }
   name                         = each.value.interface.name
   description                  = try(each.value.interface.description, null)
@@ -954,7 +1011,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
     # This is the original line
     # interface_id                 = try(member_link.interface_feature_name, null)
     # This is the suggested line
-    interface_id                 = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${member_link.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id
+    #  transport_wan_vpn_interface_ethernet_feature_id = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
+    interface_id                 = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id
     # This is a line i created to try to break the cycle 
     # interface_id                 = try(each.value.interface.port_channel_member_interface, null) == true ? sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${member_link.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id : null
 

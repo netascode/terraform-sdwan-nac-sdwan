@@ -834,10 +834,10 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
     ])
     : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item 
   }
-  name                         = each.value.interface.name
-  description                  = try(each.value.interface.description, null)
-  feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
-  transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  name                           = each.value.interface.name
+  description                    = try(each.value.interface.description, null)
+  feature_profile_id             = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id   = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
   autonegotiate                  = try(each.value.interface.autonegotiate, null)
   autonegotiate_variable         = try("{{${each.value.interface.autonegotiate_variable}}}", null)
   duplex                         = try(each.value.interface.duplex, null)
@@ -846,34 +846,16 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   interface_description_variable = try("{{${each.value.interface.interface_description_variable}}}", null)
   interface_name                 = try(each.value.interface.interface_name, null)
   interface_name_variable        = try("{{${each.value.interface.interface_name_variable}}}", null)
-  load_interval              = try(each.value.interface.load_interval, null)
-  load_interval_variable     = try("{{${each.value.interface.load_interval_variable}}}", null)
-  media_type                 = try(each.value.interface.media_type, null)
-  media_type_variable        = try("{{${each.value.interface.media_type_variable}}}", null)
-  port_channel_interface                     = try(each.value.interface.port_channel_interface, null)
-  port_channel_lacp_fast_switchover          = try(each.value.interface.port_channel_lacp_fast_switchover, null)
-  port_channel_lacp_fast_switchover_variable = try("{{${each.value.interface.port_channel_lacp_fast_switchover_variable}}}", null)
-  port_channel_lacp_load_balance             = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_load_balance, null) : null
-  port_channel_lacp_load_balance_variable    = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
-  port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
-  port_channel_lacp_max_bundle_variable      = try(each.value.interface.port_channel_lacp_max_bundle_variable, null)
-  port_channel_lacp_member_links             = null
-  port_channel_lacp_min_bundle               = try(each.value.interface.port_channel_lacp_min_bundle, null)
-  port_channel_lacp_min_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_min_bundle_variable}}}", null)
-  port_channel_lacp_qos_aggregate            = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_lacp_qos_aggregate, null) : null
-  port_channel_lacp_qos_aggregate_variable   = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_lacp_qos_aggregate_variable}}}", null) : null
-  port_channel_member_interface              = try(each.value.interface.port_channel_member_interface, null)
-  port_channel_mode                          = try(each.value.interface.port_channel_mode, null)
-  port_channel_static_load_balance           = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_load_balance, null) : null 
-  port_channel_static_load_balance_variable  = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null   
-  port_channel_static_member_links           = null
-  port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_qos_aggregate, null) : null 
-  port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null
-  port_channel_subinterface                  = try(each.value.interface.port_channel_subinterface, null)
-  shutdown                                 = try(each.value.interface.shutdown, null)
-  shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
-  speed                                    = try(each.value.interface.speed, null)
-  speed_variable                           = try("{{${each.value.interface.speed_variable}}}", null)
+  load_interval                  = try(each.value.interface.load_interval, null)
+  load_interval_variable         = try("{{${each.value.interface.load_interval_variable}}}", null)
+  media_type                     = try(each.value.interface.media_type, null)
+  media_type_variable            = try("{{${each.value.interface.media_type_variable}}}", null)
+  port_channel_interface         = try(each.value.interface.port_channel_interface, null)
+  port_channel_member_interface  = try(each.value.interface.port_channel_member_interface, null)
+  shutdown                       = try(each.value.interface.shutdown, null)
+  shutdown_variable              = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                          = try(each.value.interface.speed, null)
+  speed_variable                 = try("{{${each.value.interface.speed_variable}}}", null)
 }
 
 resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_feature" {
@@ -1007,15 +989,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_lacp_load_balance_variable    = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
   port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
   port_channel_lacp_max_bundle_variable      = try(each.value.interface.port_channel_lacp_max_bundle_variable, null)
-  port_channel_lacp_member_links             = try(each.value.interface.port_channel_mode, null) == "lacp" ? [for member_link in each.value.interface.port_channel_member_links : {
-    # This is the original line
-    # interface_id                 = try(member_link.interface_feature_name, null)
-    # This is the suggested line
-    #  transport_wan_vpn_interface_ethernet_feature_id = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
-    interface_id                 = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id
-    # This is a line i created to try to break the cycle 
-    # interface_id                 = try(each.value.interface.port_channel_member_interface, null) == true ? sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${member_link.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id : null
-
+  port_channel_lacp_member_links             = try(each.value.interface.port_channel_mode, null) == "lacp" ? [for member_link in try(each.value.interface.port_channel_member_links, []) : {
+    interface_id                 = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
     lacp_mode                    = try(member_link.lacp_mode, null)
     lacp_mode_variable           = try("{{${member_link.lacp_mode_variable}}}", null)
     lacp_port_priority           = try(member_link.lacp_port_priority, null)
@@ -1025,17 +1000,17 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   }] : null
   port_channel_lacp_min_bundle               = try(each.value.interface.port_channel_lacp_min_bundle, null)
   port_channel_lacp_min_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_min_bundle_variable}}}", null)
-  port_channel_lacp_qos_aggregate            = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_lacp_qos_aggregate, null) : null
-  port_channel_lacp_qos_aggregate_variable   = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_lacp_qos_aggregate_variable}}}", null) : null
+  port_channel_lacp_qos_aggregate            = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
+  port_channel_lacp_qos_aggregate_variable   = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
   port_channel_member_interface              = try(each.value.interface.port_channel_member_interface, null)
   port_channel_mode                          = try(each.value.interface.port_channel_mode, null)
-  port_channel_static_load_balance           = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_load_balance, null) : null 
-  port_channel_static_load_balance_variable  = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null   
-  port_channel_static_member_links             = try(each.value.interface.port_channel_mode, null) == "static" ? [for member_link in each.value.interface.port_channel_member_links : {
-    interface_id                 = try(member_link.interface_feature_name, null)
+  port_channel_static_load_balance           = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null 
+  port_channel_static_load_balance_variable  = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null   
+  port_channel_static_member_links             = try(each.value.interface.port_channel_mode, null) == "static" ? [for member_link in try(each.value.interface.port_channel_member_links, []) : {
+    interface_id                 = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
   }] : null
-  port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_static_qos_aggregate, null) : null 
-  port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_static_qos_aggregate_variable}}}", null) : null
+  port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null 
+  port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
   port_channel_subinterface                  = try(each.value.interface.port_channel_subinterface, null)
   qos_adaptive                             = try(each.value.interface.adaptive_qos, false)
   qos_adaptive_bandwidth_downstream        = try(each.value.interface.adaptive_qos_shaping_rate_downstream != null, null)

@@ -45,6 +45,7 @@
 - add support for service IPv4 ACL
 - add support for service IPv6 ACL
 - add support for service LAN VPN Ethernet Interface
+- add support for service LAN VPN GRE Interface
 - add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL

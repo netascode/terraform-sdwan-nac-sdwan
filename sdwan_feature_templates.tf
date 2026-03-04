@@ -744,7 +744,7 @@ resource "sdwan_cisco_ospf_feature_template" "cisco_ospf_feature_template" {
     nat_dia_variable      = try(r.nat_dia_variable, null)
     optional              = try(r.optional, null)
   }]
-  route_policies = try(each.value.route_policy, null) == null ? null : [{
+  route_policies = try(each.value.route_policy, each.value.route_policy_variable, null) == null ? null : [{
     direction            = "in"
     policy_name          = try(each.value.route_policy, null)
     policy_name_variable = try(each.value.route_policy_variable, null)
@@ -923,7 +923,10 @@ resource "sdwan_cisco_secure_internet_gateway_feature_template" "cisco_secure_in
       backup_interface_weight = try(pair.backup_interface_weight, null)
     }]
   }]
-  depends_on = [sdwan_localized_policy.localized_policy]
+  depends_on = [
+    sdwan_localized_policy.localized_policy,
+    sdwan_cisco_sig_credentials_feature_template.cisco_sig_credentials_feature_template
+  ]
 }
 
 resource "sdwan_cisco_security_feature_template" "cisco_security_feature_template" {
@@ -988,7 +991,7 @@ resource "sdwan_cisco_sig_credentials_feature_template" "cisco_sig_credentials_f
   for_each                          = { for t in try(local.edge_feature_templates.sig_credentials_templates, {}) : t.name => t }
   name                              = each.value.name
   description                       = each.value.name == "Cisco-Umbrella-Global-Credentials" ? "Global credentials for umbrella" : "Global credentials for zscaler"
-  device_types                      = local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types
+  device_types                      = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.sig_credentials_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]
   umbrella_api_key                  = try(each.value.umbrella_api_key, null)
   umbrella_api_key_variable         = try(each.value.umbrella_api_key_variable, null)
   umbrella_api_secret               = try(each.value.umbrella_api_secret, null)
@@ -1411,6 +1414,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   route_global_exports = try(length(each.value.route_global_exports) == 0, true) ? null : [for exp in each.value.route_global_exports : {
     protocol          = try(exp.protocol, null)
     protocol_variable = try(exp.protocol_variable, null)
+    protocol_sub_type = try(exp.protocol, null) != null ? ["external"] : null
     route_policy      = try(exp.route_policy, null)
     redistributes = try(length(exp.redistributes) == 0, true) ? null : [for r in exp.redistributes : {
       protocol          = try(r.protocol, null)
@@ -1421,6 +1425,7 @@ resource "sdwan_cisco_vpn_feature_template" "cisco_vpn_feature_template" {
   route_global_imports = try(length(each.value.route_global_imports) == 0, true) ? null : [for imp in each.value.route_global_imports : {
     protocol          = try(imp.protocol, null)
     protocol_variable = try(imp.protocol_variable, null)
+    protocol_sub_type = try(imp.protocol, null) != null ? ["external"] : null
     route_policy      = try(imp.route_policy, null)
     redistributes = try(length(imp.redistributes) == 0, true) ? null : [for r in imp.redistributes : {
       protocol          = try(r.protocol, null)

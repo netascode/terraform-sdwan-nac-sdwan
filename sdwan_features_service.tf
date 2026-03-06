@@ -1073,7 +1073,7 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
   acl_ipv6_ingress_feature_id = try(sdwan_service_ipv6_acl_feature.service_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_ingress_acl}"].id, null)
   arp_timeout                 = try(each.value.interface.arp_timeout, null)
   arp_timeout_variable        = try("{{${each.value.interface.arp_timeout_variable}}}", null)
-  arps = try(length(each.value.interface.arps) == 0, true) ? null : [for arp in each.value.interface.arps : {
+  arps = try(length(each.value.interface.arp_entries) == 0, true) ? null : [for arp in each.value.interface.arp_entries : {
     ip_address           = try(arp.ip_address, null)
     ip_address_variable  = try("{{${arp.ip_address_variable}}}", null)
     mac_address          = try(arp.mac_address, null)
@@ -1101,7 +1101,7 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
   }]
   ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
   ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
-  ipv4_vrrps = try(length(each.value.interface.ipv4_vrrps) == 0, true) ? null : [for vrrp in each.value.interface.ipv4_vrrps : {
+  ipv4_vrrps = try(length(each.value.interface.ipv4_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv4_vrrp_groups : {
     address                              = try(vrrp.address, null)
     address_variable                     = try("{{${vrrp.address_variable}}}", null)
     follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
@@ -1141,14 +1141,14 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
   ipv6_dhcp_helpers = try(length(each.value.interface.ipv6_dhcp_helpers) == 0, true) ? null : [for helper in each.value.interface.ipv6_dhcp_helpers : {
     address          = try(helper.address, null)
     address_variable = try("{{${helper.address_variable}}}", null)
-    vpn              = try(helper.vpn, null)
-    vpn_variable     = try("{{${helper.vpn_variable}}}", null)
+    vpn              = try(helper.vpn_id, null)
+    vpn_variable     = try("{{${helper.vpn_id_variable}}}", null)
   }]
   ipv6_secondary_addresses = try(length(each.value.interface.ipv6_secondary_addresses) == 0, true) ? null : [for addr in each.value.interface.ipv6_secondary_addresses : {
     address          = try(addr.address, null)
     address_variable = try("{{${addr.address_variable}}}", null)
   }]
-  ipv6_vrrps = try(length(each.value.interface.ipv6_vrrps) == 0, true) ? null : [for vrrp in each.value.interface.ipv6_vrrps : {
+  ipv6_vrrps = try(length(each.value.interface.ipv6_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv6_vrrp_groups : {
     follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
     group_id                             = try(vrrp.group_id, null)
     group_id_variable                    = try("{{${vrrp.group_id_variable}}}", null)

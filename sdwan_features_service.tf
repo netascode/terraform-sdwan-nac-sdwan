@@ -1085,6 +1085,8 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
   interface_description_variable = try("{{${each.value.interface.interface_description_variable}}}", null)
   interface_mtu                  = try(each.value.interface.interface_mtu, null)
   interface_mtu_variable         = try("{{${each.value.interface.interface_mtu_variable}}}", null)
+  interface_name                 = try(each.value.interface.interface_name, null)
+  interface_name_variable        = try("{{${each.value.interface.interface_name_variable}}}", null)
   ip_directed_broadcast          = try(each.value.interface.ip_directed_broadcast, null)
   ip_directed_broadcast_variable = try("{{${each.value.interface.ip_directed_broadcast_variable}}}", null)
   ip_mtu                         = try(each.value.interface.ip_mtu, null)
@@ -1105,8 +1107,8 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
     address                              = try(vrrp.address, null)
     address_variable                     = try("{{${vrrp.address_variable}}}", null)
     follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
-    group_id                             = try(vrrp.group_id, null)
-    group_id_variable                    = try("{{${vrrp.group_id_variable}}}", null)
+    group_id                             = try(vrrp.id, null)
+    group_id_variable                    = try("{{${vrrp.id_variable}}}", null)
     prefix_list                          = try(vrrp.prefix_list, null)
     prefix_list_variable                 = try("{{${vrrp.prefix_list_variable}}}", null)
     priority                             = try(vrrp.priority, null)
@@ -1130,8 +1132,8 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
           null
         )
       )
-      track_action             = try(obj.track_action, null)
-      track_action_variable    = try("{{${obj.track_action_variable}}}", null)
+      track_action             = try(obj.action, null)
+      track_action_variable    = try("{{${obj.action_variable}}}", null)
       decrement_value          = try(obj.decrement_value, null)
       decrement_value_variable = try("{{${obj.decrement_value_variable}}}", null)
     }]
@@ -1150,8 +1152,8 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
   }]
   ipv6_vrrps = try(length(each.value.interface.ipv6_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv6_vrrp_groups : {
     follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
-    group_id                             = try(vrrp.group_id, null)
-    group_id_variable                    = try("{{${vrrp.group_id_variable}}}", null)
+    group_id                             = try(vrrp.id, null)
+    group_id_variable                    = try("{{${vrrp.id_variable}}}", null)
     priority                             = try(vrrp.priority, null)
     priority_variable                    = try("{{${vrrp.priority_variable}}}", null)
     timer                                = try(vrrp.timer, null)
@@ -1161,18 +1163,16 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
     track_prefix_list                    = try(vrrp.track_prefix_list, null)
     track_prefix_list_variable           = try("{{${vrrp.track_prefix_list_variable}}}", null)
     addresses = try(length(vrrp.addresses) == 0, true) ? null : [for addr in vrrp.addresses : {
-      global_address              = try(addr.prefix, null)
-      global_address_variable     = try("{{${addr.prefix_variable}}}", null)
+      global_address              = try(addr.global_prefix, null)
+      global_address_variable     = try("{{${addr.global_prefix_variable}}}", null)
       link_local_address          = try(addr.link_local_address, null)
       link_local_address_variable = try("{{${addr.link_local_address_variable}}}", null)
     }]
   }]
-  shutdown                = try(each.value.interface.shutdown, null)
-  shutdown_variable       = try("{{${each.value.interface.shutdown_variable}}}", null)
-  tcp_mss                 = try(each.value.interface.tcp_mss, null)
-  tcp_mss_variable        = try("{{${each.value.interface.tcp_mss_variable}}}", null)
-  interface_name          = try(each.value.interface.vlan_interface_name, null)
-  interface_name_variable = try("{{${each.value.interface.vlan_interface_name_variable}}}", null)
+  shutdown          = try(each.value.interface.shutdown, null)
+  shutdown_variable = try("{{${each.value.interface.shutdown_variable}}}", null)
+  tcp_mss           = try(each.value.interface.tcp_mss, null)
+  tcp_mss_variable  = try("{{${each.value.interface.tcp_mss_variable}}}", null)
 }
 
 resource "sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature" "service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature" {

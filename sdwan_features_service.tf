@@ -1126,7 +1126,7 @@ resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interfac
       tracker_id = try(
         sdwan_service_object_tracker_feature.service_object_tracker_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
         try(
-          sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${obj.tracker_object_group}"].id,
+          sdwan_service_object_tracker_group_feature.service_object_tracker_group_feature["${each.value.profile.name}-${obj.tracker_object}"].id,
           null
         )
       )

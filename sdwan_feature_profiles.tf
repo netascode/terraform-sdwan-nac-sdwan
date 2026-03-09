@@ -1,3 +1,9 @@
+resource "sdwan_embedded_security_feature_profile" "embedded_security_feature_profile" {
+  for_each    = { for p in try(local.feature_profiles.ngfw_security_profiles, []) : p.name => p }
+  name        = each.value.name
+  description = try(each.value.description, "")
+}
+
 resource "sdwan_application_priority_feature_profile" "application_priority_feature_profile" {
   for_each    = { for t in try(local.feature_profiles.application_priority_profiles, {}) : t.name => t }
   name        = each.value.name

@@ -251,18 +251,13 @@ resource "sdwan_policy_object_security_url_block_list" "policy_object_security_u
   }]
 }
 
-locals {
-  # default block page content header for policy_object_unified_url_filtering
-  block_page_content_header = "Access to the requested page has been denied."
-}
-
 resource "sdwan_policy_object_unified_url_filtering" "policy_object_unified_url_filtering" {
   for_each              = { for p in try(local.feature_profiles.policy_object_profile.security_url_filtering_profiles, {}) : p.name => p }
   name                  = each.value.name
   feature_profile_id    = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   alerts                = try(each.value.alerts, null)
   block_page_action     = each.value.block_page_action
-  block_page_contents   = each.value.block_page_action == "text" ? try(each.value.block_page_content_body, null) != null ? "${local.block_page_content_header} ${each.value.block_page_content_body}" : "${local.block_page_content_header} ${local.defaults.sdwan.feature_profiles.policy_object_profile.security_url_filtering_profiles.block_page_content_body}" : null
+  block_page_contents   = each.value.block_page_action == "text" ? try(each.value.block_page_content_body, null) != null ? "Access to the requested page has been denied. ${each.value.block_page_content_body}" : "Access to the requested page has been denied. ${local.defaults.sdwan.feature_profiles.policy_object_profile.security_url_filtering_profiles.block_page_content_body}" : null
   enable_alerts         = each.value.enable_alerts
   redirect_url          = try(each.value.redirect_url, null)
   url_allow_list_id     = try(sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list[each.value.url_allow_list].id, null)

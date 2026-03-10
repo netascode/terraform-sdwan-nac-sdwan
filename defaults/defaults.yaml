@@ -454,7 +454,6 @@ defaults:
           alert_log_level: error
           custom_signature_set: false
         security_url_filtering_profiles:
-          block_page_content_header: Access to the requested page has been denied.
           block_page_content_body: Please contact your Network Administrator
       service_profiles:
         bgp_features:

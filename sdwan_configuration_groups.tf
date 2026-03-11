@@ -168,6 +168,9 @@ locals {
           try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
           try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
         ]],
+        try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
+        ]],
       ]],
       try(profile.multicast_features, null) == null ? [] : [for multicast_feature in try(profile.multicast_features, []) : [
         sdwan_service_multicast_feature.service_multicast_feature["${profile.name}-${multicast_feature.name}"].version

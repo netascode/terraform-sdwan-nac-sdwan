@@ -414,28 +414,28 @@ resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
     ])
     : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
   }
-  name                           = each.value.tracker.name
-  description                    = try(each.value.tracker.description, null)
-  feature_profile_id             = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
-  endpoint_api_url               = try(each.value.tracker.endpoint_api_url, null)
-  endpoint_api_url_variable      = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
-  endpoint_dns_name              = try(each.value.tracker.endpoint_dns_name, null)
-  endpoint_dns_name_variable     = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
-  endpoint_ip                    = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
-  endpoint_ip_variable           = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type          = try(each.value.tracker.endpoint_tracker_type, null)
-  icmp_interval                  = try(each.value.tracker.icmp_interval, null)
-  icmp_interval_variable         = try("{{${each.value.tracker.icmp_interval_variable}}}", null)
-  interval                       = try(each.value.tracker.interval, null)
-  interval_variable              = try("{{${each.value.tracker.interval_variable}}}", null)
-  multiplier                     = try(each.value.tracker.multiplier, null)
-  multiplier_variable            = try("{{${each.value.tracker.multiplier_variable}}}", null)
-  threshold                      = try(each.value.tracker.threshold, null)
-  threshold_variable             = try("{{${each.value.tracker.threshold_variable}}}", null)
-  tracker_name                   = try(each.value.tracker.tracker_name, null)
-  tracker_name_variable          = try("{{${each.value.tracker.tracker_name_variable}}}", null)
-  tracker_type                   = try(each.value.tracker.tracker_type, null)
-  tracker_type_variable          = try("{{${each.value.tracker.tracker_type_variable}}}", null)
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  endpoint_api_url           = try(each.value.tracker.endpoint_api_url, null)
+  endpoint_api_url_variable  = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
+  endpoint_dns_name          = try(each.value.tracker.endpoint_dns_name, null)
+  endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
+  endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
+  endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null)
+  icmp_interval              = try(each.value.tracker.icmp_interval, null)
+  icmp_interval_variable     = try("{{${each.value.tracker.icmp_interval_variable}}}", null)
+  interval                   = try(each.value.tracker.interval, null)
+  interval_variable          = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                 = try(each.value.tracker.multiplier, null)
+  multiplier_variable        = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  threshold                  = try(each.value.tracker.threshold, null)
+  threshold_variable         = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name               = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable      = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type               = try(each.value.tracker.tracker_type, null)
+  tracker_type_variable      = try("{{${each.value.tracker.tracker_type_variable}}}", null)
 }
 
 resource "sdwan_transport_ipv6_tracker_group_feature" "transport_ipv6_tracker_group_feature" {
@@ -474,28 +474,28 @@ resource "sdwan_transport_ipv6_tracker_feature" "transport_ipv6_tracker_feature"
     ])
     : "${tracker_item.profile.name}-${tracker_item.tracker.name}" => tracker_item
   }
-  name                           = each.value.tracker.name
-  description                    = try(each.value.tracker.description, null)
-  feature_profile_id             = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
-  endpoint_api_url               = try(each.value.tracker.endpoint_api_url, null)
-  endpoint_api_url_variable      = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
-  endpoint_dns_name              = try(each.value.tracker.endpoint_dns_name, null)
-  endpoint_dns_name_variable     = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
-  endpoint_ip                    = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
-  endpoint_ip_variable           = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type          = try(each.value.tracker.endpoint_tracker_type, null)
-  icmp_interval                  = try(each.value.tracker.icmp_interval, null)
-  icmp_interval_variable         = try("{{${each.value.tracker.icmp_interval_variable}}}", null)
-  interval                       = try(each.value.tracker.interval, null)
-  interval_variable              = try("{{${each.value.tracker.interval_variable}}}", null)
-  multiplier                     = try(each.value.tracker.multiplier, null)
-  multiplier_variable            = try("{{${each.value.tracker.multiplier_variable}}}", null)
-  threshold                      = try(each.value.tracker.threshold, null)
-  threshold_variable             = try("{{${each.value.tracker.threshold_variable}}}", null)
-  tracker_name                   = try(each.value.tracker.tracker_name, null)
-  tracker_name_variable          = try("{{${each.value.tracker.tracker_name_variable}}}", null)
-  tracker_type                   = try(each.value.tracker.tracker_type, null)
-  tracker_type_variable          = try("{{${each.value.tracker.tracker_type_variable}}}", null)
+  name                       = each.value.tracker.name
+  description                = try(each.value.tracker.description, null)
+  feature_profile_id         = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  endpoint_api_url           = try(each.value.tracker.endpoint_api_url, null)
+  endpoint_api_url_variable  = try("{{${each.value.tracker.endpoint_api_url_variable}}}", null)
+  endpoint_dns_name          = try(each.value.tracker.endpoint_dns_name, null)
+  endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
+  endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
+  endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
+  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null)
+  icmp_interval              = try(each.value.tracker.icmp_interval, null)
+  icmp_interval_variable     = try("{{${each.value.tracker.icmp_interval_variable}}}", null)
+  interval                   = try(each.value.tracker.interval, null)
+  interval_variable          = try("{{${each.value.tracker.interval_variable}}}", null)
+  multiplier                 = try(each.value.tracker.multiplier, null)
+  multiplier_variable        = try("{{${each.value.tracker.multiplier_variable}}}", null)
+  threshold                  = try(each.value.tracker.threshold, null)
+  threshold_variable         = try("{{${each.value.tracker.threshold_variable}}}", null)
+  tracker_name               = try(each.value.tracker.tracker_name, null)
+  tracker_name_variable      = try("{{${each.value.tracker.tracker_name_variable}}}", null)
+  tracker_type               = try(each.value.tracker.tracker_type, null)
+  tracker_type_variable      = try("{{${each.value.tracker.tracker_type_variable}}}", null)
 }
 
 resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feature" {

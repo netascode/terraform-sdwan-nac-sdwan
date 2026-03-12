@@ -34,6 +34,7 @@
 - add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
 - add support for policy object security URL Filtering Profile
 - add support for service LAN VPN SVI Interface
+- add support for `icmp_interval` and `icmp_interval_variable` in `sdwan_transport_tracker_feature` and `sdwan_transport_ipv6_tracker_feature`, and remove `endpoint_tracker_type_variable` from both features
 
 ## 1.3.0
 

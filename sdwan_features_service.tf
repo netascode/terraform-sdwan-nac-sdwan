@@ -1576,8 +1576,8 @@ resource "sdwan_service_routing_ospfv3_ipv4_feature" "service_routing_ospfv3_ipv
     ranges = try(length(area.ranges) == 0, true) ? null : [for range in area.ranges : {
       cost                     = try(range.cost, null)
       cost_variable            = try("{{${range.cost_variable}}}", null)
-      ip_address          = try(range.ip_address, null)
-      ip_address_variable = try("{{${range.ip_address_variable}}}", null)
+      ip_address          = try(range.network_address, null)
+      ip_address_variable = try("{{${range.network_address_variable}}}", null)
       subnet_mask              = try(range.subnet_mask, null)
       subnet_mask_variable     = try("{{${range.subnet_mask_variable}}}", null)
       no_advertise             = try(range.no_advertise, null)

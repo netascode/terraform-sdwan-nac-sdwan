@@ -408,7 +408,6 @@ resource "sdwan_system_mrf_feature" "system_mrf_feature" {
   feature_profile_id           = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   enable_migration_to_mrf      = try(each.value.mrf.migration_to_mrf, null)
   migration_bgp_community      = try(each.value.mrf.migration_bgp_community, null)
-  region_id                    = try(each.value.mrf.region_id, null)
   role                         = try(each.value.mrf.role, null)
   role_variable                = try("{{${each.value.mrf.role_variable}}}", null)
   secondary_region_id          = try(each.value.mrf.secondary_region_id, null)

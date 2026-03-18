@@ -169,6 +169,9 @@ locals {
           try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
           try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature.service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
         ]],
+        try(lan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(lan_vpn.gre_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
+        ]],
         try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
           sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
           try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature.service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],

@@ -614,6 +614,7 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
     authorization          = try(c.authorization, null)
     authorization_variable = try("{{${c.authorization_variable}}}", null)
     name                   = c.name
+    name_variable = try("{{${c.name_variable}}}", null)
     user_label             = c.user_label
     view                   = try(c.view, null)
     view_variable          = try("{{${c.view_variable}}}", null)

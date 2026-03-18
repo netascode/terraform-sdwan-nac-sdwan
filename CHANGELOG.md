@@ -35,6 +35,7 @@
 - add support for policy object security URL Filtering Profile
 - add support for service LAN VPN SVI Interface
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
+- add support for `icmp_interval` and `icmp_interval_variable` in `sdwan_transport_tracker_feature` and `sdwan_transport_ipv6_tracker_feature`, and remove `endpoint_tracker_type_variable` from both features
 
 ## 1.3.0
 

@@ -32,7 +32,9 @@
 - add support for new 20.15 policy object App Probe Class attribute
 - add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
 - add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
-- add support for mrf core region and port-channel on wan_vpn ethernet interfaces
+- add support for policy object security URL Filtering Profile
+- add support for service LAN VPN SVI Interface
+- add support for mrf core region, port-channel and other new 20.15 parameters for wan_vpn ethernet interfaces
 
 ## 1.3.0
 

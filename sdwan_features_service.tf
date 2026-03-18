@@ -99,6 +99,10 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv4_originate          = try(each.value.bgp.ipv4_default_originate, null)
   ipv4_originate_variable = try("{{${each.value.bgp.ipv4_default_originate_variable}}}", null)
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
+    metric                        = try(redistribute.metric, null)
+    metric_variable               = try("{{${redistribute.metric_variable}}}", null)
+    ospf_match_route              = try(redistribute.ospf_match_route, null)
+    ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
     route_policy_id               = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
@@ -176,6 +180,10 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv6_originate          = try(each.value.bgp.ipv6_default_originate, null)
   ipv6_originate_variable = try("{{${each.value.bgp.ipv6_default_originate_variable}}}", null)
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
+    metric                        = try(redistribute.metric, null)
+    metric_variable               = try("{{${redistribute.metric_variable}}}", null)
+    ospf_match_route              = try(redistribute.ospf_match_route, null)
+    ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
     route_policy_id               = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
@@ -1050,6 +1058,94 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_gro
   service_tracker_group_feature_id              = sdwan_service_tracker_group_feature.service_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker_group}"].id
 }
 
+resource "sdwan_service_lan_vpn_interface_gre_feature" "service_lan_vpn_interface_gre_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, {}) : [
+        for lan_vpn in try(profile.lan_vpns, []) : [
+          for interface in try(lan_vpn.gre_interfaces, []) : {
+            profile   = profile
+            lan_vpn   = lan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}" => interface_item
+  }
+  name                                      = each.value.interface.name
+  description                               = try(each.value.interface.description, null)
+  feature_profile_id                        = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id                = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  application_tunnel_type                   = try(each.value.interface.application_tunnel_type, null)
+  application_tunnel_type_variable          = try("{{${each.value.interface.application_tunnel_type_variable}}}", null)
+  clear_dont_fragment                       = try(each.value.interface.clear_dont_fragment, null)
+  clear_dont_fragment_variable              = try("{{${each.value.interface.clear_dont_fragment_variable}}}", null)
+  dpd_interval                              = try(each.value.interface.dpd_interval, null)
+  dpd_interval_variable                     = try("{{${each.value.interface.dpd_interval_variable}}}", null)
+  dpd_retries                               = try(each.value.interface.dpd_retries, null)
+  dpd_retries_variable                      = try("{{${each.value.interface.dpd_retries_variable}}}", null)
+  ike_ciphersuite                           = try(each.value.interface.ike_cipher_suite, null)
+  ike_ciphersuite_variable                  = try("{{${each.value.interface.ike_cipher_suite_variable}}}", null)
+  ike_group                                 = try(each.value.interface.ike_diffie_hellman_group, null)
+  ike_group_variable                        = try("{{${each.value.interface.ike_diffie_hellman_group_variable}}}", null)
+  ike_local_id                              = try(each.value.interface.ike_id_for_local_endpoint, null)
+  ike_local_id_variable                     = try("{{${each.value.interface.ike_id_for_local_endpoint_variable}}}", null)
+  ike_remote_id                             = try(each.value.interface.ike_id_for_remote_endpoint, null)
+  ike_remote_id_variable                    = try("{{${each.value.interface.ike_id_for_remote_endpoint_variable}}}", null)
+  ike_mode                                  = try(each.value.interface.ike_integrity_protocol, null)
+  ike_mode_variable                         = try("{{${each.value.interface.ike_integrity_protocol_variable}}}", null)
+  ike_rekey_interval                        = try(each.value.interface.ike_rekey_interval, null)
+  ike_rekey_interval_variable               = try("{{${each.value.interface.ike_rekey_interval_variable}}}", null)
+  ike_version                               = try(each.value.interface.ike_version, null)
+  interface_description                     = try(each.value.interface.interface_description, null)
+  interface_description_variable            = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_name                            = try(each.value.interface.interface_name, null)
+  interface_name_variable                   = try("{{${each.value.interface.interface_name_variable}}}", null)
+  ipv4_mtu                                  = try(each.value.interface.ipv4_mtu, null)
+  ipv4_mtu_variable                         = try("{{${each.value.interface.ipv4_mtu_variable}}}", null)
+  ipv4_address                              = try(each.value.interface.ipv4_address, null)
+  ipv4_address_variable                     = try("{{${each.value.interface.ipv4_address_variable}}}", null)
+  ipv4_subnet_mask                          = try(each.value.interface.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable                 = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
+  ipv4_tcp_mss                              = try(each.value.interface.ipv4_tcp_mss, null)
+  ipv4_tcp_mss_variable                     = try("{{${each.value.interface.ipv4_tcp_mss_variable}}}", null)
+  ipv6_address                              = try(each.value.interface.ipv6_address, null)
+  ipv6_address_variable                     = try("{{${each.value.interface.ipv6_address_variable}}}", null)
+  ipv6_mtu                                  = try(each.value.interface.ipv6_mtu, null)
+  ipv6_mtu_variable                         = try("{{${each.value.interface.ipv6_mtu_variable}}}", null)
+  ipv6_tcp_mss                              = try(each.value.interface.ipv6_tcp_mss, null)
+  ipv6_tcp_mss_variable                     = try("{{${each.value.interface.ipv6_tcp_mss_variable}}}", null)
+  ipsec_ciphersuite                         = try(each.value.interface.ipsec_cipher_suite, null)
+  ipsec_ciphersuite_variable                = try("{{${each.value.interface.ipsec_cipher_suite_variable}}}", null)
+  ipsec_rekey_interval                      = try(each.value.interface.ipsec_rekey_interval, null)
+  ipsec_rekey_interval_variable             = try("{{${each.value.interface.ipsec_rekey_interval_variable}}}", null)
+  ipsec_replay_window                       = try(each.value.interface.ipsec_replay_window, null)
+  ipsec_replay_window_variable              = try("{{${each.value.interface.ipsec_replay_window_variable}}}", null)
+  perfect_forward_secrecy                   = try(each.value.interface.perfect_forward_secrecy, null)
+  perfect_forward_secrecy_variable          = try("{{${each.value.interface.perfect_forward_secrecy_variable}}}", null)
+  pre_shared_secret                         = try(each.value.interface.preshared_key_for_ike, null)
+  pre_shared_secret_variable                = try("{{${each.value.interface.preshared_key_for_ike_variable}}}", null)
+  shutdown                                  = try(each.value.interface.shutdown, null)
+  shutdown_variable                         = try("{{${each.value.interface.shutdown_variable}}}", null)
+  tunnel_destination_ipv4_address           = try(each.value.interface.tunnel_destination_ipv4_address, null)
+  tunnel_destination_ipv4_address_variable  = try("{{${each.value.interface.tunnel_destination_ipv4_address_variable}}}", null)
+  tunnel_destination_ipv6_address           = try(each.value.interface.tunnel_destination_ipv6_address, null)
+  tunnel_destination_ipv6_address_variable  = try("{{${each.value.interface.tunnel_destination_ipv6_address_variable}}}", null)
+  tunnel_mode                               = try(each.value.interface.tunnel_mode, null)
+  tunnel_protection                         = try(each.value.interface.tunnel_protection, null)
+  tunnel_route_via_loopback                 = try(each.value.interface.tunnel_route_via_loopback, null)
+  tunnel_route_via_loopback_variable        = try("{{${each.value.interface.tunnel_route_via_loopback_variable}}}", null)
+  tunnel_source_interface                   = try(each.value.interface.tunnel_source_interface, null)
+  tunnel_source_interface_variable          = try("{{${each.value.interface.tunnel_source_interface_variable}}}", null)
+  tunnel_source_interface_loopback          = try(each.value.interface.tunnel_source_interface_loopback, null)
+  tunnel_source_interface_loopback_variable = try("{{${each.value.interface.tunnel_source_interface_loopback_variable}}}", null)
+  tunnel_source_ipv4_address                = try(each.value.interface.tunnel_source_ipv4_address, null)
+  tunnel_source_ipv4_address_variable       = try("{{${each.value.interface.tunnel_source_ipv4_address_variable}}}", null)
+  tunnel_source_ipv6_address                = try(each.value.interface.tunnel_source_ipv6_address, null)
+  tunnel_source_ipv6_address_variable       = try("{{${each.value.interface.tunnel_source_ipv6_address_variable}}}", null)
+}
+
 resource "sdwan_service_lan_vpn_interface_svi_feature" "service_lan_vpn_interface_svi_feature" {
   for_each = {
     for interface_item in flatten([
@@ -1255,7 +1351,7 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
       connection_source_interface_variable  = try("{{${peer.connection_source_interface_variable}}}", null)
       default_peer                          = try(peer.default_peer, null)
       keepalive_hold_time                   = try(peer.keepalive_hold_time, null)
-      keepalive_hold_time_variable          = try("{{${peer.keepalive_hold_time_variable}}}}", null)
+      keepalive_hold_time_variable          = try("{{${peer.keepalive_hold_time_variable}}}", null)
       keepalive_interval                    = try(peer.keepalive_interval, null)
       keepalive_interval_variable           = try("{{${peer.keepalive_interval_variable}}}", null)
       peer_authentication_password          = try(peer.peer_authentication_password, null)

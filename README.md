@@ -40,7 +40,7 @@ module "sdwan" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
-| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.9.0 |
+| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.11.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
 
 ## Inputs
@@ -64,7 +64,7 @@ module "sdwan" {
 | Name | Version |
 |------|---------|
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
-| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.9.0 |
+| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.11.0 |
 | <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2, < 2.0.0 |
 
 ## Resources
@@ -190,6 +190,7 @@ module "sdwan" {
 | [sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature.service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature) | resource |
 | [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_ethernet_feature_associate_tracker_feature) | resource |
 | [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature) | resource |
+| [sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_gre_feature) | resource |
 | [sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_svi_feature) | resource |
 | [sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature.service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature) | resource |
 | [sdwan_service_multicast_feature.service_multicast_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_multicast_feature) | resource |

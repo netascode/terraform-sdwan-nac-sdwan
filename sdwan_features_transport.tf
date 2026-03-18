@@ -101,9 +101,13 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv4_originate          = try(each.value.bgp.ipv4_default_originate, null)
   ipv4_originate_variable = try("{{${each.value.bgp.ipv4_default_originate_variable}}}", null)
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
-    protocol          = try(redistribute.protocol, null)
-    protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
-    route_policy_id   = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    metric                    = try(redistribute.metric, null)
+    metric_variable           = try("{{${redistribute.metric_variable}}}", null)
+    ospf_match_route          = try(redistribute.ospf_match_route, null)
+    ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
+    protocol                  = try(redistribute.protocol, null)
+    protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id           = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
   }]
   ipv4_table_map_filter          = try(each.value.bgp.ipv4_table_map_filter, null)
   ipv4_table_map_filter_variable = try("{{${each.value.bgp.ipv4_table_map_filter_variable}}}", null)
@@ -176,9 +180,13 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv6_originate          = try(each.value.bgp.ipv6_default_originate, null)
   ipv6_originate_variable = try("{{${each.value.bgp.ipv6_default_originate_variable}}}", null)
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
-    protocol          = try(redistribute.protocol, null)
-    protocol_variable = try("{{${redistribute.protocol_variable}}}", null)
-    route_policy_id   = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
+    metric                    = try(redistribute.metric, null)
+    metric_variable           = try("{{${redistribute.metric_variable}}}", null)
+    ospf_match_route          = try(redistribute.ospf_match_route, null)
+    ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
+    protocol                  = try(redistribute.protocol, null)
+    protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
+    route_policy_id           = try(sdwan_transport_route_policy_feature.transport_route_policy_feature["${each.value.profile.name}-${redistribute.route_policy}"].id, null)
   }]
   ipv6_table_map_filter          = try(each.value.bgp.ipv6_table_map_filter, null)
   ipv6_table_map_filter_variable = try("{{${each.value.bgp.ipv6_table_map_filter_variable}}}", null)

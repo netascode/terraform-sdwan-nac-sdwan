@@ -34,6 +34,8 @@
 - add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
 - add support for policy object security URL Filtering Profile
 - add support for service LAN VPN SVI Interface
+- add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
+- fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
 
 ## 1.3.0
 
@@ -48,6 +50,7 @@
 - add support for service IPv4 ACL
 - add support for service IPv6 ACL
 - add support for service LAN VPN Ethernet Interface
+- add support for service LAN VPN GRE Interface
 - add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL

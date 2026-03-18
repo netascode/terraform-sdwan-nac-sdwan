@@ -34,6 +34,7 @@
 - add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
 - add support for policy object security URL Filtering Profile
 - add support for service LAN VPN SVI Interface
+- fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
 
 ## 1.3.0
 

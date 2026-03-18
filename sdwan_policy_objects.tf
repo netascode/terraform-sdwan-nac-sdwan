@@ -4,13 +4,14 @@ resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
   description        = null # not supported in the UI
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [{
-    forwarding_class = each.value.forwarding_class
+    forwarding_class_id = sdwan_policy_object_class_map.policy_object_class_map[each.value.forwarding_class].id
     map = [for m in try(each.value.mappings, []) : {
       color = m.color
       dscp  = try(m.dscp, null)
     }]
   }]
 }
+
 resource "sdwan_policy_object_application_list" "policy_object_application_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.application_lists, {}) : p.name => p }
   name               = each.value.name
@@ -258,6 +259,22 @@ resource "sdwan_policy_object_security_zone" "policy_object_security_zone" {
     vpn       = try(e.vpn, null)
     interface = try(e.interface, null)
   }]
+}
+
+resource "sdwan_policy_object_unified_url_filtering" "policy_object_unified_url_filtering" {
+  for_each              = { for p in try(local.feature_profiles.policy_object_profile.security_url_filtering_profiles, {}) : p.name => p }
+  name                  = each.value.name
+  feature_profile_id    = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  alerts                = try(each.value.alerts, null)
+  block_page_action     = each.value.block_page_action
+  block_page_contents   = each.value.block_page_action == "text" ? try(each.value.block_page_content_body, null) != null ? "Access to the requested page has been denied. ${each.value.block_page_content_body}" : "Access to the requested page has been denied. ${local.defaults.sdwan.feature_profiles.policy_object_profile.security_url_filtering_profiles.block_page_content_body}" : null
+  enable_alerts         = each.value.enable_alerts
+  redirect_url          = try(each.value.redirect_url, null)
+  url_allow_list_id     = try(sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list[each.value.url_allow_list].id, null)
+  url_block_list_id     = try(sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list[each.value.url_block_list].id, null)
+  web_categories        = each.value.web_categories
+  web_categories_action = each.value.web_categories_action
+  web_reputation        = each.value.web_reputation
 }
 
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {

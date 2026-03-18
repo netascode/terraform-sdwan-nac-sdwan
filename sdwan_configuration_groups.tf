@@ -78,7 +78,8 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_zone.policy_object_security_zone,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list,
     sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection,
-    sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention
+    sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention,
+    sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering
   ]
   lifecycle {
     create_before_destroy = true
@@ -167,6 +168,11 @@ locals {
           sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
           try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
           try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
+          try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature.service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
+        ]],
+        try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
+          try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature.service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
         ]],
       ]],
       try(profile.multicast_features, null) == null ? [] : [for multicast_feature in try(profile.multicast_features, []) : [
@@ -186,6 +192,9 @@ locals {
       ]],
       try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
         sdwan_service_route_policy_feature.service_route_policy_feature["${profile.name}-${route_policy.name}"].version
+      ]],
+      try(profile.switchport_features, null) == null ? [] : [for switchport_feature in try(profile.switchport_features, []) : [
+        sdwan_service_switchport_feature.service_switchport_feature["${profile.name}-${switchport_feature.name}"].version
       ]],
     ])
   }

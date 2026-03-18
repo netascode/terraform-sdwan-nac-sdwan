@@ -35,7 +35,7 @@
 - add support for policy object security URL Filtering Profile
 - add support for service LAN VPN SVI Interface
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
-- add support for mrf core region and port-channel on wan_vpn ethernet interfaces
+- add support for mrf core region, port-channel and other new 20.15 parameters for wan_vpn ethernet interface
 
 ## 1.3.0
 

@@ -32,6 +32,8 @@
 - add support for new 20.15 policy object App Probe Class attribute
 - add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
 - add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
+- add support for policy object security URL Filtering Profile
+- add support for service LAN VPN SVI Interface
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
 
 ## 1.3.0

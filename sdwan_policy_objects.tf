@@ -251,6 +251,22 @@ resource "sdwan_policy_object_security_url_block_list" "policy_object_security_u
   }]
 }
 
+resource "sdwan_policy_object_unified_url_filtering" "policy_object_unified_url_filtering" {
+  for_each              = { for p in try(local.feature_profiles.policy_object_profile.security_url_filtering_profiles, {}) : p.name => p }
+  name                  = each.value.name
+  feature_profile_id    = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  alerts                = try(each.value.alerts, null)
+  block_page_action     = each.value.block_page_action
+  block_page_contents   = each.value.block_page_action == "text" ? try(each.value.block_page_content_body, null) != null ? "Access to the requested page has been denied. ${each.value.block_page_content_body}" : "Access to the requested page has been denied. ${local.defaults.sdwan.feature_profiles.policy_object_profile.security_url_filtering_profiles.block_page_content_body}" : null
+  enable_alerts         = each.value.enable_alerts
+  redirect_url          = try(each.value.redirect_url, null)
+  url_allow_list_id     = try(sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list[each.value.url_allow_list].id, null)
+  url_block_list_id     = try(sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list[each.value.url_block_list].id, null)
+  web_categories        = each.value.web_categories
+  web_categories_action = each.value.web_categories_action
+  web_reputation        = each.value.web_reputation
+}
+
 resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name

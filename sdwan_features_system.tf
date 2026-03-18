@@ -613,7 +613,7 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
   communities = try(length(each.value.snmp.communities) == 0, true) ? null : [for c in each.value.snmp.communities : {
     authorization          = try(c.authorization, null)
     authorization_variable = try("{{${c.authorization_variable}}}", null)
-    name                   = c.name
+    name                   = try(c.name, null)
     name_variable = try("{{${c.name_variable}}}", null)
     user_label             = c.user_label
     view                   = try(c.view, null)

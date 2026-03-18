@@ -882,7 +882,7 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   ip_mtu_variable                = try("{{${each.value.interface.ip_mtu_variable}}}", null)
   ipv4_address                   = try(each.value.interface.ipv4_address, null)
   ipv4_address_variable          = try("{{${each.value.interface.ipv4_address_variable}}}", null)
-  ipv4_configuration_type        = try(each.value.interface.ipv4_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv4_configuration_type)
+  ipv4_address_type              = try(each.value.interface.ipv4_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv4_configuration_type)
   ipv4_dhcp_distance             = try(each.value.interface.ipv4_dhcp_distance, null)
   ipv4_dhcp_distance_variable    = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
   ipv4_dhcp_helper               = try(each.value.interface.ipv4_dhcp_helpers, null)
@@ -927,9 +927,9 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
       decrement_value_variable = try("{{${obj.decrement_value_variable}}}", null)
     }]
   }]
-  ipv6_address            = try(each.value.interface.ipv6_address, null)
-  ipv6_address_variable   = try("{{${each.value.interface.ipv6_address_variable}}}", null)
-  ipv6_configuration_type = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type)
+  ipv6_address          = try(each.value.interface.ipv6_address, null)
+  ipv6_address_variable = try("{{${each.value.interface.ipv6_address_variable}}}", null)
+  ipv6_address_type     = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ethernet_interfaces.ipv6_configuration_type)
   ipv6_dhcp_helpers = try(length(each.value.interface.ipv6_dhcp_helpers) == 0, true) ? null : [for helper in each.value.interface.ipv6_dhcp_helpers : {
     address                    = try(helper.address, null)
     address_variable           = try("{{${helper.address_variable}}}", null)

@@ -1016,7 +1016,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_lacp_load_balance             = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_load_balance, null) : null
   port_channel_lacp_load_balance_variable    = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
   port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
-  port_channel_lacp_max_bundle_variable      = try(each.value.interface.port_channel_lacp_max_bundle_variable, null)
+  port_channel_lacp_max_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_max_bundle_variable}}}", null)
   port_channel_lacp_member_links = try(each.value.interface.port_channel_mode, null) == "lacp" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
     interface_id                = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
     lacp_mode                   = try(member_link.lacp_mode, null)

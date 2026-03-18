@@ -77,7 +77,8 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list,
     sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection,
-    sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention
+    sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention,
+    sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering
   ]
   lifecycle {
     create_before_destroy = true
@@ -169,6 +170,9 @@ locals {
         ]],
         try(lan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(lan_vpn.gre_interfaces, []) : [
           sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
+        ]],
+        try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
         ]],
       ]],
       try(profile.multicast_features, null) == null ? [] : [for multicast_feature in try(profile.multicast_features, []) : [

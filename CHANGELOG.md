@@ -31,6 +31,9 @@
 - fix an issue where the SIG `fallback_to_routing` set to false was still getting applied in `sdwan_traffic_data_policy_definition`
 - add support for new 20.15 policy object App Probe Class attribute
 - add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
+- add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
+- add support for policy object security URL Filtering Profile
+- add support for service LAN VPN SVI Interface
 
 ## 1.3.0
 

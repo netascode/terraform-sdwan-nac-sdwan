@@ -252,7 +252,7 @@ resource "sdwan_policy_object_security_url_block_list" "policy_object_security_u
 }
 
 resource "sdwan_policy_object_security_zone" "policy_object_security_zone" {
-  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_zone_lists, {}) : p.name => p }
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_zones, {}) : p.name => p }
   name               = each.value.name
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in concat([for v in try(each.value.vpns, []) : { "vpn" : v }], [for intf in try(each.value.interfaces, []) : { "interface" : intf }]) : {

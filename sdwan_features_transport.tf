@@ -1034,7 +1034,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_mode                         = try(each.value.interface.port_channel_mode, null)
   port_channel_static_load_balance          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null
   port_channel_static_load_balance_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
-  port_channel_static_member_links = try(each.value.interface.port_channel_mode, null) == "static" ? [for member_link in try(each.value.interface.port_channel_member_links, []) : {
+  port_channel_static_member_links = try(each.value.interface.port_channel_mode, null) == "static" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
     interface_id = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
   }] : null
   port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null

@@ -166,6 +166,7 @@ module "sdwan" {
 | [sdwan_policy_object_sla_class_list.policy_object_sla_class_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_sla_class_list) | resource |
 | [sdwan_policy_object_standard_community_list.policy_object_standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_standard_community_list) | resource |
 | [sdwan_policy_object_tloc_list.policy_object_tloc_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_tloc_list) | resource |
+| [sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_advanced_inspection_profile) | resource |
 | [sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_advanced_malware_protection) | resource |
 | [sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_intrusion_prevention) | resource |
 | [sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_unified_url_filtering) | resource |

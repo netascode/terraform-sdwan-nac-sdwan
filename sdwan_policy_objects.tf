@@ -317,6 +317,18 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
   }]
 }
 
+resource "sdwan_policy_object_unified_advanced_inspection_profile" "policy_object_unified_advanced_inspection_profile" {
+  for_each                            = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_inspection_profiles, {}) : p.name => p }
+  name                                = each.value.name
+  description                         = try(each.value.description, null)
+  feature_profile_id                  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  tls_decryption_action               = lookup({ "never_decrypt" = "neverDecrypt", "skip_decrypt" = "skipDecrypt" }, each.value.tls_action, each.value.tls_action)
+  intrusion_prevention_list_id        = try(sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention[each.value.intrusion_prevention].id, null)
+  url_filtering_list_id               = try(sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering[each.value.url_filtering].id, null)
+  advanced_malware_protection_list_id = try(sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection[each.value.advanced_malware_protection].id, null)
+  tls_ssl_profile_list_id             = null # not supported
+}
+
 resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_object_unified_advanced_malware_protection" {
   for_each                      = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_malware_protection_profiles, {}) : p.name => p }
   name                          = each.value.name

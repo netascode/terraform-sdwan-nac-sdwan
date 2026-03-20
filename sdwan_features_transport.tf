@@ -967,7 +967,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   }]
   nat_ipv4_pools = try(length(each.value.interface.ipv4_nat_pools) == 0, true) ? null : [for nat_pool in each.value.interface.ipv4_nat_pools : {
     enable_dual_router_ha_mapping = try(nat_pool.enable_dual_router_ha_mapping, null)
-    name                          = try(tonumber(nat_pool.pool_id), null)
+    name                          = try(tonumber(nat_pool.id), null)
     name_variable                 = try("{{${nat_pool.pool_id_variable}}}", null)
     overload                      = try(nat_pool.overload, null)
     overload_variable             = try("{{${nat_pool.overload_variable}}}", null)

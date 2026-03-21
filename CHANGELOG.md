@@ -12,6 +12,8 @@
 - add support for policy object security url block list
 - add support for policy object security Advanced Malware Protection Profile
 - add support for policy object security Intrusion Prevention Profile
+- add support for policy object security zone
+- add support for service OSPFv3 IPv4
 - add support for service OSPFv3 IPv6
 - add support for service Multicast
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
@@ -36,6 +38,7 @@
 - add support for service LAN VPN SVI Interface
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
 - fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
+- add support for policy object security Advanced Inspection Profile
 
 ## 1.3.0
 

@@ -1190,7 +1190,7 @@ resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_in
   description                              = try(each.value.interface.description, null)
   feature_profile_id                       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
   transport_wan_vpn_feature_id             = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
-  application_tunnel_type                  = try(each.value.interface.application_tunnel_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipsec_interfaces.application_tunnel_type)
+  application_tunnel_type                  = try(each.value.interface.application_tunnel_type_variable, null) != null ? null : try(each.value.interface.application_tunnel_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ipsec_interfaces.application_tunnel_type)
   application_tunnel_type_variable         = try("{{${each.value.interface.application_tunnel_type_variable}}}", null)
   clear_dont_fragment                      = try(each.value.interface.clear_dont_fragment, null)
   clear_dont_fragment_variable             = try("{{${each.value.interface.clear_dont_fragment_variable}}}", null)

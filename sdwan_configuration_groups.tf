@@ -75,7 +75,9 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list,
     sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list,
     sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list,
+    sdwan_policy_object_security_zone.policy_object_security_zone,
     sdwan_policy_object_sla_class_list.policy_object_sla_class_list,
+    sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile,
     sdwan_policy_object_unified_advanced_malware_protection.policy_object_unified_advanced_malware_protection,
     sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention,
     sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering
@@ -161,15 +163,21 @@ locals {
         try(lan_vpn.eigrp, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_eigrp_feature.service_lan_vpn_feature_associate_routing_eigrp_feature["${profile.name}-${lan_vpn.name}-routing_eigrp"].version],
         try(lan_vpn.multicast, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_multicast_feature.service_lan_vpn_feature_associate_multicast_feature["${profile.name}-${lan_vpn.name}-routing_multicast"].version],
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
+        try(lan_vpn.ospfv3_ipv4, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv4_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv4_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv4"].version],
         try(lan_vpn.ospfv3_ipv6, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv6"].version],
         sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ethernet_interfaces, []) : [
           sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
           try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
           try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-${lan_vpn.name}-${interface.name}-trackergroup"].version],
+          try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature.service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
+        ]],
+        try(lan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(lan_vpn.gre_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
         ]],
         try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
           sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
+          try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature.service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
         ]],
       ]],
       try(profile.multicast_features, null) == null ? [] : [for multicast_feature in try(profile.multicast_features, []) : [
@@ -183,6 +191,9 @@ locals {
       ]],
       try(profile.ospf_features, null) == null ? [] : [for ospf_feature in try(profile.ospf_features, []) : [
         sdwan_service_routing_ospf_feature.service_routing_ospf_feature["${profile.name}-${ospf_feature.name}"].version
+      ]],
+      try(profile.ospfv3_ipv4_features, null) == null ? [] : [for ospfv3_ipv4_feature in try(profile.ospfv3_ipv4_features, []) : [
+        sdwan_service_routing_ospfv3_ipv4_feature.service_routing_ospfv3_ipv4_feature["${profile.name}-${ospfv3_ipv4_feature.name}"].version
       ]],
       try(profile.ospfv3_ipv6_features, null) == null ? [] : [for ospfv3_ipv6_feature in try(profile.ospfv3_ipv6_features, []) : [
         sdwan_service_routing_ospfv3_ipv6_feature.service_routing_ospfv3_ipv6_feature["${profile.name}-${ospfv3_ipv6_feature.name}"].version

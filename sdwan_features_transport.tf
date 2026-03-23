@@ -431,7 +431,7 @@ resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
   endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
   endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
   endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? "interface-icmp" : try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? "interface" : null
+  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null) == "icmp" ? "interface-icmp" : try(each.value.tracker.endpoint_tracker_type, null) == "http" ? "interface" : null
   icmp_interval              = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try(each.value.tracker.interval, null) : null
   icmp_interval_variable     = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
   interval                   = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try(each.value.tracker.interval, null) : null
@@ -491,7 +491,7 @@ resource "sdwan_transport_ipv6_tracker_feature" "transport_ipv6_tracker_feature"
   endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
   endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
   endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? "ipv6-interface-icmp" : try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? "ipv6-interface" : null
+  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null) == "icmp" ? "ipv6-interface-icmp" : try(each.value.tracker.endpoint_tracker_type, null) == "http" ? "ipv6-interface" : null
   icmp_interval              = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try(each.value.tracker.interval, null) : null
   icmp_interval_variable     = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
   interval                   = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try(each.value.tracker.interval, null) : null

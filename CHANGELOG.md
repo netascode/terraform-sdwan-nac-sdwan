@@ -12,6 +12,8 @@
 - add support for policy object security url block list
 - add support for policy object security Advanced Malware Protection Profile
 - add support for policy object security Intrusion Prevention Profile
+- add support for policy object security zone
+- add support for service OSPFv3 IPv4
 - add support for service OSPFv3 IPv6
 - add support for service Multicast
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
@@ -20,6 +22,7 @@
 - fix nat fallback default behaviour in centralized data policy
 - fix match region_id bug in custom control policy
 - add support for policy object security geolocation list
+- add support for Service Switchport
 - add support for UX 2.0 MRF in versions 20.13 and higher
 - align `cisco_sig_credentials_feature_template` device types creation logic with other features
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
@@ -28,6 +31,14 @@
 - add support for new 20.15 service LAN VPN attributes
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
 - fix an issue where the SIG `fallback_to_routing` set to false was still getting applied in `sdwan_traffic_data_policy_definition`
+- add support for new 20.15 policy object App Probe Class attribute
+- add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
+- add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
+- add support for policy object security URL Filtering Profile
+- add support for service LAN VPN SVI Interface
+- add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
+- fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
+- add support for policy object security Advanced Inspection Profile
 - add support for transport ipsec interface
 
 ## 1.3.0
@@ -43,6 +54,7 @@
 - add support for service IPv4 ACL
 - add support for service IPv6 ACL
 - add support for service LAN VPN Ethernet Interface
+- add support for service LAN VPN GRE Interface
 - add support for service OSPF
 - add support for transport BGP
 - add support for transport IPv4 ACL

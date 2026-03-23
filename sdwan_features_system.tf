@@ -38,7 +38,8 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       address             = server.address
       auth_port           = try(server.authentication_port, null)
       auth_port_variable  = try("{{${server.authentication_port_variable}}}", null)
-      key                 = server.key
+      key                 = try(server.key, null)
+      key_variable        = try("{{${server.key_variable}}}", null)
       key_type            = try(server.key_type, null)
       key_type_variable   = try("{{${server.key_type_variable}}}", null)
       retransmit          = try(server.retransmit, null)
@@ -55,7 +56,8 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     group_name = try("tacacs-${group.vpn}", "tacacs-0-0")
     servers = !can(group.servers) ? null : [for server in group.servers : {
       address          = server.address
-      key              = server.key
+      key              = try(server.key, null)
+      key_variable     = try("{{${server.key_variable}}}", null)
       port             = try(server.port, null)
       port_variable    = try("{{${server.port_variable}}}", null)
       timeout          = try(server.timeout, null)
@@ -73,8 +75,9 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     privilege          = try(user.privilege, null)
     privilege_variable = try("{{${user.privilege_variable}}}", null)
     public_keys = try(length(user.public_key_chains) == 0, true) ? null : [for public_key in user.public_key_chains : {
-      key_type   = "ssh-rsa"
-      key_string = public_key
+      key_type            = "ssh-rsa"
+      key_string          = try(public_key.key, null)
+      key_string_variable = try("{{${public_key.key_variable}}}", null)
     }]
   }]
 }
@@ -141,36 +144,38 @@ resource "sdwan_system_basic_feature" "system_basic_feature" {
     number          = try(n.number, null)
     number_variable = try("{{${n.number_variable}}}", null)
   }]
-  idle_timeout                    = try(each.value.basic.idle_timeout, null)
-  idle_timeout_variable           = try("{{${each.value.basic.idle_timeout_variable}}}", null)
-  location                        = try(each.value.basic.location, null)
-  location_variable               = try("{{${each.value.basic.location_variable}}}", null)
-  max_omp_sessions                = try(each.value.basic.max_omp_sessions, null)
-  max_omp_sessions_variable       = try("{{${each.value.basic.max_omp_sessions_variable}}}", null)
-  multi_tenant                    = try(each.value.basic.multitenant, null)
-  multi_tenant_variable           = try("{{${each.value.basic.multitenant_variable}}}", null)
-  on_demand_enable                = try(each.value.basic.on_demand_tunnel, null)
-  on_demand_enable_variable       = try("{{${each.value.basic.on_demand_tunnel_variable}}}", null)
-  on_demand_idle_timeout          = try(each.value.basic.on_demand_tunnel_idle_timeout, null)
-  on_demand_idle_timeout_variable = try("{{${each.value.basic.on_demand_tunnel_idle_timeout_variable}}}", null)
-  overlay_id                      = try(each.value.basic.overlay_id, null)
-  overlay_id_variable             = try("{{${each.value.basic.overlay_id_variable}}}", null)
-  port_hopping                    = try(each.value.basic.port_hopping, null)
-  port_hopping_variable           = try("{{${each.value.basic.port_hopping_variable}}}", null)
-  port_offset                     = try(each.value.basic.port_offset, null)
-  port_offset_variable            = try("{{${each.value.basic.port_offset_variable}}}", null)
-  site_types                      = try(each.value.basic.site_types, null)
-  site_types_variable             = try("{{${each.value.basic.site_types_variable}}}", null)
-  timezone                        = try(each.value.basic.timezone, null)
-  timezone_variable               = try("{{${each.value.basic.timezone_variable}}}", null)
-  track_default_gateway           = try(each.value.basic.track_default_gateway, null)
-  track_default_gateway_variable  = try("{{${each.value.basic.track_default_gateway_variable}}}", null)
-  track_interface_tag             = try(each.value.basic.track_interface_tag, null)
-  track_interface_tag_variable    = try("{{${each.value.basic.track_interface_tag_variable}}}", null)
-  track_transport                 = try(each.value.basic.track_transport, null)
-  track_transport_variable        = try("{{${each.value.basic.track_transport_variable}}}", null)
-  transport_gateway               = try(each.value.basic.transport_gateway, null)
-  transport_gateway_variable      = try("{{${each.value.basic.transport_gateway_variable}}}", null)
+  idle_timeout                          = try(each.value.basic.idle_timeout, null)
+  idle_timeout_variable                 = try("{{${each.value.basic.idle_timeout_variable}}}", null)
+  location                              = try(each.value.basic.location, null)
+  location_variable                     = try("{{${each.value.basic.location_variable}}}", null)
+  max_omp_sessions                      = try(each.value.basic.max_omp_sessions, null)
+  max_omp_sessions_variable             = try("{{${each.value.basic.max_omp_sessions_variable}}}", null)
+  multi_tenant                          = try(each.value.basic.multitenant, null)
+  multi_tenant_variable                 = try("{{${each.value.basic.multitenant_variable}}}", null)
+  on_demand_enable                      = try(each.value.basic.on_demand_tunnel, null)
+  on_demand_enable_variable             = try("{{${each.value.basic.on_demand_tunnel_variable}}}", null)
+  on_demand_idle_timeout                = try(each.value.basic.on_demand_tunnel_idle_timeout, null)
+  on_demand_idle_timeout_variable       = try("{{${each.value.basic.on_demand_tunnel_idle_timeout_variable}}}", null)
+  overlay_id                            = try(each.value.basic.overlay_id, null)
+  overlay_id_variable                   = try("{{${each.value.basic.overlay_id_variable}}}", null)
+  port_hopping                          = try(each.value.basic.port_hopping, null)
+  port_hopping_variable                 = try("{{${each.value.basic.port_hopping_variable}}}", null)
+  port_offset                           = try(each.value.basic.port_offset, null)
+  port_offset_variable                  = try("{{${each.value.basic.port_offset_variable}}}", null)
+  site_types                            = try(each.value.basic.site_types, null)
+  site_types_variable                   = try("{{${each.value.basic.site_types_variable}}}", null)
+  timezone                              = try(each.value.basic.timezone, null)
+  timezone_variable                     = try("{{${each.value.basic.timezone_variable}}}", null)
+  track_default_gateway                 = try(each.value.basic.track_default_gateway, null)
+  track_default_gateway_variable        = try("{{${each.value.basic.track_default_gateway_variable}}}", null)
+  track_interface_tag                   = try(each.value.basic.track_interface_tag, null)
+  track_interface_tag_variable          = try("{{${each.value.basic.track_interface_tag_variable}}}", null)
+  track_transport                       = try(each.value.basic.track_transport, null)
+  track_transport_variable              = try("{{${each.value.basic.track_transport_variable}}}", null)
+  tracker_dia_stabilize_status          = try(each.value.basic.tracker_dia_stabilize_status, null)
+  tracker_dia_stabilize_status_variable = try("{{${each.value.basic.tracker_dia_stabilize_status_variable}}}", null)
+  transport_gateway                     = try(each.value.basic.transport_gateway, null)
+  transport_gateway_variable            = try("{{${each.value.basic.transport_gateway_variable}}}", null)
 }
 
 resource "sdwan_system_bfd_feature" "system_bfd_feature" {
@@ -403,7 +408,6 @@ resource "sdwan_system_mrf_feature" "system_mrf_feature" {
   feature_profile_id           = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   enable_migration_to_mrf      = try(each.value.mrf.migration_to_mrf, null)
   migration_bgp_community      = try(each.value.mrf.migration_bgp_community, null)
-  region_id                    = try(each.value.mrf.region_id, null)
   role                         = try(each.value.mrf.role, null)
   role_variable                = try("{{${each.value.mrf.role_variable}}}", null)
   secondary_region_id          = try(each.value.mrf.secondary_region_id, null)

@@ -101,7 +101,7 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     metric                        = try(redistribute.metric, null)
     metric_variable               = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route              = try(redistribute.ospf_match_route, null)
+    ospf_match_route              = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
     ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
@@ -182,7 +182,7 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     metric                        = try(redistribute.metric, null)
     metric_variable               = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route              = try(redistribute.ospf_match_route, null)
+    ospf_match_route              = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
     ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)

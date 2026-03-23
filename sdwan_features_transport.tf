@@ -103,7 +103,7 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     metric                    = try(redistribute.metric, null)
     metric_variable           = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route          = try(redistribute.ospf_match_route, null)
+    ospf_match_route          = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
     ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                  = try(redistribute.protocol, null)
     protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
@@ -182,7 +182,7 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     metric                    = try(redistribute.metric, null)
     metric_variable           = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route          = try(redistribute.ospf_match_route, null)
+    ospf_match_route          = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
     ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                  = try(redistribute.protocol, null)
     protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
@@ -431,9 +431,11 @@ resource "sdwan_transport_tracker_feature" "transport_tracker_feature" {
   endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
   endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
   endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null)
-  interval                   = try(each.value.tracker.interval, null)
-  interval_variable          = try("{{${each.value.tracker.interval_variable}}}", null)
+  endpoint_tracker_type      = lookup({ "icmp" = "interface-icmp", "http" = "interface" }, try(each.value.tracker.endpoint_tracker_type, ""), null)
+  icmp_interval              = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try(each.value.tracker.interval, null) : null
+  icmp_interval_variable     = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
+  interval                   = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try(each.value.tracker.interval, null) : null
+  interval_variable          = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
   multiplier                 = try(each.value.tracker.multiplier, null)
   multiplier_variable        = try("{{${each.value.tracker.multiplier_variable}}}", null)
   threshold                  = try(each.value.tracker.threshold, null)
@@ -489,9 +491,11 @@ resource "sdwan_transport_ipv6_tracker_feature" "transport_ipv6_tracker_feature"
   endpoint_dns_name_variable = try("{{${each.value.tracker.endpoint_dns_name_variable}}}", null)
   endpoint_ip                = try(each.value.tracker.endpoint_ip, each.value.tracker.endpoint_tcp_udp_ip, null)
   endpoint_ip_variable       = try("{{${each.value.tracker.endpoint_ip_variable}}}", null)
-  endpoint_tracker_type      = try(each.value.tracker.endpoint_tracker_type, null)
-  interval                   = try(each.value.tracker.interval, null)
-  interval_variable          = try("{{${each.value.tracker.interval_variable}}}", null)
+  endpoint_tracker_type      = lookup({ "icmp" = "ipv6-interface-icmp", "http" = "ipv6-interface" }, try(each.value.tracker.endpoint_tracker_type, ""), null)
+  icmp_interval              = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try(each.value.tracker.interval, null) : null
+  icmp_interval_variable     = try(each.value.tracker.endpoint_tracker_type, "http") == "icmp" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
+  interval                   = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try(each.value.tracker.interval, null) : null
+  interval_variable          = try(each.value.tracker.endpoint_tracker_type, "http") == "http" ? try("{{${each.value.tracker.interval_variable}}}", null) : null
   multiplier                 = try(each.value.tracker.multiplier, null)
   multiplier_variable        = try("{{${each.value.tracker.multiplier_variable}}}", null)
   threshold                  = try(each.value.tracker.threshold, null)

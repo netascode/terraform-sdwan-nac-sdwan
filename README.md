@@ -63,9 +63,9 @@ module "sdwan" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
-| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.11.0 |
-| <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2, < 2.0.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.7.0 |
+| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | 0.11.0 |
+| <a name="provider_utils"></a> [utils](#provider\_utils) | 1.0.2 |
 
 ## Resources
 

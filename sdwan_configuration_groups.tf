@@ -274,6 +274,9 @@ locals {
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${profile.name}-wan_vpn-${interface.name}"].version,
       ] if try(interface.port_channel_member_interface, false) == true],
+      try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+      ]],
     ])
   }
 

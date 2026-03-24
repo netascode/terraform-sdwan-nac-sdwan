@@ -39,6 +39,10 @@
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
 - fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
 - add support for policy object security Advanced Inspection Profile
+- add support for `icmp_interval` and `icmp_interval_variable` in `sdwan_transport_tracker_feature` and `sdwan_transport_ipv6_tracker_feature`, and remove `endpoint_tracker_type_variable` from both features
+- align `ospf_match_route` with the updated schema to accept non-capitalized values
+- add support for new 20.15 parameters in system OMP, Global and SNMP features
+- add support for transport ipsec interface
 - add support for mrf, port-channel and other new 20.15 parameters for wan_vpn ethernet interface
 
 ## 1.3.0

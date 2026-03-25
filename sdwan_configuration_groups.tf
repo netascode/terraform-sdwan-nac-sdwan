@@ -270,7 +270,10 @@ locals {
         try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-trackergroup"].version],
         try(interface.ipv6_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_tracker"].version],
         try(interface.ipv6_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature.transport_wan_vpn_interface_ethernet_feature_associate_ipv6_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-ipv6_trackergroup"].version],
-      ]],
+      ] if try(interface.port_channel_member_interface, false) == false],
+      try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${profile.name}-wan_vpn-${interface.name}"].version,
+      ] if try(interface.port_channel_member_interface, false) == true],
       try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
       ]],
@@ -299,8 +302,11 @@ locals {
           }
         },
         {
-          for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => {
+          for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => try(feature.port_channel_member_interface, false) == false ? {
             parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/ethernet"
+            } : {
+            parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${profile.name}-wan_vpn-${feature.name}"].id
             parcel_type = "wan/vpn/interface/ethernet"
           }
         },

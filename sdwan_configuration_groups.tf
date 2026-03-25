@@ -305,7 +305,7 @@ locals {
           for feature in try(profile.wan_vpn.ethernet_interfaces, []) : feature.name => try(feature.port_channel_member_interface, false) == false ? {
             parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${feature.name}"].id
             parcel_type = "wan/vpn/interface/ethernet"
-          } : {
+            } : {
             parcel_id   = sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${profile.name}-wan_vpn-${feature.name}"].id
             parcel_type = "wan/vpn/interface/ethernet"
           }

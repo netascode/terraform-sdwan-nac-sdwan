@@ -1043,7 +1043,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   }] : null
   port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
   port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
-  port_channel_subinterface                  = try(each.value.interface.port_channel_subinterface, null) == true ? each.value.interface.port_channel_subinterface : null
+  port_channel_subinterface                  = try(each.value.interface.port_channel_subinterface, null)
   qos_adaptive                               = try(each.value.interface.adaptive_qos, false)
   qos_adaptive_bandwidth_downstream          = try(each.value.interface.adaptive_qos_shaping_rate_downstream != null, null)
   qos_adaptive_bandwidth_upstream            = try(each.value.interface.adaptive_qos_shaping_rate_upstream != null, null)

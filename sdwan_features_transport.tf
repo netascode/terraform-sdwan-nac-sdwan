@@ -593,7 +593,7 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   autonegotiate_variable              = try("{{${each.value.interface.autonegotiate_variable}}}", null)
   duplex                              = try(each.value.interface.duplex, null)
   duplex_variable                     = try("{{${each.value.interface.duplex_variable}}}", null)
-  enable_dhcpv6                       = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type) == "dynamic" ? true : null
+  enable_dhcpv6                       = try(each.value.interface.ipv6_address_type, null) == "dynamic" ? true : null
   icmp_redirect_disable               = try(each.value.interface.icmp_redirect_disable, null)
   icmp_redirect_disable_variable      = try("{{${each.value.interface.icmp_redirect_disable_variable}}}", null)
   interface_description               = try(each.value.interface.interface_description, null)
@@ -610,7 +610,8 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
   ipv4_auto_detect_bandwidth_variable = try("{{${each.value.interface.auto_detect_bandwidth_variable}}}", null)
   ipv4_address                        = try(each.value.interface.ipv4_address, null)
   ipv4_address_variable               = try("{{${each.value.interface.ipv4_address_variable}}}", null)
-  ipv4_address_type                   = try(each.value.interface.ipv4_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv4_configuration_type)
+  ipv4_address_type                   = try(each.value.interface.ipv4_address_type, null)
+  ipv4_address_type_variable          = try("{{${each.value.interface.ipv4_address_type_variable}}}", null)
   ipv4_dhcp_distance                  = try(each.value.interface.ipv4_dhcp_distance, null)
   ipv4_dhcp_distance_variable         = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
   ipv4_dhcp_helper                    = try(each.value.interface.ipv4_dhcp_helpers, null)
@@ -623,23 +624,24 @@ resource "sdwan_transport_management_vpn_interface_ethernet_feature" "transport_
     subnet_mask          = try(a.subnet_mask, null)
     subnet_mask_variable = try("{{${a.subnet_mask_variable}}}", null)
   }]
-  ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
-  ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
-  ipv6_address              = try(each.value.interface.ipv6_address, null)
-  ipv6_address_variable     = try("{{${each.value.interface.ipv6_address_variable}}}", null)
-  ipv6_address_type         = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.management_vpn.ethernet_interfaces.ipv6_configuration_type)
-  load_interval             = try(each.value.interface.load_interval, null)
-  load_interval_variable    = try("{{${each.value.interface.load_interval_variable}}}", null)
-  mac_address               = try(each.value.interface.mac_address, null)
-  mac_address_variable      = try("{{${each.value.interface.mac_address_variable}}}", null)
-  media_type                = try(each.value.interface.media_type, null)
-  media_type_variable       = try("{{${each.value.interface.media_type_variable}}}", null)
-  shutdown                  = try(each.value.interface.shutdown, null)
-  shutdown_variable         = try("{{${each.value.interface.shutdown_variable}}}", null)
-  speed                     = try(each.value.interface.speed, null)
-  speed_variable            = try("{{${each.value.interface.speed_variable}}}", null)
-  tcp_mss                   = try(each.value.interface.tcp_mss, null)
-  tcp_mss_variable          = try("{{${each.value.interface.tcp_mss_variable}}}", null)
+  ipv4_subnet_mask           = try(each.value.interface.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable  = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
+  ipv6_address               = try(each.value.interface.ipv6_address, null)
+  ipv6_address_variable      = try("{{${each.value.interface.ipv6_address_variable}}}", null)
+  ipv6_address_type          = try(each.value.interface.ipv6_address_type, null)
+  ipv6_address_type_variable = try("{{${each.value.interface.ipv6_address_type_variable}}}", null)
+  load_interval              = try(each.value.interface.load_interval, null)
+  load_interval_variable     = try("{{${each.value.interface.load_interval_variable}}}", null)
+  mac_address                = try(each.value.interface.mac_address, null)
+  mac_address_variable       = try("{{${each.value.interface.mac_address_variable}}}", null)
+  media_type                 = try(each.value.interface.media_type, null)
+  media_type_variable        = try("{{${each.value.interface.media_type_variable}}}", null)
+  shutdown                   = try(each.value.interface.shutdown, null)
+  shutdown_variable          = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                      = try(each.value.interface.speed, null)
+  speed_variable             = try("{{${each.value.interface.speed_variable}}}", null)
+  tcp_mss                    = try(each.value.interface.tcp_mss, null)
+  tcp_mss_variable           = try("{{${each.value.interface.tcp_mss_variable}}}", null)
 }
 
 resource "sdwan_transport_routing_ospf_feature" "transport_routing_ospf_feature" {
@@ -911,7 +913,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   block_non_source_ip_variable   = try("{{${each.value.interface.block_non_source_ip_variable}}}", null)
   duplex                         = try(each.value.interface.duplex, null)
   duplex_variable                = try("{{${each.value.interface.duplex_variable}}}", null)
-  enable_dhcpv6                  = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "dynamic" ? true : null
+  enable_dhcpv6                  = try(each.value.interface.ipv6_address_type, null) == "dynamic" ? true : null
   gre_tunnel_source_ip           = try(each.value.interface.gre_tloc_extension_source_ip, null)
   gre_tunnel_source_ip_variable  = try("{{${each.value.interface.gre_tloc_extension_source_ip_variable}}}", null)
   icmp_redirect_disable          = try(each.value.interface.icmp_redirect_disable, null)
@@ -930,7 +932,8 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   iperf_server_variable          = try("{{${each.value.interface.iperf_server_variable}}}", null)
   ipv4_address                   = try(each.value.interface.ipv4_address, null)
   ipv4_address_variable          = try("{{${each.value.interface.ipv4_address_variable}}}", null)
-  ipv4_address_type              = try(each.value.interface.ipv4_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv4_configuration_type)
+  ipv4_address_type              = try(each.value.interface.ipv4_address_type, null)
+  ipv4_address_type_variable     = try("{{${each.value.interface.ipv4_address_type_variable}}}", null)
   ipv4_dhcp_distance             = try(each.value.interface.ipv4_dhcp_distance, null)
   ipv4_dhcp_distance_variable    = try("{{${each.value.interface.ipv4_dhcp_distance_variable}}}", null)
   ipv4_dhcp_helper               = try(each.value.interface.ipv4_dhcp_helpers, null)
@@ -941,16 +944,17 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
     subnet_mask          = try(a.subnet_mask, null)
     subnet_mask_variable = try("{{${a.subnet_mask_variable}}}", null)
   }]
-  ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
-  ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
-  ipv6_address              = try(each.value.interface.ipv6_address, null)
-  ipv6_address_variable     = try("{{${each.value.interface.ipv6_address_variable}}}", null)
-  ipv6_address_type         = try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "none" ? null : try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type)
-  ipv6_dhcp_secondary_address = try(try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "dynamic" && length(each.value.interface.ipv6_secondary_addresses) > 0, false) ? [for a in each.value.interface.ipv6_secondary_addresses : {
+  ipv4_subnet_mask           = try(each.value.interface.ipv4_subnet_mask, null)
+  ipv4_subnet_mask_variable  = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
+  ipv6_address               = try(each.value.interface.ipv6_address, null)
+  ipv6_address_variable      = try("{{${each.value.interface.ipv6_address_variable}}}", null)
+  ipv6_address_type          = try(each.value.interface.ipv6_address_type, null)
+  ipv6_address_type_variable = try("{{${each.value.interface.ipv6_address_type_variable}}}", null)
+  ipv6_dhcp_secondary_address = try(length(each.value.interface.ipv6_dynamic_secondary_addresses) > 0, false) ? [for a in each.value.interface.ipv6_dynamic_secondary_addresses : {
     address          = try(a.address, null)
     address_variable = try("{{${a.address_variable}}}", null)
   }] : null
-  ipv6_secondary_addresses = try(try(each.value.interface.ipv6_configuration_type, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.ethernet_interfaces.ipv6_configuration_type) == "static" && length(each.value.interface.ipv6_secondary_addresses) > 0, false) ? [for a in each.value.interface.ipv6_secondary_addresses : {
+  ipv6_secondary_addresses = try(length(each.value.interface.ipv6_static_secondary_addresses) > 0, false) ? [for a in each.value.interface.ipv6_static_secondary_addresses : {
     address          = try(a.address, null)
     address_variable = try("{{${a.address_variable}}}", null)
   }] : null

@@ -470,9 +470,6 @@ defaults:
           sequences:
             name: acl
         lan_vpns:
-          ethernet_interfaces:
-            ipv4_configuration_type: static
-            ipv6_configuration_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:
@@ -538,9 +535,6 @@ defaults:
             name: acl
         management_vpn:
           name: management_vpn
-          ethernet_interfaces:
-            ipv4_configuration_type: static
-            ipv6_configuration_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:
@@ -552,8 +546,6 @@ defaults:
         wan_vpn:
           name: wan_vpn
           ethernet_interfaces:
-            ipv4_configuration_type: static
-            ipv6_configuration_type: none
             tunnel_interface:
               ipsec_encapsulation: true
           ipv4_static_routes:

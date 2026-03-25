@@ -36,6 +36,7 @@
 - add support for service LAN VPN SVI Interface
 - add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
 - fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
+- rename `ipv4_configuration_type`/`ipv6_configuration_type` to `ipv4_address_type`/`ipv6_address_type` and add `ipv4_address_type_variable`/`ipv6_address_type_variable` in service LAN VPN ethernet interface, transport management VPN ethernet interface and transport WAN VPN ethernet interface
 
 ## 1.3.0
 

@@ -861,7 +861,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   media_type                     = try(each.value.interface.media_type, null)
   media_type_variable            = try("{{${each.value.interface.media_type_variable}}}", null)
   port_channel_interface         = try(each.value.interface.port_channel_interface, null)
-  port_channel_member_interface  = try(each.value.interface.port_channel_member_interface, null)
+  port_channel_member_interface  = true
   shutdown                       = try(each.value.interface.shutdown, null)
   shutdown_variable              = try("{{${each.value.interface.shutdown_variable}}}", null)
   speed                          = try(each.value.interface.speed, null)
@@ -1034,7 +1034,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_lacp_min_bundle_variable     = try("{{${each.value.interface.port_channel_lacp_min_bundle_variable}}}", null)
   port_channel_lacp_qos_aggregate           = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
   port_channel_lacp_qos_aggregate_variable  = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
-  port_channel_member_interface             = try(each.value.interface.port_channel_member_interface, null)
+  port_channel_member_interface             = null
   port_channel_mode                         = try(each.value.interface.port_channel_mode, null)
   port_channel_static_load_balance          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null
   port_channel_static_load_balance_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null

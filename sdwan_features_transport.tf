@@ -831,7 +831,7 @@ resource "sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature" "trans
   transport_routing_ospf_feature_id = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${each.value.name}-${each.value.wan_vpn.ospf}"].id
 }
 
-resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link" {
+resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link_feature" {
   for_each = {
     for interface_item in flatten([
       for profile in try(local.feature_profiles.transport_profiles, {}) : [
@@ -1026,7 +1026,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
   port_channel_lacp_max_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_max_bundle_variable}}}", null)
   port_channel_lacp_member_links = try(each.value.interface.port_channel_mode, null) == "lacp" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
-    interface_id                = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
+    interface_id                = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
     lacp_mode                   = try(member_link.lacp_mode, null)
     lacp_mode_variable          = try("{{${member_link.lacp_mode_variable}}}", null)
     lacp_port_priority          = try(member_link.lacp_port_priority, null)
@@ -1043,7 +1043,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_static_load_balance          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null
   port_channel_static_load_balance_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
   port_channel_static_member_links = try(each.value.interface.port_channel_mode, null) == "static" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
-    interface_id = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
+    interface_id = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
   }] : null
   port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
   port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null

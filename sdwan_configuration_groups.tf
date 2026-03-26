@@ -274,6 +274,10 @@ locals {
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${profile.name}-wan_vpn-${interface.name}"].version,
       ] if try(interface.port_channel_member_interface, false) == true],
+      try(profile.wan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.gre_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+        try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_gre_feature_associate_tracker_feature.transport_wan_vpn_interface_gre_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
+      ]],
       try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
       ]],

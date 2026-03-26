@@ -548,6 +548,8 @@ defaults:
           ethernet_interfaces:
             tunnel_interface:
               ipsec_encapsulation: true
+          ipsec_interfaces:
+            application_tunnel_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:

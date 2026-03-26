@@ -45,7 +45,6 @@
 - add support for transport ipsec interface
 - rename `ipv4_configuration_type`/`ipv6_configuration_type` to `ipv4_address_type`/`ipv6_address_type` and add `ipv4_address_type_variable`/`ipv6_address_type_variable` in service LAN VPN ethernet interface, transport management VPN ethernet interface and transport WAN VPN ethernet interface
 - add support for mrf, port-channel and other new 20.15 parameters for wan_vpn ethernet interface
-- rename resource `transport_wan_vpn_interface_ethernet_member_link` to `transport_wan_vpn_interface_ethernet_member_link_feature` for `sdwan_transport_wan_vpn_interface_ethernet_feature`
 
 ## 1.3.0
 

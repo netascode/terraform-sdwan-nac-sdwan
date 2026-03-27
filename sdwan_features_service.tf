@@ -345,7 +345,7 @@ resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
       accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
-      accept_set_service_chain_name              = s.base_action == "accept" ? try(s.actions.service_chain_name, null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
       accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
       accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
       accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
@@ -1999,7 +1999,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
       accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
-      accept_set_service_chain_name              = s.base_action == "accept" ? try(s.actions.service_chain_name, null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
       accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
       accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
       accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null

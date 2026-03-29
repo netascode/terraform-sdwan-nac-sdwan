@@ -290,14 +290,20 @@ resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
   default_action     = each.value.acl.default_action
   sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
-      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
-      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
-      accept_set_dscp       = s.base_action == "accept" ? try(s.actions.dscp, null) : null
-      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
-      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
-      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+      accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_set_dscp                            = s.base_action == "accept" ? try(s.actions.dscp, null) : null
+      accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
+      accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
+      accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
+      accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
+      accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
+      drop_counter_name                          = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log                                   = s.base_action == "drop" ? try(s.actions.log, null) : null
     }] : null
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
@@ -831,7 +837,7 @@ resource "sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature" "trans
   transport_routing_ospf_feature_id = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${each.value.name}-${each.value.wan_vpn.ospf}"].id
 }
 
-resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link" {
+resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link_feature" {
   for_each = {
     for interface_item in flatten([
       for profile in try(local.feature_profiles.transport_profiles, {}) : [
@@ -1026,7 +1032,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
   port_channel_lacp_max_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_max_bundle_variable}}}", null)
   port_channel_lacp_member_links = try(each.value.interface.port_channel_mode, null) == "lacp" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
-    interface_id                = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
+    interface_id                = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
     lacp_mode                   = try(member_link.lacp_mode, null)
     lacp_mode_variable          = try("{{${member_link.lacp_mode_variable}}}", null)
     lacp_port_priority          = try(member_link.lacp_port_priority, null)
@@ -1043,7 +1049,7 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
   port_channel_static_load_balance          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null
   port_channel_static_load_balance_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
   port_channel_static_member_links = try(each.value.interface.port_channel_mode, null) == "static" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
-    interface_id = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
+    interface_id = try(sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-wan_vpn-${member_link.interface_feature_name}"].id, null)
   }] : null
   port_channel_static_qos_aggregate          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
   port_channel_static_qos_aggregate_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
@@ -1508,14 +1514,20 @@ resource "sdwan_transport_ipv6_acl_feature" "transport_ipv6_acl_feature" {
   default_action     = try(each.value.acl.default_action, "drop")
   sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
-      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
-      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
-      accept_traffic_class  = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
-      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
-      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
-      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+      accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_traffic_class                       = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
+      accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
+      accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
+      accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
+      accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
+      accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
+      drop_counter_name                          = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log                                   = s.base_action == "drop" ? try(s.actions.log, null) : null
     }] : null
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{

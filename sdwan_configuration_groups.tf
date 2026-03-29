@@ -314,13 +314,18 @@ locals {
             parcel_type = "wan/vpn/interface/ethernet"
           }
         },
-        # Other transport features to be added when supported
-        # {
-        #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
-        #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
-        #     parcel_type = "wan/vpn/interface/gre"
-        #   }
-        # }
+        {
+          for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/gre"
+          }
+        },
+        {
+          for feature in try(profile.wan_vpn.ipsec_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/ipsec"
+          }
+        },
       )
     },
     # Service profile features
@@ -355,6 +360,14 @@ locals {
             for interface in try(lan_vpn.ethernet_interfaces, []) : interface.name => {
               parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
               parcel_type = "lan/vpn/interface/ethernet"
+            }
+          }
+        ]...),
+        merge([
+          for lan_vpn in try(profile.lan_vpns, []) : {
+            for interface in try(lan_vpn.svi_interfaces, []) : interface.name => {
+              parcel_id   = sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
+              parcel_type = "lan/vpn/interface/svi"
             }
           }
         ]...)

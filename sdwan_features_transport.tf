@@ -290,14 +290,20 @@ resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
   default_action     = each.value.acl.default_action
   sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
-      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
-      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
-      accept_set_dscp       = s.base_action == "accept" ? try(s.actions.dscp, null) : null
-      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
-      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
-      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+      accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_set_dscp                            = s.base_action == "accept" ? try(s.actions.dscp, null) : null
+      accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
+      accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
+      accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
+      accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
+      accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
+      drop_counter_name                          = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log                                   = s.base_action == "drop" ? try(s.actions.log, null) : null
     }] : null
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
@@ -1395,14 +1401,20 @@ resource "sdwan_transport_ipv6_acl_feature" "transport_ipv6_acl_feature" {
   default_action     = try(each.value.acl.default_action, "drop")
   sequences = try(length(each.value.acl.sequences) == 0, true) ? null : [for s in each.value.acl.sequences : {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
-      accept_counter_name   = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
-      accept_log            = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id     = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
-      accept_traffic_class  = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
-      accept_set_next_hop   = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
-      drop_counter_name     = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
-      drop_log              = s.base_action == "drop" ? try(s.actions.log, null) : null
+      accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
+      accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_traffic_class                       = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
+      accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
+      accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
+      accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
+      accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
+      accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
+      drop_counter_name                          = s.base_action == "drop" ? try(s.actions.counter_name, null) : null
+      drop_log                                   = s.base_action == "drop" ? try(s.actions.log, null) : null
     }] : null
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{

@@ -277,6 +277,10 @@ locals {
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_member_link_feature["${profile.name}-wan_vpn-${interface.name}"].version,
       ] if try(interface.port_channel_member_interface, false) == true],
+      try(profile.wan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.gre_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+        try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_gre_feature_associate_tracker_feature.transport_wan_vpn_interface_gre_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
+      ]],
       try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
       ]],
@@ -313,13 +317,18 @@ locals {
             parcel_type = "wan/vpn/interface/ethernet"
           }
         },
-        # Other transport features to be added when supported
-        # {
-        #   for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
-        #     parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
-        #     parcel_type = "wan/vpn/interface/gre"
-        #   }
-        # }
+        {
+          for feature in try(profile.wan_vpn.gre_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_gre_feature.transport_wan_vpn_interface_gre_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/gre"
+          }
+        },
+        {
+          for feature in try(profile.wan_vpn.ipsec_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/ipsec"
+          }
+        },
       )
     },
     # Service profile features
@@ -358,6 +367,14 @@ locals {
             {
               parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_member_link_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
               parcel_type = "lan/vpn/interface/ethernet"
+            }
+          }
+        ]...),
+        merge([
+          for lan_vpn in try(profile.lan_vpns, []) : {
+            for interface in try(lan_vpn.svi_interfaces, []) : interface.name => {
+              parcel_id   = sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
+              parcel_type = "lan/vpn/interface/svi"
             }
           }
         ]...)

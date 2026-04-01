@@ -47,7 +47,7 @@
 - add support for mrf, port-channel and other new 20.15 parameters for wan_vpn ethernet interface
 - add `accept_set_service_chain_fallback`, `accept_set_service_chain_name` and `accept_set_service_chain_vpn` support with their respective variable fields in `sdwan_service_ipv4_acl_feature`, `sdwan_service_ipv6_acl_feature`, `sdwan_transport_ipv4_acl_feature` and `sdwan_transport_ipv6_acl_feature`
 - add support for transport WAN VPN GRE Interface
-- add support for port-channel and other new 20.15 parameters in the service LAN VPN Ethernet interface
+- add support for port-channel and other new 20.15 parameters in the service LAN VPN ethernet interface
 
 ## 1.3.0
 

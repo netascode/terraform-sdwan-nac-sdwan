@@ -422,12 +422,12 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   advertise_omp_ipv6s = try(length(each.value.lan_vpn.ipv6_omp_advertise_routes) == 0, true) ? null : [
     for route in each.value.lan_vpn.ipv6_omp_advertise_routes : {
       protocol = (
-        try(route.protocol) == "bgp" ? "BGP" :
-        try(route.protocol) == "ospf" ? "OSPF" :
-        try(route.protocol) == "connected" ? "Connected" :
-        try(route.protocol) == "static" ? "Static" :
-        try(route.protocol) == "network" ? "Network" :
-        try(route.protocol) == "aggregate" ? "Aggregate" : null
+        try(route.protocol, null) == "bgp" ? "BGP" :
+        try(route.protocol, null) == "ospf" ? "OSPF" :
+        try(route.protocol, null) == "connected" ? "Connected" :
+        try(route.protocol, null) == "static" ? "Static" :
+        try(route.protocol, null) == "network" ? "Network" :
+        try(route.protocol, null) == "aggregate" ? "Aggregate" : null
       )
       protocol_variable = try("{{${route.protocol_variable}}}", null)
       route_policy_id   = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${route.route_policy}"].id, null)
@@ -716,10 +716,10 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   services = try(length(each.value.lan_vpn.services) == 0, true) ? null : [
     for service in each.value.lan_vpn.services : {
       service_type = (
-        try(service.service_type) == "fw" ? "FW" :
-        try(service.service_type) == "ids" ? "IDS" :
-        try(service.service_type) == "idp" ? "IDP" :
-        try(service.service_type) == "te" ? "TE" :
+        try(service.service_type, null) == "fw" ? "FW" :
+        try(service.service_type, null) == "ids" ? "IDS" :
+        try(service.service_type, null) == "idp" ? "IDP" :
+        try(service.service_type, null) == "te" ? "TE" :
         try(service.service_type, null)
       )
       service_type_variable   = try("{{${service.service_type_variable}}}", null)

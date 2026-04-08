@@ -1,3 +1,16 @@
+resource "sdwan_application_priority_policy_settings_policy" "application_priority_policy_settings_policy" {
+  for_each = {
+    for profile in try(local.feature_profiles.application_priority_profiles, []) : profile.name => profile
+  }
+  name                        = "${each.value.name}_settings"
+  description                 = null # not supported in the UI
+  feature_profile_id          = sdwan_application_priority_feature_profile.application_priority_feature_profile[each.value.name].id
+  ipv4_application_visibility = try(each.value.settings.ipv4_application_visibility, local.defaults.sdwan.feature_profiles.application_priority_profiles.settings.ipv4_application_visibility, false)
+  ipv6_application_visibility = try(each.value.settings.ipv6_application_visibility, local.defaults.sdwan.feature_profiles.application_priority_profiles.settings.ipv6_application_visibility, false)
+  ipv4_flow_visibility        = try(each.value.settings.ipv4_flow_visibility, local.defaults.sdwan.feature_profiles.application_priority_profiles.settings.ipv4_flow_visibility, false)
+  ipv6_flow_visibility        = try(each.value.settings.ipv6_flow_visibility, local.defaults.sdwan.feature_profiles.application_priority_profiles.settings.ipv6_flow_visibility, false)
+}
+
 resource "sdwan_application_priority_qos_policy" "application_priority_qos_policy" {
   for_each = {
     for qos_item in flatten([

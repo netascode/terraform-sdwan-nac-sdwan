@@ -77,6 +77,7 @@ module "sdwan" {
 | [sdwan_application_aware_routing_policy_definition.application_aware_routing_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_aware_routing_policy_definition) | resource |
 | [sdwan_application_list_policy_object.application_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_list_policy_object) | resource |
 | [sdwan_application_priority_feature_profile.application_priority_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_feature_profile) | resource |
+| [sdwan_application_priority_policy_settings_policy.application_priority_policy_settings_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_policy_settings_policy) | resource |
 | [sdwan_application_priority_qos_policy.application_priority_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_qos_policy) | resource |
 | [sdwan_application_priority_traffic_policy_policy.application_priority_traffic_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_priority_traffic_policy_policy) | resource |
 | [sdwan_as_path_list_policy_object.as_path_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/as_path_list_policy_object) | resource |

@@ -175,6 +175,9 @@ locals {
         try(lan_vpn.gre_interfaces, null) == null ? [] : [for interface in try(lan_vpn.gre_interfaces, []) : [
           sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
         ]],
+        try(lan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ipsec_interfaces, []) : [
+          sdwan_service_lan_vpn_interface_ipsec_feature.service_lan_vpn_interface_ipsec_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
+        ]],
         try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
           sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
           try(interface.dhcp_server, null) == null ? [] : [sdwan_service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature.service_lan_vpn_interface_svi_feature_associate_dhcp_server_feature["${profile.name}-${lan_vpn.name}-${interface.name}-dhcp_server"].version],
@@ -368,6 +371,14 @@ locals {
             for interface in try(lan_vpn.svi_interfaces, []) : interface.name => {
               parcel_id   = sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
               parcel_type = "lan/vpn/interface/svi"
+            }
+          }
+        ]...),
+        merge([
+          for lan_vpn in try(profile.lan_vpns, []) : {
+            for interface in try(lan_vpn.ipsec_interfaces, []) : interface.name => {
+              parcel_id   = sdwan_service_lan_vpn_interface_ipsec_feature.service_lan_vpn_interface_ipsec_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
+              parcel_type = "lan/vpn/interface/ipsec"
             }
           }
         ]...)

@@ -360,7 +360,7 @@ locals {
         },
         merge([
           for lan_vpn in try(profile.lan_vpns, []) : {
-            for interface in try(lan_vpn.ethernet_interfaces, []) : "${lan_vpn.name}-${interface.name}" => try(interface.port_channel_member_interface, false) == false ? {
+            for interface in try(lan_vpn.ethernet_interfaces, []) : interface.name => try(interface.port_channel_member_interface, false) == false ? {
               parcel_id   = sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].id
               parcel_type = "lan/vpn/interface/ethernet"
             } :

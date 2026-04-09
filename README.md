@@ -118,6 +118,9 @@ module "sdwan" {
 | [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv4_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv6_prefix_list_policy_object.data_ipv6_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv6_prefix_list_policy_object) | resource |
+| [sdwan_embedded_security_feature_profile.embedded_security_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/embedded_security_feature_profile) | resource |
+| [sdwan_embedded_security_ngfw_policy.embedded_security_ngfw_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/embedded_security_ngfw_policy) | resource |
+| [sdwan_embedded_security_policy.embedded_security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/embedded_security_policy) | resource |
 | [sdwan_expanded_community_list_policy_object.expanded_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/expanded_community_list_policy_object) | resource |
 | [sdwan_extended_community_list_policy_object.extended_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/extended_community_list_policy_object) | resource |
 | [sdwan_feature_device_template.feature_device_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/feature_device_template) | resource |

@@ -443,6 +443,11 @@ defaults:
       cli_profiles:
         config:
           name: config
+      ngfw_security_profiles:
+        policies:
+          sequences:
+            sequence_type: ngfirewall
+            disable_sequence: false
       other_profiles:
         thousandeyes:
           name: thousandeyes

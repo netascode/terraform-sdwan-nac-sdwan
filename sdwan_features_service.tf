@@ -844,6 +844,46 @@ resource "sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature" "
   service_routing_ospfv3_ipv6_feature_id = sdwan_service_routing_ospfv3_ipv6_feature.service_routing_ospfv3_ipv6_feature["${each.value.profile.name}-${each.value.lan_vpn.ospfv3_ipv6}"].id
 }
 
+resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_interface_ethernet_member_link_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, {}) : [
+        for lan_vpn in try(profile.lan_vpns, []) : [
+          for interface in try(lan_vpn.ethernet_interfaces, []) : {
+            profile   = profile
+            lan_vpn   = lan_vpn
+            interface = interface
+          } if try(interface.port_channel_member_interface, false) == true
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-${interface_item.lan_vpn.name}-${interface_item.interface.name}" => interface_item
+  }
+
+  name                           = each.value.interface.name
+  description                    = try(each.value.interface.description, null)
+  feature_profile_id             = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  service_lan_vpn_feature_id     = sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${each.value.lan_vpn.name}"].id
+  autonegotiate                  = try(each.value.interface.autonegotiate, null)
+  autonegotiate_variable         = try("{{${each.value.interface.autonegotiate_variable}}}", null)
+  duplex                         = try(each.value.interface.duplex, null)
+  duplex_variable                = try("{{${each.value.interface.duplex_variable}}}", null)
+  interface_description          = try(each.value.interface.interface_description, null)
+  interface_description_variable = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_name                 = try(each.value.interface.interface_name, null)
+  interface_name_variable        = try("{{${each.value.interface.interface_name_variable}}}", null)
+  load_interval                  = try(each.value.interface.load_interval, null)
+  load_interval_variable         = try("{{${each.value.interface.load_interval_variable}}}", null)
+  media_type                     = try(each.value.interface.media_type, null)
+  media_type_variable            = try("{{${each.value.interface.media_type_variable}}}", null)
+  port_channel_interface         = null
+  port_channel_member_interface  = true
+  shutdown                       = try(each.value.interface.shutdown, null)
+  shutdown_variable              = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                          = try(each.value.interface.speed, null)
+  speed_variable                 = try("{{${each.value.interface.speed_variable}}}", null)
+}
+
 resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_interface_ethernet_feature" {
   for_each = {
     for interface_item in flatten([
@@ -853,7 +893,7 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
             profile   = profile
             lan_vpn   = lan_vpn
             interface = interface
-          }
+          } if try(interface.port_channel_member_interface, false) == false
         ]
       ]
     ])
@@ -911,17 +951,19 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
   ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
   ipv4_vrrps = try(length(each.value.interface.ipv4_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv4_vrrp_groups : {
-    address                = try(vrrp.address, null)
-    address_variable       = try("{{${vrrp.address_variable}}}", null)
-    group_id               = try(vrrp.id, null)
-    group_id_variable      = try("{{${vrrp.id_variable}}}", null)
-    priority               = try(vrrp.priority, null)
-    priority_variable      = try("{{${vrrp.priority_variable}}}", null)
-    timer                  = try(vrrp.timer, null)
-    timer_variable         = try("{{${vrrp.timer_variable}}}", null)
-    tloc_prefix_change     = try(vrrp.tloc_preference_change, null)
-    tloc_pref_change_value = try(vrrp.tloc_preference_change_value, null)
-    track_omp              = try(vrrp.track_omp, null)
+    address                    = try(vrrp.address, null)
+    address_variable           = try("{{${vrrp.address_variable}}}", null)
+    group_id                   = try(vrrp.id, null)
+    group_id_variable          = try("{{${vrrp.id_variable}}}", null)
+    min_preempt_delay          = try(vrrp.min_preempt_delay, null)
+    min_preempt_delay_variable = try("{{${vrrp.min_preempt_delay_variable}}}", null)
+    priority                   = try(vrrp.priority, null)
+    priority_variable          = try("{{${vrrp.priority_variable}}}", null)
+    timer                      = try(vrrp.timer, null)
+    timer_variable             = try("{{${vrrp.timer_variable}}}", null)
+    tloc_prefix_change         = try(vrrp.tloc_preference_change, null)
+    tloc_pref_change_value     = try(vrrp.tloc_preference_change_value, null)
+    track_omp                  = try(vrrp.track_omp, null)
     secondary_addresses = try(length(vrrp.secondary_addresses) == 0, true) ? null : [for addr in vrrp.secondary_addresses : {
       address              = try(addr.address, null)
       address_variable     = try("{{${addr.address_variable}}}", null)
@@ -961,13 +1003,16 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
     address_variable = try("{{${addr.address_variable}}}", null)
   }]
   ipv6_vrrps = try(length(each.value.interface.ipv6_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv6_vrrp_groups : {
-    group_id          = try(vrrp.id, null)
-    group_id_variable = try("{{${vrrp.id_variable}}}", null)
-    priority          = try(vrrp.priority, null)
-    priority_variable = try("{{${vrrp.priority_variable}}}", null)
-    timer             = try(vrrp.timer, null)
-    timer_variable    = try("{{${vrrp.timer_variable}}}", null)
-    track_omp         = try(vrrp.track_omp, null)
+    follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
+    group_id                             = try(vrrp.id, null)
+    group_id_variable                    = try("{{${vrrp.id_variable}}}", null)
+    min_preempt_delay                    = try(vrrp.min_preempt_delay, null)
+    min_preempt_delay_variable           = try("{{${vrrp.min_preempt_delay_variable}}}", null)
+    priority                             = try(vrrp.priority, null)
+    priority_variable                    = try("{{${vrrp.priority_variable}}}", null)
+    timer                                = try(vrrp.timer, null)
+    timer_variable                       = try("{{${vrrp.timer_variable}}}", null)
+    track_omp                            = try(vrrp.track_omp, null)
     ipv6_addresses = try(vrrp.link_local_address, null) != null || try(vrrp.link_local_address_variable, null) != null || try(vrrp.global_prefix, null) != null || try(vrrp.global_prefix_variable, null) != null ? [{
       link_local_address          = try(vrrp.link_local_address, null)
       link_local_address_variable = try("{{${vrrp.link_local_address_variable}}}", null)
@@ -975,27 +1020,61 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
       global_address_variable     = try("{{${vrrp.global_prefix_variable}}}", null)
     }] : null
   }]
-  load_interval                                 = try(each.value.interface.load_interval, null)
-  load_interval_variable                        = try("{{${each.value.interface.load_interval_variable}}}", null)
-  mac_address                                   = try(each.value.interface.mac_address, null)
-  mac_address_variable                          = try("{{${each.value.interface.mac_address_variable}}}", null)
-  media_type                                    = try(each.value.interface.media_type, null)
-  media_type_variable                           = try("{{${each.value.interface.media_type_variable}}}", null)
-  shutdown                                      = try(each.value.interface.shutdown, null)
-  shutdown_variable                             = try("{{${each.value.interface.shutdown_variable}}}", null)
-  speed                                         = try(each.value.interface.speed, null)
-  speed_variable                                = try("{{${each.value.interface.speed_variable}}}", null)
-  tcp_mss                                       = try(each.value.interface.tcp_mss, null)
-  tcp_mss_variable                              = try("{{${each.value.interface.tcp_mss_variable}}}", null)
-  trustsec_enable_enforced_propogation          = try(each.value.interface.trustsec_enable_enforced_propogation, null)
-  trustsec_enable_sgt_propogation               = try(each.value.interface.trustsec_enable_sgt_propogation, null)
-  trustsec_enforced_security_group_tag          = try(each.value.interface.trustsec_enforced_sgt, null)
-  trustsec_enforced_security_group_tag_variable = try("{{${each.value.interface.trustsec_enforced_sgt_variable}}}", null)
-  trustsec_propogate                            = try(each.value.interface.trustsec_propogate, null)
-  trustsec_security_group_tag                   = try(each.value.interface.trustsec_sgt, null)
-  trustsec_security_group_tag_variable          = try("{{${each.value.interface.trustsec_sgt_variable}}}", null)
-  xconnect                                      = try(each.value.interface.xconnect, null)
-  xconnect_variable                             = try("{{${each.value.interface.xconnect_variable}}}", null)
+  load_interval                              = try(each.value.interface.load_interval, null)
+  load_interval_variable                     = try("{{${each.value.interface.load_interval_variable}}}", null)
+  mac_address                                = try(each.value.interface.mac_address, null)
+  mac_address_variable                       = try("{{${each.value.interface.mac_address_variable}}}", null)
+  media_type                                 = try(each.value.interface.media_type, null)
+  media_type_variable                        = try("{{${each.value.interface.media_type_variable}}}", null)
+  port_channel_interface                     = try(each.value.interface.port_channel_interface, null)
+  port_channel_lacp_fast_switchover          = try(each.value.interface.port_channel_lacp_fast_switchover, null)
+  port_channel_lacp_fast_switchover_variable = try("{{${each.value.interface.port_channel_lacp_fast_switchover_variable}}}", null)
+  port_channel_lacp_load_balance             = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_load_balance, null) : null
+  port_channel_lacp_load_balance_variable    = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
+  port_channel_lacp_max_bundle               = try(each.value.interface.port_channel_lacp_max_bundle, null)
+  port_channel_lacp_max_bundle_variable      = try("{{${each.value.interface.port_channel_lacp_max_bundle_variable}}}", null)
+  port_channel_lacp_member_links = try(each.value.interface.port_channel_mode, null) == "lacp" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
+    interface_id                = try(sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-${each.value.lan_vpn.name}-${member_link.interface_feature_name}"].id, null)
+    lacp_mode                   = try(member_link.lacp_mode, null)
+    lacp_mode_variable          = try("{{${member_link.lacp_mode_variable}}}", null)
+    lacp_port_priority          = try(member_link.lacp_port_priority, null)
+    lacp_port_priority_variable = try("{{${member_link.lacp_port_priority_variable}}}", null)
+    lacp_rate                   = try(member_link.lacp_rate, null)
+    lacp_rate_variable          = try("{{${member_link.lacp_rate_variable}}}", null)
+  }] : null
+  port_channel_lacp_min_bundle              = try(each.value.interface.port_channel_lacp_min_bundle, null)
+  port_channel_lacp_min_bundle_variable     = try("{{${each.value.interface.port_channel_lacp_min_bundle_variable}}}", null)
+  port_channel_lacp_qos_aggregate           = try(each.value.interface.port_channel_mode, null) == "lacp" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
+  port_channel_lacp_qos_aggregate_variable  = try(each.value.interface.port_channel_mode, null) == "lacp" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
+  port_channel_member_interface             = null
+  port_channel_mode                         = try(each.value.interface.port_channel_mode, null)
+  port_channel_static_load_balance          = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_load_balance, null) : null
+  port_channel_static_load_balance_variable = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_load_balance_variable}}}", null) : null
+  port_channel_static_member_links = try(each.value.interface.port_channel_mode, null) == "static" && try(length(each.value.interface.port_channel_member_links) == 0, true) == false ? [for member_link in each.value.interface.port_channel_member_links : {
+    interface_id = try(sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_member_link_feature["${each.value.profile.name}-${each.value.lan_vpn.name}-${member_link.interface_feature_name}"].id, null)
+  }] : null
+  port_channel_static_qos_aggregate                           = try(each.value.interface.port_channel_mode, null) == "static" ? try(each.value.interface.port_channel_qos_aggregate, null) : null
+  port_channel_static_qos_aggregate_variable                  = try(each.value.interface.port_channel_mode, null) == "static" ? try("{{${each.value.interface.port_channel_qos_aggregate_variable}}}", null) : null
+  port_channel_subinterface                                   = try(each.value.interface.port_channel_subinterface, null)
+  port_channel_subinterface_primary_interface_name            = try(each.value.interface.port_channel_subinterface_primary_interface_name, null)
+  port_channel_subinterface_primary_interface_name_variable   = try("{{${each.value.interface.port_channel_subinterface_primary_interface_name_variable}}}", null)
+  port_channel_subinterface_secondary_interface_name          = try(each.value.interface.port_channel_subinterface_secondary_interface_name, null)
+  port_channel_subinterface_secondary_interface_name_variable = try("{{${each.value.interface.port_channel_subinterface_secondary_interface_name_variable}}}", null)
+  shutdown                                                    = try(each.value.interface.shutdown, null)
+  shutdown_variable                                           = try("{{${each.value.interface.shutdown_variable}}}", null)
+  speed                                                       = try(each.value.interface.speed, null)
+  speed_variable                                              = try("{{${each.value.interface.speed_variable}}}", null)
+  tcp_mss                                                     = try(each.value.interface.tcp_mss, null)
+  tcp_mss_variable                                            = try("{{${each.value.interface.tcp_mss_variable}}}", null)
+  trustsec_enable_enforced_propogation                        = try(each.value.interface.trustsec_enable_enforced_propogation, null)
+  trustsec_enable_sgt_propogation                             = try(each.value.interface.trustsec_enable_sgt_propogation, null)
+  trustsec_enforced_security_group_tag                        = try(each.value.interface.trustsec_enforced_sgt, null)
+  trustsec_enforced_security_group_tag_variable               = try("{{${each.value.interface.trustsec_enforced_sgt_variable}}}", null)
+  trustsec_propogate                                          = try(each.value.interface.trustsec_propogate, null)
+  trustsec_security_group_tag                                 = try(each.value.interface.trustsec_sgt, null)
+  trustsec_security_group_tag_variable                        = try("{{${each.value.interface.trustsec_sgt_variable}}}", null)
+  xconnect                                                    = try(each.value.interface.xconnect, null)
+  xconnect_variable                                           = try("{{${each.value.interface.xconnect_variable}}}", null)
 }
 
 resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" "service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" {

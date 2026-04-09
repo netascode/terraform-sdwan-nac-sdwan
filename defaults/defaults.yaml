@@ -448,6 +448,11 @@ defaults:
       cli_profiles:
         config:
           name: config
+      ngfw_security_profiles:
+        policies:
+          sequences:
+            sequence_type: ngfirewall
+            disable_sequence: false
       other_profiles:
         thousandeyes:
           name: thousandeyes
@@ -475,6 +480,8 @@ defaults:
           sequences:
             name: acl
         lan_vpns:
+          ipsec_interfaces:
+            application_tunnel_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:

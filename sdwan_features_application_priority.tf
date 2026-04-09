@@ -261,7 +261,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
             preferred_remote_color_restrict = try(seq.actions.preferred_remote_color_restrict, null)
           }] : [],
           try(seq.actions.service, null) != null ? [{
-            service_type               = try(seq.actions.service.type, null) != null ? upper(seq.actions.service.type) : null
+            service_type               = try(seq.actions.service.type, null)
             service_vpn                = try(seq.actions.service.vpn, null)
             service_tloc_color         = try(seq.actions.service.tloc_color, null)
             service_tloc_encapsulation = try(seq.actions.service.tloc_encapsulation, null)
@@ -271,7 +271,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
             service_restrict           = try(seq.actions.service.restrict, null)
           }] : [],
           try(seq.actions.service_chain, null) != null ? [{
-            service_chain_type                = try(seq.actions.service_chain.type, null) != null ? upper(seq.actions.service_chain.type) : null
+            service_chain_type                = try(seq.actions.service_chain.type, null)
             service_chain_vpn                 = try(seq.actions.service_chain.vpn, null)
             service_chain_local               = try(seq.actions.service_chain.local, null)
             service_chain_fallback_to_routing = try(seq.actions.service_chain.fallback_to_routing, null) != null ? !seq.actions.service_chain.fallback_to_routing : null

@@ -7,10 +7,15 @@ resource "sdwan_policy_group" "policy_group" {
   feature_profile_ids = flatten([
     try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, []),
     try(each.value.application_priority, null) == null ? [] : [sdwan_application_priority_feature_profile.application_priority_feature_profile[each.value.application_priority].id],
+    try(each.value.ngfw_security, null) == null ? [] : [sdwan_embedded_security_feature_profile.embedded_security_feature_profile[each.value.ngfw_security].id],
   ])
-  policy_versions = length(
-    try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority]
-  ) == 0 ? null : local.application_priority_policies_versions[each.value.application_priority]
+  policy_versions = length(concat(
+    try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
+    try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
+    )) == 0 ? null : concat(
+    try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
+    try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
+  )
   devices = length([for router in local.routers : router if router.policy_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
       id     = router.chassis_id
@@ -193,6 +198,169 @@ locals {
 
       # Referenced object versions
       try(local.application_priority_object_versions[profile.name], [])
+    ]))
+  }
+
+  # ============================================================================
+  # Embedded Security (NGFW) - Policy Object Reference Tracking
+  # ============================================================================
+
+  embedded_security_referenced_objects = {
+    for profile in try(local.feature_profiles.ngfw_security_profiles, []) : profile.name => {
+
+      # Advanced inspection profiles referenced in sequences or at settings level
+      advanced_inspection_profiles = distinct(compact(flatten([
+        try(profile.settings.advanced_inspection_profile, null),
+        [for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.actions.advanced_inspection_profile, null)
+        ]]
+      ])))
+
+      # Security local application lists
+      local_app_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.match_entries.application_list, null)
+        ]
+      ])))
+
+      # Security data IPv4 prefix lists
+      security_data_ipv4_prefix_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_data_ipv4_prefix_lists, []),
+            try(seq.match_entries.destination_data_ipv4_prefix_lists, []),
+          ]
+        ]
+      ])))
+
+      # Security FQDN lists
+      fqdn_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.match_entries.destination_fqdn_lists, [])
+        ]
+      ])))
+
+      # Security geolocation lists
+      geo_location_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_geo_location_lists, []),
+            try(seq.match_entries.destination_geo_location_lists, []),
+          ]
+        ]
+      ])))
+
+      # Security port lists
+      port_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_port_lists, []),
+            try(seq.match_entries.destination_port_lists, []),
+          ]
+        ]
+      ])))
+
+      # Security protocol name lists
+      protocol_name_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.match_entries.protocol_name_lists, [])
+        ]
+      ])))
+
+      # Security zones referenced in assembly entries
+      security_zones = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          contains(["self", "no_zone", "untrusted"], try(policy.source_zone, "")) ? [] : [try(policy.source_zone, null)],
+          [for dst in try(policy.destination_zones, []) :
+            contains(["self", "no_zone", "untrusted"], dst) ? null : dst
+          ],
+        ]
+      ])))
+    }
+  }
+
+  # ============================================================================
+  # Embedded Security (NGFW) - Referenced Object Versions
+  # ============================================================================
+
+  embedded_security_object_versions = {
+    for profile in try(local.feature_profiles.ngfw_security_profiles, []) : profile.name => compact(flatten([
+
+      # Advanced Inspection Profiles
+      [for aip in try(local.embedded_security_referenced_objects[profile.name].advanced_inspection_profiles, []) :
+        try(sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[aip].version, null)
+      ],
+
+      # Security Local Application Lists
+      [for al in try(local.embedded_security_referenced_objects[profile.name].local_app_lists, []) :
+        try(sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list[al].version, null)
+      ],
+
+      # Security Data IPv4 Prefix Lists
+      [for pl in try(local.embedded_security_referenced_objects[profile.name].security_data_ipv4_prefix_lists, []) :
+        try(sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[pl].version, null)
+      ],
+
+      # Security FQDN Lists
+      [for fl in try(local.embedded_security_referenced_objects[profile.name].fqdn_lists, []) :
+        try(sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[fl].version, null)
+      ],
+
+      # Security Geolocation Lists
+      [for gl in try(local.embedded_security_referenced_objects[profile.name].geo_location_lists, []) :
+        try(sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[gl].version, null)
+      ],
+
+      # Security Port Lists
+      [for pl in try(local.embedded_security_referenced_objects[profile.name].port_lists, []) :
+        try(sdwan_policy_object_security_port_list.policy_object_security_port_list[pl].version, null)
+      ],
+
+      # Security Protocol Name Lists
+      [for pl in try(local.embedded_security_referenced_objects[profile.name].protocol_name_lists, []) :
+        try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[pl].version, null)
+      ],
+
+      # Security Zones
+      [for z in try(local.embedded_security_referenced_objects[profile.name].security_zones, []) :
+        try(sdwan_policy_object_security_zone.policy_object_security_zone[z].version, null)
+      ],
+    ]))
+  }
+
+  # ============================================================================
+  # Embedded Security (NGFW) - Policy Versions
+  # ============================================================================
+
+  embedded_security_policy_versions = {
+    for profile in try(local.feature_profiles.ngfw_security_profiles, []) : profile.name => flatten([
+      # NGFW policy parcel versions
+      try(profile.policies, null) == null ? [] : [for policy in try(profile.policies, []) :
+        sdwan_embedded_security_ngfw_policy.embedded_security_ngfw_policy["${profile.name}-${policy.name}"].version
+      ],
+      # Policy assembly parcel version
+      try(profile.settings, null) != null || try(profile.policies, null) != null ? [
+        sdwan_embedded_security_policy.embedded_security_policy[profile.name].version
+      ] : [],
+    ])
+  }
+
+  # ============================================================================
+  # Embedded Security (NGFW) - Combined Policy and Object Versions
+  # ============================================================================
+
+  embedded_security_policies_versions = {
+    for profile in try(local.feature_profiles.ngfw_security_profiles, []) : profile.name => sort(flatten([
+
+      # Policy versions (NGFW parcels + assembly)
+      try(local.embedded_security_policy_versions[profile.name], []),
+
+      # Referenced object versions
+      try(local.embedded_security_object_versions[profile.name], []),
     ]))
   }
 }

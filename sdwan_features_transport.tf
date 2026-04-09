@@ -103,7 +103,7 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     metric                    = try(redistribute.metric, null)
     metric_variable           = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route          = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
+    ospf_match_route          = try(redistribute.ospf_match_route, null)
     ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                  = try(redistribute.protocol, null)
     protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
@@ -182,7 +182,7 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     metric                    = try(redistribute.metric, null)
     metric_variable           = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route          = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
+    ospf_match_route          = try(redistribute.ospf_match_route, null)
     ospf_match_route_variable = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                  = try(redistribute.protocol, null)
     protocol_variable         = try("{{${redistribute.protocol_variable}}}", null)
@@ -351,7 +351,7 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
       as_path_prepend = try(a.prepend_as_paths, null)
       community = try(length(a.communities) == 0, true) ? null : [
-        for c in a.communities : c == "local-as" ? "local-AS" : c
+        for c in a.communities : c
       ]
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
@@ -537,7 +537,7 @@ resource "sdwan_transport_management_vpn_feature" "transport_management_vpn_feat
     subnet_mask_variable = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.management_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.management_vpn.ipv6_static_routes : {
-    nat          = try(upper(route.nat), null)
+    nat          = try(route.nat, null)
     nat_variable = try("{{${route.nat_variable}}}", null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
@@ -773,7 +773,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
     subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
   }]
   ipv6_static_routes = try(length(each.value.wan_vpn.ipv6_static_routes) == 0, true) ? null : [for route in each.value.wan_vpn.ipv6_static_routes : {
-    nat = try(upper(route.nat), null)
+    nat = try(route.nat, null)
     next_hops = try(length(route.next_hops) == 0, true) ? null : [for nh in route.next_hops : {
       address                          = try(nh.address, null)
       address_variable                 = try("{{${nh.address_variable}}}", null)
@@ -810,7 +810,7 @@ resource "sdwan_transport_wan_vpn_feature" "transport_wan_vpn_feature" {
   secondary_dns_address_ipv6          = try(each.value.wan_vpn.ipv6_secondary_dns_address, null)
   secondary_dns_address_ipv6_variable = try("{{${each.value.wan_vpn.ipv6_secondary_dns_address_variable}}}", null)
   services = try(length(each.value.wan_vpn.services) == 0, true) ? null : [for service in each.value.wan_vpn.services : {
-    service_type = upper(service)
+    service_type = service
   }]
   vpn = 0
 }
@@ -964,17 +964,19 @@ resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn
     address          = try(a.address, null)
     address_variable = try("{{${a.address_variable}}}", null)
   }] : null
-  load_interval          = try(each.value.interface.load_interval, null)
-  load_interval_variable = try("{{${each.value.interface.load_interval_variable}}}", null)
-  mac_address            = try(each.value.interface.mac_address, null)
-  mac_address_variable   = try("{{${each.value.interface.mac_address_variable}}}", null)
-  media_type             = try(each.value.interface.media_type, null)
-  media_type_variable    = try("{{${each.value.interface.media_type_variable}}}", null)
-  mrf_core_region_type   = try(each.value.interface.tunnel_interface.mrf_core_region_type, null)
-  mrf_enable_core_region = try(each.value.interface.tunnel_interface.mrf_enable_core_region, null)
-  nat64                  = try(each.value.interface.ipv6_nat_type == "nat64", null)
-  nat66                  = try(each.value.interface.ipv6_nat_type == "nat66", null)
-  nat_ipv4               = try(each.value.interface.ipv4_nat, null)
+  load_interval               = try(each.value.interface.load_interval, null)
+  load_interval_variable      = try("{{${each.value.interface.load_interval_variable}}}", null)
+  mac_address                 = try(each.value.interface.mac_address, null)
+  mac_address_variable        = try("{{${each.value.interface.mac_address_variable}}}", null)
+  media_type                  = try(each.value.interface.media_type, null)
+  media_type_variable         = try("{{${each.value.interface.media_type_variable}}}", null)
+  mrf_core_region_type        = try(each.value.interface.tunnel_interface.mrf_core_region_type, null)
+  mrf_enable_core_region      = try(each.value.interface.tunnel_interface.mrf_enable_core_region, null)
+  mrf_enable_secondary_region = try(each.value.interface.tunnel_interface.mrf_enable_secondary_region, null)
+  mrf_secondary_region_type   = try(each.value.interface.tunnel_interface.mrf_secondary_region_type, null)
+  nat64                       = try(each.value.interface.ipv6_nat_type == "nat64", null)
+  nat66                       = try(each.value.interface.ipv6_nat_type == "nat66", null)
+  nat_ipv4                    = try(each.value.interface.ipv4_nat, null)
   nat_ipv4_loopbacks = try(length(each.value.interface.ipv4_nat_loopbacks) == 0, true) ? null : [for loopback in each.value.interface.ipv4_nat_loopbacks : {
     loopback_interface          = try(loopback.loopback_interface, null)
     loopback_interface_variable = try("{{${loopback.loopback_interface_variable}}}", null)

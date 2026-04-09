@@ -171,11 +171,12 @@ locals {
   }
 
   # ============================================================================
-  # Application Priority - Policy Versions (QoS and Traffic Policies)
+  # Application Priority - Policy Versions (Settings, QoS and Traffic Policies)
   # ============================================================================
 
   application_priority_policy_versions = {
     for profile in try(local.feature_profiles.application_priority_profiles, []) : profile.name => flatten([
+      sdwan_application_priority_policy_settings_policy.application_priority_policy_settings_policy[profile.name].version,
       try(profile.qos_policies, null) == null ? [] : [for policy in try(profile.qos_policies, []) :
         sdwan_application_priority_qos_policy.application_priority_qos_policy["${profile.name}-${policy.name}"].version
       ],

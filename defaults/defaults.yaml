@@ -437,6 +437,11 @@ defaults:
         policy_group_deploy: true
     feature_profiles:
       application_priority_profiles:
+        settings:
+          ipv4_application_visibility: false
+          ipv6_application_visibility: false
+          ipv4_flow_visibility: false
+          ipv6_flow_visibility: false
         traffic_policies:
           sequences:
             protocol: ipv4

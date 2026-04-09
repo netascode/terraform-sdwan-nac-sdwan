@@ -49,6 +49,7 @@
 - add support for transport WAN VPN GRE Interface
 - add support for embedded security NGFW feature profile, NGFW policy and embedded security policy (settings) resources
 - add support for port-channel and other new 20.15 parameters in the service LAN VPN ethernet interface
+- add support for service LAN VPN IPsec Interface
 
 ## 1.3.0
 

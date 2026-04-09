@@ -101,7 +101,7 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv4_redistributes = try(length(each.value.bgp.ipv4_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv4_redistributes : {
     metric                        = try(redistribute.metric, null)
     metric_variable               = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route              = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
+    ospf_match_route              = try(redistribute.ospf_match_route, null)
     ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
@@ -182,7 +182,7 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
   ipv6_redistributes = try(length(each.value.bgp.ipv6_redistributes) == 0, true) ? null : [for redistribute in each.value.bgp.ipv6_redistributes : {
     metric                        = try(redistribute.metric, null)
     metric_variable               = try("{{${redistribute.metric_variable}}}", null)
-    ospf_match_route              = try([for route in redistribute.ospf_match_route : "${upper(substr(route, 0, 1))}${substr(route, 1, -1)}"], null)
+    ospf_match_route              = try(redistribute.ospf_match_route, null)
     ospf_match_route_variable     = try("{{${redistribute.ospf_match_route_variable}}}", null)
     protocol                      = try(redistribute.protocol, null)
     protocol_variable             = try("{{${redistribute.protocol_variable}}}", null)
@@ -345,7 +345,7 @@ resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
       accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
-      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(s.actions.service_chain_name, null) : null
       accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
       accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
       accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null
@@ -421,14 +421,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
   ]
   advertise_omp_ipv6s = try(length(each.value.lan_vpn.ipv6_omp_advertise_routes) == 0, true) ? null : [
     for route in each.value.lan_vpn.ipv6_omp_advertise_routes : {
-      protocol = (
-        try(route.protocol) == "bgp" ? "BGP" :
-        try(route.protocol) == "ospf" ? "OSPF" :
-        try(route.protocol) == "connected" ? "Connected" :
-        try(route.protocol) == "static" ? "Static" :
-        try(route.protocol) == "network" ? "Network" :
-        try(route.protocol) == "aggregate" ? "Aggregate" : null
-      )
+      protocol          = try(route.protocol, null)
       protocol_variable = try("{{${route.protocol_variable}}}", null)
       route_policy_id   = try(sdwan_service_route_policy_feature.service_route_policy_feature["${each.value.profile.name}-${route.route_policy}"].id, null)
       prefixes = try(route.aggregates != null, false) ? [
@@ -567,7 +560,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
         try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway) == "interface" ? "staticRouteInterface" :
         try(route.gateway, local.defaults.sdwan.feature_profiles.service_profiles.lan_vpns.ipv6_static_routes.gateway)
       )
-      nat          = try(route.gateway == "nat" ? upper(route.nat) : null, null)
+      nat          = try(route.gateway == "nat" ? route.nat : null, null)
       nat_variable = try(route.gateway == "nat" ? "{{${route.nat_variable}}}" : null, null)
       null0        = try(route.gateway == "null0" ? true : null, null)
       next_hops = try(length(route.next_hops) == 0, true) ? null : [
@@ -614,7 +607,7 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
     for forward in each.value.lan_vpn.nat_port_forwards : {
       nat_pool_name                 = try(forward.nat_pool_id, null)
       nat_pool_name_variable        = try("{{${forward.nat_pool_id_variable}}}", null)
-      protocol                      = try(upper(forward.protocol), null)
+      protocol                      = try(forward.protocol, null)
       protocol_variable             = try("{{${forward.protocol_variable}}}", null)
       source_ip                     = try(forward.source_ip, null)
       source_ip_variable            = try("{{${forward.source_ip_variable}}}", null)
@@ -701,27 +694,17 @@ resource "sdwan_service_lan_vpn_feature" "service_lan_vpn_feature" {
       network_address_variable = try("{{${route.network_address_variable}}}", null)
       subnet_mask              = try(route.subnet_mask, null)
       subnet_mask_variable     = try("{{${route.subnet_mask_variable}}}", null)
-      service                  = try(upper(route.service), null)
+      service                  = try(route.service, null)
       service_variable         = try("{{${route.service_variable}}}", null)
       vpn                      = 0
-      sse_instance = (
-        try(route.sse_instance, null) == "cisco-secure-access" ? "Cisco-Secure-Access" :
-        try(route.sse_instance, null) == "zscaler" ? "zScaler" :
-        null
-      )
-      sse_instance_variable = try("{{${route.sse_instance_variable}}}", null)
+      sse_instance             = try(route.sse_instance, null)
+      sse_instance_variable    = try("{{${route.sse_instance_variable}}}", null)
     }
   ]
   # Services
   services = try(length(each.value.lan_vpn.services) == 0, true) ? null : [
     for service in each.value.lan_vpn.services : {
-      service_type = (
-        try(service.service_type) == "fw" ? "FW" :
-        try(service.service_type) == "ids" ? "IDS" :
-        try(service.service_type) == "idp" ? "IDP" :
-        try(service.service_type) == "te" ? "TE" :
-        try(service.service_type, null)
-      )
+      service_type            = try(service.service_type, null)
       service_type_variable   = try("{{${service.service_type_variable}}}", null)
       ipv4_addresses          = try(service.ipv4_addresses, null)
       ipv4_addresses_variable = try("{{${service.ipv4_addresses_variable}}}", null)
@@ -995,7 +978,7 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
           null
         )
       )
-      tracker_action           = try(obj.action == "shutdown" ? "Shutdown" : try(obj.action == "decrement" ? "Decrement" : null), null)
+      tracker_action           = try(obj.action, null)
       tracker_action_variable  = try("{{${obj.action_variable}}}", null)
       decrement_value          = try(obj.decrement_value, null)
       decrement_value_variable = try("{{${obj.decrement_value_variable}}}", null)
@@ -2025,7 +2008,7 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
     actions = try(length(s.actions) == 0, true) ? null : [for a in [s.actions] : {
       as_path_prepend = try(a.prepend_as_paths, null)
       community = try(length(a.communities) == 0, true) ? null : [
-        for c in a.communities : c == "local-as" ? "local-AS" : c
+        for c in a.communities : c
       ]
       community_additive = try(a.communities_additive, null)
       community_variable = try("{{${a.communities_variable}}}", null)
@@ -2165,7 +2148,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
       accept_set_service_chain_fallback_variable = s.base_action == "accept" ? try("{{${s.actions.service_chain_fallback_variable}}}", null) : null
-      accept_set_service_chain_name              = s.base_action == "accept" ? try(upper(s.actions.service_chain_name), null) : null
+      accept_set_service_chain_name              = s.base_action == "accept" ? try(s.actions.service_chain_name, null) : null
       accept_set_service_chain_name_variable     = s.base_action == "accept" ? try("{{${s.actions.service_chain_name_variable}}}", null) : null
       accept_set_service_chain_vpn               = s.base_action == "accept" ? try(s.actions.service_chain_vpn, null) : null
       accept_set_service_chain_vpn_variable      = s.base_action == "accept" ? try("{{${s.actions.service_chain_vpn_variable}}}", null) : null

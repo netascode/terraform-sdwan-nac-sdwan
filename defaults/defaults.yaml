@@ -475,6 +475,8 @@ defaults:
           sequences:
             name: acl
         lan_vpns:
+          ipsec_interfaces:
+            application_tunnel_type: none
           ipv4_static_routes:
             gateway: nexthop
           ipv6_static_routes:

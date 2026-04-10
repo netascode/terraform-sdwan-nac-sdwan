@@ -27,10 +27,23 @@
 - add support for system mrf in versions 20.13 and higher
 - add support for transport WAN VPN GRE interface
 - add support for transport WAN VPN IPsec interface
-- add support for new 20.15 attributes in policy object app probe class
-- add support for new 20.15 attributes in service BGP, IPv4 ACL, IPv6 ACL, LAN VPN and LAN VPN ethernet interface
-- add support for new 20.15 attributes in system aaa, basic, global, OMP and SNMP
-- add support for new 20.15 attributes in transport BGP, IPv4 ACL, IPv4 tracker, IPv6 ACL, IPv6 tracker and WAN VPN ethernet interface
+- add support for new 20.15 attributes in policy object app probe class (`sdwan_policy_object_app_probe_class`): `forwarding_class_id` (replacing direct forwarding class mapping)
+- add support for new 20.15 attributes in service BGP (`sdwan_service_routing_bgp_feature`): `metric`, `metric_variable`, `ospf_match_route`, `ospf_match_route_variable`
+- add support for new 20.15 attributes in service IPv4 ACL (`sdwan_service_ipv4_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in service IPv6 ACL (`sdwan_service_ipv6_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in service LAN VPN (`sdwan_service_lan_vpn_feature`): static route interface gateway handling, `administrative_distance`, `administrative_distance_variable`, `sse_instance`, `sse_instance_variable`, `static_nat_subnets` and variable-capable subfields
+- add support for new 20.15 attributes in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`): port-channel/member-link support, VRRP additions (`min_preempt_delay`, IPv6 follow-HA), subinterface primary/secondary interface fields with variable support
+- add support for new 20.15 attributes in system basic (`sdwan_system_basic_feature`): `tracker_dia_stabilize_status`, `tracker_dia_stabilize_status_variable`
+- add support for new 20.15 attributes in system aaa (`sdwan_system_aaa_feature`): TACACS/RADIUS `key_variable`, users `key_string_variable`
+- add support for new 20.15 attributes in system global (`sdwan_system_global_feature`): `bgp_community_new_format`, `bgp_community_new_format_variable`, `etherchannel_flow_load_balance`, `etherchannel_flow_load_balance_variable`, `etherchannel_vlan_load_balance`, `etherchannel_vlan_load_balance_variable`, `lacp_system_priority`, `lacp_system_priority_variable`
+- add support for new 20.15 attributes in system OMP (`sdwan_system_omp_feature`): `aspath_auto_translation`, `aspath_auto_translation_variable`, site-type mapping update for transport gateway
+- add support for new 20.15 attributes in system SNMP (`sdwan_system_snmp_feature`): community `name_variable`
+- add support for new 20.15 attributes in transport BGP (`sdwan_transport_routing_bgp_feature`): `metric`, `metric_variable`, `ospf_match_route`, `ospf_match_route_variable`
+- add support for new 20.15 attributes in transport IPv4 ACL (`sdwan_transport_ipv4_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in transport IPv6 ACL (`sdwan_transport_ipv6_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in transport IPv4 tracker (`sdwan_transport_tracker_feature`): `icmp_interval`, `icmp_interval_variable`, endpoint tracker type mapping cleanup
+- add support for new 20.15 attributes in transport IPv6 tracker (`sdwan_transport_ipv6_tracker_feature`): `icmp_interval`, `icmp_interval_variable`, endpoint tracker type mapping cleanup
+- add support for new 20.15 attributes in transport WAN VPN ethernet (`sdwan_transport_wan_vpn_interface_ethernet_feature`): MRF core/secondary region fields, port-channel model/member links, NAT extensions (`nat_ipv4_pools`, loopbacks, match-interface, static port forwards), tunnel additions (`allow_fragmentation`, `set_sdwan_tunnel_mtu_to_max`) with variable support
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
 - add `topology_label` attribute to configuration group

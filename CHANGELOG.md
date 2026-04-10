@@ -1,5 +1,6 @@
 ## 1.4.0 (unreleased)
 
+- add support for application priority settings
 - add support for application priority traffic policy
 - add support for embedded security NGFW feature profile, NGFW policy and embedded security policy (settings)
 - add support for policy object security advanced inspection profile

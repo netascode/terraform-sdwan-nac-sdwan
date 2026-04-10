@@ -1,57 +1,73 @@
 ## 1.4.0
 
-- move device types to defaults for SIG credentials feature template
-- rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
+- add support for application priority settings
+- add support for application priority traffic policy
+- add support for embedded security NGFW feature profile, NGFW policy and embedded security policy (settings)
+- add support for policy object security advanced inspection profile
+- add support for policy object security advanced malware protection profile
 - add support for policy object security data IP prefix
 - add support for policy object security fqdn list
+- add support for policy object security geolocation list
+- add support for policy object security intrusion prevention profile
 - add support for policy object security ips signature list
 - add support for policy object security local application list
 - add support for policy object security port list
 - add support for policy object security protocol list
 - add support for policy object security url allow list
 - add support for policy object security url block list
-- add support for policy object security Advanced Malware Protection Profile
-- add support for policy object security Intrusion Prevention Profile
+- add support for policy object security url filtering profile
 - add support for policy object security zone
+- add support for service multicast
+- add support for service LAN VPN GRE interface
+- add support for service LAN VPN IPsec interface
+- add support for service LAN VPN SVI interface
 - add support for service OSPFv3 IPv4
 - add support for service OSPFv3 IPv6
-- add support for service Multicast
+- add support for service switchport
+- add support for system CA certificate
+- add support for system mrf in versions 20.13 and higher
+- add support for transport WAN VPN GRE interface
+- add support for transport WAN VPN IPsec interface
+- add support for new 20.15 attributes in policy object app probe class (`sdwan_policy_object_app_probe_class`): `forwarding_class_id` (replacing direct forwarding class mapping)
+- add support for new 20.15 attributes in service BGP (`sdwan_service_routing_bgp_feature`): `metric`, `metric_variable`, `ospf_match_route`, `ospf_match_route_variable`
+- add support for new 20.15 attributes in service IPv4 ACL (`sdwan_service_ipv4_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in service IPv6 ACL (`sdwan_service_ipv6_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in service LAN VPN (`sdwan_service_lan_vpn_feature`): static route interface gateway handling, `administrative_distance`, `administrative_distance_variable`, `sse_instance`, `sse_instance_variable`, `static_nat_subnets` and variable-capable subfields
+- add support for new 20.15 attributes in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`): port-channel/member-link support, VRRP additions (`min_preempt_delay`, IPv6 follow-HA), subinterface primary/secondary interface fields with variable support
+- add support for new 20.15 attributes in system basic (`sdwan_system_basic_feature`): `tracker_dia_stabilize_status`, `tracker_dia_stabilize_status_variable`
+- add support for new 20.15 attributes in system aaa (`sdwan_system_aaa_feature`): TACACS/RADIUS `key_variable`, users `key_string_variable`
+- add support for new 20.15 attributes in system global (`sdwan_system_global_feature`): `bgp_community_new_format`, `bgp_community_new_format_variable`, `etherchannel_flow_load_balance`, `etherchannel_flow_load_balance_variable`, `etherchannel_vlan_load_balance`, `etherchannel_vlan_load_balance_variable`, `lacp_system_priority`, `lacp_system_priority_variable`
+- add support for new 20.15 attributes in system OMP (`sdwan_system_omp_feature`): `aspath_auto_translation`, `aspath_auto_translation_variable`, site-type mapping update for transport gateway
+- add support for new 20.15 attributes in system SNMP (`sdwan_system_snmp_feature`): community `name_variable`
+- add support for new 20.15 attributes in transport BGP (`sdwan_transport_routing_bgp_feature`): `metric`, `metric_variable`, `ospf_match_route`, `ospf_match_route_variable`
+- add support for new 20.15 attributes in transport IPv4 ACL (`sdwan_transport_ipv4_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in transport IPv6 ACL (`sdwan_transport_ipv6_acl_feature`): `accept_set_service_chain_fallback`, `accept_set_service_chain_fallback_variable`, `accept_set_service_chain_name`, `accept_set_service_chain_name_variable`, `accept_set_service_chain_vpn`, `accept_set_service_chain_vpn_variable`
+- add support for new 20.15 attributes in transport IPv4 tracker (`sdwan_transport_tracker_feature`): `icmp_interval`, `icmp_interval_variable`, endpoint tracker type mapping cleanup
+- add support for new 20.15 attributes in transport IPv6 tracker (`sdwan_transport_ipv6_tracker_feature`): `icmp_interval`, `icmp_interval_variable`, endpoint tracker type mapping cleanup
+- add support for new 20.15 attributes in transport WAN VPN ethernet (`sdwan_transport_wan_vpn_interface_ethernet_feature`): MRF core/secondary region fields, port-channel model/member links, NAT extensions (`nat_ipv4_pools`, loopbacks, match-interface, static port forwards), tunnel additions (`allow_fragmentation`, `set_sdwan_tunnel_mtu_to_max`) with variable support
 - add support for `cloud_qos` and `cloud_qos_service_side` in `sdwan_localized_policy`
-- add `topology_label` attribute to configuration group
-- fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
-- fix nat fallback default behaviour in centralized data policy
-- fix match region_id bug in custom control policy
-- add support for policy object security geolocation list
-- add support for Service Switchport
-- add support for UX 2.0 MRF in versions 20.13 and higher
-- align `cisco_sig_credentials_feature_template` device types creation logic with other features
 - add support for `policy_version` in `sdwan_zone_based_firewall_policy_definition`
-- add support for system CA certificate feature
-- add support for application priority traffic policy
-- add support for new 20.15 service LAN VPN attributes
+- add `topology_label` attribute to configuration group
+- rename `traffic_class` to `traffic_classes` in both transport and service IPv6 ACL match actions
+- rename `ipv4_configuration_type`/`ipv6_configuration_type` to `ipv4_address_type`/`ipv6_address_type` and add `ipv4_address_type_variable`/`ipv6_address_type_variable` in service LAN VPN ethernet interface, transport management VPN ethernet interface and transport WAN VPN ethernet interface
+- rename `fw` to `FW`, `ids` to `IDS`, `idp` to `IDP` in traffic policy action service `type` and service LAN VPN `service_type`
+- rename `sc1`-`sc16` to `SC1`-`SC16` in traffic policy action service chain `type`, service IPv4/IPv6 ACL `service_chain_name` and transport IPv4/IPv6 ACL `service_chain_name`
+- rename `local-as` to `local-AS` in policy object standard community list `standard_communities` and transport route policy action `communities`
+- rename `internal` to `Internal`, `external-type1` to `External-type1`, `external-type2` to `External-type2` in service BGP IPv4/IPv6 redistribute `ospf_match_route` and transport BGP IPv4/IPv6 redistribute `ospf_match_route`
+- rename `decrement` to `Decrement`, `shutdown` to `Shutdown` in service LAN VPN ethernet interface IPv4 VRRP tracking object `action`
+- rename `bgp` to `BGP`, `ospf` to `OSPF`, `connected` to `Connected`, `static` to `Static`, `network` to `Network`, `aggregate` to `Aggregate` in service LAN VPN IPv6 OMP advertise route `protocol`
+- rename `nat64` to `NAT64`, `nat66` to `NAT66` in service LAN VPN IPv6 static route `nat`, transport management VPN IPv6 static route `nat` and transport WAN VPN IPv6 static route `nat`
+- rename `tcp` to `TCP`, `udp` to `UDP` in service LAN VPN NAT port forward `protocol`
+- rename `sig` to `SIG`, `sse` to `SSE` in service LAN VPN service routes `service`
+- rename `cisco-secure-access` to `Cisco-Secure-Access`, `zscaler` to `zScaler` in service LAN VPN service routes `sse_instance`
+- rename `te` to `TE` in service LAN VPN `service_type` and transport WAN VPN `services`
+- fix service bgp and transport bgp failing when ipv6 neighbor has `maximum_prefix_reach_policy` set to `off`
+- fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
+- move device types to defaults for SIG credentials feature template
+- fix nat fallback default behaviour in centralized data policy
+- fix match `region_id` bug in custom control policy
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
 - fix an issue where the SIG `fallback_to_routing` set to false was still getting applied in `sdwan_traffic_data_policy_definition`
-- add support for new 20.15 policy object App Probe Class attribute
-- add support for `tracker_dia_stabilize_status` and `tracker_dia_stabilize_status_variable` in `sdwan_system_basic_feature`
-- add `key_variable` support for TACACS and RADIUS servers, and `key_string_variable` support for users in `sdwan_system_aaa_feature`
-- add support for policy object security URL Filtering Profile
-- add support for service LAN VPN SVI Interface
-- add `metric` and `ospf_match_route` support with their respective variable fields for IPv4 and IPv6 redistributes in `sdwan_transport_routing_bgp_feature` and `sdwan_service_routing_bgp_feature`
-- fix configuration group `feature_versions` not tracking DHCP server association changes for service LAN VPN ethernet and SVI interfaces
-- add support for policy object security Advanced Inspection Profile
-- add support for `icmp_interval` and `icmp_interval_variable` in `sdwan_transport_tracker_feature` and `sdwan_transport_ipv6_tracker_feature`, and remove `endpoint_tracker_type_variable` from both features
-- align `ospf_match_route` with the updated schema to accept non-capitalized values
-- add support for new 20.15 parameters in system OMP, Global and SNMP features
-- add support for transport ipsec interface
-- rename `ipv4_configuration_type`/`ipv6_configuration_type` to `ipv4_address_type`/`ipv6_address_type` and add `ipv4_address_type_variable`/`ipv6_address_type_variable` in service LAN VPN ethernet interface, transport management VPN ethernet interface and transport WAN VPN ethernet interface
-- add support for mrf, port-channel and other new 20.15 parameters for wan_vpn ethernet interface
-- add `accept_set_service_chain_fallback`, `accept_set_service_chain_name` and `accept_set_service_chain_vpn` support with their respective variable fields in `sdwan_service_ipv4_acl_feature`, `sdwan_service_ipv6_acl_feature`, `sdwan_transport_ipv4_acl_feature` and `sdwan_transport_ipv6_acl_feature`
-- add support for transport WAN VPN GRE Interface
-- add support for embedded security NGFW feature profile, NGFW policy and embedded security policy (settings) resources
-- add support for port-channel and other new 20.15 parameters in the service LAN VPN ethernet interface
-- add support for service LAN VPN IPsec Interface
-- update UX 2.0 enum values to match API payload
-- add support for application priority settings
 
 ## 1.3.0
 

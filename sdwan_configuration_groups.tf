@@ -270,6 +270,11 @@ locals {
       ]],
       try(profile.wan_vpn, null) == null ? [] : [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${profile.name}-wan_vpn"].version],
       try(profile.wan_vpn.bgp, null) == null ? [] : [sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature.transport_wan_vpn_feature_associate_routing_bgp_feature["${profile.name}-wan_vpn-routing_bgp"].version],
+      try(profile.wan_vpn.cellular_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.cellular_interfaces, []) : [
+        sdwan_transport_wan_vpn_interface_cellular_feature.transport_wan_vpn_interface_cellular_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+        try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_cellular_feature_associate_tracker_feature.transport_wan_vpn_interface_cellular_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
+        try(interface.ipv4_tracker_group, null) == null ? [] : [sdwan_transport_wan_vpn_interface_cellular_feature_associate_tracker_group_feature.transport_wan_vpn_interface_cellular_feature_associate_tracker_group_feature["${profile.name}-wan_vpn-${interface.name}-trackergroup"].version],
+      ]],
       try(profile.wan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ethernet_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ethernet_feature.transport_wan_vpn_interface_ethernet_feature["${profile.name}-wan_vpn-${interface.name}"].version,
         try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature.transport_wan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
@@ -309,6 +314,12 @@ locals {
           for feature in try(profile.route_policies, []) : feature.name => {
             parcel_id   = sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${feature.name}"].id
             parcel_type = "route-policy"
+          }
+        },
+        {
+          for feature in try(profile.wan_vpn.cellular_interfaces, []) : feature.name => {
+            parcel_id   = sdwan_transport_wan_vpn_interface_cellular_feature.transport_wan_vpn_interface_cellular_feature["${profile.name}-wan_vpn-${feature.name}"].id
+            parcel_type = "wan/vpn/interface/cellular"
           }
         },
         {

@@ -837,6 +837,219 @@ resource "sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature" "trans
   transport_routing_ospf_feature_id = sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${each.value.name}-${each.value.wan_vpn.ospf}"].id
 }
 
+resource "sdwan_transport_wan_vpn_interface_cellular_feature" "transport_wan_vpn_interface_cellular_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.cellular_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}" => interface_item
+  }
+  name                         = each.value.interface.name
+  description                  = try(each.value.interface.description, null)
+  feature_profile_id           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  acl_ipv4_egress_feature_id   = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_egress_acl}"].id, null)
+  acl_ipv4_ingress_feature_id  = try(sdwan_transport_ipv4_acl_feature.transport_ipv4_acl_feature["${each.value.profile.name}-${each.value.interface.ipv4_ingress_acl}"].id, null)
+  acl_ipv6_egress_feature_id   = try(sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_egress_acl}"].id, null)
+  acl_ipv6_ingress_feature_id  = try(sdwan_transport_ipv6_acl_feature.transport_ipv6_acl_feature["${each.value.profile.name}-${each.value.interface.ipv6_ingress_acl}"].id, null)
+  arps = try(length(each.value.interface.arp_entries) == 0, true) ? null : [for arp in each.value.interface.arp_entries : {
+    ip_address           = try(arp.ip_address, null)
+    ip_address_variable  = try("{{${arp.ip_address_variable}}}", null)
+    mac_address          = try(arp.mac_address, null)
+    mac_address_variable = try("{{${arp.mac_address_variable}}}", null)
+  }]
+  bandwidth_downstream                     = try(each.value.interface.bandwidth_downstream, null)
+  bandwidth_downstream_variable            = try("{{${each.value.interface.bandwidth_downstream_variable}}}", null)
+  bandwidth_upstream                       = try(each.value.interface.bandwidth_upstream, null)
+  bandwidth_upstream_variable              = try("{{${each.value.interface.bandwidth_upstream_variable}}}", null)
+  enable_ipv6                              = try(each.value.interface.enable_ipv6, null)
+  enable_ipv6_variable                     = try("{{${each.value.interface.enable_ipv6_variable}}}", null)
+  interface_description                    = try(each.value.interface.interface_description, null)
+  interface_description_variable           = try("{{${each.value.interface.interface_description_variable}}}", null)
+  interface_mtu                            = try(each.value.interface.interface_mtu, null)
+  interface_mtu_variable                   = try("{{${each.value.interface.interface_mtu_variable}}}", null)
+  interface_name                           = try(each.value.interface.interface_name, null)
+  interface_name_variable                  = try("{{${each.value.interface.interface_name_variable}}}", null)
+  ip_directed_broadcast                    = try(each.value.interface.ip_directed_broadcast, null)
+  ip_directed_broadcast_variable           = try("{{${each.value.interface.ip_directed_broadcast_variable}}}", null)
+  ip_mtu                                   = try(each.value.interface.ip_mtu, null)
+  ip_mtu_variable                          = try("{{${each.value.interface.ip_mtu_variable}}}", null)
+  ipv4_dhcp_helper                         = try(each.value.interface.ipv4_dhcp_helpers, null)
+  ipv4_dhcp_helper_variable                = try("{{${each.value.interface.ipv4_dhcp_helpers_variable}}}", null)
+  mrf_core_region_type                     = try(each.value.interface.tunnel_interface.mrf_core_region_type, null)
+  mrf_enable_core_region                   = try(each.value.interface.tunnel_interface.mrf_enable_core_region, null)
+  nat_ipv4                                 = try(each.value.interface.ipv4_nat, null)
+  nat_ipv4_variable                        = try("{{${each.value.interface.ipv4_nat_variable}}}", null)
+  nat_tcp_timeout                          = try(each.value.interface.ipv4_nat_tcp_timeout, null)
+  nat_tcp_timeout_variable                 = try("{{${each.value.interface.ipv4_nat_tcp_timeout_variable}}}", null)
+  nat_udp_timeout                          = try(each.value.interface.ipv4_nat_udp_timeout, null)
+  nat_udp_timeout_variable                 = try("{{${each.value.interface.ipv4_nat_udp_timeout_variable}}}", null)
+  per_tunnel_qos                           = try(each.value.interface.tunnel_interface.per_tunnel_qos, null)
+  per_tunnel_qos_variable                  = try("{{${each.value.interface.tunnel_interface.per_tunnel_qos_variable}}}", null)
+  qos_adaptive                             = try(each.value.interface.adaptive_qos, false)
+  qos_adaptive_bandwidth_downstream        = try(each.value.interface.adaptive_qos_shaping_rate_downstream != null, null)
+  qos_adaptive_bandwidth_upstream          = try(each.value.interface.adaptive_qos_shaping_rate_upstream != null, null)
+  qos_adaptive_default_downstream          = try(each.value.interface.adaptive_qos_shaping_rate_downstream.default, null)
+  qos_adaptive_default_downstream_variable = try("{{${each.value.interface.adaptive_qos_shaping_rate_downstream.default_variable}}}", null)
+  qos_adaptive_default_upstream            = try(each.value.interface.adaptive_qos_shaping_rate_upstream.default, null)
+  qos_adaptive_default_upstream_variable   = try("{{${each.value.interface.adaptive_qos_shaping_rate_upstream.default_variable}}}", null)
+  qos_adaptive_max_downstream              = try(each.value.interface.adaptive_qos_shaping_rate_downstream.maximum, null)
+  qos_adaptive_max_downstream_variable     = try("{{${each.value.interface.adaptive_qos_shaping_rate_downstream.maximum_variable}}}", null)
+  qos_adaptive_max_upstream                = try(each.value.interface.adaptive_qos_shaping_rate_upstream.maximum, null)
+  qos_adaptive_max_upstream_variable       = try("{{${each.value.interface.adaptive_qos_shaping_rate_upstream.maximum_variable}}}", null)
+  qos_adaptive_min_downstream              = try(each.value.interface.adaptive_qos_shaping_rate_downstream.minimum, null)
+  qos_adaptive_min_downstream_variable     = try("{{${each.value.interface.adaptive_qos_shaping_rate_downstream.minimum_variable}}}", null)
+  qos_adaptive_min_upstream                = try(each.value.interface.adaptive_qos_shaping_rate_upstream.minimum, null)
+  qos_adaptive_min_upstream_variable       = try("{{${each.value.interface.adaptive_qos_shaping_rate_upstream.minimum_variable}}}", null)
+  qos_adaptive_period                      = try(each.value.interface.adaptive_qos_period, null)
+  qos_adaptive_period_variable             = try("{{${each.value.interface.adaptive_qos_period_variable}}}", null)
+  qos_shaping_rate                         = try(each.value.interface.shaping_rate, null)
+  qos_shaping_rate_variable                = try("{{${each.value.interface.shaping_rate_variable}}}", null)
+  service_provider                         = try(each.value.interface.service_provider, null)
+  service_provider_variable                = try("{{${each.value.interface.service_provider_variable}}}", null)
+  shutdown                                 = try(each.value.interface.shutdown, null)
+  shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
+  tcp_mss                                  = try(each.value.interface.tcp_mss, null)
+  tcp_mss_variable                         = try("{{${each.value.interface.tcp_mss_variable}}}", null)
+  tloc_extension                           = try(each.value.interface.tloc_extension, null)
+  tloc_extension_variable                  = try("{{${each.value.interface.tloc_extension_variable}}}", null)
+  tunnel_interface                         = try(each.value.interface.tunnel_interface != null, null)
+  tunnel_interface_encapsulations = try(each.value.interface.tunnel_interface == null, true) ? null : flatten([
+    try(each.value.interface.tunnel_interface.ipsec_encapsulation, local.defaults.sdwan.feature_profiles.transport_profiles.wan_vpn.cellular_interfaces.tunnel_interface.ipsec_encapsulation) ? [{
+      encapsulation       = "ipsec"
+      preference          = try(each.value.interface.tunnel_interface.ipsec_preference, null)
+      preference_variable = try("{{${each.value.interface.tunnel_interface.ipsec_preference_variable}}}", null)
+      weight              = try(each.value.interface.tunnel_interface.ipsec_weight, null)
+      weight_variable     = try("{{${each.value.interface.tunnel_interface.ipsec_weight_variable}}}", null)
+    }] : [],
+    try(each.value.interface.tunnel_interface.gre_encapsulation, false) ? [{
+      encapsulation       = "gre"
+      preference          = try(each.value.interface.tunnel_interface.gre_preference, null)
+      preference_variable = try("{{${each.value.interface.tunnel_interface.gre_preference_variable}}}", null)
+      weight              = try(each.value.interface.tunnel_interface.gre_weight, null)
+      weight_variable     = try("{{${each.value.interface.tunnel_interface.gre_weight_variable}}}", null)
+    }] : []
+  ])
+  tunnel_interface_allow_all                              = try(each.value.interface.tunnel_interface.allow_service_all, null)
+  tunnel_interface_allow_all_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_all_variable}}}", null)
+  tunnel_interface_allow_bfd                              = try(each.value.interface.tunnel_interface.allow_service_bfd, null)
+  tunnel_interface_allow_bfd_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_bfd_variable}}}", null)
+  tunnel_interface_allow_bgp                              = try(each.value.interface.tunnel_interface.allow_service_bgp, null)
+  tunnel_interface_allow_bgp_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_bgp_variable}}}", null)
+  tunnel_interface_allow_dhcp                             = try(each.value.interface.tunnel_interface.allow_service_dhcp, null)
+  tunnel_interface_allow_dhcp_variable                    = try("{{${each.value.interface.tunnel_interface.allow_service_dhcp_variable}}}", null)
+  tunnel_interface_allow_dns                              = try(each.value.interface.tunnel_interface.allow_service_dns, null)
+  tunnel_interface_allow_dns_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_dns_variable}}}", null)
+  tunnel_interface_allow_https                            = try(each.value.interface.tunnel_interface.allow_service_https, null)
+  tunnel_interface_allow_https_variable                   = try("{{${each.value.interface.tunnel_interface.allow_service_https_variable}}}", null)
+  tunnel_interface_allow_icmp                             = try(each.value.interface.tunnel_interface.allow_service_icmp, null)
+  tunnel_interface_allow_icmp_variable                    = try("{{${each.value.interface.tunnel_interface.allow_service_icmp_variable}}}", null)
+  tunnel_interface_allow_netconf                          = try(each.value.interface.tunnel_interface.allow_service_netconf, null)
+  tunnel_interface_allow_netconf_variable                 = try("{{${each.value.interface.tunnel_interface.allow_service_netconf_variable}}}", null)
+  tunnel_interface_allow_ntp                              = try(each.value.interface.tunnel_interface.allow_service_ntp, null)
+  tunnel_interface_allow_ntp_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_ntp_variable}}}", null)
+  tunnel_interface_allow_ospf                             = try(each.value.interface.tunnel_interface.allow_service_ospf, null)
+  tunnel_interface_allow_ospf_variable                    = try("{{${each.value.interface.tunnel_interface.allow_service_ospf_variable}}}", null)
+  tunnel_interface_allow_snmp                             = try(each.value.interface.tunnel_interface.allow_service_snmp, null)
+  tunnel_interface_allow_snmp_variable                    = try("{{${each.value.interface.tunnel_interface.allow_service_snmp_variable}}}", null)
+  tunnel_interface_allow_ssh                              = try(each.value.interface.tunnel_interface.allow_service_ssh, null)
+  tunnel_interface_allow_ssh_variable                     = try("{{${each.value.interface.tunnel_interface.allow_service_ssh_variable}}}", null)
+  tunnel_interface_allow_stun                             = try(each.value.interface.tunnel_interface.allow_service_stun, null)
+  tunnel_interface_allow_stun_variable                    = try("{{${each.value.interface.tunnel_interface.allow_service_stun_variable}}}", null)
+  tunnel_interface_bind_loopback_tunnel                   = try(each.value.interface.tunnel_interface.bind_loopback_tunnel, null)
+  tunnel_interface_bind_loopback_tunnel_variable          = try("{{${each.value.interface.tunnel_interface.bind_loopback_tunnel_variable}}}", null)
+  tunnel_interface_border                                 = try(each.value.interface.tunnel_interface.border, null)
+  tunnel_interface_border_variable                        = try("{{${each.value.interface.tunnel_interface.border_variable}}}", null)
+  tunnel_interface_carrier                                = try(each.value.interface.tunnel_interface.carrier, null)
+  tunnel_interface_carrier_variable                       = try("{{${each.value.interface.tunnel_interface.carrier_variable}}}", null)
+  tunnel_interface_clear_dont_fragment                    = try(each.value.interface.tunnel_interface.clear_dont_fragment, null)
+  tunnel_interface_clear_dont_fragment_variable           = try("{{${each.value.interface.tunnel_interface.clear_dont_fragment_variable}}}", null)
+  tunnel_interface_color                                  = try(each.value.interface.tunnel_interface.color, null)
+  tunnel_interface_color_restrict                         = try(each.value.interface.tunnel_interface.restrict, null)
+  tunnel_interface_color_restrict_variable                = try("{{${each.value.interface.tunnel_interface.restrict_variable}}}", null)
+  tunnel_interface_color_variable                         = try("{{${each.value.interface.tunnel_interface.color_variable}}}", null)
+  tunnel_interface_exclude_controller_group_list          = try(each.value.interface.tunnel_interface.exclude_controller_groups, null)
+  tunnel_interface_exclude_controller_group_list_variable = try("{{${each.value.interface.tunnel_interface.exclude_controller_groups_variable}}}", null)
+  tunnel_interface_groups                                 = try(each.value.interface.tunnel_interface.group, null)
+  tunnel_interface_groups_variable                        = try("{{${each.value.interface.tunnel_interface.group_variable}}}", null)
+  tunnel_interface_hello_interval                         = try(each.value.interface.tunnel_interface.hello_interval, null)
+  tunnel_interface_hello_interval_variable                = try("{{${each.value.interface.tunnel_interface.hello_interval_variable}}}", null)
+  tunnel_interface_hello_tolerance                        = try(each.value.interface.tunnel_interface.hello_tolerance, null)
+  tunnel_interface_hello_tolerance_variable               = try("{{${each.value.interface.tunnel_interface.hello_tolerance_variable}}}", null)
+  tunnel_interface_last_resort_circuit                    = try(each.value.interface.tunnel_interface.last_resort_circuit, null)
+  tunnel_interface_last_resort_circuit_variable           = try("{{${each.value.interface.tunnel_interface.last_resort_circuit_variable}}}", null)
+  tunnel_interface_low_bandwidth_link                     = try(each.value.interface.tunnel_interface.low_bandwidth_link, null)
+  tunnel_interface_low_bandwidth_link_variable            = try("{{${each.value.interface.tunnel_interface.low_bandwidth_link_variable}}}", null)
+  tunnel_interface_max_control_connections                = try(each.value.interface.tunnel_interface.max_control_connections, null)
+  tunnel_interface_max_control_connections_variable       = try("{{${each.value.interface.tunnel_interface.max_control_connections_variable}}}", null)
+  tunnel_interface_nat_refresh_interval                   = try(each.value.interface.tunnel_interface.nat_refresh_interval, null)
+  tunnel_interface_nat_refresh_interval_variable          = try("{{${each.value.interface.tunnel_interface.nat_refresh_interval_variable}}}", null)
+  tunnel_interface_network_broadcast                      = try(each.value.interface.tunnel_interface.network_broadcast, null)
+  tunnel_interface_network_broadcast_variable             = try("{{${each.value.interface.tunnel_interface.network_broadcast_variable}}}", null)
+  tunnel_interface_port_hop                               = try(each.value.interface.tunnel_interface.port_hop, null)
+  tunnel_interface_port_hop_variable                      = try("{{${each.value.interface.tunnel_interface.port_hop_variable}}}", null)
+  tunnel_interface_tunnel_tcp_mss                         = try(each.value.interface.tunnel_interface.tcp_mss, null)
+  tunnel_interface_tunnel_tcp_mss_variable                = try("{{${each.value.interface.tunnel_interface.tcp_mss_variable}}}", null)
+  tunnel_interface_vbond_as_stun_server                   = try(each.value.interface.tunnel_interface.vbond_as_stun_server, null)
+  tunnel_interface_vbond_as_stun_server_variable          = try("{{${each.value.interface.tunnel_interface.vbond_as_stun_server_variable}}}", null)
+  tunnel_interface_vmanage_connection_preference          = try(each.value.interface.tunnel_interface.vmanage_connection_preference, null)
+  tunnel_interface_vmanage_connection_preference_variable = try("{{${each.value.interface.tunnel_interface.vmanage_connection_preference_variable}}}", null)
+  tunnel_qos_mode                                         = try(each.value.interface.tunnel_interface.per_tunnel_qos_mode, null)
+  tunnel_qos_mode_variable                                = try("{{${each.value.interface.tunnel_interface.per_tunnel_qos_mode_variable}}}", null)
+}
+
+resource "sdwan_transport_wan_vpn_interface_cellular_feature_associate_tracker_feature" "transport_wan_vpn_interface_cellular_feature_associate_tracker_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.cellular_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-tracker" => interface_item
+    if try(interface_item.interface.ipv4_tracker, null) != null
+  }
+  feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id                    = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  transport_wan_vpn_interface_cellular_feature_id = sdwan_transport_wan_vpn_interface_cellular_feature.transport_wan_vpn_interface_cellular_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
+  transport_tracker_feature_id                    = sdwan_transport_tracker_feature.transport_tracker_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker}"].id
+}
+
+resource "sdwan_transport_wan_vpn_interface_cellular_feature_associate_tracker_group_feature" "transport_wan_vpn_interface_cellular_feature_associate_tracker_group_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.cellular_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-trackergroup" => interface_item
+    if try(interface_item.interface.ipv4_tracker_group, null) != null
+  }
+  feature_profile_id                              = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id                    = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  transport_wan_vpn_interface_cellular_feature_id = sdwan_transport_wan_vpn_interface_cellular_feature.transport_wan_vpn_interface_cellular_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
+  transport_tracker_group_feature_id              = sdwan_transport_tracker_group_feature.transport_tracker_group_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker_group}"].id
+}
+
 resource "sdwan_transport_wan_vpn_interface_ethernet_feature" "transport_wan_vpn_interface_ethernet_member_link_feature" {
   for_each = {
     for interface_item in flatten([

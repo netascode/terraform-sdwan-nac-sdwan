@@ -1,3 +1,7 @@
+## 1.5.0 (unreleased)
+
+- add support for transport WAN VPN cellular interface
+
 ## 1.4.0
 
 - add support for application priority settings

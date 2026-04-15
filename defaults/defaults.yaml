@@ -557,6 +557,9 @@ defaults:
             protocol: ipv4
         wan_vpn:
           name: wan_vpn
+          cellular_interfaces:
+            tunnel_interface:
+              ipsec_encapsulation: true
           ethernet_interfaces:
             tunnel_interface:
               ipsec_encapsulation: true

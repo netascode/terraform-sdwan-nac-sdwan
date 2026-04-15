@@ -72,6 +72,7 @@
 - fix match `region_id` bug in custom control policy
 - fix an issue where the `route_policy_variable` was not being correctly applied in `sdwan_cisco_ospf_feature_template`
 - fix an issue where the SIG `fallback_to_routing` set to false was still getting applied in `sdwan_traffic_data_policy_definition`
+- add support for transport cellular controller
 
 ## 1.3.0
 

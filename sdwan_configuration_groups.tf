@@ -237,6 +237,9 @@ locals {
       try(profile.bgp_features, null) == null ? [] : [for bgp_feature in try(profile.bgp_features, []) : [
         sdwan_transport_routing_bgp_feature.transport_routing_bgp_feature["${profile.name}-${bgp_feature.name}"].version
       ]],
+      try(profile.cellular_controllers, null) == null ? [] : [for cellular_controller in try(profile.cellular_controllers, []) : [
+        sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature["${profile.name}-${cellular_controller.name}"].version
+      ]],
       try(profile.cellular_profiles, null) == null ? [] : [for cellular_profile in try(profile.cellular_profiles, []) : [
         sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature["${profile.name}-${cellular_profile.name}"].version
       ]],

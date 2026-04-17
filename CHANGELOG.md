@@ -1,6 +1,7 @@
 ## 1.5.0 (unreleased)
 
 - add support for transport WAN VPN cellular interface
+- add support for transport cellular controller
 
 ## 1.4.0
 

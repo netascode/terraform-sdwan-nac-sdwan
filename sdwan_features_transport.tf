@@ -211,6 +211,33 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
   router_id_variable           = try("{{${each.value.bgp.router_id_variable}}}", null)
 }
 
+resource "sdwan_transport_cellular_controller_feature" "transport_cellular_controller_feature" {
+  for_each = {
+    for controller_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for controller in try(profile.cellular_controllers, []) : {
+          profile    = profile
+          controller = controller
+        }
+      ]
+    ])
+    : "${controller_item.profile.name}-${controller_item.controller.name}" => controller_item
+  }
+  name                          = each.value.controller.name
+  description                   = try(each.value.controller.description, null)
+  feature_profile_id            = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  cellular_id                   = try(each.value.controller.cellular_id, null)
+  cellular_id_variable          = try("{{${each.value.controller.cellular_id_variable}}}", null)
+  firmware_auto_sim             = try(each.value.controller.firmware_auto_sim, null)
+  firmware_auto_sim_variable    = try("{{${each.value.controller.firmware_auto_sim_variable}}}", null)
+  primary_sim_slot              = try(each.value.controller.primary_sim_slot, null)
+  primary_sim_slot_variable     = try("{{${each.value.controller.primary_sim_slot_variable}}}", null)
+  sim_failover_retries          = try(each.value.controller.sim_failover_retries, null)
+  sim_failover_retries_variable = try("{{${each.value.controller.sim_failover_retries_variable}}}", null)
+  sim_failover_timeout          = try(each.value.controller.sim_failover_timeout, null)
+  sim_failover_timeout_variable = try("{{${each.value.controller.sim_failover_timeout_variable}}}", null)
+}
+
 resource "sdwan_transport_cellular_profile_feature" "transport_cellular_profile_feature" {
   for_each = {
     for cellular_item in flatten([

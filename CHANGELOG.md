@@ -2,6 +2,7 @@
 
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
+- add support for policy object security local domain list
 
 ## 1.4.0
 

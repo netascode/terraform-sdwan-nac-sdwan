@@ -162,6 +162,7 @@ module "sdwan" {
 | [sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_geolocation_list) | resource |
 | [sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_ips_signature) | resource |
 | [sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_local_application_list) | resource |
+| [sdwan_policy_object_security_local_domain_list.policy_object_security_local_domain_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_local_domain_list) | resource |
 | [sdwan_policy_object_security_port_list.policy_object_security_port_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_port_list) | resource |
 | [sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_protocol_list) | resource |
 | [sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_allow_list) | resource |

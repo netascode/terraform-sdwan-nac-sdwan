@@ -4,6 +4,7 @@
 - add support for transport cellular controller
 - add support for policy object security local domain list
 - fix duplicate service LAN VPN version entry in configuration group feature_versions
+- Use Terraform provider functions for YAML merge instead of data sources
 
 ## 1.4.0
 

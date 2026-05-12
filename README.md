@@ -38,7 +38,7 @@ module "sdwan" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
 | <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.11.1 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
@@ -65,7 +65,7 @@ module "sdwan" {
 |------|---------|
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
 | <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.11.1 |
-| <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2, < 2.0.0 |
+| <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Resources
 
@@ -275,8 +275,7 @@ module "sdwan" {
 | [sdwan_vpn_membership_policy_definition.vpn_membership_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_membership_policy_definition) | resource |
 | [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
 | [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
-| [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
+| [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 
 ## Modules
 

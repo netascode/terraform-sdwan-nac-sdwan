@@ -4,7 +4,7 @@
 - add support for transport cellular controller
 - add support for policy object security local domain list
 - fix duplicate service LAN VPN version entry in configuration group feature_versions
-- Use Terraform provider functions for YAML merge instead of data sources
+- Use Terraform provider functions for YAML merge instead of data sources (requires Terraform >= 1.8.0, previously >= 1.3.0)
 
 ## 1.4.0
 

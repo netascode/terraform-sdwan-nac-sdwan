@@ -71,6 +71,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list,
     sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature,
     sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list,
+    sdwan_policy_object_security_local_domain_list.policy_object_security_local_domain_list,
     sdwan_policy_object_security_port_list.policy_object_security_port_list,
     sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list,
     sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list,
@@ -165,7 +166,6 @@ locals {
         try(lan_vpn.ospf, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospf_feature.service_lan_vpn_feature_associate_routing_ospf_feature["${profile.name}-${lan_vpn.name}-routing_ospf"].version],
         try(lan_vpn.ospfv3_ipv4, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv4_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv4_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv4"].version],
         try(lan_vpn.ospfv3_ipv6, null) == null ? [] : [sdwan_service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature.service_lan_vpn_feature_associate_routing_ospfv3_ipv6_feature["${profile.name}-${lan_vpn.name}-routing_ospfv3_ipv6"].version],
-        sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${profile.name}-${lan_vpn.name}"].version,
         try(lan_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ethernet_interfaces, []) : [
           sdwan_service_lan_vpn_interface_ethernet_feature.service_lan_vpn_interface_ethernet_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
           try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ethernet_feature_associate_tracker_feature.service_lan_vpn_interface_ethernet_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],

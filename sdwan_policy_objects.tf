@@ -213,6 +213,15 @@ resource "sdwan_policy_object_security_local_application_list" "policy_object_se
   }]
 }
 
+resource "sdwan_policy_object_security_local_domain_list" "policy_object_security_local_domain_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_local_domain_lists, {}) : p.name => p }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.local_domains, []) : {
+    local_domain = try(e, null)
+  }]
+}
+
 resource "sdwan_policy_object_security_port_list" "policy_object_security_port_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_port_lists, {}) : p.name => p }
   name               = each.value.name

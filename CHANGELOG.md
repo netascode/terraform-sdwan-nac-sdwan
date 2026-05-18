@@ -2,6 +2,8 @@
 
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
+- add support for policy object security local domain list
+- fix duplicate service LAN VPN version entry in configuration group feature_versions
 - add support for `dhcp_ha_enable` and `dhcp_ha_enable_variable` in DHCP server feature (`sdwan_service_dhcp_server_feature`)
 
 ## 1.4.0

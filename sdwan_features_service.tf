@@ -230,6 +230,8 @@ resource "sdwan_service_dhcp_server_feature" "service_dhcp_server_feature" {
   subnet_mask_variable     = try("{{${each.value.dhcp_server.pool_subnet_mask_variable}}}", null)
   default_gateway          = try(each.value.dhcp_server.default_gateway, null)
   default_gateway_variable = try("{{${each.value.dhcp_server.default_gateway_variable}}}", null)
+  dhcp_ha_enable           = try(each.value.dhcp_server.dhcp_ha_enable, null)
+  dhcp_ha_enable_variable  = try("{{${each.value.dhcp_server.dhcp_ha_enable_variable}}}", null)
   dns_servers              = try(each.value.dhcp_server.dns_servers, null)
   dns_servers_variable     = try("{{${each.value.dhcp_server.dns_servers_variable}}}", null)
   domain_name              = try(each.value.dhcp_server.domain_name, null)

@@ -4,6 +4,7 @@
 - add support for transport cellular controller
 - add support for policy object security local domain list
 - fix duplicate service LAN VPN version entry in configuration group feature_versions
+- add support for new 20.18 attributes in system AAA (`sdwan_system_aaa_feature`): RADIUS/TACACS groups `vpn_variable`, `trustsec_cts_auth_list`, `trustsec_cts_auth_list_variable`, `trustsec_radius_group`
 
 ## 1.4.0
 

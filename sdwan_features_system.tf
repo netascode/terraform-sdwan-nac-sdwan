@@ -48,6 +48,7 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       timeout_variable    = try("{{${server.timeout_variable}}}", null)
     }]
     vpn                       = try(group.vpn, null)
+    vpn_variable              = try("{{${group.vpn_variable}}}", null)
     source_interface          = try(group.source_interface, null)
     source_interface_variable = try("{{${group.source_interface_variable}}}", null)
   }]
@@ -64,9 +65,13 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       timeout_variable = try("{{${server.timeout_variable}}}", null)
     }]
     vpn                       = try(group.vpn, null)
+    vpn_variable              = try("{{${group.vpn_variable}}}", null)
     source_interface          = try(group.source_interface, null)
     source_interface_variable = try("{{${group.source_interface_variable}}}", null)
   }]
+  trustsec_cts_auth_list          = try(each.value.aaa.trustsec_cts_auth_list, null)
+  trustsec_cts_auth_list_variable = try("{{${each.value.aaa.trustsec_cts_auth_list_variable}}}", null)
+  trustsec_radius_group           = try(each.value.aaa.trustsec_radius_group, null)
   users = try(length(each.value.aaa.users) == 0, true) ? null : [for user in each.value.aaa.users : {
     name               = try(user.name, null)
     name_variable      = try("{{${user.name_variable}}}", null)

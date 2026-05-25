@@ -179,4 +179,4 @@ resource "sdwan_intrusion_prevention_policy_definition" "intrusion_prevention_po
   signature_set   = try(each.value.signature_set, null)
   # ips_signature_list_id = try(each.value.ips_signature_list, null)
   target_vpns = try(each.value.target_vpns, null) != null ? [for x in try(each.value.target_vpns, []) : x] : null
-} 
+}

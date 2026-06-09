@@ -117,27 +117,28 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
       # Scenario 1 — pass/drop + log: true    → [{type=log, parameter="true"}]
       # Scenario 2 — inspect + no log + AIP   → [{type=advancedInspectionProfile, parameter_id=<uuid>}]
       # Scenario 3 — inspect + log + AIP      → [{type=connectionEvents, parameter="true"}, {type=advancedInspectionProfile, parameter_id=<uuid>}]
+      # Scenario 4 — inspect + log only       → [{type=connectionEvents, parameter="true"}]
       # No action                             → null
       actions = (
         seq.base_action != "inspect"
         ? (
-          try(seq.actions.log, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.actions.log, false) == true
+          try(seq.actions.log, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.actions.log, false)
           ? [{ type = "log", parameter = "true", parameter_id = null }]
           : null
         )
         : (
-          try(seq.actions.advanced_inspection_profile, null) != null
-          ? (
-            try(seq.actions.log, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.actions.log, false) == true
-            ? [
-              { type = "connectionEvents", parameter = "true", parameter_id = null },
-              { type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }
-            ]
-            : [
-              { type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }
-            ]
+          try(seq.actions.log, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.actions.log, false)
+          ? concat(
+            [{ type = "connectionEvents", parameter = "true", parameter_id = null }],
+            try(seq.actions.advanced_inspection_profile, null) != null
+            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }]
+            : []
           )
-          : null
+          : (
+            try(seq.actions.advanced_inspection_profile, null) != null
+            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }]
+            : null
+          )
         )
       )
     }

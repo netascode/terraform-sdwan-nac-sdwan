@@ -9,6 +9,7 @@
 - Use Terraform provider functions for YAML merge instead of data sources (requires Terraform >= 1.8.0, previously >= 1.3.0)
 - add support for external services cloud provider credentials settings
 - fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
+- fix tracker in `service LAN VPN ipsec interface` and `transport WAN VPN ipsec interface`
 
 ## 1.4.0
 

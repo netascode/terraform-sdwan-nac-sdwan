@@ -1721,8 +1721,7 @@ resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_in
   multiplexing_variable                    = try("{{${each.value.interface.multiplexing_variable}}}", null)
   shutdown                                 = try(each.value.interface.shutdown, null)
   shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
-  tracker_id                               = try(each.value.interface.tracker_id, null)
-  tracker_id_variable                      = try("{{${each.value.interface.tracker_id_variable}}}", null)
+  tracker_id                               = try(sdwan_transport_tracker_feature.transport_tracker_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker}"].id, null)
   tunnel_destination_ipv4_address          = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try(each.value.interface.tunnel_destination_ipv4_address, null) : null
   tunnel_destination_ipv4_address_variable = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try("{{${each.value.interface.tunnel_destination_ipv4_address_variable}}}", null) : null
   tunnel_destination_ipv6_address          = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try(each.value.interface.tunnel_destination_ipv6_address, null) : null

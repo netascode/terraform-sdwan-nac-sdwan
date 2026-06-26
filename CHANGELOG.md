@@ -10,6 +10,7 @@
 - add support for external services cloud provider credentials settings
 - fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
 - update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
+- fix wrong traffic category value in `application priority profile`
 
 ## 1.4.0
 

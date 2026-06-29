@@ -321,14 +321,28 @@ resource "sdwan_system_ipv4_device_access_feature" "system_ipv4_device_access_fe
     base_action                         = s.base_action
     destination_ip_prefix_list          = try(s.match_entries.destination_data_prefixes, null)
     destination_ip_prefix_list_variable = try("{{${s.match_entries.destination_data_prefixes_variable}}}", null)
-    destination_data_prefix_list_id     = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id, null)
-    device_access_port                  = s.match_entries.destination_port
-    id                                  = s.id
-    name                                = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.sequences.name)
-    source_ip_prefix_list               = try(s.match_entries.source_data_prefixes, null)
-    source_ip_prefix_list_variable      = try("{{${s.match_entries.source_data_prefixes_variable}}}", null)
-    source_data_prefix_list_id          = try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id, null)
-    source_ports                        = try(s.match_entries.source_ports, null)
+    destination_data_prefix_list_id = (
+      try(s.match_entries.destination_data_prefix_list, null) != null
+      ? try(
+        sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id,
+        local.system_ipv4_prefix_map[s.match_entries.destination_data_prefix_list]
+      )
+      : null
+    )
+    device_access_port             = s.match_entries.destination_port
+    id                             = s.id
+    name                           = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv4_device_access_policy.sequences.name)
+    source_ip_prefix_list          = try(s.match_entries.source_data_prefixes, null)
+    source_ip_prefix_list_variable = try("{{${s.match_entries.source_data_prefixes_variable}}}", null)
+    source_data_prefix_list_id = (
+      try(s.match_entries.source_data_prefix_list, null) != null
+      ? try(
+        sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id,
+        local.system_ipv4_prefix_map[s.match_entries.source_data_prefix_list]
+      )
+      : null
+    )
+    source_ports = try(s.match_entries.source_ports, null)
   }]
 }
 

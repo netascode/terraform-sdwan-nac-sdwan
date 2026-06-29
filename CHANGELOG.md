@@ -3,7 +3,6 @@
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list
-- add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix duplicate service LAN VPN version entry in configuration group feature_versions
 - add support for new 20.18 attributes in system AAA (`sdwan_system_aaa_feature`): RADIUS/TACACS groups `vpn_variable`, `trustsec_cts_auth_list`, `trustsec_cts_auth_list_variable`, `trustsec_radius_group`
 - add support for `dhcp_ha_enable` and `dhcp_ha_enable_variable` in DHCP server feature (`sdwan_service_dhcp_server_feature`)
@@ -12,6 +11,7 @@
 - fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
 - update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
 - fix wrong traffic category value in `application priority profile`
+- add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 
 ## 1.4.0
 

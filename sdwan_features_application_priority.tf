@@ -135,9 +135,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
         tcp = seq.match_entries.tcp
       }] : [],
       try(seq.match_entries.traffic_category, null) != null ? [{
-        traffic_category = lookup({
-          "optimize-allow" = "optimizeAllow"
-        }, seq.match_entries.traffic_category, seq.match_entries.traffic_category)
+        traffic_category = seq.match_entries.traffic_category
       }] : [],
       try(seq.match_entries.traffic_class, null) != null ? [{
         traffic_class = seq.match_entries.traffic_class

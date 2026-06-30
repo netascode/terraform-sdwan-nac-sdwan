@@ -1,3 +1,29 @@
+# System-created policy object lookups
+data "sdwan_policy_object_feature_profile_parcels" "system_data_prefix" {
+  count              = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  created_by         = "system"
+  parcel_type        = "data-prefix"
+}
+
+data "sdwan_policy_object_feature_profile_parcels" "system_app_list" {
+  count              = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  created_by         = "system"
+  parcel_type        = "app-list"
+}
+
+locals {
+  system_ipv4_prefix_map = {
+    for p in try(data.sdwan_policy_object_feature_profile_parcels.system_data_prefix[0].parcels, []) :
+    p.parcel_name => p.parcel_id
+  }
+  system_app_list_map = {
+    for p in try(data.sdwan_policy_object_feature_profile_parcels.system_app_list[0].parcels, []) :
+    p.parcel_name => p.parcel_id
+  }
+}
+
 resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.app_probe_classes, {}) : p.name => p }
   name               = each.value.name

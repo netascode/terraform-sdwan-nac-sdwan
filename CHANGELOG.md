@@ -10,6 +10,8 @@
 - add support for external services cloud provider credentials settings
 - fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
 - update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
+- fix wrong traffic category value in `application priority profile`
+- add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix tracker in `transport WAN VPN ipsec interface`
 
 ## 1.4.0

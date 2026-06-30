@@ -66,17 +66,26 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
       # Application matching
       try(seq.match_entries.application_list, null) != null ? [{
-        application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.application_list].id
+        application_list_id = try(
+          sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.application_list].id,
+          local.system_app_list_map[seq.match_entries.application_list]
+        )
       }] : [],
       try(seq.match_entries.dns, null) != null ? [{
         dns = seq.match_entries.dns
       }] : [],
       try(seq.match_entries.dns_application_list, null) != null ? [{
-        dns_application_list_id = sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.dns_application_list].id
+        dns_application_list_id = try(
+          sdwan_policy_object_application_list.policy_object_application_list[seq.match_entries.dns_application_list].id,
+          local.system_app_list_map[seq.match_entries.dns_application_list]
+        )
       }] : [],
       # Destination criteria
       try(seq.match_entries.destination_data_ipv4_prefix_list, null) != null ? [{
-        destination_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.destination_data_ipv4_prefix_list].id
+        destination_data_ipv4_prefix_list_id = try(
+          sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.destination_data_ipv4_prefix_list].id,
+          local.system_ipv4_prefix_map[seq.match_entries.destination_data_ipv4_prefix_list]
+        )
       }] : [],
       try(seq.match_entries.destination_data_ipv6_prefix_list, null) != null ? [{
         destination_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.destination_data_ipv6_prefix_list].id
@@ -117,7 +126,10 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       }] : [],
       # Source criteria
       try(seq.match_entries.source_data_ipv4_prefix_list, null) != null ? [{
-        source_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.source_data_ipv4_prefix_list].id
+        source_data_ipv4_prefix_list_id = try(
+          sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.source_data_ipv4_prefix_list].id,
+          local.system_ipv4_prefix_map[seq.match_entries.source_data_ipv4_prefix_list]
+        )
       }] : [],
       try(seq.match_entries.source_data_ipv6_prefix_list, null) != null ? [{
         source_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.source_data_ipv6_prefix_list].id
@@ -135,9 +147,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
         tcp = seq.match_entries.tcp
       }] : [],
       try(seq.match_entries.traffic_category, null) != null ? [{
-        traffic_category = lookup({
-          "optimize-allow" = "optimizeAllow"
-        }, seq.match_entries.traffic_category, seq.match_entries.traffic_category)
+        traffic_category = seq.match_entries.traffic_category
       }] : [],
       try(seq.match_entries.traffic_class, null) != null ? [{
         traffic_class = seq.match_entries.traffic_class

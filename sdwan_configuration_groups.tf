@@ -294,6 +294,7 @@ locals {
       ]],
       try(profile.wan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.ipsec_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${profile.name}-wan_vpn-${interface.name}"].version,
+        try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_ipsec_feature_associate_tracker_feature.transport_wan_vpn_interface_ipsec_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],
       ]],
     ])
   }

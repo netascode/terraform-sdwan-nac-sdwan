@@ -1727,8 +1727,6 @@ resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_in
   multiplexing_variable                    = try("{{${each.value.interface.multiplexing_variable}}}", null)
   shutdown                                 = try(each.value.interface.shutdown, null)
   shutdown_variable                        = try("{{${each.value.interface.shutdown_variable}}}", null)
-  tracker_id                               = try(each.value.interface.tracker_id, null)
-  tracker_id_variable                      = try("{{${each.value.interface.tracker_id_variable}}}", null)
   tunnel_destination_ipv4_address          = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try(each.value.interface.tunnel_destination_ipv4_address, null) : null
   tunnel_destination_ipv4_address_variable = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try("{{${each.value.interface.tunnel_destination_ipv4_address_variable}}}", null) : null
   tunnel_destination_ipv6_address          = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try(each.value.interface.tunnel_destination_ipv6_address, null) : null
@@ -1742,6 +1740,28 @@ resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_in
   tunnel_source_ipv4_address_variable      = (try(each.value.interface.tunnel_mode, "ipv4") == "ipv4" || try(each.value.interface.tunnel_mode, "ipv4") == "ipv4-v6overlay") ? try("{{${each.value.interface.tunnel_source_ipv4_address_variable}}}", null) : null
   tunnel_source_ipv6_address               = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try(each.value.interface.tunnel_source_ipv6_address, null) : null
   tunnel_source_ipv6_address_variable      = try(each.value.interface.tunnel_mode, "ipv4") == "ipv6" ? try("{{${each.value.interface.tunnel_source_ipv6_address_variable}}}", null) : null
+}
+
+resource "sdwan_transport_wan_vpn_interface_ipsec_feature_associate_tracker_feature" "transport_wan_vpn_interface_ipsec_feature_associate_tracker_feature" {
+  for_each = {
+    for interface_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, {}) : [
+        for wan_vpn in try([profile.wan_vpn], []) : [
+          for interface in try(wan_vpn.ipsec_interfaces, []) : {
+            profile   = profile
+            wan_vpn   = wan_vpn
+            interface = interface
+          }
+        ]
+      ]
+    ])
+    : "${interface_item.profile.name}-wan_vpn-${interface_item.interface.name}-tracker" => interface_item
+    if try(interface_item.interface.ipv4_tracker, null) != null
+  }
+  feature_profile_id                           = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_wan_vpn_feature_id                 = sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${each.value.profile.name}-wan_vpn"].id
+  transport_wan_vpn_interface_ipsec_feature_id = sdwan_transport_wan_vpn_interface_ipsec_feature.transport_wan_vpn_interface_ipsec_feature["${each.value.profile.name}-wan_vpn-${each.value.interface.name}"].id
+  transport_tracker_feature_id                 = sdwan_transport_tracker_feature.transport_tracker_feature["${each.value.profile.name}-${each.value.interface.ipv4_tracker}"].id
 }
 
 resource "sdwan_transport_ipv6_acl_feature" "transport_ipv6_acl_feature" {

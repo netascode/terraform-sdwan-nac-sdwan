@@ -179,8 +179,7 @@ locals {
           sdwan_service_lan_vpn_interface_gre_feature.service_lan_vpn_interface_gre_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
         ]],
         try(lan_vpn.ipsec_interfaces, null) == null ? [] : [for interface in try(lan_vpn.ipsec_interfaces, []) : [
-          sdwan_service_lan_vpn_interface_ipsec_feature.service_lan_vpn_interface_ipsec_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,
-          try(interface.ipv4_tracker, null) == null ? [] : [sdwan_service_lan_vpn_interface_ipsec_feature_associate_tracker_feature.service_lan_vpn_interface_ipsec_feature_associate_tracker_feature["${profile.name}-${lan_vpn.name}-${interface.name}-tracker"].version],
+          sdwan_service_lan_vpn_interface_ipsec_feature.service_lan_vpn_interface_ipsec_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version
         ]],
         try(lan_vpn.svi_interfaces, null) == null ? [] : [for interface in try(lan_vpn.svi_interfaces, []) : [
           sdwan_service_lan_vpn_interface_svi_feature.service_lan_vpn_interface_svi_feature["${profile.name}-${lan_vpn.name}-${interface.name}"].version,

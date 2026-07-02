@@ -13,6 +13,7 @@
 - fix wrong traffic category value in `application priority profile`
 - add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix tracker in `transport WAN VPN ipsec interface`
+- allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
 
 ## 1.4.0
 

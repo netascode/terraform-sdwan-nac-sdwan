@@ -30,8 +30,8 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     method           = rule.method
     rule_id          = rule.id
   }]
-  radius_groups = try(length(each.value.aaa.radius_groups) == 0, true) ? null : [for group in each.value.aaa.radius_groups : {
-    group_name = try("radius-${group.vpn}", "radius-0-0")
+  radius_groups = try(length(each.value.aaa.radius_groups) == 0, true) ? null : [for index, group in each.value.aaa.radius_groups : {
+    group_name = try(group.group_name, "radius-${index}-${group.vpn}", "radius-${index}-${index}")
     servers = !can(group.servers) ? null : [for server in group.servers : {
       acct_port           = try(server.accounting_port, null)
       acct_port_variable  = try("{{${server.accounting_port_variable}}}", null)
@@ -53,8 +53,8 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     source_interface_variable = try("{{${group.source_interface_variable}}}", null)
   }]
   server_auth_order = try(each.value.aaa.auth_order, local.defaults.sdwan.feature_profiles.system_profiles.aaa.auth_order)
-  tacacs_groups = try(length(each.value.aaa.tacacs_groups) == 0, true) ? null : [for group in each.value.aaa.tacacs_groups : {
-    group_name = try("tacacs-${group.vpn}", "tacacs-0-0")
+  tacacs_groups = try(length(each.value.aaa.tacacs_groups) == 0, true) ? null : [for index, group in each.value.aaa.tacacs_groups : {
+    group_name = try(group.group_name, try("tacacs-${index}-${group.vpn}", "tacacs-${index}-${index}"))
     servers = !can(group.servers) ? null : [for server in group.servers : {
       address          = server.address
       key              = try(server.key, null)

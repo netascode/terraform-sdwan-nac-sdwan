@@ -1,5 +1,6 @@
 ## 1.5.0 (unreleased)
 
+- **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated (e.g. `tacacs-0-511` instead of `tacacs-511`), or set `group_name` explicitly to retain the old name
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list
@@ -14,6 +15,7 @@
 - add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix tracker in `transport WAN VPN ipsec interface`
 - allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
+- 
 
 ## 1.4.0
 

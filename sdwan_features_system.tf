@@ -54,7 +54,7 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
   }]
   server_auth_order = try(each.value.aaa.auth_order, local.defaults.sdwan.feature_profiles.system_profiles.aaa.auth_order)
   tacacs_groups = try(length(each.value.aaa.tacacs_groups) == 0, true) ? null : [for index, group in each.value.aaa.tacacs_groups : {
-    group_name = try(group.group_name, try("tacacs-${index}-${group.vpn}", "tacacs-${index}-${index}"))
+    group_name = try(group.group_name, "tacacs-${index}-${group.vpn}", "tacacs-${index}-${index}")
     servers = !can(group.servers) ? null : [for server in group.servers : {
       address          = server.address
       key              = try(server.key, null)

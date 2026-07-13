@@ -1,5 +1,6 @@
 ## 1.5.0 (unreleased)
 
+- **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list

@@ -106,7 +106,7 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
   ip_enforced_for_known_browsers_variable = try("{{${each.value.zscaler.ip_enforced_for_known_browsers_variable}}}", null)
   ips_control                             = try(each.value.zscaler.ips_control, null)
   ips_control_variable                    = try("{{${each.value.zscaler.ips_control_variable}}}", null)
-  location_name                           = try(each.value.zscaler.location_name, null)
+  location_name                           = null # not supported in the UI
   location_name_variable                  = try("{{${each.value.zscaler.location_name_variable}}}", null)
   ofw_enabled                             = try(each.value.zscaler.firewall_enabled, null)
   ofw_enabled_variable                    = try("{{${each.value.zscaler.firewall_enabled_variable}}}", null)

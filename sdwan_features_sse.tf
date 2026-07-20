@@ -26,8 +26,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
   country_variable                       = try("{{${each.value.zscaler.country_variable}}}", null)
   display_time_unit                      = try(each.value.zscaler.display_time_unit, null)
   display_time_unit_variable             = try("{{${each.value.zscaler.display_time_unit_variable}}}", null)
-  dn_bandwidth                           = try(each.value.zscaler.dn_bandwidth, null)
-  dn_bandwidth_variable                  = try("{{${each.value.zscaler.dn_bandwidth_variable}}}", null)
+  dn_bandwidth                           = try(each.value.zscaler.download_bandwidth, null)
+  dn_bandwidth_variable                  = try("{{${each.value.zscaler.download_bandwidth_variable}}}", null)
   enforce_bandwidth_control              = try(each.value.zscaler.enforce_bandwidth_control, null)
   enforce_bandwidth_control_variable     = try("{{${each.value.zscaler.enforce_bandwidth_control_variable}}}", null)
   force_ssl_inspection                   = try(each.value.zscaler.force_ssl_inspection, null)
@@ -45,7 +45,7 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     backup_interface_weight_variable = try("{{${item.backup_interface_weight_variable}}}", null)
   }]
   interfaces = try(length(each.value.zscaler.interfaces) == 0, true) ? null : [for item in each.value.zscaler.interfaces : {
-    auto                             = try(item.auto, null)
+    auto                             = null # not supported in the UI
     dpd_interval                     = try(item.dpd_interval, null)
     dpd_interval_variable            = try("{{${item.dpd_interval_variable}}}", null)
     dpd_retries                      = try(item.dpd_retries, null)
@@ -78,8 +78,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     mtu_variable                     = try("{{${item.mtu_variable}}}", null)
     perfect_forward_secrecy          = try(item.perfect_forward_secrecy, null)
     perfect_forward_secrecy_variable = try("{{${item.perfect_forward_secrecy_variable}}}", null)
-    pre_shared_key_dynamic           = try(item.pre_shared_key_dynamic, null)
-    pre_shared_key_dynamic_variable  = try("{{${item.pre_shared_key_dynamic_variable}}}", null)
+    pre_shared_key_dynamic           = null # not supported in the UI
+    pre_shared_key_dynamic_variable  = null # not supported in the UI
     shutdown                         = try(item.shutdown, null)
     tcp_mss_adjust                   = try(item.tcp_mss_adjust, null)
     tcp_mss_adjust_variable          = try("{{${item.tcp_mss_adjust_variable}}}", null)
@@ -108,8 +108,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
   ips_control_variable                    = try("{{${each.value.zscaler.ips_control_variable}}}", null)
   location_name                           = try(each.value.zscaler.location_name, null)
   location_name_variable                  = try("{{${each.value.zscaler.location_name_variable}}}", null)
-  ofw_enabled                             = try(each.value.zscaler.ofw_enabled, null)
-  ofw_enabled_variable                    = try("{{${each.value.zscaler.ofw_enabled_variable}}}", null)
+  ofw_enabled                             = try(each.value.zscaler.firewall_enabled, null)
+  ofw_enabled_variable                    = try("{{${each.value.zscaler.firewall_enabled_variable}}}", null)
   primary_data_center                     = try(each.value.zscaler.primary_data_center, null)
   primary_data_center_variable            = try("{{${each.value.zscaler.primary_data_center_variable}}}", null)
   refresh_time                            = try(each.value.zscaler.refresh_time, null)
@@ -134,8 +134,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     caution_enabled_variable               = try("{{${sub_location.caution_enabled_variable}}}", null)
     display_time_unit                      = try(sub_location.display_time_unit, null)
     display_time_unit_variable             = try("{{${sub_location.display_time_unit_variable}}}", null)
-    dn_bandwidth                           = try(sub_location.dn_bandwidth, null)
-    dn_bandwidth_variable                  = try("{{${sub_location.dn_bandwidth_variable}}}", null)
+    dn_bandwidth                           = try(sub_location.download_bandwidth, null)
+    dn_bandwidth_variable                  = try("{{${sub_location.download_bandwidth_variable}}}", null)
     enforce_bandwidth_control              = try(sub_location.enforce_bandwidth_control, null)
     enforce_bandwidth_control_variable     = try("{{${sub_location.enforce_bandwidth_control_variable}}}", null)
     force_ssl_inspection                   = try(sub_location.force_ssl_inspection, null)
@@ -148,8 +148,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     }]
     ip_enforced_for_known_browsers          = try(sub_location.ip_enforced_for_known_browsers, null)
     ip_enforced_for_known_browsers_variable = try("{{${sub_location.ip_enforced_for_known_browsers_variable}}}", null)
-    ofw_enabled                             = try(sub_location.ofw_enabled, null)
-    ofw_enabled_variable                    = try("{{${sub_location.ofw_enabled_variable}}}", null)
+    ofw_enabled                             = try(sub_location.firewall_enabled, null)
+    ofw_enabled_variable                    = try("{{${sub_location.firewall_enabled_variable}}}", null)
     refresh_time                            = try(sub_location.refresh_time, null)
     refresh_time_variable                   = try("{{${sub_location.refresh_time_variable}}}", null)
     refresh_time_unit                       = try(sub_location.refresh_time_unit, null)
@@ -158,8 +158,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     service_vpn_variable                    = try("{{${sub_location.service_vpn_variable}}}", null)
     surrogate_ip                            = try(sub_location.surrogate_ip, null)
     surrogate_ip_variable                   = try("{{${sub_location.surrogate_ip_variable}}}", null)
-    up_bandwidth                            = try(sub_location.up_bandwidth, null)
-    up_bandwidth_variable                   = try("{{${sub_location.up_bandwidth_variable}}}", null)
+    up_bandwidth                            = try(sub_location.upload_bandwidth, null)
+    up_bandwidth_variable                   = try("{{${sub_location.upload_bandwidth_variable}}}", null)
   }]
   surrogate_ip               = try(each.value.zscaler.surrogate_ip, null)
   surrogate_ip_variable      = try("{{${each.value.zscaler.surrogate_ip_variable}}}", null)
@@ -176,8 +176,8 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     threshold                 = try(item.threshold, null)
     threshold_variable        = try("{{${item.threshold_variable}}}", null)
   }]
-  up_bandwidth                 = try(each.value.zscaler.up_bandwidth, null)
-  up_bandwidth_variable        = try("{{${each.value.zscaler.up_bandwidth_variable}}}", null)
+  up_bandwidth                 = try(each.value.zscaler.upload_bandwidth, null)
+  up_bandwidth_variable        = try("{{${each.value.zscaler.upload_bandwidth_variable}}}", null)
   xff_forward_enabled          = try(each.value.zscaler.xff_forward_enabled, null)
   xff_forward_enabled_variable = try("{{${each.value.zscaler.xff_forward_enabled_variable}}}", null)
 }

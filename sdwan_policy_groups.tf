@@ -13,11 +13,11 @@ resource "sdwan_policy_group" "policy_group" {
   policy_versions = length(concat(
     try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
     try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
-    try(each.value.sse, null) == null ? [] : local.sse_profile_features_versions[each.value.sse],
+    try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
     )) == 0 ? null : concat(
     try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
     try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
-    try(each.value.sse, null) == null ? [] : local.sse_profile_features_versions[each.value.sse],
+    try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
   )
   devices = length([for router in local.routers : router if router.policy_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
@@ -368,10 +368,10 @@ locals {
   }
 
   # ============================================================================
-  # Secure Service Edge (SSE)
+  # Secure Service Edge (SSE) - Policy Versions
   # ============================================================================
 
-  sse_profile_features_versions = {
+  sse_profile_policy_versions = {
     for profile in try(local.feature_profiles.sse_profiles, []) : profile.name => flatten([
       # SSE Zscaler
       try(profile.zscaler, null) == null ? [] : [sdwan_sse_zscaler_feature.sse_zscaler_feature["${profile.name}-zscaler"].version],

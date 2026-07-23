@@ -42,7 +42,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
     # Formula: (user_id) * 10
     id          = seq.sequence_id * 10
     name        = try(seq.sequence_name, "Rule${seq.sequence_id}")
-    base_action = try(seq.base_action, null)
+    base_action = try(seq.base_action, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.base_action)
     type        = try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type)
     ip_type     = try(seq.protocol, null) == "both" ? "all" : try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol)
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
@@ -77,7 +77,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
         }]
       }] : [],
       try(seq.match_entries.role, null) != null ? [{
-        role = seq.match_entries.role
+        role = lookup({ "border" = "border-router", "edge" = "edge-router" }, try(seq.match_entries.role, ""), null)
       }] : [],
       try(seq.match_entries.path_type, null) != null ? [{
         path_type = seq.match_entries.path_type

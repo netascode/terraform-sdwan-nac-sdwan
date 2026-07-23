@@ -533,6 +533,7 @@ defaults:
         custom_policies:
           default_action: reject
           sequences:
+            base_action: reject
             protocol: ipv4
             type: route
           target_level: sites

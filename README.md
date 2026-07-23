@@ -73,6 +73,7 @@ module "sdwan" {
 |------|------|
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [sdwan_activate_centralized_policy.activate_centralized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/activate_centralized_policy) | resource |
+| [sdwan_activate_topology_group.activate_topology_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/activate_topology_group) | resource |
 | [sdwan_app_probe_class_policy_object.app_probe_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/app_probe_class_policy_object) | resource |
 | [sdwan_application_aware_routing_policy_definition.application_aware_routing_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_aware_routing_policy_definition) | resource |
 | [sdwan_application_list_policy_object.application_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/application_list_policy_object) | resource |
@@ -239,6 +240,9 @@ module "sdwan" {
 | [sdwan_system_snmp_feature.system_snmp_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/system_snmp_feature) | resource |
 | [sdwan_tag.tag](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tag) | resource |
 | [sdwan_tloc_list_policy_object.tloc_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/tloc_list_policy_object) | resource |
+| [sdwan_topology_custom_control_feature.topology_custom_control_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_custom_control_feature) | resource |
+| [sdwan_topology_feature_profile.topology_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_feature_profile) | resource |
+| [sdwan_topology_group.topology_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_group) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
 | [sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature) | resource |
 | [sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_profile_feature) | resource |

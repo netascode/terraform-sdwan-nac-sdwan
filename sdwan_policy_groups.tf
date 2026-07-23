@@ -30,6 +30,7 @@ resource "sdwan_policy_group" "policy_group" {
   depends_on = [
     sdwan_tag.tag,
     sdwan_configuration_group.configuration_group,
+    sdwan_activate_topology_group.activate_topology_group,
   ]
   lifecycle {
     create_before_destroy = true

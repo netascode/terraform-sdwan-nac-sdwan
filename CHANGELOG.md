@@ -1,5 +1,9 @@
 ## 1.5.0 (unreleased)
 
+- add support for topology feature profile (`sdwan_topology_feature_profile`)
+- add support for topology group (`sdwan_topology_group`)
+- add support for topology group activation (`sdwan_activate_topology_group`)
+- add support for topology custom control feature (`sdwan_topology_custom_control_feature`)
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list

@@ -185,4 +185,3 @@ resource "sdwan_topology_group" "topology_group" {
   ])
   feature_versions = [for k, v in sdwan_topology_custom_control_feature.topology_custom_control_feature : v.version if startswith(k, "${each.value.topology_profile}-")]
 }
-

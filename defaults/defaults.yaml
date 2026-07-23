@@ -531,8 +531,11 @@ defaults:
           name: snmp
       topology_profiles:
         custom_policies:
+          default_action: reject
           sequences:
             protocol: ipv4
+            type: route
+          target_level: sites
       transport_profiles:
         bgp_features:
           ipv4_neighbors:

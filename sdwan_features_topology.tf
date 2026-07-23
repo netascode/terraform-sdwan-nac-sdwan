@@ -23,8 +23,8 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
   name                  = each.value.custom_control.name
   description           = null # not supported in the UI
   feature_profile_id    = sdwan_topology_feature_profile.topology_feature_profile[each.value.profile.name].id
-  default_action        = each.value.custom_control.default_action
-  target_level          = lookup({ "sites" = "SITE", "wan_regions" = "REGION", "sub_regions" = "SUB_REGION" }, each.value.custom_control.target_level, null)
+  default_action        = try(each.value.custom_control.default_action, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.default_action)
+  target_level          = lookup({ "sites" = "SITE", "wan_regions" = "REGION", "sub_regions" = "SUB_REGION" }, try(each.value.custom_control.target_level, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.target_level), null)
   target_vpn            = null # not supported in the UI
   target_role           = lookup({ "border" = "border-router", "edge" = "edge-router" }, try(each.value.custom_control.target_role, ""), null)
   target_inbound_sites  = try(each.value.custom_control.target_inbound_sites, null)
@@ -41,9 +41,9 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
     # Transform user-friendly sequence IDs (1,2,3,4) to API sequence IDs (10,20,30,40)
     # Formula: (user_id) * 10
     id          = seq.sequence_id * 10
-    name        = try(seq.sequence_name, null)
+    name        = try(seq.sequence_name, "Rule${seq.sequence_id}")
     base_action = try(seq.base_action, null)
-    type        = try(seq.type, null)
+    type        = try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type)
     ip_type     = try(seq.protocol, null) == "both" ? "all" : try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol)
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
       try(seq.match_entries.color_list, null) != null ? [{

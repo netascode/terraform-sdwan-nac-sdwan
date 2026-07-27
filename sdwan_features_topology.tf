@@ -1,11 +1,14 @@
 resource "sdwan_activate_topology_group" "activate_topology_group" {
-  for_each = { for g in try(local.topology_groups, []) : g.name => g
+  for_each = { for g in try(local.topology_groups, []) : "active" => g
   if try(g.activate, false) == true }
-  id               = sdwan_topology_group.topology_group[each.key].id
-  feature_versions = sdwan_topology_group.topology_group[each.key].feature_versions
-  depends_on = [
-    sdwan_topology_custom_control_feature.topology_custom_control_feature,
-  ]
+  id               = sdwan_topology_group.topology_group[each.value.name].id
+  feature_versions = sdwan_topology_group.topology_group[each.value.name].feature_versions
+  lifecycle {
+    precondition {
+      condition     = length([for g in try(local.topology_groups, []) : g if try(g.activate, false) == true]) <= 1
+      error_message = "Only one topology group can be active at a time. Set `activate: true` on at most one entry in `topology_groups`."
+    }
+  }
 }
 
 resource "sdwan_topology_custom_control_feature" "topology_custom_control_feature" {
@@ -44,7 +47,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
     name        = try(seq.sequence_name, "Rule${seq.sequence_id}")
     base_action = try(seq.base_action, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.base_action)
     type        = try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type)
-    ip_type     = try(seq.protocol, null) == "both" ? "all" : try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol)
+    ip_type     = lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol)) # try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type) == "tloc" ? null : lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol))
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
       try(seq.match_entries.color_list, null) != null ? [{
         color_list_id = sdwan_policy_object_color_list.policy_object_color_list[seq.match_entries.color_list].id
@@ -174,14 +177,108 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
   }]
 }
 
-resource "sdwan_topology_group" "topology_group" {
+resource "sdwan_topology_group" "topology_group" { # change and see ; dependency vs versioning changes directly
   for_each    = { for g in try(local.topology_groups, []) : g.name => g }
-  name        = each.value.name
-  description = try(each.value.description, "")
+  name        = each.value.topology_profile                                                                      #each.value.name
+  description = sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].description #try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
     sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,
     sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id,
   ])
-  feature_versions = [for k, v in sdwan_topology_custom_control_feature.topology_custom_control_feature : v.version if startswith(k, "${each.value.topology_profile}-")]
+  feature_versions = length(try(local.topology_profile_features_versions[each.value.topology_profile], [])) == 0 ? null : try(local.topology_profile_features_versions[each.value.topology_profile], null)
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+locals {
+  # ============================================================================
+  # Topology - Custom Control Parcel + Referenced Object Version Tracking
+  # ============================================================================
+
+  # Names of policy objects referenced inside custom-control sequences, per
+  # topology profile. Names are de-duplicated (distinct) since versions are
+  # looked up positionally afterwards.
+  topology_profile_referenced_objects = {
+    for profile in try(local.feature_profiles.topology_profiles, []) : profile.name => {
+      color_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) :
+          try(seq.match_entries.color_list, null)
+        ]
+      ])))
+      standard_community_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) :
+          try(seq.match_entries.community_list, null)
+        ]
+      ])))
+      expanded_community_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) :
+          try(seq.match_entries.expanded_community_list, null)
+        ]
+      ])))
+      tloc_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) : [
+            try(seq.match_entries.tloc_list, null),
+            try(seq.action_entries.tloc_list, null),
+            try(seq.action_entries.service_tloc_list, null),
+            try(seq.action_entries.service_chain_tloc_list, null),
+          ]
+        ]
+      ])))
+      ipv4_prefix_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) :
+          try(seq.match_entries.ipv4_prefix_list, null)
+        ]
+      ])))
+      ipv6_prefix_lists = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) :
+          try(seq.match_entries.ipv6_prefix_list, null)
+        ]
+      ])))
+    }
+  }
+
+  # Versions of the referenced policy objects, per topology profile.
+  topology_profile_object_versions = {
+    for profile in try(local.feature_profiles.topology_profiles, []) : profile.name => compact(flatten([
+      [for n in try(local.topology_profile_referenced_objects[profile.name].color_lists, []) :
+        try(sdwan_policy_object_color_list.policy_object_color_list[n].version, null)
+      ],
+      [for n in try(local.topology_profile_referenced_objects[profile.name].standard_community_lists, []) :
+        try(sdwan_policy_object_standard_community_list.policy_object_standard_community_list[n].version, null)
+      ],
+      [for n in try(local.topology_profile_referenced_objects[profile.name].expanded_community_lists, []) :
+        try(sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[n].version, null)
+      ],
+      [for n in try(local.topology_profile_referenced_objects[profile.name].tloc_lists, []) :
+        try(sdwan_policy_object_tloc_list.policy_object_tloc_list[n].version, null)
+      ],
+      [for n in try(local.topology_profile_referenced_objects[profile.name].ipv4_prefix_lists, []) :
+        try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[n].version, null)
+      ],
+      [for n in try(local.topology_profile_referenced_objects[profile.name].ipv6_prefix_lists, []) :
+        try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[n].version, null)
+      ],
+    ]))
+  }
+
+  # Combined per-profile version list: custom-control parcel versions plus the
+  # versions of every policy object they reference. Built from the data-model
+  # list so removing a custom_policies entry drops its version element too.
+  topology_profile_features_versions = {
+    for profile in try(local.feature_profiles.topology_profiles, []) : profile.name => sort(flatten([
+      try(profile.custom_policies, null) == null ? [] : [
+        for custom_control in try(profile.custom_policies, []) :
+        sdwan_topology_custom_control_feature.topology_custom_control_feature["${profile.name}-${custom_control.name}"].version
+      ],
+      try(local.topology_profile_object_versions[profile.name], []),
+    ]))
+  }
 }

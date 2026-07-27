@@ -242,6 +242,14 @@ locals {
           try(seq.match_entries.ipv6_prefix_list, null)
         ]
       ])))
+      lan_vpn_names = distinct(compact(flatten([
+        for custom_control in try(profile.custom_policies, []) : [
+          for seq in try(custom_control.sequences, []) : concat(
+            try(seq.match_entries.lan_vpn_names, []),
+            try(seq.action_entries.export_to_lan_vpn_names, []),
+          )
+        ]
+      ])))
     }
   }
 
@@ -265,6 +273,9 @@ locals {
       ],
       [for n in try(local.topology_profile_referenced_objects[profile.name].ipv6_prefix_lists, []) :
         try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[n].version, null)
+      ],
+      [for k, v in sdwan_service_lan_vpn_feature.service_lan_vpn_feature : v.version
+        if contains(try(local.topology_profile_referenced_objects[profile.name].lan_vpn_names, []), v.name)
       ],
     ]))
   }

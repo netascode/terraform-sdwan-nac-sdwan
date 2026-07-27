@@ -35,14 +35,10 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
   idle_time                              = try(each.value.zscaler.idle_time, null)
   idle_time_variable                     = try("{{${each.value.zscaler.idle_time_variable}}}", null)
   interface_pairs = try(length(each.value.zscaler.interface_pairs) == 0, true) ? null : [for item in each.value.zscaler.interface_pairs : {
-    active_interface                 = try(item.active_interface, null)
-    active_interface_variable        = try("{{${item.active_interface_variable}}}", null)
-    active_interface_weight          = try(item.active_interface_weight, null)
-    active_interface_weight_variable = try("{{${item.active_interface_weight_variable}}}", null)
-    backup_interface                 = try(item.backup_interface, null)
-    backup_interface_variable        = try("{{${item.backup_interface_variable}}}", null)
-    backup_interface_weight          = try(item.backup_interface_weight, null)
-    backup_interface_weight_variable = try("{{${item.backup_interface_weight_variable}}}", null)
+    active_interface        = try(item.active_interface, null)
+    active_interface_weight = try(item.active_interface_weight, null)
+    backup_interface        = try(item.backup_interface, null)
+    backup_interface_weight = try(item.backup_interface_weight, null)
   }]
   interfaces = try(length(each.value.zscaler.interfaces) == 0, true) ? null : [for item in each.value.zscaler.interfaces : {
     auto                             = null # not supported in the UI
@@ -65,7 +61,6 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     interface_description            = try(item.interface_description, null)
     interface_description_variable   = try("{{${item.interface_description_variable}}}", null)
     interface_name                   = try(item.interface_name, null)
-    interface_name_variable          = try("{{${item.interface_name_variable}}}", null)
     ipsec_ciphersuite                = try(item.ipsec_ciphersuite, null)
     ipsec_ciphersuite_variable       = try("{{${item.ipsec_ciphersuite_variable}}}", null)
     ipsec_rekey_interval             = try(item.ipsec_rekey_interval, null)
@@ -79,14 +74,11 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     perfect_forward_secrecy          = try(item.perfect_forward_secrecy, null)
     perfect_forward_secrecy_variable = try("{{${item.perfect_forward_secrecy_variable}}}", null)
     pre_shared_key_dynamic           = null # not supported in the UI
-    pre_shared_key_dynamic_variable  = null # not supported in the UI
     shutdown                         = try(item.shutdown, null)
     tcp_mss_adjust                   = try(item.tcp_mss_adjust, null)
     tcp_mss_adjust_variable          = try("{{${item.tcp_mss_adjust_variable}}}", null)
     track_enable                     = try(item.track_enable, null)
-    track_enable_variable            = try("{{${item.track_enable_variable}}}", null)
     tracker                          = try(item.tracker, null)
-    tracker_variable                 = try("{{${item.tracker_variable}}}", null)
     tunnel_dc_preference             = try(item.tunnel_dc_preference, null)
     tunnel_destination               = try(item.tunnel_destination, null)
     tunnel_destination_variable      = try("{{${item.tunnel_destination_variable}}}", null)
@@ -95,7 +87,6 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
     tunnel_route_via                 = try(item.tunnel_route_via, null)
     tunnel_route_via_variable        = try("{{${item.tunnel_route_via_variable}}}", null)
     tunnel_set                       = try(item.tunnel_set, null)
-    tunnel_set_variable              = try("{{${item.tunnel_set_variable}}}", null)
     tunnel_source                    = try(item.tunnel_source, null)
     tunnel_source_variable           = try("{{${item.tunnel_source_variable}}}", null)
     tunnel_source_interface          = try(item.tunnel_source_interface, null)

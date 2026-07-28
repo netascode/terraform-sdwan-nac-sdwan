@@ -177,10 +177,10 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
   }]
 }
 
-resource "sdwan_topology_group" "topology_group" { # change and see ; dependency vs versioning changes directly
+resource "sdwan_topology_group" "topology_group" {
   for_each    = { for g in try(local.topology_groups, []) : g.name => g }
-  name        = each.value.topology_profile                                                                      #each.value.name
-  description = sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].description #try(each.value.description, "")
+  name        = each.value.name
+  description = try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
     sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,

@@ -4,6 +4,7 @@
 - add support for topology group (`sdwan_topology_group`)
 - add support for topology group activation (`sdwan_activate_topology_group`)
 - add support for topology custom control feature (`sdwan_topology_custom_control_feature`)
+- **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list
@@ -17,6 +18,8 @@
 - fix wrong traffic category value in `application priority profile`
 - add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix tracker in `transport WAN VPN ipsec interface`
+- allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
+- add support for sse feature profile and sse zscaler feature
 
 ## 1.4.0
 

@@ -47,7 +47,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
     name        = try(seq.sequence_name, "Rule${seq.sequence_id}")
     base_action = try(seq.base_action, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.base_action)
     type        = try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type)
-    ip_type     = lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol)) # try(seq.type, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.type) == "tloc" ? null : lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol))
+    ip_type     = lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol))
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
       try(seq.match_entries.color_list, null) != null ? [{
         color_list_id = sdwan_policy_object_color_list.policy_object_color_list[seq.match_entries.color_list].id
@@ -197,7 +197,7 @@ locals {
   # Topology - Custom Control Parcel + Referenced Object Version Tracking
   # ============================================================================
 
-  # Names of policy objects referenced inside custom-control sequences, per
+  # Names of policy objects and service lan vpns referenced inside custom-control sequences, per
   # topology profile. Names are de-duplicated (distinct) since versions are
   # looked up positionally afterwards.
   topology_profile_referenced_objects = {
@@ -253,7 +253,7 @@ locals {
     }
   }
 
-  # Versions of the referenced policy objects, per topology profile.
+  # Versions of the referenced policy objects and service lan vpns per topology profile.
   topology_profile_object_versions = {
     for profile in try(local.feature_profiles.topology_profiles, []) : profile.name => compact(flatten([
       [for n in try(local.topology_profile_referenced_objects[profile.name].color_lists, []) :
@@ -281,7 +281,7 @@ locals {
   }
 
   # Combined per-profile version list: custom-control parcel versions plus the
-  # versions of every policy object they reference. Built from the data-model
+  # versions of every policy object and service lan vpns they reference. Built from the data-model
   # list so removing a custom_policies entry drops its version element too.
   topology_profile_features_versions = {
     for profile in try(local.feature_profiles.topology_profiles, []) : profile.name => sort(flatten([

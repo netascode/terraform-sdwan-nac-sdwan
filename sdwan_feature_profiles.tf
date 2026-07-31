@@ -41,7 +41,7 @@ resource "sdwan_sse_feature_profile" "sse_feature_profile" {
 }
 
 resource "sdwan_topology_feature_profile" "topology_feature_profile" {
-  for_each    = { for t in try(local.feature_profiles.topology_profiles, []) : t.name => t }
+  for_each    = { for t in try(local.feature_profiles.topology_profiles, {}) : t.name => t }
   name        = each.value.name
   description = try(each.value.description, "")
 }

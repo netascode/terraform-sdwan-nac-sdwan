@@ -16,6 +16,7 @@
 - fix tracker in `transport WAN VPN ipsec interface`
 - allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
 - add support for sse feature profile and sse zscaler feature
+- add support for custom application feature
 
 ## 1.4.0
 

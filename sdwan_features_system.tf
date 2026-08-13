@@ -451,10 +451,14 @@ resource "sdwan_system_ntp_feature" "system_ntp_feature" {
   description        = try(each.value.ntp.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   authentication_keys = try(length(each.value.ntp.authentication_keys) == 0, true) ? null : [for key in each.value.ntp.authentication_keys : {
-    key_id             = try(key.id, null)
-    key_id_variable    = try("{{${key.id_variable}}}", null)
-    md5_value          = try(key.md5_value, null)
-    md5_value_variable = try("{{${key.md5_value_variable}}}", null)
+    key_id                     = try(key.id, null)
+    key_id_variable            = try("{{${key.id_variable}}}", null)
+    md5_value                  = try(key.md5_value, null)
+    md5_value_variable         = try("{{${key.md5_value_variable}}}", null)
+    hmac_sha2_value            = try(key.hmac_sha2_value, null)
+    hmac_sha2_value_variable   = try("{{${key.hmac_sha2_value_variable}}}", null)
+    cmac_aes128_value          = try(key.cmac_aes128_value, null)
+    cmac_aes128_value_variable = try("{{${key.cmac_aes128_value_variable}}}", null)
   }]
   authoritative_ntp_server          = try(each.value.ntp.authoritative_ntp_server, null)
   authoritative_ntp_server_variable = try("{{${each.value.ntp.authoritative_ntp_server_variable}}}", null)

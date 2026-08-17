@@ -177,6 +177,52 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
   }]
 }
 
+resource "sdwan_topology_hub_spoke_feature" "topology_hub_spoke_feature" {
+  for_each = {
+    for hub_spoke_item in flatten([
+      for profile in try(local.feature_profiles.topology_profiles, []) : [
+        for hub_spoke in try(profile.hub_spoke_policies, []) : {
+          profile   = profile
+          hub_spoke = hub_spoke
+        }
+      ]
+    ])
+    : "${hub_spoke_item.profile.name}-${hub_spoke_item.hub_spoke.name}" => hub_spoke_item
+  }
+  name               = each.value.hub_spoke.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_topology_feature_profile.topology_feature_profile[each.value.profile.name].id
+  target_vpns        = each.value.hub_spoke.target_lan_vpn_names
+  selected_hubs      = each.value.hub_spoke.selected_hub_sites
+  spokes = try(length(each.value.hub_spoke.spoke_groups) == 0, true) ? null : [for spoke in try(each.value.hub_spoke.spoke_groups, []) : {
+    name        = try(spoke.name, null)
+    spoke_sites = try(spoke.spoke_sites, null)
+    hub_sites = try(length(spoke.hub_preferences) == 0, true) ? null : [for hub_pref in try(spoke.hub_preferences, []) : {
+      sites      = try(hub_pref.hub_sites, null)
+      preference = try(hub_pref.preference, null)
+    }]
+  }]
+}
+
+resource "sdwan_topology_mesh_feature" "topology_mesh_feature" {
+  for_each = {
+    for mesh_item in flatten([
+      for profile in try(local.feature_profiles.topology_profiles, []) : [
+        for mesh in try(profile.mesh_policies, []) : {
+          profile = profile
+          mesh    = mesh
+        }
+      ]
+    ])
+    : "${mesh_item.profile.name}-${mesh_item.mesh.name}" => mesh_item
+  }
+  name               = each.value.mesh.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_topology_feature_profile.topology_feature_profile[each.value.profile.name].id
+  target_vpns        = each.value.mesh.target_lan_vpn_names
+  sites              = each.value.mesh.sites
+}
+
 resource "sdwan_topology_group" "topology_group" {
   for_each    = { for g in try(local.topology_groups, []) : g.name => g }
   name        = each.value.name
@@ -288,6 +334,14 @@ locals {
       try(profile.custom_policies, null) == null ? [] : [
         for custom_control in try(profile.custom_policies, []) :
         sdwan_topology_custom_control_feature.topology_custom_control_feature["${profile.name}-${custom_control.name}"].version
+      ],
+      try(profile.hub_spoke_policies, null) == null ? [] : [
+        for hub_spoke in try(profile.hub_spoke_policies, []) :
+        sdwan_topology_hub_spoke_feature.topology_hub_spoke_feature["${profile.name}-${hub_spoke.name}"].version
+      ],
+      try(profile.mesh_policies, null) == null ? [] : [
+        for mesh in try(profile.mesh_policies, []) :
+        sdwan_topology_mesh_feature.topology_mesh_feature["${profile.name}-${mesh.name}"].version
       ],
       try(local.topology_profile_object_versions[profile.name], []),
     ]))

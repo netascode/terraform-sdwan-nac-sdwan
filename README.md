@@ -245,6 +245,8 @@ module "sdwan" {
 | [sdwan_topology_custom_control_feature.topology_custom_control_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_custom_control_feature) | resource |
 | [sdwan_topology_feature_profile.topology_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_feature_profile) | resource |
 | [sdwan_topology_group.topology_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_group) | resource |
+| [sdwan_topology_hub_spoke_feature.topology_hub_spoke_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_hub_spoke_feature) | resource |
+| [sdwan_topology_mesh_feature.topology_mesh_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_mesh_feature) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
 | [sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature) | resource |
 | [sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_profile_feature) | resource |

@@ -1,32 +1,6 @@
-resource "sdwan_activate_topology_group" "activate_topology_group" {
-  for_each = { for g in try(local.topology_groups, []) : "active" => g
-  if try(g.activate, false) == true }
-  id               = sdwan_topology_group.topology_group[each.value.name].id
-  feature_versions = sdwan_topology_group.topology_group[each.value.name].feature_versions
-  lifecycle {
-    precondition {
-      condition     = length([for g in try(local.topology_groups, []) : g if try(g.activate, false) == true]) <= 1
-      error_message = "Only one topology group can be active at a time. Set `activate: true` on at most one entry in `topology_groups`."
-    }
-  }
-}
-
-resource "sdwan_topology_group" "topology_group" {
-  for_each    = { for g in try(local.topology_groups, []) : g.name => g }
-  name        = each.value.name
-  description = try(each.value.description, "")
-  solution    = "sdwan"
-  feature_profile_ids = flatten([
-    sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,
-    sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id,
-  ])
-  feature_versions = length(try(local.topology_profile_features_versions[each.value.topology_profile], [])) == 0 ? null : try(local.topology_profile_features_versions[each.value.topology_profile], null)
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 locals {
+  active_topology_groups = [for g in try(local.topology_groups, []) : g if try(g.activate, false)]
+
   # ============================================================================
   # Topology - Custom Control Parcel + Referenced Object Version Tracking
   # ============================================================================
@@ -126,5 +100,33 @@ locals {
       ],
       try(local.topology_profile_object_versions[profile.name], []),
     ]))
+  }
+}
+
+resource "sdwan_activate_topology_group" "activate_topology_group" {
+  for_each         = { for g in local.active_topology_groups : g.name => g }
+  id               = sdwan_topology_group.topology_group[each.value.name].id
+  feature_versions = sdwan_topology_group.topology_group[each.value.name].feature_versions
+  depends_on       = [sdwan_policy_group.policy_group]
+  lifecycle {
+    precondition {
+      condition     = length(local.active_topology_groups) <= 1
+      error_message = "Only one topology group can be active at a time. Set `activate: true` on at most one entry in `topology_groups`."
+    }
+  }
+}
+
+resource "sdwan_topology_group" "topology_group" {
+  for_each    = { for g in try(local.topology_groups, []) : g.name => g }
+  name        = each.value.name
+  description = try(each.value.description, "")
+  solution    = "sdwan"
+  feature_profile_ids = flatten([
+    sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,
+    sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id,
+  ])
+  feature_versions = length(try(local.topology_profile_features_versions[each.value.topology_profile], [])) == 0 ? null : try(local.topology_profile_features_versions[each.value.topology_profile], null)
+  lifecycle {
+    create_before_destroy = true
   }
 }

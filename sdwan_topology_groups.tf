@@ -123,7 +123,7 @@ resource "sdwan_topology_group" "topology_group" {
   solution    = "sdwan"
   feature_profile_ids = flatten([
     sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,
-    sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id,
+    try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, []),
   ])
   feature_versions = length(try(local.topology_profile_features_versions[each.value.topology_profile], [])) == 0 ? null : try(local.topology_profile_features_versions[each.value.topology_profile], null)
   lifecycle {

@@ -1,5 +1,11 @@
 ## 1.5.0 (unreleased)
 
+- add support for topology feature profile (`sdwan_topology_feature_profile`)
+- add support for topology group (`sdwan_topology_group`)
+- add support for topology group activation (`sdwan_activate_topology_group`)
+- add support for topology custom control feature (`sdwan_topology_custom_control_feature`)
+- add support for topology hub spoke feature (`sdwan_topology_hub_spoke_feature`)
+- add support for topology mesh feature (`sdwan_topology_mesh_feature`)
 - **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller

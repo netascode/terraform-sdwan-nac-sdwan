@@ -3,7 +3,7 @@ resource "sdwan_custom_application" "custom_application" {
   app_name           = each.value.name
   application_family = try(each.value.application_family, null)
   application_group  = try(each.value.application_group, null)
-  business_relevance = try(each.value.business_relevance, null)
+  business_relevance = try(local.business_relevance_map[each.value.business_relevance], null)
   l3l4 = try(length(each.value.l3l4) > 0, false) ? [
     for item in each.value.l3l4 : {
       ip_addresses = try(item.ip_addresses, null)
@@ -13,4 +13,12 @@ resource "sdwan_custom_application" "custom_application" {
   ] : null
   server_names  = try(each.value.server_names, null)
   traffic_class = try(each.value.traffic_class, null)
+}
+
+locals {
+  business_relevance_map = {
+    "Bronze" : "business-irrelevant"
+    "Gold" : "business-relevant"
+    "Silver" : "default"
+  }
 }

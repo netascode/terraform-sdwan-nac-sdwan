@@ -23,6 +23,7 @@
 - allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
 - add support for sse feature profile and sse zscaler feature
 - add support for new NTP 26.1 auth key types
+- add support for custom application feature
 
 ## 1.4.0
 

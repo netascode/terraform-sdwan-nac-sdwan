@@ -1,4 +1,5 @@
 locals {
+  application_catalog    = try(local.model.sdwan.application_catalog, {})
   edge_feature_templates = try(local.model.sdwan.edge_feature_templates, {})
   edge_device_templates  = try(local.model.sdwan.edge_device_templates, {})
   localized_policies     = try(local.model.sdwan.localized_policies, {})

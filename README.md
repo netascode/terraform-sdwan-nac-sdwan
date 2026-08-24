@@ -117,6 +117,7 @@ module "sdwan" {
 | [sdwan_cloud_provider_settings.cloud_provider_settings](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cloud_provider_settings) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_configuration_group.configuration_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/configuration_group) | resource |
+| [sdwan_custom_application.custom_application](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_application) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
 | [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource |
 | [sdwan_data_ipv4_prefix_list_policy_object.data_ipv4_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_ipv4_prefix_list_policy_object) | resource |

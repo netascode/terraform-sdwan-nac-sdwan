@@ -140,6 +140,13 @@ module "sdwan" {
 | [sdwan_localized_policy.localized_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/localized_policy) | resource |
 | [sdwan_mesh_topology_policy_definition.mesh_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mesh_topology_policy_definition) | resource |
 | [sdwan_mirror_policy_object.mirror_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mirror_policy_object) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_group_l0](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_group_l1](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_group_l2](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_region_l0](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_region_l1](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_region_l2](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
+| [sdwan_network_hierarchy_node.network_hierarchy_site](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/network_hierarchy_node) | resource |
 | [sdwan_other_feature_profile.other_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_feature_profile) | resource |
 | [sdwan_other_thousandeyes_feature.other_thousandeyes_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_thousandeyes_feature) | resource |
 | [sdwan_other_ucse_feature.other_ucse_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_ucse_feature) | resource |

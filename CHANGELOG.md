@@ -24,6 +24,7 @@
 - add support for sse feature profile and sse zscaler feature
 - add support for new NTP 26.1 auth key types
 - add support for custom application feature
+- add support for network hierarchy nodes (`sdwan_network_hierarchy_node`) - nested `groups`/`regions`/`sites`, up to 3 levels deep
 
 ## 1.4.0
 

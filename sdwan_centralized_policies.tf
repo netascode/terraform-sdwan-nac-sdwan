@@ -410,8 +410,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
         log  = s.actions.log
       }],
       try(s.actions.cflowd, null) == null ? [] : [{
-        type   = "cflowd"
-        cflowd = s.actions.cflowd
+        type = "cflowd"
       }],
       try(s.actions.counter_name, null) == null ? [] : [{
         type    = "count"

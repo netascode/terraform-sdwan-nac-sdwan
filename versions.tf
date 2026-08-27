@@ -4,7 +4,7 @@ terraform {
   required_providers {
     sdwan = {
       source  = "CiscoDevNet/sdwan"
-      version = ">= 0.11.4"
+      version = "0.11.4"
     }
     utils = {
       source  = "netascode/utils"
@@ -12,7 +12,7 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = ">= 2.9.0"
+      version = "2.9.0"
     }
   }
 }

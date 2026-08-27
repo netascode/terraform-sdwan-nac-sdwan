@@ -144,14 +144,8 @@ resource "sdwan_network_hierarchy_node" "network_hierarchy_site" {
   parent_group = each.value.parent_key == null ? "Global" : local.nh_all_names[each.value.parent_key]
 }
 
-# Global-node settings, independent of the group/region/site hierarchy above - the
-# provider resolves the Global node itself, no node_id to wire up here.
-# flow_active_timeout/flow_inactive_timeout/flow_refresh_time/flow_sampling_interval/
-# protocol are Required on the provider resource (the live API rejects a request
-# missing any of them - confirmed against its own JSON schema, no server-side
-# default exists despite the GUI showing suggested values). Defaulted here so
-# users aren't forced to always set all five; values match the API schema's own
-# documented defaults.
+# Global-node settings, independent of the group/region/site hierarchy
+
 resource "sdwan_network_hierarchy_cflowd" "network_hierarchy_cflowd" {
   count                  = try(local.network_hierarchy.cflowd, null) != null ? 1 : 0
   flow_active_timeout    = try(local.network_hierarchy.cflowd.flow_active_timeout, 600)

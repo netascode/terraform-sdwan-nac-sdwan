@@ -251,6 +251,22 @@ resource "sdwan_feature_device_template" "feature_device_template" {
   }
 }
 
+# Lookup table to be used when building the cor_saas_entries used for policy-group deploy payload involving CoR SaaS
+locals {
+  cor_saas_variable_api_names = {
+    cor_saas_device_role     = "cloudSaaSDeviceRole_variable"
+    cor_saas_vpn_type        = "cloudSaaSVpnType_variable"
+    cor_saas_lb_enabled      = "cloudSaasLBEnabled_variable"
+    cor_saas_sig_enabled     = "cloudSaasSigEnabled_variable"
+    cor_saas_source_ip_based = "cloudSaasSourceIpBased_variable"
+    cor_saas_latency         = "cloudSaasLatency_variable"
+    cor_saas_loss            = "cloudSaasLoss_variable"
+    cor_saas_interface_list  = "cloudSaasInterfaceList_variable"
+    cor_saas_tloc_list       = "cloudSaasTlocList_variable"
+    cor_saas_sig_tunnel_list = "cloudSaasSigTunnelList_variable"
+  }
+}
+
 locals {
   routers = flatten([
     for site in try(local.sites, []) : [
@@ -266,6 +282,13 @@ locals {
         device_variables           = try(router.device_variables, null)
         policy_variables           = try(router.policy_variables, null)
         model                      = try(router.model, null)
+        cor_saas_entries = [
+          for k, v in try(router.cor_saas_variables, {}) : {
+            name       = local.cor_saas_variable_api_names[k]
+            value      = can(tolist(v)) ? tostring(null) : try(tostring(v), null)
+            list_value = can(tolist(v)) ? tolist(v) : tolist(null)
+          }
+        ]
       }
     ]
   ])

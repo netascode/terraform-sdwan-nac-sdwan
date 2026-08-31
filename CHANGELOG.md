@@ -1,6 +1,6 @@
 ## 1.5.0 (unreleased)
 
-- add support for Cor for SaaS variables in devices (`sdwan_device_templates`) and policy groups (`sdwan_policy_groups`)
+- add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)
 - add support for topology group activation (`sdwan_activate_topology_group`)

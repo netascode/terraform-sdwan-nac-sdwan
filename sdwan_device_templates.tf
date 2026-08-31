@@ -285,8 +285,8 @@ locals {
         cor_saas_entries = [
           for k, v in try(router.cor_saas_variables, {}) : {
             name       = local.cor_saas_variable_api_names[k]
-            value      = can(tolist(v)) ? tostring(null) : try(tostring(v), null)
-            list_value = can(tolist(v)) ? tolist(v) : tolist(null)
+            value      = try(tostring(v), null)
+            list_value = try(tolist(v), null)
           }
         ]
       }

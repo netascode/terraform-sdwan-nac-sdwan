@@ -1,4 +1,3 @@
-
 resource "sdwan_policy_group" "policy_group" {
   for_each    = { for p in local.policy_groups : p.name => p }
   name        = each.value.name
@@ -23,11 +22,18 @@ resource "sdwan_policy_group" "policy_group" {
     for router in local.routers : {
       id     = router.chassis_id
       deploy = try(router.policy_group_deploy, local.defaults.sdwan.sites.routers.policy_group_deploy)
-      variables = try(length(router.policy_variables) == 0, true) ? null : [for name, value in router.policy_variables : {
-        name       = name
-        value      = try(tostring(value), null)
-        list_value = try(tolist(value), null)
-      }]
+      variables = (
+        try(length(router.policy_variables) == 0, true) &&
+        try(length(router.cor_saas_entries) == 0, true)
+        ) ? null : concat(
+        try(length(router.policy_variables), 0) == 0 ? [] :
+        [for name, value in router.policy_variables : {
+          name       = name
+          value      = try(tostring(value), null)
+          list_value = try(tolist(value), null)
+        }],
+        try(router.cor_saas_entries, []),
+      )
     } if router.policy_group == each.value.name
   ]
   depends_on = [

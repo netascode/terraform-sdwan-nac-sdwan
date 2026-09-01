@@ -39,8 +39,8 @@ module "sdwan" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
-| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.11.1 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.9.0 |
+| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | >= 0.11.4 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.1, < 3.0.0 |
 
 ## Inputs
@@ -63,8 +63,8 @@ module "sdwan" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
-| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | >= 0.11.1 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
+| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | 0.11.4 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Resources
@@ -142,6 +142,7 @@ module "sdwan" {
 | [sdwan_mirror_policy_object.mirror_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/mirror_policy_object) | resource |
 | [sdwan_other_feature_profile.other_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_feature_profile) | resource |
 | [sdwan_other_thousandeyes_feature.other_thousandeyes_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_thousandeyes_feature) | resource |
+| [sdwan_other_trustsec_feature.other_trustsec_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_trustsec_feature) | resource |
 | [sdwan_other_ucse_feature.other_ucse_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_ucse_feature) | resource |
 | [sdwan_policer_policy_object.policer_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policer_policy_object) | resource |
 | [sdwan_policy_group.policy_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group) | resource |

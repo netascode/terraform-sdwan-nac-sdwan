@@ -26,6 +26,7 @@
 - add support for new NTP 26.1 auth key types
 - add support for custom application feature
 - fix `cflowd` action in traffic data policy causing a perpetual diff on import of GUI-created policies (upgrading to version with this fix may trigger a one-time reactivation of policies referencing it)
+- fix dependency issue of custom app usage in the application list
 
 ## 1.4.0
 

@@ -1,5 +1,6 @@
 ## 1.5.0 (unreleased)
 
+- add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)
 - add support for topology group activation (`sdwan_activate_topology_group`)
@@ -25,6 +26,8 @@
 - add support for new NTP 26.1 auth key types
 - add support for custom application feature
 - fix `cflowd` action in traffic data policy causing a perpetual diff on import of GUI-created policies (upgrading to version with this fix may trigger a one-time reactivation of policies referencing it)
+- add support for other TrustSec feature
+- fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
 
 ## 1.4.0

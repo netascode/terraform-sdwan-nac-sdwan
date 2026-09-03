@@ -221,6 +221,7 @@ module "sdwan" {
 | [sdwan_service_tracker_group_feature.service_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_group_feature) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
 | [sdwan_sla_class_policy_object.sla_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sla_class_policy_object) | resource |
+| [sdwan_sse_cisco_feature.sse_cisco_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sse_cisco_feature) | resource |
 | [sdwan_sse_feature_profile.sse_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sse_feature_profile) | resource |
 | [sdwan_sse_zscaler_feature.sse_zscaler_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sse_zscaler_feature) | resource |
 | [sdwan_standard_community_list_policy_object.standard_community_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/standard_community_list_policy_object) | resource |

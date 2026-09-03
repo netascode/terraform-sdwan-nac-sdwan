@@ -172,3 +172,77 @@ resource "sdwan_sse_zscaler_feature" "sse_zscaler_feature" {
   xff_forward_enabled          = try(each.value.zscaler.xff_forward_enabled, null)
   xff_forward_enabled_variable = try("{{${each.value.zscaler.xff_forward_enabled_variable}}}", null)
 }
+
+resource "sdwan_sse_cisco_feature" "sse_cisco_feature" {
+  for_each = {
+    for cisco_item in flatten([
+      for profile in try(local.feature_profiles.sse_profiles, []) :
+      try(profile.cisco, null) != null ? [{
+        profile = profile
+        cisco   = profile.cisco
+      }] : []
+    ])
+    : "${cisco_item.profile.name}-cisco" => cisco_item
+  }
+  name                       = each.value.cisco.name
+  description                = try(each.value.cisco.description, null)
+  feature_profile_id         = sdwan_sse_feature_profile.sse_feature_profile[each.value.profile.name].id
+  context_sharing_for_sgt    = try(each.value.cisco.context_sharing_for_sgt, null)
+  context_sharing_for_vpn    = try(each.value.cisco.context_sharing_for_vpn, null)
+  region                     = try(each.value.cisco.region, null)
+  region_variable            = null # Not configurable in manager GUI
+  tracker_source_ip          = try(each.value.cisco.tracker_source_ip, null)
+  tracker_source_ip_variable = try("{{${each.value.cisco.tracker_source_ip_variable}}}", null)
+  interface_pairs = try(length(each.value.cisco.interface_pairs) == 0, true) ? null : [for item in each.value.cisco.interface_pairs : {
+    active_interface        = try(item.active_interface, null)
+    active_interface_weight = try(item.active_interface_weight, null)
+    backup_interface        = try(item.backup_interface, null)
+    backup_interface_weight = try(item.backup_interface_weight, null)
+  }]
+  interfaces = try(length(each.value.cisco.interfaces) == 0, true) ? null : [for item in each.value.cisco.interfaces : {
+    interface_name                   = try(item.interface_name, null)
+    tunnel_source_interface          = try(item.tunnel_source_interface, null)
+    tunnel_source_interface_variable = try("{{${item.tunnel_source_interface_variable}}}", null)
+    tunnel_dc_preference             = try(item.tunnel_dc_preference, null)
+    tunnel_route_via                 = try(item.tunnel_route_via, null)
+    tunnel_route_via_variable        = try("{{${item.tunnel_route_via_variable}}}", null)
+    dpd_interval                     = try(item.dpd_interval, null)
+    dpd_interval_variable            = try("{{${item.dpd_interval_variable}}}", null)
+    dpd_retries                      = try(item.dpd_retries, null)
+    dpd_retries_variable             = try("{{${item.dpd_retries_variable}}}", null)
+    ike_ciphersuite                  = try(item.ike_ciphersuite, null)
+    ike_ciphersuite_variable         = try("{{${item.ike_ciphersuite_variable}}}", null)
+    ike_group                        = try(item.ike_group, null)
+    ike_group_variable               = try("{{${item.ike_group_variable}}}", null)
+    ike_rekey_interval               = try(item.ike_rekey_interval, null)
+    ike_rekey_interval_variable      = try("{{${item.ike_rekey_interval_variable}}}", null)
+    ipsec_ciphersuite                = try(item.ipsec_ciphersuite, null)
+    ipsec_ciphersuite_variable       = try("{{${item.ipsec_ciphersuite_variable}}}", null)
+    ipsec_rekey_interval             = try(item.ipsec_rekey_interval, null)
+    ipsec_rekey_interval_variable    = try("{{${item.ipsec_rekey_interval_variable}}}", null)
+    ipsec_replay_window              = try(item.ipsec_replay_window, null)
+    ipsec_replay_window_variable     = try("{{${item.ipsec_replay_window_variable}}}", null)
+    mtu                              = try(item.mtu, null)
+    mtu_variable                     = try("{{${item.mtu_variable}}}", null)
+    perfect_forward_secrecy          = try(item.perfect_forward_secrecy, null)
+    perfect_forward_secrecy_variable = try("{{${item.perfect_forward_secrecy_variable}}}", null)
+    shutdown                         = try(item.shutdown, null)
+    shutdown_variable                = try("{{${item.shutdown_variable}}}", null)
+    tcp_mss_adjust                   = try(item.tcp_mss_adjust, null)
+    tcp_mss_adjust_variable          = try("{{${item.tcp_mss_adjust_variable}}}", null)
+    track_enable                     = try(item.track_enable, null)
+    track_enable_variable            = try("{{${item.track_enable_variable}}}", null)
+    tracker                          = try(item.tracker, null)
+  }]
+  trackers = try(length(each.value.cisco.trackers) == 0, true) ? null : [for item in each.value.cisco.trackers : {
+    name                      = try(item.name, null)
+    endpoint_api_url          = try(item.endpoint_api_url, null)
+    endpoint_api_url_variable = try("{{${item.endpoint_api_url_variable}}}", null)
+    interval                  = try(item.interval, null)
+    interval_variable         = try("{{${item.interval_variable}}}", null)
+    multiplier                = try(item.multiplier, null)
+    multiplier_variable       = try("{{${item.multiplier_variable}}}", null)
+    threshold                 = try(item.threshold, null)
+    threshold_variable        = try("{{${item.threshold_variable}}}", null)
+  }]
+}

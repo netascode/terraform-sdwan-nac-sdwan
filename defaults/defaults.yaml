@@ -456,6 +456,8 @@ defaults:
       other_profiles:
         thousandeyes:
           name: thousandeyes
+        trustsec:
+          name: trustsec
         ucse:
           name: ucse
       policy_object_profile:

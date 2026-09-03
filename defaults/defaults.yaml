@@ -456,6 +456,8 @@ defaults:
       other_profiles:
         thousandeyes:
           name: thousandeyes
+        trustsec:
+          name: trustsec
         ucse:
           name: ucse
       policy_object_profile:
@@ -529,14 +531,6 @@ defaults:
           name: security
         snmp:
           name: snmp
-      topology_profiles:
-        custom_policies:
-          default_action: reject
-          sequences:
-            base_action: reject
-            protocol: ipv4
-            type: route
-          target_level: sites
       transport_profiles:
         bgp_features:
           ipv4_neighbors:

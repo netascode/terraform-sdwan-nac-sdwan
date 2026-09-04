@@ -381,6 +381,8 @@ locals {
     for profile in try(local.feature_profiles.sse_profiles, []) : profile.name => flatten([
       # SSE Zscaler
       try(profile.zscaler, null) == null ? [] : [sdwan_sse_zscaler_feature.sse_zscaler_feature["${profile.name}-zscaler"].version],
+      # SSE Cisco
+      try(profile.cisco, null) == null ? [] : [sdwan_sse_cisco_feature.sse_cisco_feature["${profile.name}-cisco"].version]
     ])
   }
 }

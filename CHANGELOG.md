@@ -25,6 +25,7 @@
 - add support for sse feature profile and sse zscaler feature
 - add support for new NTP 26.1 auth key types
 - add support for custom application feature
+- add support for network hierarchy nodes (`sdwan_network_hierarchy_node`) - nested `groups`/`regions`/`sites`, up to 3 levels deep
 - fix `cflowd` action in traffic data policy causing a perpetual diff on import of GUI-created policies (upgrading to version with this fix may trigger a one-time reactivation of policies referencing it)
 - add support for other TrustSec feature
 - fix dependency issue of custom app usage in the application list

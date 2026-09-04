@@ -538,7 +538,7 @@ defaults:
             base_action: reject
             protocol: ipv4
             type: route
-          target_level: sites
+          level: sites
       transport_profiles:
         bgp_features:
           ipv4_neighbors:

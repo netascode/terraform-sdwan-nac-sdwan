@@ -93,9 +93,9 @@ locals {
 }
 
 resource "sdwan_activate_topology_group" "activate_topology_group" {
-  for_each         = { for g in local.active_topology_groups : "active" => g }
-  id               = sdwan_topology_group.topology_group[each.value.name].id
-  feature_versions = sdwan_topology_group.topology_group[each.value.name].feature_versions
+  for_each         = length(local.active_topology_groups) > 0 ? { "active" = local.active_topology_groups } : {}
+  id               = sdwan_topology_group.topology_group[each.value[0].name].id
+  feature_versions = sdwan_topology_group.topology_group[each.value[0].name].feature_versions
   depends_on       = [sdwan_policy_group.policy_group]
   lifecycle {
     precondition {

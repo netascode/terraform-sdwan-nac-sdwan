@@ -28,10 +28,10 @@ locals {
       tloc_lists = distinct(compact(flatten([
         for custom_control in try(profile.custom_policies, []) : [
           for seq in try(custom_control.sequences, []) : [
-            try(seq.match_entries.tloc_list, null),
-            try(seq.action_entries.tloc_list, null),
-            try(seq.action_entries.service_tloc_list, null),
-            try(seq.action_entries.service_chain_tloc_list, null),
+            try(seq.match_entries.tloc.list, null),
+            try(seq.action_entries.tloc.list, null),
+            try(seq.action_entries.service.tloc_list, null),
+            try(seq.action_entries.service_chain.tloc_list, null),
           ]
         ]
       ])))
@@ -93,7 +93,7 @@ locals {
 }
 
 resource "sdwan_activate_topology_group" "activate_topology_group" {
-  for_each         = { for g in local.active_topology_groups : g.name => g }
+  for_each         = { for g in local.active_topology_groups : "active" => g }
   id               = sdwan_topology_group.topology_group[each.value.name].id
   feature_versions = sdwan_topology_group.topology_group[each.value.name].feature_versions
   depends_on       = [sdwan_policy_group.policy_group]

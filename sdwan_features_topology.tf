@@ -88,6 +88,9 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
       try(seq.match_entries.group_id, null) != null ? [{
         group_id = seq.match_entries.group_id
       }] : [],
+      try(seq.match_entries.role, null) != null ? [{
+        role = lookup({ "border" = "border-router", "edge" = "edge-router" }, try(seq.match_entries.role, ""), null)
+      }] : [],
       try(seq.match_entries.tloc.ip, null) != null ? [{
         tloc_ip            = seq.match_entries.tloc.ip
         tloc_color         = try(seq.match_entries.tloc.color, null)

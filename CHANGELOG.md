@@ -29,6 +29,7 @@
 - add support for other TrustSec feature
 - fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
+- add support for service Dual Router HA feature
 
 ## 1.4.0
 

@@ -931,7 +931,7 @@ resource "sdwan_transport_wan_vpn_interface_cellular_feature" "transport_wan_vpn
   nat_udp_timeout_variable                 = try("{{${each.value.interface.ipv4_nat_udp_timeout_variable}}}", null)
   per_tunnel_qos                           = try(each.value.interface.tunnel_interface.per_tunnel_qos, null)
   per_tunnel_qos_variable                  = try("{{${each.value.interface.tunnel_interface.per_tunnel_qos_variable}}}", null)
-  qos_adaptive                             = try(each.value.interface.adaptive_qos, false)
+  qos_adaptive                             = try(each.value.interface.adaptive_qos, null)
   qos_adaptive_bandwidth_downstream        = try(each.value.interface.adaptive_qos_shaping_rate_downstream != null, null)
   qos_adaptive_bandwidth_upstream          = try(each.value.interface.adaptive_qos_shaping_rate_upstream != null, null)
   qos_adaptive_default_downstream          = try(each.value.interface.adaptive_qos_shaping_rate_downstream.default, null)

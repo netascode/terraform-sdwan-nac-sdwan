@@ -178,10 +178,10 @@ resource "sdwan_network_hierarchy_security_logging" "network_hierarchy_security_
       port      = try(h.port, local.defaults.sdwan.network_hierarchy.collectors.security_logging.high_speed_logging_servers.port)
     }
   ]
-  utd_syslog = try(local.network_hierarchy.collectors.security_logging.external_syslog_servers, null) == null ? null : [
-    for u in local.network_hierarchy.collectors.security_logging.external_syslog_servers : {
-      vpn       = u.lan_vpn_name
-      server_ip = u.server_ip
+  utd_syslog = try(local.network_hierarchy.collectors.security_logging.external_syslog_server, null) == null ? null : [
+    {
+      vpn       = local.network_hierarchy.collectors.security_logging.external_syslog_server.lan_vpn_name
+      server_ip = local.network_hierarchy.collectors.security_logging.external_syslog_server.server_ip
     }
   ]
 }

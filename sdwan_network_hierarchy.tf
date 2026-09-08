@@ -147,39 +147,40 @@ resource "sdwan_network_hierarchy_node" "network_hierarchy_site" {
 # Global-node settings, independent of the group/region/site hierarchy
 
 resource "sdwan_network_hierarchy_cflowd" "network_hierarchy_cflowd" {
-  count                  = try(local.network_hierarchy.cflowd, null) != null ? 1 : 0
-  flow_active_timeout    = try(local.network_hierarchy.cflowd.flow_active_timeout, 600)
-  flow_inactive_timeout  = try(local.network_hierarchy.cflowd.flow_inactive_timeout, 60)
-  flow_refresh_time      = try(local.network_hierarchy.cflowd.flow_refresh_time, 600)
-  flow_sampling_interval = try(local.network_hierarchy.cflowd.flow_sampling_interval, 1)
-  collect_tloc_loopback  = try(local.network_hierarchy.cflowd.collect_tloc_loopback, null)
-  protocol               = try(local.network_hierarchy.cflowd.protocol, "ipv4")
-  collect_tos            = try(local.network_hierarchy.cflowd.collect_tos, null)
-  collect_dscp_output    = try(local.network_hierarchy.cflowd.collect_dscp_output, null)
-  collectors = try(local.network_hierarchy.cflowd.collectors, null) == null ? null : [
-    for c in local.network_hierarchy.cflowd.collectors : {
+  count                  = try(local.network_hierarchy.collectors.cflowd, null) != null ? 1 : 0
+  flow_active_timeout    = try(local.network_hierarchy.collectors.cflowd.settings.flow_active_timeout, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.flow_active_timeout)
+  flow_inactive_timeout  = try(local.network_hierarchy.collectors.cflowd.settings.flow_inactive_timeout, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.flow_inactive_timeout)
+  flow_refresh_time      = try(local.network_hierarchy.collectors.cflowd.settings.flow_refresh_time, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.flow_refresh_time)
+  flow_sampling_interval = try(local.network_hierarchy.collectors.cflowd.settings.flow_sampling_interval, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.flow_sampling_interval)
+  collect_tloc_loopback  = try(local.network_hierarchy.collectors.cflowd.settings.collect_tloc_loopback, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.collect_tloc_loopback)
+  protocol               = try(local.network_hierarchy.collectors.cflowd.settings.protocol, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.protocol)
+  collect_tos            = try(local.network_hierarchy.collectors.cflowd.settings.collect_tos, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.collect_tos)
+  collect_dscp_output    = try(local.network_hierarchy.collectors.cflowd.settings.collect_dscp_output, local.defaults.sdwan.network_hierarchy.collectors.cflowd.settings.collect_dscp_output)
+  collectors = try(local.network_hierarchy.collectors.cflowd.servers, null) == null ? null : [
+    for c in local.network_hierarchy.collectors.cflowd.servers : {
       vpn_id             = c.vpn_id
       address            = c.address
-      udp_port           = c.udp_port
-      export_spread      = try(c.export_spread, null)
-      bfd_metrics_export = try(c.bfd_metrics_export, null)
-      export_interval    = try(c.export_interval, null)
+      udp_port           = try(c.udp_port, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.udp_port)
+      export_spread      = try(c.export_spread, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.export_spread)
+      bfd_metrics_export = try(c.bfd_metrics_export, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.bfd_metrics_export)
+      export_interval    = try(c.export_interval, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.export_interval)
+      source_interface   = try(c.source_interface, null)
     }
   ]
 }
 
 resource "sdwan_network_hierarchy_security_logging" "network_hierarchy_security_logging" {
-  count = try(local.network_hierarchy.security_logging, null) != null ? 1 : 0
-  high_speed_logging = try(local.network_hierarchy.security_logging.high_speed_logging, null) == null ? null : [
-    for h in local.network_hierarchy.security_logging.high_speed_logging : {
-      vrf       = h.vrf
+  count = try(local.network_hierarchy.collectors.security_logging, null) != null ? 1 : 0
+  high_speed_logging = try(local.network_hierarchy.collectors.security_logging.high_speed_logging_servers, null) == null ? null : [
+    for h in local.network_hierarchy.collectors.security_logging.high_speed_logging_servers : {
+      vrf       = h.lan_vpn_name
       server_ip = h.server_ip
-      port      = h.port
+      port      = try(h.port, local.defaults.sdwan.network_hierarchy.collectors.security_logging.high_speed_logging_servers.port)
     }
   ]
-  utd_syslog = try(local.network_hierarchy.security_logging.utd_syslog, null) == null ? null : [
-    for u in local.network_hierarchy.security_logging.utd_syslog : {
-      vpn       = u.vpn
+  utd_syslog = try(local.network_hierarchy.collectors.security_logging.external_syslog_servers, null) == null ? null : [
+    for u in local.network_hierarchy.collectors.security_logging.external_syslog_servers : {
+      vpn       = u.lan_vpn_name
       server_ip = u.server_ip
     }
   ]

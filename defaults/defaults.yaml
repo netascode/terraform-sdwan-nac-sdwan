@@ -569,3 +569,23 @@ defaults:
             gateway: nexthop
           ipv6_static_routes:
             gateway: nexthop
+    network_hierarchy:
+      collectors:
+        cflowd:
+          servers:
+            udp_port: 4739
+            export_spread: false
+            bfd_metrics_export: false
+            export_interval: 600
+          settings:
+            flow_active_timeout: 600
+            flow_inactive_timeout: 60
+            flow_refresh_time: 600
+            flow_sampling_interval: 1
+            collect_tloc_loopback: false
+            protocol: ipv4
+            collect_tos: false
+            collect_dscp_output: false
+        security_logging:
+          high_speed_logging_servers:
+            port: 2055

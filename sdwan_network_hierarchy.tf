@@ -163,7 +163,7 @@ resource "sdwan_network_hierarchy_cflowd" "network_hierarchy_cflowd" {
       udp_port           = try(c.udp_port, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.udp_port)
       export_spread      = try(c.export_spread, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.export_spread)
       bfd_metrics_export = try(c.bfd_metrics_export, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.bfd_metrics_export)
-      export_interval    = try(c.export_interval, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.export_interval)
+      export_interval    = try(c.bfd_metrics_export, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.bfd_metrics_export) == true ? try(c.export_interval, local.defaults.sdwan.network_hierarchy.collectors.cflowd.servers.export_interval) : null
       source_interface   = try(c.source_interface, null)
     }
   ]

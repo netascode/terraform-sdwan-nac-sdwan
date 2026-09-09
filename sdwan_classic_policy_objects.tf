@@ -3,7 +3,8 @@ resource "sdwan_application_list_policy_object" "application_list_policy_object"
   name     = each.value.name
   #  entries = [for e in try(each.value.entries, []) : {
   entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
-    application        = try(e.application, null)
+    # Resolve custom application names through the resource to create an implicit dependency
+    application        = try(sdwan_custom_application.custom_application[e.application].app_name, e.application, null)
     application_family = try(e.application_family, null)
   }]
 }

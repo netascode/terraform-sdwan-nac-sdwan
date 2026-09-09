@@ -97,6 +97,7 @@ locals {
   other_profile_features_versions = {
     for profile in try(local.feature_profiles.other_profiles, []) : profile.name => flatten([
       try(profile.thousandeyes, null) == null ? [] : [sdwan_other_thousandeyes_feature.other_thousandeyes_feature["${profile.name}-thousandeyes"].version],
+      try(profile.trustsec, null) == null ? [] : [sdwan_other_trustsec_feature.other_trustsec_feature["${profile.name}-trustsec"].version],
       try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
     ])
   }

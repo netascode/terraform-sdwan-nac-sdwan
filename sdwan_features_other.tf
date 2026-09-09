@@ -32,6 +32,59 @@ resource "sdwan_other_thousandeyes_feature" "other_thousandeyes_feature" {
   }]
 }
 
+resource "sdwan_other_trustsec_feature" "other_trustsec_feature" {
+  for_each = {
+    for other in try(local.feature_profiles.other_profiles, {}) :
+    "${other.name}-trustsec" => other
+    if try(other.trustsec, null) != null
+  }
+  name                            = try(each.value.trustsec.name, local.defaults.sdwan.feature_profiles.other_profiles.trustsec.name)
+  description                     = try(each.value.trustsec.description, "")
+  feature_profile_id              = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
+  device_id                       = try(each.value.trustsec.device_id, null)
+  device_id_variable              = try("{{${each.value.trustsec.device_id_variable}}}", null)
+  device_password                 = try(each.value.trustsec.device_password, null)
+  device_password_variable        = try("{{${each.value.trustsec.device_password_variable}}}", null)
+  device_sgt                      = try(each.value.trustsec.device_sgt, null)
+  device_sgt_variable             = try("{{${each.value.trustsec.device_sgt_variable}}}", null)
+  enable_enforcement              = try(each.value.trustsec.enable_enforcement, null)
+  enable_enforcement_variable     = try("{{${each.value.trustsec.enable_enforcement_variable}}}", null)
+  enable_sxp                      = try(each.value.trustsec.enable_sxp, null)
+  listener_hold_time_max          = try(each.value.trustsec.listener_hold_time_max, null)
+  listener_hold_time_max_variable = try("{{${each.value.trustsec.listener_hold_time_max_variable}}}", null)
+  listener_hold_time_min          = try(each.value.trustsec.listener_hold_time_min, null)
+  listener_hold_time_min_variable = try("{{${each.value.trustsec.listener_hold_time_min_variable}}}", null)
+  speaker_hold_time               = try(each.value.trustsec.speaker_hold_time, null)
+  speaker_hold_time_variable      = try("{{${each.value.trustsec.speaker_hold_time_variable}}}", null)
+  sxp_connections = try(length(each.value.trustsec.sxp_connections) == 0, true) ? null : [for c in each.value.trustsec.sxp_connections : {
+    max_hold_time          = try(c.max_hold_time, null)
+    max_hold_time_variable = try("{{${c.max_hold_time_variable}}}", null)
+    min_hold_time          = try(c.min_hold_time, null)
+    min_hold_time_variable = try("{{${c.min_hold_time_variable}}}", null)
+    mode                   = try(c.mode, null)
+    mode_type              = try(c.mode_type, null)
+    peer_ip                = try(c.peer_ip, null)
+    peer_ip_variable       = try("{{${c.peer_ip_variable}}}", null)
+    preshared_key          = try(c.preshared_key, null)
+    source_ip              = try(c.source_ip, null)
+    source_ip_variable     = try("{{${c.source_ip_variable}}}", null)
+    vpn_id                 = try(c.vpn_id, null)
+    vpn_id_variable        = try("{{${c.vpn_id_variable}}}", null)
+  }]
+  sxp_default_password               = try(each.value.trustsec.sxp_default_password, null)
+  sxp_default_password_variable      = try("{{${each.value.trustsec.sxp_default_password_variable}}}", null)
+  sxp_key_chain                      = try(each.value.trustsec.sxp_key_chain, null)
+  sxp_key_chain_variable             = try("{{${each.value.trustsec.sxp_key_chain_variable}}}", null)
+  sxp_log_binding_changes            = try(each.value.trustsec.sxp_log_binding_changes, null)
+  sxp_log_binding_changes_variable   = try("{{${each.value.trustsec.sxp_log_binding_changes_variable}}}", null)
+  sxp_reconciliation_period          = try(each.value.trustsec.sxp_reconciliation_period, null)
+  sxp_reconciliation_period_variable = try("{{${each.value.trustsec.sxp_reconciliation_period_variable}}}", null)
+  sxp_retry_period                   = try(each.value.trustsec.sxp_retry_period, null)
+  sxp_retry_period_variable          = try("{{${each.value.trustsec.sxp_retry_period_variable}}}", null)
+  sxp_source_ip                      = try(each.value.trustsec.sxp_source_ip, null)
+  sxp_source_ip_variable             = try("{{${each.value.trustsec.sxp_source_ip_variable}}}", null)
+}
+
 resource "sdwan_other_ucse_feature" "other_ucse_feature" {
   for_each = {
     for other in try(local.feature_profiles.other_profiles, {}) :

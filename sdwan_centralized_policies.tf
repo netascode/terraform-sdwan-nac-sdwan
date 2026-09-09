@@ -113,7 +113,7 @@ resource "sdwan_custom_control_topology_policy_definition" "custom_control_topol
   name           = each.value.name
   description    = each.value.description
   default_action = try(each.value.default_action_type, null)
-  sequences = [for s in each.value.sequences : {
+  sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id          = s.id
     name        = s.name
     type        = try(s.type, null)
@@ -321,7 +321,7 @@ resource "sdwan_traffic_data_policy_definition" "traffic_data_policy_definition"
   name           = each.value.name
   description    = each.value.description
   default_action = try(each.value.default_action_type, null)
-  sequences = [for s in each.value.sequences : {
+  sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id   = s.id
     name = s.name
     type = (
@@ -591,7 +591,7 @@ resource "sdwan_application_aware_routing_policy_definition" "application_aware_
     try(each.value.default_action_sla_class_list, null) != null ?
     sdwan_sla_class_policy_object.sla_class_policy_object[each.value.default_action_sla_class_list].version : null
   )
-  sequences = [for s in each.value.sequences : {
+  sequences = try(length(each.value.sequences) == 0, true) ? null : [for s in each.value.sequences : {
     id      = s.id
     name    = s.name
     ip_type = try(s.ip_type, local.defaults.sdwan.centralized_policies.definitions.data_policy.application_aware_routing.sequences.ip_type)

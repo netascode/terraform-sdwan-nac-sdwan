@@ -1,5 +1,7 @@
 ## 1.5.0 (unreleased)
 
+- add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites
+- add support for the network hierarchy cflowd (`sdwan_network_hierarchy_cflowd`) and security logging (`sdwan_network_hierarchy_security_logging`) collectors
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)
 - add support for topology group activation (`sdwan_activate_topology_group`)
@@ -24,7 +26,6 @@
 - add support for sse feature profile and sse zscaler feature
 - add support for new NTP 26.1 auth key types
 - add support for custom application feature
-- add support for network hierarchy nodes (`sdwan_network_hierarchy_node`) - nested `groups`/`regions`/`sites`, up to 3 levels deep
 - fix `cflowd` action in traffic data policy causing a perpetual diff on import of GUI-created policies (upgrading to version with this fix may trigger a one-time reactivation of policies referencing it)
 
 ## 1.4.0

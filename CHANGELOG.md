@@ -1,5 +1,7 @@
 ## 1.5.0 (unreleased)
 
+- add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites
+- add support for the network hierarchy cflowd (`sdwan_network_hierarchy_cflowd`) and security logging (`sdwan_network_hierarchy_security_logging`) collectors
 - add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)

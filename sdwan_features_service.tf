@@ -1082,9 +1082,14 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   trustsec_propogate                                          = try(each.value.interface.trustsec_propogate, null)
   trustsec_security_group_tag                                 = try(each.value.interface.trustsec_sgt, null)
   trustsec_security_group_tag_variable                        = try("{{${each.value.interface.trustsec_sgt_variable}}}", null)
-  trustsec_trusted                                            = try(each.value.interface.trustsec_propogate, false) == true ? try(each.value.interface.trustsec_trusted, null) : null
-  xconnect                                                    = try(each.value.interface.xconnect, null)
-  xconnect_variable                                           = try("{{${each.value.interface.xconnect_variable}}}", null)
+  trustsec_trusted = (
+    try(each.value.interface.trustsec_propogate, false) == true &&
+    try(each.value.interface.trustsec_enable_sgt_propogation, false) == true &&
+    try(each.value.interface.port_channel_member_interface, false) != true &&
+    (try(each.value.interface.trustsec_sgt, null) != null || try(each.value.interface.trustsec_sgt_variable, null) != null)
+  ) ? try(each.value.interface.trustsec_trusted, null) : null
+  xconnect          = try(each.value.interface.xconnect, null)
+  xconnect_variable = try("{{${each.value.interface.xconnect_variable}}}", null)
 }
 
 resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" "service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" {

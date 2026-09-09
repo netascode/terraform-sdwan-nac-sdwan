@@ -34,6 +34,10 @@
 - add support for other TrustSec feature
 - fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
+- add support for `trustsec_trusted` in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`), only sent when `trustsec_propogate` and `trustsec_enable_sgt_propogation` are `true`, `port_channel_member_interface` is not `true`, and a security group tag is set
+- add support for `access_list` and `interval` in service multicast `auto_rp_announces` (`sdwan_service_multicast_feature`)
+- add support for `follow_dual_router_high_availability` in service LAN VPN ethernet interface IPv4 VRRP groups (`sdwan_service_lan_vpn_interface_ethernet_feature`)
+- fix service multicast `pim_bsr_rp_candidates` reading the variable from `access_list_id_variable` instead of the data model's `access_list_variable`, which left the variable unresolved
 
 ## 1.4.0
 

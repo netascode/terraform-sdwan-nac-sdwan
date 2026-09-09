@@ -959,19 +959,20 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   ipv4_subnet_mask          = try(each.value.interface.ipv4_subnet_mask, null)
   ipv4_subnet_mask_variable = try("{{${each.value.interface.ipv4_subnet_mask_variable}}}", null)
   ipv4_vrrps = try(length(each.value.interface.ipv4_vrrp_groups) == 0, true) ? null : [for vrrp in each.value.interface.ipv4_vrrp_groups : {
-    address                    = try(vrrp.address, null)
-    address_variable           = try("{{${vrrp.address_variable}}}", null)
-    group_id                   = try(vrrp.id, null)
-    group_id_variable          = try("{{${vrrp.id_variable}}}", null)
-    min_preempt_delay          = try(vrrp.min_preempt_delay, null)
-    min_preempt_delay_variable = try("{{${vrrp.min_preempt_delay_variable}}}", null)
-    priority                   = try(vrrp.priority, null)
-    priority_variable          = try("{{${vrrp.priority_variable}}}", null)
-    timer                      = try(vrrp.timer, null)
-    timer_variable             = try("{{${vrrp.timer_variable}}}", null)
-    tloc_prefix_change         = try(vrrp.tloc_preference_change, null)
-    tloc_pref_change_value     = try(vrrp.tloc_preference_change_value, null)
-    track_omp                  = try(vrrp.track_omp, null)
+    address                              = try(vrrp.address, null)
+    address_variable                     = try("{{${vrrp.address_variable}}}", null)
+    follow_dual_router_high_availability = try(vrrp.follow_dual_router_high_availability, null)
+    group_id                             = try(vrrp.id, null)
+    group_id_variable                    = try("{{${vrrp.id_variable}}}", null)
+    min_preempt_delay                    = try(vrrp.min_preempt_delay, null)
+    min_preempt_delay_variable           = try("{{${vrrp.min_preempt_delay_variable}}}", null)
+    priority                             = try(vrrp.priority, null)
+    priority_variable                    = try("{{${vrrp.priority_variable}}}", null)
+    timer                                = try(vrrp.timer, null)
+    timer_variable                       = try("{{${vrrp.timer_variable}}}", null)
+    tloc_prefix_change                   = try(vrrp.tloc_preference_change, null)
+    tloc_pref_change_value               = try(vrrp.tloc_preference_change_value, null)
+    track_omp                            = try(vrrp.track_omp, null)
     secondary_addresses = try(length(vrrp.secondary_addresses) == 0, true) ? null : [for addr in vrrp.secondary_addresses : {
       address              = try(addr.address, null)
       address_variable     = try("{{${addr.address_variable}}}", null)
@@ -1081,8 +1082,14 @@ resource "sdwan_service_lan_vpn_interface_ethernet_feature" "service_lan_vpn_int
   trustsec_propogate                                          = try(each.value.interface.trustsec_propogate, null)
   trustsec_security_group_tag                                 = try(each.value.interface.trustsec_sgt, null)
   trustsec_security_group_tag_variable                        = try("{{${each.value.interface.trustsec_sgt_variable}}}", null)
-  xconnect                                                    = try(each.value.interface.xconnect, null)
-  xconnect_variable                                           = try("{{${each.value.interface.xconnect_variable}}}", null)
+  trustsec_trusted = (
+    try(each.value.interface.trustsec_propogate, false) == true &&
+    try(each.value.interface.trustsec_enable_sgt_propogation, false) == true &&
+    try(each.value.interface.port_channel_member_interface, false) != true &&
+    (try(each.value.interface.trustsec_sgt, null) != null || try(each.value.interface.trustsec_sgt_variable, null) != null)
+  ) ? try(each.value.interface.trustsec_trusted, null) : null
+  xconnect          = try(each.value.interface.xconnect, null)
+  xconnect_variable = try("{{${each.value.interface.xconnect_variable}}}", null)
 }
 
 resource "sdwan_service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" "service_lan_vpn_interface_ethernet_feature_associate_dhcp_server_feature" {
@@ -1496,6 +1503,10 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
     interface_name_variable = try("{{${auto_rp_announce.interface_name_variable}}}", null)
     scope                   = try(auto_rp_announce.scope, null)
     scope_variable          = try("{{${auto_rp_announce.scope_variable}}}", null)
+    access_list_id          = try(auto_rp_announce.access_list, null)
+    access_list_id_variable = try("{{${auto_rp_announce.access_list_variable}}}", null)
+    interval                = try(auto_rp_announce.interval, null)
+    interval_variable       = try("{{${auto_rp_announce.interval_variable}}}", null)
   }]
   auto_rp_discoveries = try(length(each.value.multicast.auto_rp_discoveries) == 0, true) ? null : [for auto_rp_discovery in each.value.multicast.auto_rp_discoveries : {
     interface_name          = try(auto_rp_discovery.interface_name, null)
@@ -1561,7 +1572,7 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
     interface_name          = try(bsr_rp_candidate.interface_name, null)
     interface_name_variable = try("{{${bsr_rp_candidate.interface_name_variable}}}", null)
     access_list_id          = try(bsr_rp_candidate.access_list, null)
-    access_list_id_variable = try("{{${bsr_rp_candidate.access_list_id_variable}}}", null)
+    access_list_id_variable = try("{{${bsr_rp_candidate.access_list_variable}}}", null)
     interval                = try(bsr_rp_candidate.interval, null)
     interval_variable       = try("{{${bsr_rp_candidate.interval_variable}}}", null)
     priority                = try(bsr_rp_candidate.priority, null)

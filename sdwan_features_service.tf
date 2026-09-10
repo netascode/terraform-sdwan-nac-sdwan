@@ -262,6 +262,31 @@ resource "sdwan_service_dhcp_server_feature" "service_dhcp_server_feature" {
   }]
 }
 
+resource "sdwan_service_dual_router_ha_feature" "service_dual_router_ha_feature" {
+  for_each = {
+    for dual_router_ha_feature_item in flatten([
+      for profile in try(local.feature_profiles.service_profiles, []) : [
+        for dual_router_ha_feature in try(profile.dual_router_ha_features, []) : {
+          profile                = profile
+          dual_router_ha_feature = dual_router_ha_feature
+        }
+      ]
+    ])
+    : "${dual_router_ha_feature_item.profile.name}-${dual_router_ha_feature_item.dual_router_ha_feature.name}" => dual_router_ha_feature_item
+  }
+  name                  = each.value.dual_router_ha_feature.name
+  description           = try(each.value.dual_router_ha_feature.description, null)
+  feature_profile_id    = sdwan_service_feature_profile.service_feature_profile[each.value.profile.name].id
+  enable_optimize_paths = try(each.value.dual_router_ha_feature.enable_optimize_paths, null)
+  redundancy_groups = [for group in try(each.value.dual_router_ha_feature.redundancy_groups, []) : {
+    group_id = try(group.group_id, null)
+    tag_name = try(group.tag_name, null)
+    vpn_ids = try(length(group.vpn_names) == 0, true) ? null : [for vpn_name in group.vpn_names : {
+      vpn_id = try(sdwan_service_lan_vpn_feature.service_lan_vpn_feature["${each.value.profile.name}-${vpn_name}"].id, null)
+    }]
+  }]
+}
+
 resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
   for_each = {
     for eigrp_item in flatten([

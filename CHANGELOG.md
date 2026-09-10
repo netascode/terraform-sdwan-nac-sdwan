@@ -38,6 +38,7 @@
 - add support for `access_list` and `interval` in service multicast `auto_rp_announces` (`sdwan_service_multicast_feature`)
 - add support for `follow_dual_router_high_availability` in service LAN VPN ethernet interface IPv4 VRRP groups (`sdwan_service_lan_vpn_interface_ethernet_feature`)
 - fix service multicast `pim_bsr_rp_candidates` reading the variable from `access_list_id_variable` instead of the data model's `access_list_variable`, which left the variable unresolved
+- add support for service Dual Router HA feature
 
 ## 1.4.0
 

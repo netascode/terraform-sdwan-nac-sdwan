@@ -96,7 +96,10 @@ resource "sdwan_activate_topology_group" "activate_topology_group" {
   for_each         = length(local.active_topology_groups) > 0 ? { "active" = local.active_topology_groups } : {}
   id               = sdwan_topology_group.topology_group[each.value[0].name].id
   feature_versions = sdwan_topology_group.topology_group[each.value[0].name].feature_versions
-  depends_on       = [sdwan_policy_group.policy_group]
+  depends_on = [
+    sdwan_attach_feature_device_template.attach_feature_device_template,
+    sdwan_policy_group.policy_group,
+  ]
   lifecycle {
     precondition {
       condition     = length(local.active_topology_groups) <= 1

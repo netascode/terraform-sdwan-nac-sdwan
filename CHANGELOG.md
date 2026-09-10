@@ -1,5 +1,7 @@
 ## 1.5.0 (unreleased)
 
+- add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites
+- add support for the network hierarchy cflowd (`sdwan_network_hierarchy_cflowd`) and security logging (`sdwan_network_hierarchy_security_logging`) collectors
 - add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)
@@ -19,6 +21,9 @@
 - fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
 - update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
 - fix wrong traffic category value in `application priority profile`
+- add support for new 20.18 attributes in transport cellular profile (`sdwan_transport_cellular_profile_feature`): `slice_type`/`slice_type_variable`, `slice_differentiator`/`slice_differentiator_variable`
+- add support for new 20.18 attributes in transport WAN VPN ethernet interface (`sdwan_transport_wan_vpn_interface_ethernet_feature`): `enable_ha_interlink_interface`, `tunnel_interface_color_description`/`_variable`, `tunnel_interface_full_port_hop`/`_variable`, TrustSec/SGT propagation attributes (`enable_sgt_propagation`, `propagate`, `security_group_tag`/`_variable`, `trusted`, `enable_enforced_propagation`, `enforced_security_group_tag`/`_variable`)
+- add support for new 20.18 attributes in transport WAN VPN cellular interface (`sdwan_transport_wan_vpn_interface_cellular_feature`): `tunnel_interface_color_description`/`_variable`, `tunnel_interface_full_port_hop`/`_variable`
 - add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
 - fix tracker in `transport WAN VPN ipsec interface`
 - allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
@@ -29,6 +34,10 @@
 - add support for other TrustSec feature
 - fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
+- add support for `trustsec_trusted` in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`), only sent when `trustsec_propogate` and `trustsec_enable_sgt_propogation` are `true`, `port_channel_member_interface` is not `true`, and a security group tag is set
+- add support for `access_list` and `interval` in service multicast `auto_rp_announces` (`sdwan_service_multicast_feature`)
+- add support for `follow_dual_router_high_availability` in service LAN VPN ethernet interface IPv4 VRRP groups (`sdwan_service_lan_vpn_interface_ethernet_feature`)
+- fix service multicast `pim_bsr_rp_candidates` reading the variable from `access_list_id_variable` instead of the data model's `access_list_variable`, which left the variable unresolved
 - add support for service Dual Router HA feature
 
 ## 1.4.0

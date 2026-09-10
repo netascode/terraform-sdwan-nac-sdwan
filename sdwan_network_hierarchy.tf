@@ -75,6 +75,37 @@ locals {
     ]),
   )
 
+  # --- lookups used by topology site targeting (see sdwan_features_topology.tf) ---
+
+  # Container name -> hierarchy path (covers regions and groups alike). Keyed
+  # by name, so a duplicate name anywhere in the hierarchy surfaces as a
+  # Terraform duplicate-key error.
+  nh_container_keys = { for c in local.nh_all_containers : c.name => c.key }
+
+  # Container name -> its descendant site names, at any depth. A site is under
+  # a container iff its path is prefixed by the container's path; the trailing
+  # slash keeps "test" from matching "test-group/...".
+  nh_container_sites = {
+    for name, key in local.nh_container_keys : name => [
+      for s in local.nh_sites_flat : s.name if startswith(s.key, "${key}/")
+    ]
+  }
+
+  nh_site_names      = toset([for s in local.nh_sites_flat : s.name])
+  nh_site_name_to_id = { for k, v in sdwan_network_hierarchy_node.network_hierarchy_site : v.name => v.id }
+
+  # Unset manager_version means 20.18+: site targeting is sent as hierarchy
+  # UUIDs, which the 20.18 GUI requires to render sequence match entries.
+  # Declare 20.15 (or below) explicitly to send site names instead.
+  #
+  # try() wraps every step: manager_version can be missing, a single segment,
+  # or non-numeric when the module is called directly with var.model.
+  nh_version_segments = try(split(".", tostring(local.model.sdwan.manager_version)), [])
+  nh_version_supports_uuids = try(
+    tonumber(local.nh_version_segments[0]) > 20 ||
+    (tonumber(local.nh_version_segments[0]) == 20 && tonumber(local.nh_version_segments[1]) >= 18),
+    true,
+  )
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_group_l0" {

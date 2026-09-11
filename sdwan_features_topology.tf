@@ -133,12 +133,11 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
         preference = seq.match_entries.preference
       }] : [],
       # The 20.18 GUI renders this match entry only with hierarchy UUIDs; a
-      # site name is accepted by the API but shows blank there.
-      length(seq.match_site_names) > 0 ? [
-        local.nh_uuid_mode
-        ? { hierarchy_uuids = [for s in seq.match_site_names : local.nh_site_name_to_id[s]] }
-        : { site = seq.match_site_names }
-      ] : [],
+      # site name is accepted by the API but shows blank there
+      length(seq.match_site_names) > 0 ? [{
+        site            = local.nh_uuid_mode ? null : seq.match_site_names
+        hierarchy_uuids = local.nh_uuid_mode ? [for s in seq.match_site_names : local.nh_site_name_to_id[s]] : null
+      }] : [],
       try(length(seq.match_entries.wan_regions), 0) > 0 ? [{
         match_regions = [for region in seq.match_entries.wan_regions : {
           region      = region

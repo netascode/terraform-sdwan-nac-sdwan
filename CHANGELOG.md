@@ -1,48 +1,48 @@
 ## 1.5.0 (unreleased)
 
+- **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
 - add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites
 - add support for the network hierarchy cflowd (`sdwan_network_hierarchy_cflowd`) and security logging (`sdwan_network_hierarchy_security_logging`) collectors
-- add network hierarchy UUID support to topology site targeting: site names resolve to hierarchy UUIDs, required for sequence match entries to render in the GUI. An unset `manager_version` means 20.18.1+ (UUIDs); set it below 20.18 (e.g. `20.15`) to send site names instead
-- add `inbound_site_groups`/`outbound_site_groups`/`match_entries.site_groups` to topology custom policies, `site_groups` to mesh policies, and `spoke_site_groups` to hub spoke policies - each names a network hierarchy group or region and expands to its member sites, unioned with any sites listed directly. Hub sites (`selected_hub_sites`, `hub_preferences.hub_sites`) stay literal site lists only
-- topology site targeting now fails the plan, naming the site, when a referenced name is not declared under `network_hierarchy` while UUID resolution is active
-- topology mesh and hub spoke (spoke-side) policies now fail the plan, instead of sending an empty array, when a site selection resolves to no sites
-- add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)
 - add support for topology group activation (`sdwan_activate_topology_group`)
 - add support for topology custom control feature (`sdwan_topology_custom_control_feature`)
 - add support for topology hub spoke feature (`sdwan_topology_hub_spoke_feature`)
 - add support for topology mesh feature (`sdwan_topology_mesh_feature`)
-- **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
+- add network hierarchy UUID support to topology site targeting: site names resolve to hierarchy UUIDs, required for sequence match entries to render in the GUI. An unset `manager_version` means 20.18.1+ (UUIDs); set it below 20.18 (e.g. `20.15`) to send site names instead
+- add `inbound_site_groups`/`outbound_site_groups`/`match_entries.site_groups` to topology custom policies, `site_groups` to mesh policies, and `spoke_site_groups` to hub spoke policies - each names a network hierarchy group or region and expands to its member sites, unioned with any sites listed directly. Hub sites (`selected_hub_sites`, `hub_preferences.hub_sites`) stay literal site lists only
+- topology site targeting now fails the plan, naming the site, when a referenced name is not declared under `network_hierarchy` while UUID resolution is active
+- topology mesh and hub spoke (spoke-side) policies now fail the plan, instead of sending an empty array, when a site selection resolves to no sites
 - add support for transport WAN VPN cellular interface
 - add support for transport cellular controller
 - add support for policy object security local domain list
-- fix duplicate service LAN VPN version entry in configuration group feature_versions
-- add support for new 20.18 attributes in system AAA (`sdwan_system_aaa_feature`): RADIUS/TACACS groups `vpn_variable`, `trustsec_cts_auth_list`, `trustsec_cts_auth_list_variable`, `trustsec_radius_group`
-- add support for `dhcp_ha_enable` and `dhcp_ha_enable_variable` in DHCP server feature (`sdwan_service_dhcp_server_feature`)
-- Use Terraform provider functions for YAML merge instead of data sources (requires Terraform >= 1.8.0, previously >= 1.3.0)
 - add support for external services cloud provider credentials settings
-- fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
-- update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
-- fix wrong traffic category value in `application priority profile`
+- add support for sse feature profile and sse zscaler feature
+- add support for custom application feature
+- add support for other TrustSec feature
+- add support for service dual router HA feature
+- add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
+- add support for new 20.18 attributes in system AAA (`sdwan_system_aaa_feature`): RADIUS/TACACS groups `vpn_variable`, `trustsec_cts_auth_list`, `trustsec_cts_auth_list_variable`, `trustsec_radius_group`
 - add support for new 20.18 attributes in transport cellular profile (`sdwan_transport_cellular_profile_feature`): `slice_type`/`slice_type_variable`, `slice_differentiator`/`slice_differentiator_variable`
 - add support for new 20.18 attributes in transport WAN VPN ethernet interface (`sdwan_transport_wan_vpn_interface_ethernet_feature`): `enable_ha_interlink_interface`, `tunnel_interface_color_description`/`_variable`, `tunnel_interface_full_port_hop`/`_variable`, TrustSec/SGT propagation attributes (`enable_sgt_propagation`, `propagate`, `security_group_tag`/`_variable`, `trusted`, `enable_enforced_propagation`, `enforced_security_group_tag`/`_variable`)
 - add support for new 20.18 attributes in transport WAN VPN cellular interface (`sdwan_transport_wan_vpn_interface_cellular_feature`): `tunnel_interface_color_description`/`_variable`, `tunnel_interface_full_port_hop`/`_variable`
-- add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
-- fix tracker in `transport WAN VPN ipsec interface`
-- allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
-- add support for sse feature profile and sse zscaler feature
+- add support for `dhcp_ha_enable` and `dhcp_ha_enable_variable` in service DHCP server feature (`sdwan_service_dhcp_server_feature`)
+- add support for `trustsec_trusted` in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`), only sent when `trustsec_propogate` and `trustsec_enable_sgt_propogation` are `true`, `port_channel_member_interface` is not `true`, and a security group tag is set
+- add support for `follow_dual_router_high_availability` in service LAN VPN ethernet interface IPv4 VRRP groups (`sdwan_service_lan_vpn_interface_ethernet_feature`)
+- add support for `access_list` and `interval` in service multicast `auto_rp_announces` (`sdwan_service_multicast_feature`)
 - add support for new NTP 26.1 auth key types
-- add support for custom application feature
+- add support for referencing built-in (read-only) system data prefix lists (e.g. `rfc1918_default_dataprefixes`) and application lists (e.g. `office365_apps`) by name in service IPv4 ACL, transport IPv4 ACL, system IPv4 device access policy, and application priority traffic policy match entries
+- allow combining `yaml_directories`/`yaml_files` with `model` variable for deep merge
+- use Terraform provider functions for YAML merge instead of data sources (requires Terraform >= 1.8.0, previously >= 1.3.0)
+- update `netascode/utils` provider requirement to >= 2.0.1, < 3.0.0
+- fix duplicate service LAN VPN version entry in configuration group feature_versions
+- fix NGFW policy `inspect` + `log` action without advanced inspection profile (missing `connectionEvents` action)
+- fix wrong traffic category value in `application priority profile`
+- fix tracker in `transport WAN VPN ipsec interface`
 - fix `cflowd` action in traffic data policy causing a perpetual diff on import of GUI-created policies (upgrading to version with this fix may trigger a one-time reactivation of policies referencing it)
-- add support for other TrustSec feature
 - fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
-- add support for `trustsec_trusted` in service LAN VPN ethernet interface (`sdwan_service_lan_vpn_interface_ethernet_feature`), only sent when `trustsec_propogate` and `trustsec_enable_sgt_propogation` are `true`, `port_channel_member_interface` is not `true`, and a security group tag is set
-- add support for `access_list` and `interval` in service multicast `auto_rp_announces` (`sdwan_service_multicast_feature`)
-- add support for `follow_dual_router_high_availability` in service LAN VPN ethernet interface IPv4 VRRP groups (`sdwan_service_lan_vpn_interface_ethernet_feature`)
 - fix service multicast `pim_bsr_rp_candidates` reading the variable from `access_list_id_variable` instead of the data model's `access_list_variable`, which left the variable unresolved
-- add support for service Dual Router HA feature
 
 ## 1.4.0
 

@@ -2,6 +2,10 @@
 
 - add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites
 - add support for the network hierarchy cflowd (`sdwan_network_hierarchy_cflowd`) and security logging (`sdwan_network_hierarchy_security_logging`) collectors
+- add network hierarchy UUID support to topology site targeting: site names resolve to hierarchy UUIDs, required for sequence match entries to render in the GUI. An unset `manager_version` means 20.18.1+ (UUIDs); set it below 20.18 (e.g. `20.15`) to send site names instead
+- add `inbound_site_groups`/`outbound_site_groups`/`match_entries.site_groups` to topology custom policies, `site_groups` to mesh policies, and `spoke_site_groups` to hub spoke policies - each names a network hierarchy group or region and expands to its member sites, unioned with any sites listed directly. Hub sites (`selected_hub_sites`, `hub_preferences.hub_sites`) stay literal site lists only
+- topology site targeting now fails the plan, naming the site, when a referenced name is not declared under `network_hierarchy` while UUID resolution is active
+- topology mesh and hub spoke (spoke-side) policies now fail the plan, instead of sending an empty array, when a site selection resolves to no sites
 - add support for Cor for SaaS variables in UX 2.0 through policy groups (`sdwan_policy_groups`)
 - add support for topology feature profile (`sdwan_topology_feature_profile`)
 - add support for topology group (`sdwan_topology_group`)

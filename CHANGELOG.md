@@ -1,4 +1,4 @@
-## 1.5.0 (unreleased)
+## 1.5.0
 
 - **BREAKING CHANGE**: system AAA TACACS/RADIUS `group_name` auto-generation format changed; name is now resolved in priority order: explicit `group_name` field → `tacacs-{index}-{vpn}` / `radius-{index}-{vpn}` (if `vpn` is set) → `tacacs-{index}-{index}` / `radius-{index}-{index}` (fallback); previously only `tacacs-{vpn}` / `radius-{vpn}` (without index) was generated; to avoid a breaking push when upgrading, set `group_name` explicitly to the previously auto-generated name (e.g. add `group_name: tacacs-511` for a TACACS group with `vpn: 511`) — this preserves the existing group name in Manager without any configuration change
 - add support for the `sdwan_network_hierarchy_node` resource with nested groups, regions, and sites

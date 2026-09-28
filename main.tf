@@ -11,6 +11,7 @@ locals {
   feature_profiles       = try(local.model.sdwan.feature_profiles, {})
   network_hierarchy      = try(local.model.sdwan.network_hierarchy, {})
   policy_groups          = try(local.model.sdwan.policy_groups, {})
+  scopes                 = try(local.model.sdwan.scopes, {})
   settings               = try(local.model.sdwan.settings, {})
   topology_groups        = try(local.model.sdwan.topology_groups, {})
   device_type_map = {

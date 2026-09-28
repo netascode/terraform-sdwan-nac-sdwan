@@ -195,6 +195,7 @@ module "sdwan" {
 | [sdwan_region_list_policy_object.region_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/region_list_policy_object) | resource |
 | [sdwan_rewrite_rule_policy_definition.rewrite_rule_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/rewrite_rule_policy_definition) | resource |
 | [sdwan_route_policy_definition.route_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/route_policy_definition) | resource |
+| [sdwan_scope.scope](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/scope) | resource |
 | [sdwan_security_app_hosting_feature_template.security_app_hosting_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_app_hosting_feature_template) | resource |
 | [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
 | [sdwan_service_appqoe_feature.service_appqoe_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_appqoe_feature) | resource |
@@ -301,6 +302,7 @@ module "sdwan" {
 | [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
 | [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [sdwan_network_hierarchy_node.scope_global](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/network_hierarchy_node) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_app_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_data_prefix](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 

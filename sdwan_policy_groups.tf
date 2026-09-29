@@ -26,8 +26,7 @@ resource "sdwan_policy_group" "policy_group" {
         try(length(router.policy_variables) == 0, true) &&
         try(length(router.cor_saas_entries) == 0, true)
         ) ? null : concat(
-        try(length(router.policy_variables), 0) == 0 ? [] :
-        [for name, value in router.policy_variables : {
+        [for name, value in try(router.policy_variables, {}) : {
           name       = name
           value      = try(tostring(value), null)
           list_value = try(tolist(value), null)

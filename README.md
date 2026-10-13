@@ -264,6 +264,8 @@ module "sdwan" {
 | [sdwan_topology_mesh_feature.topology_mesh_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_mesh_feature) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
 | [sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature) | resource |
+| [sdwan_transport_cellular_controller_feature_associate_cellular_profile_feature.transport_cellular_controller_feature_associate_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature_associate_cellular_profile_feature) | resource |
+| [sdwan_transport_cellular_controller_feature_associate_gps_feature.transport_cellular_controller_feature_associate_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature_associate_gps_feature) | resource |
 | [sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_profile_feature) | resource |
 | [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
 | [sdwan_transport_gps_feature.transport_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_gps_feature) | resource |

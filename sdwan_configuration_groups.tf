@@ -138,6 +138,9 @@ locals {
   ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
+      try(profile.appqoe_features, null) == null ? [] : [for appqoe_feature in try(profile.appqoe_features, []) : [
+        sdwan_service_appqoe_feature.service_appqoe_feature["${profile.name}-${appqoe_feature.name}"].version
+      ]],
       try(profile.bgp_features, null) == null ? [] : [for bgp_feature in try(profile.bgp_features, []) : [
         sdwan_service_routing_bgp_feature.service_routing_bgp_feature["${profile.name}-${bgp_feature.name}"].version
       ]],

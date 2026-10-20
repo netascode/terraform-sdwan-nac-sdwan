@@ -4,6 +4,8 @@ resource "sdwan_custom_application" "custom_application" {
   application_family = try(each.value.application_family, null)
   application_group  = try(each.value.application_group, null)
   business_relevance = try(local.business_relevance_map[each.value.business_relevance], null)
+  endpoint_type      = try(each.value.endpoint_type, null)
+  endpoint_value     = try(each.value.endpoint_value, null)
   l3l4 = try(length(each.value.l3l4) > 0, false) ? [
     for item in each.value.l3l4 : {
       ip_addresses = try(item.ip_addresses, null)

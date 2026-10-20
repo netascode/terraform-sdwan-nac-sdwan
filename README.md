@@ -197,6 +197,7 @@ module "sdwan" {
 | [sdwan_route_policy_definition.route_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/route_policy_definition) | resource |
 | [sdwan_security_app_hosting_feature_template.security_app_hosting_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_app_hosting_feature_template) | resource |
 | [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
+| [sdwan_service_appqoe_feature.service_appqoe_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_appqoe_feature) | resource |
 | [sdwan_service_dhcp_server_feature.service_dhcp_server_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_dhcp_server_feature) | resource |
 | [sdwan_service_dual_router_ha_feature.service_dual_router_ha_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_dual_router_ha_feature) | resource |
 | [sdwan_service_feature_profile.service_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_feature_profile) | resource |

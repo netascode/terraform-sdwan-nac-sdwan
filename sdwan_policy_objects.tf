@@ -199,7 +199,7 @@ resource "sdwan_policy_object_security_data_ipv4_prefix_list" "policy_object_sec
 resource "sdwan_policy_object_security_data_ipv6_prefix_list" "policy_object_security_data_ipv6_prefix_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_data_ipv6_prefix_lists, {}) : p.name => p }
   name               = each.value.name
-  description        = null # not supported in the UI
+  description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv6_prefix          = try(e, null)

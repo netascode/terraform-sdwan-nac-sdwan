@@ -172,6 +172,7 @@ module "sdwan" {
 | [sdwan_policy_object_policer.policy_object_policer](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_policer) | resource |
 | [sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_preferred_color_group) | resource |
 | [sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_data_ipv4_prefix_list) | resource |
+| [sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_data_ipv6_prefix_list) | resource |
 | [sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_fqdn_list) | resource |
 | [sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_geolocation_list) | resource |
 | [sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_ips_signature) | resource |

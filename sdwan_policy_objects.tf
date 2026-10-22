@@ -196,6 +196,17 @@ resource "sdwan_policy_object_security_data_ipv4_prefix_list" "policy_object_sec
   }]
 }
 
+resource "sdwan_policy_object_security_data_ipv6_prefix_list" "policy_object_security_data_ipv6_prefix_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_data_ipv6_prefix_lists, {}) : p.name => p }
+  name               = each.value.name
+  description        = null # not supported in the UI
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  entries = [for e in try(each.value.prefixes, []) : {
+    ipv6_prefix          = try(e, null)
+    ipv6_prefix_variable = null # not supported in the UI
+  }]
+}
+
 resource "sdwan_policy_object_security_fqdn_list" "policy_object_security_fqdn_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_fqdn_lists, {}) : p.name => p }
   name               = each.value.name

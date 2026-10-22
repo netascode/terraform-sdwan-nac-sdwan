@@ -1,6 +1,9 @@
 ## 1.6.0 (unreleased)
 
 - add support for new 20.18 attributes in Custom Application (`sdwan_custom_application`): `endpoint_type` and `endpoint_value`
+- add support for new 20.18 attributes in NGFW security policy (`sdwan_embedded_security_ngfw_policy`): `is_rule_set`, `sequence_comment`, `sequence_ip_type`, and IPv6 match entries (`source_data_ipv6_prefix_lists`, `source_data_ipv6_prefixes`, `source_data_ipv6_prefixes_variable`, `destination_data_ipv6_prefix_lists`, `destination_data_ipv6_prefixes`, `destination_data_ipv6_prefixes_variable`)
+- add support for Security Data IPv6 Prefix List policy object (`sdwan_policy_object_security_data_ipv6_prefix_list`, 20.18.2+) via `policy_object_profile.security_data_ipv6_prefix_lists`, referenced by NGFW `source_data_ipv6_prefix_lists` / `destination_data_ipv6_prefix_lists`
+- add support for new 20.18 attributes in NGFW security settings (`sdwan_embedded_security_policy`): `high_speed_logging_servers`, `syslog_server_source_interface`, `syslog_server_source_interface_variable`, and `optimized`
 - fix `sdwan_policy_group` `devices.variables` failing to plan with `Inconsistent conditional result types` when a router's `policy_variables` mixes scalar and list values (e.g. a string variable alongside a list variable)
 
 ## 1.5.0

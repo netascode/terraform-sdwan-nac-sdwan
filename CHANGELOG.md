@@ -48,6 +48,7 @@
 - fix dependency issue of custom app usage in the application list
 - fix null crash when `sequences` is omitted from centralized policy definitions (`sdwan_custom_control_topology_policy_definition`, `sdwan_traffic_data_policy_definition`, `sdwan_application_aware_routing_policy_definition`)
 - fix service multicast `pim_bsr_rp_candidates` reading the variable from `access_list_id_variable` instead of the data model's `access_list_variable`, which left the variable unresolved
+- add support for transport cellular controller associations with cellular profile and GPS features”
 
 ## 1.4.0
 

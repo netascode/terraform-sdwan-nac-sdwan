@@ -1,7 +1,8 @@
-## 1.6.0 (unreleased)
+## 1.5.1 (unreleased)
 
 - add support for new 20.18 attributes in Custom Application (`sdwan_custom_application`): `endpoint_type` and `endpoint_value`
 - fix `sdwan_policy_group` `devices.variables` failing to plan with `Inconsistent conditional result types` when a router's `policy_variables` mixes scalar and list values (e.g. a string variable alongside a list variable)
+- add support for transport cellular controller associations with cellular profile and GPS features
 
 ## 1.5.0
 

@@ -47,11 +47,35 @@ locals {
     { for k, v in sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template : k => v.id },
   )
 
+  # Every node name the scopes reference. Built from configuration only, so it
+  # is known at plan time.
+  scope_nh_node_refs = distinct(flatten([
+    for s in try(local.scopes, []) : try(s.network_hierarchy_nodes, [])
+  ]))
+
+  # Node names the model declares itself. Derived from the configuration-only
+  # locals in sdwan_network_hierarchy.tf, never from the merged map below:
+  # feeding the data source's `names` from a map the data source contributes to
+  # would be a cycle. "Global" is the built-in root that SD-WAN Manager creates
+  # itself, so it is never declared here and always resolves through the data
+  # source.
+  scope_nh_declared_nodes = toset(concat(
+    keys(local.nh_container_keys),
+    [for s in local.nh_sites_flat : s.name],
+  ))
+
+  # Nodes that exist on the Manager but are not managed by this module. Only
+  # the Manager can give their UUIDs.
+  scope_nh_unmanaged_refs = setsubtract(
+    toset(local.scope_nh_node_refs),
+    local.scope_nh_declared_nodes,
+  )
+
   # Keyed by node name: node names are globally unique in this module, since
   # sdwan_network_hierarchy.tf:83 keys containers by bare name and :95 keys
   # sites by bare name, so duplicates already fail at plan time.
   # Merging all seven levels is acyclic and safe here because only sdwan_scope
-  # reads this map and sdwan_scope is not one of the merged resources
+  # reads this map and sdwan_scope is not one of the merged resources.
   scope_network_hierarchy_node_ids = merge(
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_group_l0 : v.name => v.id },
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_region_l0 : v.name => v.id },
@@ -60,22 +84,25 @@ locals {
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_group_l2 : v.name => v.id },
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_region_l2 : v.name => v.id },
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_site : v.name => v.id },
-    # "Global" is the built-in hierarchy root created by SD-WAN Manager itself, so
-    # it is never one of the nodes this module creates. Its UUID is generated per
-    # controller and cannot be hardcoded, so it is read back by name on demand.
-    length(data.sdwan_network_hierarchy_node.scope_global) == 0 ? {} : {
-      "Global" = data.sdwan_network_hierarchy_node.scope_global[0].id
-    },
+    # The data source is only ever asked about names the model does not
+    # declare, so declared and resolved nodes never share a key.
+    { for name, n in try(data.sdwan_network_hierarchy_nodes.scope_unmanaged[0].nodes, {}) : name => n.id },
   )
 }
 
-# Only read the built-in root when a scope actually references it, so deployments
-# that never scope to "Global" do not pay for an extra API call on every plan.
-data "sdwan_network_hierarchy_node" "scope_global" {
-  count = anytrue([
-    for s in try(local.scopes, []) : contains(try(s.network_hierarchy_nodes, []), "Global")
-  ]) ? 1 : 0
-  name = "Global"
+# A scope can target nodes this module does not manage, including the built-in
+# "Global" root, whose UUID is generated per controller and cannot be
+# hardcoded. Those names are read back from the Manager in a single call, and
+# only when a scope actually references one, so models that declare their whole
+# hierarchy never pay for an extra API call on plan.
+#
+# expand_containers is false: a scope references the node itself, so the sites
+# nested under a group or region are irrelevant, and expanding "Global" would
+# write every site in the hierarchy to state.
+data "sdwan_network_hierarchy_nodes" "scope_unmanaged" {
+  count             = length(local.scope_nh_unmanaged_refs) > 0 ? 1 : 0
+  names             = sort(tolist(local.scope_nh_unmanaged_refs))
+  expand_containers = false
 }
 
 resource "sdwan_scope" "scope" {

@@ -172,6 +172,7 @@ module "sdwan" {
 | [sdwan_policy_object_policer.policy_object_policer](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_policer) | resource |
 | [sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_preferred_color_group) | resource |
 | [sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_data_ipv4_prefix_list) | resource |
+| [sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_data_ipv6_prefix_list) | resource |
 | [sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_fqdn_list) | resource |
 | [sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_geolocation_list) | resource |
 | [sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_ips_signature) | resource |
@@ -264,6 +265,8 @@ module "sdwan" {
 | [sdwan_topology_mesh_feature.topology_mesh_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/topology_mesh_feature) | resource |
 | [sdwan_traffic_data_policy_definition.traffic_data_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/traffic_data_policy_definition) | resource |
 | [sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature) | resource |
+| [sdwan_transport_cellular_controller_feature_associate_cellular_profile_feature.transport_cellular_controller_feature_associate_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature_associate_cellular_profile_feature) | resource |
+| [sdwan_transport_cellular_controller_feature_associate_gps_feature.transport_cellular_controller_feature_associate_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_controller_feature_associate_gps_feature) | resource |
 | [sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_cellular_profile_feature) | resource |
 | [sdwan_transport_feature_profile.transport_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_feature_profile) | resource |
 | [sdwan_transport_gps_feature.transport_gps_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/transport_gps_feature) | resource |

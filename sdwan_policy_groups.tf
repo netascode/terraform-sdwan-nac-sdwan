@@ -243,6 +243,16 @@ locals {
         ]
       ])))
 
+      # Security data IPv6 prefix lists
+      security_data_ipv6_prefix_lists = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_data_ipv6_prefix_lists, []),
+            try(seq.match_entries.destination_data_ipv6_prefix_lists, []),
+          ]
+        ]
+      ])))
+
       # Security FQDN lists
       fqdn_lists = distinct(compact(flatten([
         for policy in try(profile.policies, []) : [
@@ -311,6 +321,11 @@ locals {
       # Security Data IPv4 Prefix Lists
       [for pl in try(local.embedded_security_referenced_objects[profile.name].security_data_ipv4_prefix_lists, []) :
         try(sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[pl].version, null)
+      ],
+
+      # Security Data IPv6 Prefix Lists
+      [for pl in try(local.embedded_security_referenced_objects[profile.name].security_data_ipv6_prefix_lists, []) :
+        try(sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[pl].version, null)
       ],
 
       # Security FQDN Lists

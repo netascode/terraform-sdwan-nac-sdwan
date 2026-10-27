@@ -249,6 +249,82 @@ resource "sdwan_policy_object_security_local_domain_list" "policy_object_securit
   }]
 }
 
+resource "sdwan_policy_object_security_object_group" "policy_object_security_object_group" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_object_groups, []) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  sequence_ip_type   = try(each.value.ip_type, local.defaults.sdwan.feature_profiles.policy_object_profile.security_object_groups.ip_type)
+  entries = [{
+    data_ipv4_prefixes          = try(each.value.data_ipv4_prefixes, null)
+    data_ipv4_prefixes_variable = try("{{${each.value.data_ipv4_prefixes_variable}}}", null)
+    data_ipv6_prefixes          = try(each.value.data_ipv6_prefixes, null)
+    data_ipv6_prefixes_variable = try("{{${each.value.data_ipv6_prefixes_variable}}}", null)
+    fqdns                       = try(each.value.fqdns, null)
+    fqdns_variable              = try("{{${each.value.fqdns_variable}}}", null)
+    geo_locations               = try(each.value.geo_locations, null)
+    geo_locations_variable      = null # Not supported in Manager UI
+    ports                       = try(each.value.ports, null)
+    ports_variable              = try("{{${each.value.ports_variable}}}", null)
+    data_ipv4_prefix_list_ids   = try([for name in each.value.data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
+    # below to be uncommented once security ipv6 data prefix list support is added
+    # data_ipv6_prefix_list_ids   = try([for name in each.value.data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    fqdn_list_ids         = try([for name in each.value.fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
+    geo_location_list_ids = try([for name in each.value.geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    port_list_ids         = try([for name in each.value.port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+  }]
+}
+
+resource "sdwan_policy_object_security_rule_set" "policy_object_security_rule_set" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_rule_sets, []) : p.name => p }
+  name               = each.value.name
+  description        = try(each.value.description, null)
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  sequences = [for rule_index, rule in each.value.rules : {
+    name                                  = "Rule${rule_index + 1}"
+    name_variable                         = null
+    sequence_id                           = tostring(try(rule.sequence_id, rule_index + 1))
+    sequence_id_variable                  = null # Not supported in Manager UI
+    sequence_ip_type                      = try(rule.ip_type, local.defaults.sdwan.feature_profiles.policy_object_profile.security_rule_sets.rules.ip_type)
+    action                                = "drop"
+    action_variable                       = null # Not supported in Manager UI
+    source_ipv4_prefixes                  = try(rule.source_data_ipv4_prefixes, null)
+    source_ipv4_prefixes_variable         = try("{{${rule.source_data_ipv4_prefixes_variable}}}", null)
+    source_ipv6_prefixes                  = try(rule.source_data_ipv6_prefixes, null)
+    source_ipv6_prefixes_variable         = try("{{${rule.source_data_ipv6_prefixes_variable}}}", null)
+    destination_ipv4_prefixes             = try(rule.destination_data_ipv4_prefixes, null)
+    destination_ipv4_prefixes_variable    = try("{{${rule.destination_data_ipv4_prefixes_variable}}}", null)
+    destination_ipv6_prefixes             = try(rule.destination_data_ipv6_prefixes, null)
+    destination_ipv6_prefixes_variable    = try("{{${rule.destination_data_ipv6_prefixes_variable}}}", null)
+    destination_fqdns                     = try(rule.destination_fqdns, null)
+    destination_fqdns_variable            = try("{{${rule.destination_fqdns_variable}}}", null)
+    source_geo_locations                  = try(rule.source_geo_locations, null)
+    source_geo_locations_variable         = null # Not supported in Manager UI
+    destination_geo_locations             = try(rule.destination_geo_locations, null)
+    destination_geo_locations_variable    = null # Not supported in Manager UI
+    source_ports                          = try(rule.source_ports, null)
+    source_ports_variable                 = try("{{${rule.source_ports_variable}}}", null)
+    destination_ports                     = try(rule.destination_ports, null)
+    destination_ports_variable            = try("{{${rule.destination_ports_variable}}}", null)
+    protocols                             = try(rule.protocols, null)
+    protocol_names                        = try(rule.protocol_names, null)
+    protocol_names_variable               = null # Not supported in Manager UI
+    source_data_ipv4_prefix_list_ids      = try([for name in rule.source_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
+    destination_data_ipv4_prefix_list_ids = try([for name in rule.destination_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
+    # below to be uncommented once security ipv6 data prefix list support is added
+    # source_data_ipv6_prefix_list_ids      = try([for name in rule.source_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    # destination_data_ipv6_prefix_list_ids = try([for name in rule.destination_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    destination_fqdn_list_ids         = try([for name in rule.destination_fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
+    source_geo_location_list_ids      = try([for name in rule.source_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    destination_geo_location_list_ids = try([for name in rule.destination_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    source_port_list_ids              = try([for name in rule.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+    destination_port_list_ids         = try([for name in rule.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+    protocol_name_list_ids            = try([for name in rule.protocol_name_lists : sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].id], null)
+    source_object_group_list_ids      = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.source_object_groups].id], null)
+    destination_object_group_list_ids = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.destination_object_groups].id], null)
+  }]
+}
+
 resource "sdwan_policy_object_security_port_list" "policy_object_security_port_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_port_lists, {}) : p.name => p }
   name               = each.value.name

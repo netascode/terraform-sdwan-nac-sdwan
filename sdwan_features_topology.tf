@@ -68,13 +68,14 @@ locals {
   )
 
   # The data source runs only for unmanaged groups, which data model validation
-  # rejected before 1.5.1, so no existing model is affected. A model that names sites only and
-  # declares no hierarchy keeps sending site names, whatever its version.
+  # rejected before 1.5.1, so no existing model is affected. A model that names
+  # sites only and declares no hierarchy keeps sending site names, whatever its
+  # version.
   #
-  # The version has to be explicit: an unset manager_version is read as 20.18+,
-  # and a 20.15 Manager would answer the UUID fields with HTTP 400.
-  nh_manager_version_explicit = try(local.model.sdwan.manager_version, null) != null
-  nh_resolve_unmanaged        = length(local.nh_unmanaged_group_refs) > 0 && local.nh_manager_version_explicit && local.nh_version_supports_uuids
+  # An unset manager_version is read as 20.18+ (nh_version_supports_uuids), the
+  # same assumption every other topology path makes. A 20.15 Manager has to be
+  # declared with manager_version, or it answers the UUID fields with HTTP 400.
+  nh_resolve_unmanaged = length(local.nh_unmanaged_group_refs) > 0 && local.nh_version_supports_uuids
 }
 
 data "sdwan_network_hierarchy_nodes" "unmanaged" {
@@ -99,7 +100,7 @@ output "topology_site_resolution" {
   precondition {
     condition = length(local.nh_unmanaged_group_refs) == 0 || local.nh_resolve_unmanaged
     error_message = format(
-      "Topology policies reference group or region(s) %v which are not declared under `sdwan.network_hierarchy`. Resolving them from the Manager requires `sdwan.manager_version` to be set explicitly to 20.18 or higher; 20.15 and below cannot expand a group that Terraform does not manage. Declare the groups under `sdwan.network_hierarchy`, or set `sdwan.manager_version`.",
+      "Topology policies reference group or region(s) %v which are not declared under `sdwan.network_hierarchy`. Resolving them from the Manager requires Manager 20.18 or higher, and `sdwan.manager_version` is set below that; a 20.15 Manager cannot expand a group that Terraform does not manage. Declare the groups under `sdwan.network_hierarchy`, or remove `sdwan.manager_version` or set it to 20.18 or higher.",
       sort(tolist(local.nh_unmanaged_group_refs)),
     )
   }

@@ -67,6 +67,7 @@ resource "sdwan_configuration_group" "configuration_group" {
     sdwan_policy_object_tloc_list.policy_object_tloc_list,
     sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group,
     sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list,
+    sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list,
     sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list,
     sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list,
     sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature,
@@ -138,6 +139,9 @@ locals {
   ])
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
+      try(profile.appqoe_features, null) == null ? [] : [for appqoe_feature in try(profile.appqoe_features, []) : [
+        sdwan_service_appqoe_feature.service_appqoe_feature["${profile.name}-${appqoe_feature.name}"].version
+      ]],
       try(profile.bgp_features, null) == null ? [] : [for bgp_feature in try(profile.bgp_features, []) : [
         sdwan_service_routing_bgp_feature.service_routing_bgp_feature["${profile.name}-${bgp_feature.name}"].version
       ]],

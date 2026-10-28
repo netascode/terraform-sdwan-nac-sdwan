@@ -6,6 +6,7 @@
 - add support for new 20.18 attributes in NGFW security settings (`sdwan_embedded_security_policy`): `high_speed_logging_servers`, `syslog_server_source_interface`, `syslog_server_source_interface_variable`, and `optimized`
 - fix `sdwan_policy_group` `devices.variables` failing to plan with `Inconsistent conditional result types` when a router's `policy_variables` mixes scalar and list values (e.g. a string variable alongside a list variable)
 - add support for transport cellular controller associations with cellular profile and GPS features
+- add support for sdwan_vpn_interface_dsl_ipoe_feature_template resource
 
 ## 1.5.0
 

@@ -96,7 +96,8 @@ resource "sdwan_feature_device_template" "feature_device_template" {
         can(each.value.vpn_0_template.ethernet_interface_templates) ||
         can(each.value.vpn_0_template.ipsec_interface_templates) ||
         can(each.value.vpn_0_template.svi_interface_templates) ||
-        can(each.value.vpn_0_template.secure_internet_gateway_template)) ? null : flatten([
+        can(each.value.vpn_0_template.secure_internet_gateway_template) ||
+        can(each.value.vpn_0_template.dsl_ipoe_interface_templates)) ? null : flatten([
           try(each.value.vpn_0_template.ospf_template, null) == null ? [] : [{
             id      = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].id
             version = sdwan_cisco_ospf_feature_template.cisco_ospf_feature_template[each.value.vpn_0_template.ospf_template].version
@@ -143,6 +144,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].id
             version = sdwan_vpn_interface_cellular_feature_template.vpn_interface_cellular_feature_template[sit.name].version
             type    = "vpn-cedge-interface-cellular"
+          }],
+          try(each.value.vpn_0_template.dsl_ipoe_interface_templates, null) == null ? [] : [for sit in try(each.value.vpn_0_template.dsl_ipoe_interface_templates, []) : {
+            id      = sdwan_vpn_interface_dsl_ipoe_feature_template.vpn_interface_dsl_ipoe_feature_template[sit.name].id
+            version = sdwan_vpn_interface_dsl_ipoe_feature_template.vpn_interface_dsl_ipoe_feature_template[sit.name].version
+            type    = "vpn-interface-ipoe"
           }],
       ])
     }],

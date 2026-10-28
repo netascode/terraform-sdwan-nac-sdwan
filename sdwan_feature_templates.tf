@@ -2408,6 +2408,7 @@ resource "sdwan_vpn_interface_cellular_feature_template" "vpn_interface_cellular
 
 resource "sdwan_vpn_interface_dsl_ipoe_feature_template" "vpn_interface_dsl_ipoe_feature_template" {
   for_each                         = { for t in try(local.edge_feature_templates.dsl_ipoe_interface_templates, {}) : t.name => t }
+  internal_controller_type         = "ipoe"
   name                             = each.value.name
   description                      = each.value.description
   device_types                     = [for d in try(each.value.device_types, local.defaults.sdwan.edge_feature_templates.dsl_ipoe_interface_templates.device_types) : try(local.device_type_map[d], "vedge-${d}")]

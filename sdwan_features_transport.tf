@@ -238,6 +238,44 @@ resource "sdwan_transport_cellular_controller_feature" "transport_cellular_contr
   sim_failover_timeout_variable = try("{{${each.value.controller.sim_failover_timeout_variable}}}", null)
 }
 
+resource "sdwan_transport_cellular_controller_feature_associate_cellular_profile_feature" "transport_cellular_controller_feature_associate_cellular_profile_feature" {
+  for_each = {
+    for assoc_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for controller in try(profile.cellular_controllers, []) : [
+          for profile_name in try(controller.cellular_profile_names, []) : {
+            profile      = profile
+            controller   = controller
+            profile_name = profile_name
+          }
+        ]
+      ]
+    ])
+    : "${assoc_item.profile.name}-${assoc_item.controller.name}-${assoc_item.profile_name}" => assoc_item
+  }
+  feature_profile_id                       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_cellular_controller_feature_id = sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature["${each.value.profile.name}-${each.value.controller.name}"].id
+  transport_cellular_profile_feature_id    = sdwan_transport_cellular_profile_feature.transport_cellular_profile_feature["${each.value.profile.name}-${each.value.profile_name}"].id
+}
+
+resource "sdwan_transport_cellular_controller_feature_associate_gps_feature" "transport_cellular_controller_feature_associate_gps_feature" {
+  for_each = {
+    for controller_item in flatten([
+      for profile in try(local.feature_profiles.transport_profiles, []) : [
+        for controller in try(profile.cellular_controllers, []) : {
+          profile    = profile
+          controller = controller
+        }
+      ]
+    ])
+    : "${controller_item.profile.name}-${controller_item.controller.name}-gps" => controller_item
+    if try(controller_item.controller.gps_name, null) != null
+  }
+  feature_profile_id                       = sdwan_transport_feature_profile.transport_feature_profile[each.value.profile.name].id
+  transport_cellular_controller_feature_id = sdwan_transport_cellular_controller_feature.transport_cellular_controller_feature["${each.value.profile.name}-${each.value.controller.name}"].id
+  transport_gps_feature_id                 = sdwan_transport_gps_feature.transport_gps_feature["${each.value.profile.name}-${each.value.controller.gps_name}"].id
+}
+
 resource "sdwan_transport_cellular_profile_feature" "transport_cellular_profile_feature" {
   for_each = {
     for cellular_item in flatten([

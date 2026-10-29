@@ -6,6 +6,7 @@
 - add support for new 20.18 attributes in NGFW security settings (`sdwan_embedded_security_policy`): `high_speed_logging_servers`, `syslog_server_source_interface`, `syslog_server_source_interface_variable`, and `optimized`
 - fix `sdwan_policy_group` `devices.variables` failing to plan with `Inconsistent conditional result types` when a router's `policy_variables` mixes scalar and list values (e.g. a string variable alongside a list variable)
 - add support for transport cellular controller associations with cellular profile and GPS features
+- add support for `scopes` (`sdwan_scope`); `network_hierarchy_nodes` may reference sites, groups, regions and the built-in `Global` root that exist on SD-WAN Manager but are not declared under `sdwan.network_hierarchy` — those are read with the `sdwan_network_hierarchy_nodes` data source (provider 0.11.7 or later), and models that declare every referenced node never call it
 
 ## 1.5.0
 

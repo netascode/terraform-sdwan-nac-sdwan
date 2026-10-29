@@ -35,6 +35,52 @@ locals {
     for name in local.nh_topology_site_refs : name
     if !contains(local.nh_site_names, name)
   ]
+
+  # Every group or region name topology references, mirroring nh_topology_site_refs.
+  # A region here stands for the sites under it, not for the region node itself.
+  nh_topology_group_refs = distinct(flatten([
+    for profile in try(local.feature_profiles.topology_profiles, []) : [
+      [for policy in try(profile.custom_policies, []) : concat(
+        try(policy.inbound_site_groups, []),
+        try(policy.outbound_site_groups, []),
+        flatten([for seq in try(policy.sequences, []) : try(seq.match_entries.site_groups, [])]),
+      )],
+      [for policy in try(profile.mesh_policies, []) : try(policy.site_groups, [])],
+      [for policy in try(profile.hub_spoke_policies, []) : flatten([
+        for spoke in try(policy.spoke_groups, []) : try(spoke.spoke_site_groups, [])
+      ])],
+    ]
+  ]))
+
+  # Groups the model does not declare under network_hierarchy. Only the Manager
+  # can expand these.
+  nh_unmanaged_group_refs = setsubtract(
+    toset(local.nh_topology_group_refs),
+    toset(keys(local.nh_container_keys)),
+  )
+
+  # Names the data source is asked about: unmanaged groups, plus every literal
+  # site the model does not declare, since one policy cannot mix site names with
+  # UUIDs. Built from configuration only, so it is known at plan time.
+  nh_unmanaged_refs = setsubtract(
+    toset(concat(local.nh_topology_site_refs, local.nh_topology_group_refs)),
+    setunion(local.nh_site_names_declared, toset(keys(local.nh_container_keys))),
+  )
+
+  # The data source runs only for unmanaged groups, which data model validation
+  # rejected before 1.5.1, so no existing model is affected. A model that names
+  # sites only and declares no hierarchy keeps sending site names, whatever its
+  # version.
+  #
+  # An unset manager_version is read as 20.18+ (nh_version_supports_uuids), the
+  # same assumption every other topology path makes. A 20.15 Manager has to be
+  # declared with manager_version, or it answers the UUID fields with HTTP 400.
+  nh_resolve_unmanaged = length(local.nh_unmanaged_group_refs) > 0 && local.nh_version_supports_uuids
+}
+
+data "sdwan_network_hierarchy_nodes" "topology_unmanaged" {
+  count = local.nh_resolve_unmanaged ? 1 : 0
+  names = sort(tolist(local.nh_unmanaged_refs))
 }
 
 # Named failure for an unresolvable site name, instead of a bare "Invalid
@@ -49,6 +95,13 @@ output "topology_site_resolution" {
     error_message = format(
       "Topology policies reference site(s) %v which are not declared under `sdwan.network_hierarchy`. On Manager 20.18.1+ site targeting is sent as hierarchy UUIDs, which can only be resolved for declared sites. Declare the missing sites under `sdwan.network_hierarchy`, or set `sdwan.manager_version` to 20.15 to send site names instead.",
       local.nh_unresolved_site_refs,
+    )
+  }
+  precondition {
+    condition = length(local.nh_unmanaged_group_refs) == 0 || local.nh_resolve_unmanaged
+    error_message = format(
+      "Topology policies reference group or region(s) %v which are not declared under `sdwan.network_hierarchy`. Resolving them from the Manager requires Manager 20.18 or higher, and `sdwan.manager_version` is set below that; a 20.15 Manager cannot expand a group that Terraform does not manage. Declare the groups under `sdwan.network_hierarchy`, or remove `sdwan.manager_version` or set it to 20.18 or higher.",
+      sort(tolist(local.nh_unmanaged_group_refs)),
     )
   }
 }
@@ -74,6 +127,14 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
         try(custom_control_item.custom_control.outbound_sites, []),
         flatten([for g in try(custom_control_item.custom_control.outbound_site_groups, []) : local.nh_container_sites[g]]),
       ))
+      empty_unmanaged_groups = [
+        for g in distinct(flatten([
+          try(custom_control_item.custom_control.inbound_site_groups, []),
+          try(custom_control_item.custom_control.outbound_site_groups, []),
+          flatten([for seq in try(custom_control_item.custom_control.sequences, []) : try(seq.match_entries.site_groups, [])]),
+        ])) : g
+        if contains(local.nh_unmanaged_group_refs, g) && try(length(local.nh_container_sites[g]) == 0, false)
+      ]
       sequences = [for seq in try(custom_control_item.custom_control.sequences, []) : merge(seq, {
         match_site_names = distinct(concat(
           try(seq.match_entries.sites, []),
@@ -239,6 +300,20 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
       }] : [],
     ])
   }]
+
+  # An empty direction is dropped from the payload, which would silently narrow
+  # the policy. Data model validation catches this for declared groups; a group
+  # only the Manager knows about is checked here.
+  lifecycle {
+    precondition {
+      condition = length(each.value.empty_unmanaged_groups) == 0
+      error_message = format(
+        "Custom control policy '%s' references group or region(s) %v that contain no sites on the Manager, so the selection would be silently dropped from the policy.",
+        each.value.custom_control.name,
+        each.value.empty_unmanaged_groups,
+      )
+    }
+  }
 }
 
 resource "sdwan_topology_hub_spoke_feature" "topology_hub_spoke_feature" {

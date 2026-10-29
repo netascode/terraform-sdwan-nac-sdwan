@@ -97,9 +97,9 @@ locals {
   }
 
   # Sites and groups the model references but does not declare, read from the
-  # Manager (see data.sdwan_network_hierarchy_nodes.unmanaged in
+  # Manager (see data.sdwan_network_hierarchy_nodes.topology_unmanaged in
   # sdwan_features_topology.tf). Null when nothing needs resolving.
-  nh_ds = try(data.sdwan_network_hierarchy_nodes.unmanaged[0], null)
+  nh_ds = try(data.sdwan_network_hierarchy_nodes.topology_unmanaged[0], null)
 
   # The "declared" locals feed the data source's names, so the merged locals
   # below must be separate ones; reading the merged set there would be a cycle.

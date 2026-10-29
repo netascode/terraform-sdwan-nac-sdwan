@@ -78,7 +78,7 @@ locals {
   nh_resolve_unmanaged = length(local.nh_unmanaged_group_refs) > 0 && local.nh_version_supports_uuids
 }
 
-data "sdwan_network_hierarchy_nodes" "unmanaged" {
+data "sdwan_network_hierarchy_nodes" "topology_unmanaged" {
   count = local.nh_resolve_unmanaged ? 1 : 0
   names = sort(tolist(local.nh_unmanaged_refs))
 }

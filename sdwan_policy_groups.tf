@@ -375,8 +375,8 @@ locals {
           try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].version, null)
         ],
         [for name in distinct(compact([
-          try(rule.source_object_groups, null),
-          try(rule.destination_object_groups, null),
+          try(rule.source_object_group, null),
+          try(rule.destination_object_group, null),
           ])) : [
           try(sdwan_policy_object_security_object_group.policy_object_security_object_group[name].version, null),
           try(local.security_object_group_child_versions[name], []),

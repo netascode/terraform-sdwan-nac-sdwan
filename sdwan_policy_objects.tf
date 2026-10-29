@@ -329,8 +329,8 @@ resource "sdwan_policy_object_security_rule_set" "policy_object_security_rule_se
     source_port_list_ids                  = try([for name in rule.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
     destination_port_list_ids             = try([for name in rule.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
     protocol_name_list_ids                = try([for name in rule.protocol_name_lists : sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].id], null)
-    source_object_group_list_ids          = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.source_object_groups].id], null)
-    destination_object_group_list_ids     = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.destination_object_groups].id], null)
+    source_object_group_list_ids          = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.source_object_group].id], null)
+    destination_object_group_list_ids     = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.destination_object_group].id], null)
   }]
 }
 

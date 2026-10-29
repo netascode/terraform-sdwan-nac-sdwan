@@ -289,6 +289,22 @@ locals {
         ]
       ])))
 
+      security_object_groups = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_object_group, null),
+            try(seq.match_entries.destination_object_group, null),
+          ]
+        ]
+      ])))
+
+      security_rule_sets = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.match_entries.rule_set_lists, [])
+        ]
+      ])))
+
       # Security zones referenced in assembly entries
       security_zones = distinct(compact(flatten([
         for policy in try(profile.policies, []) : [
@@ -346,6 +362,14 @@ locals {
       # Security Protocol Name Lists
       [for pl in try(local.embedded_security_referenced_objects[profile.name].protocol_name_lists, []) :
         try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[pl].version, null)
+      ],
+
+      [for object_group in try(local.embedded_security_referenced_objects[profile.name].security_object_groups, []) :
+        try(sdwan_policy_object_security_object_group.policy_object_security_object_group[object_group].version, null)
+      ],
+
+      [for rule_set in try(local.embedded_security_referenced_objects[profile.name].security_rule_sets, []) :
+        try(sdwan_policy_object_security_rule_set.policy_object_security_rule_set[rule_set].version, null)
       ],
 
       # Security Zones

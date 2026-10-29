@@ -278,11 +278,10 @@ resource "sdwan_policy_object_security_object_group" "policy_object_security_obj
     ports                       = try(each.value.ports, null)
     ports_variable              = try("{{${each.value.ports_variable}}}", null)
     data_ipv4_prefix_list_ids   = try([for name in each.value.data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
-    # below to be uncommented once security ipv6 data prefix list support is added
-    # data_ipv6_prefix_list_ids   = try([for name in each.value.data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
-    fqdn_list_ids         = try([for name in each.value.fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
-    geo_location_list_ids = try([for name in each.value.geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
-    port_list_ids         = try([for name in each.value.port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+    data_ipv6_prefix_list_ids   = try([for name in each.value.data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    fqdn_list_ids               = try([for name in each.value.fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
+    geo_location_list_ids       = try([for name in each.value.geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    port_list_ids               = try([for name in each.value.port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
   }]
 }
 
@@ -322,17 +321,16 @@ resource "sdwan_policy_object_security_rule_set" "policy_object_security_rule_se
     protocol_names_variable               = null # Not supported in Manager UI
     source_data_ipv4_prefix_list_ids      = try([for name in rule.source_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
     destination_data_ipv4_prefix_list_ids = try([for name in rule.destination_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].id], null)
-    # below to be uncommented once security ipv6 data prefix list support is added
-    # source_data_ipv6_prefix_list_ids      = try([for name in rule.source_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
-    # destination_data_ipv6_prefix_list_ids = try([for name in rule.destination_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
-    destination_fqdn_list_ids         = try([for name in rule.destination_fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
-    source_geo_location_list_ids      = try([for name in rule.source_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
-    destination_geo_location_list_ids = try([for name in rule.destination_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
-    source_port_list_ids              = try([for name in rule.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
-    destination_port_list_ids         = try([for name in rule.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
-    protocol_name_list_ids            = try([for name in rule.protocol_name_lists : sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].id], null)
-    source_object_group_list_ids      = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.source_object_groups].id], null)
-    destination_object_group_list_ids = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.destination_object_groups].id], null)
+    source_data_ipv6_prefix_list_ids      = try([for name in rule.source_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    destination_data_ipv6_prefix_list_ids = try([for name in rule.destination_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].id], null)
+    destination_fqdn_list_ids             = try([for name in rule.destination_fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].id], null)
+    source_geo_location_list_ids          = try([for name in rule.source_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    destination_geo_location_list_ids     = try([for name in rule.destination_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].id], null)
+    source_port_list_ids                  = try([for name in rule.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+    destination_port_list_ids             = try([for name in rule.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[name].id], null)
+    protocol_name_list_ids                = try([for name in rule.protocol_name_lists : sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].id], null)
+    source_object_group_list_ids          = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.source_object_groups].id], null)
+    destination_object_group_list_ids     = try([sdwan_policy_object_security_object_group.policy_object_security_object_group[rule.destination_object_groups].id], null)
   }]
 }
 

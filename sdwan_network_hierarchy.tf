@@ -85,14 +85,41 @@ locals {
   # Container name -> its descendant site names, at any depth. A site is under
   # a container iff its path is prefixed by the container's path; the trailing
   # slash keeps "test" from matching "test-group/...".
-  nh_container_sites = {
+  #
+  # A region named in a *_site_groups key means the sites under that region, never
+  # the region itself: only sites are sent. Manager 20.18.5 rejects a region
+  # configured under sites ("Region <name> cannot be configured under sites").
+  # Targeting a region itself is level wan_regions with inbound/outbound_regions.
+  nh_container_sites_declared = {
     for name, key in local.nh_container_keys : name => [
       for s in local.nh_sites_flat : s.name if startswith(s.key, "${key}/")
     ]
   }
 
-  nh_site_names      = toset([for s in local.nh_sites_flat : s.name])
-  nh_site_name_to_id = { for k, v in sdwan_network_hierarchy_node.network_hierarchy_site : v.name => v.id }
+  # Sites and groups the model references but does not declare, read from the
+  # Manager (see data.sdwan_network_hierarchy_nodes.topology_unmanaged in
+  # sdwan_features_topology.tf). Null when nothing needs resolving.
+  nh_ds = try(data.sdwan_network_hierarchy_nodes.topology_unmanaged[0], null)
+
+  # The "declared" locals feed the data source's names, so the merged locals
+  # below must be separate ones; reading the merged set there would be a cycle.
+  nh_site_names_declared = toset([for s in local.nh_sites_flat : s.name])
+
+  nh_site_names = setunion(
+    local.nh_site_names_declared,
+    toset([for s in try(local.nh_ds.resolved_sites, []) : s.name]),
+  )
+  nh_site_name_to_id = merge(
+    { for k, v in sdwan_network_hierarchy_node.network_hierarchy_site : v.name => v.id },
+    { for s in try(local.nh_ds.resolved_sites, []) : s.name => s.id },
+  )
+
+  # The data source is only ever asked for names the model does not declare, so
+  # declared and resolved containers never share a key.
+  nh_container_sites = merge(
+    local.nh_container_sites_declared,
+    try(local.nh_ds.container_sites, {}),
+  )
 
   # Unset manager_version means 20.18+: site targeting is sent as hierarchy
   # UUIDs, which the 20.18 GUI requires to render sequence match entries.

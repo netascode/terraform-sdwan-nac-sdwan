@@ -289,6 +289,22 @@ locals {
         ]
       ])))
 
+      security_object_groups = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) : [
+            try(seq.match_entries.source_object_group, null),
+            try(seq.match_entries.destination_object_group, null),
+          ]
+        ]
+      ])))
+
+      security_rule_sets = distinct(compact(flatten([
+        for policy in try(profile.policies, []) : [
+          for seq in try(policy.sequences, []) :
+          try(seq.match_entries.rule_set_lists, [])
+        ]
+      ])))
+
       # Security zones referenced in assembly entries
       security_zones = distinct(compact(flatten([
         for policy in try(profile.policies, []) : [
@@ -304,6 +320,70 @@ locals {
   # ============================================================================
   # Embedded Security (NGFW) - Referenced Object Versions
   # ============================================================================
+
+  security_object_group_child_versions = {
+    for object_group in try(local.feature_profiles.policy_object_profile.security_object_groups, []) : object_group.name => compact(flatten([
+      [for name in coalesce(try(object_group.data_ipv4_prefix_lists, null), []) :
+        try(sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].version, null)
+      ],
+      [for name in coalesce(try(object_group.data_ipv6_prefix_lists, null), []) :
+        try(sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].version, null)
+      ],
+      [for name in coalesce(try(object_group.fqdn_lists, null), []) :
+        try(sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].version, null)
+      ],
+      [for name in coalesce(try(object_group.geo_location_lists, null), []) :
+        try(sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].version, null)
+      ],
+      [for name in coalesce(try(object_group.port_lists, null), []) :
+        try(sdwan_policy_object_security_port_list.policy_object_security_port_list[name].version, null)
+      ],
+    ]))
+  }
+
+  security_rule_set_child_versions = {
+    for rule_set in try(local.feature_profiles.policy_object_profile.security_rule_sets, []) : rule_set.name => compact(flatten([
+      for rule in rule_set.rules : [
+        [for name in distinct(compact(flatten([
+          try(rule.source_data_ipv4_prefix_lists, []),
+          try(rule.destination_data_ipv4_prefix_lists, []),
+          ]))) :
+          try(sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].version, null)
+        ],
+        [for name in distinct(compact(flatten([
+          try(rule.source_data_ipv6_prefix_lists, []),
+          try(rule.destination_data_ipv6_prefix_lists, []),
+          ]))) :
+          try(sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].version, null)
+        ],
+        [for name in coalesce(try(rule.destination_fqdn_lists, null), []) :
+          try(sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].version, null)
+        ],
+        [for name in distinct(compact(flatten([
+          try(rule.source_geo_location_lists, []),
+          try(rule.destination_geo_location_lists, []),
+          ]))) :
+          try(sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].version, null)
+        ],
+        [for name in distinct(compact(flatten([
+          try(rule.source_port_lists, []),
+          try(rule.destination_port_lists, []),
+          ]))) :
+          try(sdwan_policy_object_security_port_list.policy_object_security_port_list[name].version, null)
+        ],
+        [for name in coalesce(try(rule.protocol_name_lists, null), []) :
+          try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].version, null)
+        ],
+        [for name in distinct(compact([
+          try(rule.source_object_group, null),
+          try(rule.destination_object_group, null),
+          ])) : [
+          try(sdwan_policy_object_security_object_group.policy_object_security_object_group[name].version, null),
+          try(local.security_object_group_child_versions[name], []),
+        ]],
+      ]
+    ]))
+  }
 
   embedded_security_object_versions = {
     for profile in try(local.feature_profiles.ngfw_security_profiles, []) : profile.name => compact(flatten([
@@ -346,6 +426,20 @@ locals {
       # Security Protocol Name Lists
       [for pl in try(local.embedded_security_referenced_objects[profile.name].protocol_name_lists, []) :
         try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[pl].version, null)
+      ],
+
+      [for object_group in try(local.embedded_security_referenced_objects[profile.name].security_object_groups, []) :
+        [
+          try(sdwan_policy_object_security_object_group.policy_object_security_object_group[object_group].version, null),
+          try(local.security_object_group_child_versions[object_group], []),
+        ]
+      ],
+
+      [for rule_set in try(local.embedded_security_referenced_objects[profile.name].security_rule_sets, []) :
+        [
+          try(sdwan_policy_object_security_rule_set.policy_object_security_rule_set[rule_set].version, null),
+          try(local.security_rule_set_child_versions[rule_set], []),
+        ]
       ],
 
       # Security Zones

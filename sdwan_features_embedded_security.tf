@@ -16,9 +16,12 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
   default_action     = each.value.policy.default_action
   sequences = try(length(each.value.policy.sequences) == 0, true) ? null : [
     for seq in each.value.policy.sequences : {
+      is_rule_set      = try(seq.is_rule_set, null)
       sequence_id      = tostring(seq.sequence_id)
       sequence_name    = seq.sequence_name
+      sequence_comment = try(seq.sequence_comment, null)
       base_action      = seq.base_action
+      sequence_ip_type = try(seq.sequence_ip_type, null)
       disable_sequence = try(seq.disable_sequence, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.disable_sequence)
       sequence_type    = try(seq.sequence_type, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.sequence_type)
       match_entries = try(seq.match_entries, null) == null ? null : flatten([
@@ -33,6 +36,15 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         }] : [],
         try(seq.match_entries.destination_data_ipv4_prefixes_variable, null) != null ? [{
           destination_data_prefixes_variable = "{{${seq.match_entries.destination_data_ipv4_prefixes_variable}}}"
+        }] : [],
+        try(seq.match_entries.destination_data_ipv6_prefix_lists, null) != null ? [{
+          destination_data_ipv6_prefix_list_ids = [for n in seq.match_entries.destination_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[n].id]
+        }] : [],
+        try(seq.match_entries.destination_data_ipv6_prefixes, null) != null ? [{
+          destination_ipv6_data_prefixes = seq.match_entries.destination_data_ipv6_prefixes
+        }] : [],
+        try(seq.match_entries.destination_data_ipv6_prefixes_variable, null) != null ? [{
+          destination_ipv6_data_prefixes_variable = "{{${seq.match_entries.destination_data_ipv6_prefixes_variable}}}"
         }] : [],
         try(seq.match_entries.destination_fqdn_lists, null) != null ? [{
           destination_fqdn_list_ids = [for n in seq.match_entries.destination_fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[n].id]
@@ -82,6 +94,15 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         try(seq.match_entries.source_data_ipv4_prefixes_variable, null) != null ? [{
           source_data_prefixes_variable = "{{${seq.match_entries.source_data_ipv4_prefixes_variable}}}"
         }] : [],
+        try(seq.match_entries.source_data_ipv6_prefix_lists, null) != null ? [{
+          source_data_ipv6_prefix_list_ids = [for n in seq.match_entries.source_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[n].id]
+        }] : [],
+        try(seq.match_entries.source_data_ipv6_prefixes, null) != null ? [{
+          source_ipv6_data_prefixes = seq.match_entries.source_data_ipv6_prefixes
+        }] : [],
+        try(seq.match_entries.source_data_ipv6_prefixes_variable, null) != null ? [{
+          source_ipv6_data_prefixes_variable = "{{${seq.match_entries.source_data_ipv6_prefixes_variable}}}"
+        }] : [],
         try(seq.match_entries.source_geo_location_lists, null) != null ? [{
           source_geo_location_list_ids = [for n in seq.match_entries.source_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[n].id]
         }] : [],
@@ -112,7 +133,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         try(seq.match_entries.source_scalable_group_tag_lists, null) != null ? [{
           source_scalable_group_tag_list_ids = seq.match_entries.source_scalable_group_tag_lists
         }] : [],
-        # TODO 20.18: source/destination_security_group_list_ids — requires sdwan_policy_object_security_object_group (not available in 20.15)
+        # TODO 20.18: rule_set_list_ids and source/destination_object_group_list_ids — require sdwan_policy_object_security_rule_set / sdwan_policy_object_security_object_group support in policy_object_profile
       ])
       # Scenario 1 — pass/drop + log: true    → [{type=log, parameter="true"}]
       # Scenario 2 — inspect + no log + AIP   → [{type=advancedInspectionProfile, parameter_id=<uuid>}]
@@ -162,12 +183,22 @@ resource "sdwan_embedded_security_policy" "embedded_security_policy" {
   session_reclassify_allow                 = try(each.value.settings.session_reclassify_allow, null)
   icmp_unreachable_allow                   = try(each.value.settings.icmp_unreachable_allow, null)
   failure_mode                             = try(each.value.settings.failure_mode, null)
+  syslog_server_source_interface           = try(each.value.settings.syslog_server_source_interface, null)
+  syslog_server_source_interface_variable  = try("{{${each.value.settings.syslog_server_source_interface_variable}}}", null)
+  optimized                                = try(each.value.settings.optimized, null)
   nat                                      = try(each.value.settings.app_hosting.nat, null)
   nat_variable                             = try("{{${each.value.settings.app_hosting.nat_variable}}}", null)
   download_url_database_on_device          = try(each.value.settings.app_hosting.download_url_database_on_device, null)
   download_url_database_on_device_variable = try("{{${each.value.settings.app_hosting.download_url_database_on_device_variable}}}", null)
   resource_profile                         = try(each.value.settings.app_hosting.resource_profile, null)
   resource_profile_variable                = try("{{${each.value.settings.app_hosting.resource_profile_variable}}}", null)
+  high_speed_logging = try(length(each.value.settings.high_speed_logging_servers) == 0, true) ? null : [
+    for server in each.value.settings.high_speed_logging_servers : {
+      name                      = server.name
+      source_interface          = try(server.source_interface, null)
+      source_interface_variable = try("{{${server.source_interface_variable}}}", null)
+    }
+  ]
   assembly = concat(
     [
       for policy in try(each.value.policies, []) : {

@@ -72,8 +72,8 @@ locals {
   )
 
   # Keyed by node name: node names are globally unique in this module, since
-  # sdwan_network_hierarchy.tf:83 keys containers by bare name and :95 keys
-  # sites by bare name, so duplicates already fail at plan time.
+  # local.nh_container_keys keys containers by bare name and local.nh_sites_flat
+  # yields sites by bare name, so duplicates already fail at plan time.
   # Merging all seven levels is acyclic and safe here because only sdwan_scope
   # reads this map and sdwan_scope is not one of the merged resources.
   scope_network_hierarchy_node_ids = merge(
@@ -109,35 +109,35 @@ resource "sdwan_scope" "scope" {
   for_each    = { for s in try(local.scopes, []) : s.name => s }
   name        = each.value.name
   description = try(each.value.description, "")
-  users       = try(each.value.users, null)
+  users       = length(try(each.value.users, [])) == 0 ? null : each.value.users
   objects = concat(
-    try(each.value.configuration_groups, null) == null ? [] : [{
+    length(try(each.value.configuration_groups, [])) == 0 ? [] : [{
       object_type = "config-group"
       object_ids  = tolist([for n in each.value.configuration_groups : sdwan_configuration_group.configuration_group[n].id])
     }],
-    try(each.value.feature_profiles, null) == null ? [] : [{
-      object_type = "feature-profile"
-      object_ids  = tolist([for n in each.value.feature_profiles : local.scope_feature_profile_ids[n]])
-    }],
-    try(each.value.edge_device_templates, null) == null ? [] : [{
+    length(try(each.value.edge_device_templates, [])) == 0 ? [] : [{
       object_type = "device-template"
       object_ids  = tolist([for n in each.value.edge_device_templates : sdwan_feature_device_template.feature_device_template[n].id])
     }],
-    try(each.value.edge_feature_templates, null) == null ? [] : [{
+    length(try(each.value.edge_feature_templates, [])) == 0 ? [] : [{
       object_type = "feature-template"
       object_ids  = tolist([for n in each.value.edge_feature_templates : local.scope_feature_template_ids[n]])
     }],
-    try(each.value.localized_policies, null) == null ? [] : [{
+    length(try(each.value.feature_profiles, [])) == 0 ? [] : [{
+      object_type = "feature-profile"
+      object_ids  = tolist([for n in each.value.feature_profiles : local.scope_feature_profile_ids[n]])
+    }],
+    length(try(each.value.localized_policies, [])) == 0 ? [] : [{
       object_type = "localized-policy"
       object_ids  = tolist([for n in each.value.localized_policies : sdwan_localized_policy.localized_policy[n].id])
     }],
-    try(each.value.security_policies, null) == null ? [] : [{
-      object_type = "security-policy"
-      object_ids  = tolist([for n in each.value.security_policies : sdwan_security_policy.security_policy[n].id])
-    }],
-    try(each.value.network_hierarchy_nodes, null) == null ? [] : [{
+    length(try(each.value.network_hierarchy_nodes, [])) == 0 ? [] : [{
       object_type = "network-hierarchy-node"
       object_ids  = tolist([for n in each.value.network_hierarchy_nodes : local.scope_network_hierarchy_node_ids[n]])
+    }],
+    length(try(each.value.security_policies, [])) == 0 ? [] : [{
+      object_type = "security-policy"
+      object_ids  = tolist([for n in each.value.security_policies : sdwan_security_policy.security_policy[n].id])
     }],
   )
 }

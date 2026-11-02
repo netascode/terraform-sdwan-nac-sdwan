@@ -178,8 +178,10 @@ module "sdwan" {
 | [sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_ips_signature) | resource |
 | [sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_local_application_list) | resource |
 | [sdwan_policy_object_security_local_domain_list.policy_object_security_local_domain_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_local_domain_list) | resource |
+| [sdwan_policy_object_security_object_group.policy_object_security_object_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_object_group) | resource |
 | [sdwan_policy_object_security_port_list.policy_object_security_port_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_port_list) | resource |
 | [sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_protocol_list) | resource |
+| [sdwan_policy_object_security_rule_set.policy_object_security_rule_set](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_rule_set) | resource |
 | [sdwan_policy_object_security_url_allow_list.policy_object_security_url_allow_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_allow_list) | resource |
 | [sdwan_policy_object_security_url_block_list.policy_object_security_url_block_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_url_block_list) | resource |
 | [sdwan_policy_object_security_zone.policy_object_security_zone](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_security_zone) | resource |

@@ -199,6 +199,7 @@ module "sdwan" {
 | [sdwan_scope.scope](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/scope) | resource |
 | [sdwan_security_app_hosting_feature_template.security_app_hosting_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_app_hosting_feature_template) | resource |
 | [sdwan_security_policy.security_policy](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/security_policy) | resource |
+| [sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/send_wan_edge_list_to_controllers) | resource |
 | [sdwan_service_appqoe_feature.service_appqoe_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_appqoe_feature) | resource |
 | [sdwan_service_dhcp_server_feature.service_dhcp_server_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_dhcp_server_feature) | resource |
 | [sdwan_service_dual_router_ha_feature.service_dual_router_ha_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_dual_router_ha_feature) | resource |
@@ -302,6 +303,7 @@ module "sdwan" {
 | [sdwan_vpn_interface_svi_feature_template.vpn_interface_svi_feature_template](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_interface_svi_feature_template) | resource |
 | [sdwan_vpn_list_policy_object.vpn_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_list_policy_object) | resource |
 | [sdwan_vpn_membership_policy_definition.vpn_membership_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/vpn_membership_policy_definition) | resource |
+| [sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/wan_edge_certificate_validate) | resource |
 | [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
 | [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |

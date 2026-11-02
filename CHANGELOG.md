@@ -1,5 +1,6 @@
 ## 1.5.1 (unreleased)
 
+- add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 - add support for new 20.18 attributes in Custom Application (`sdwan_custom_application`): `endpoint_type` and `endpoint_value`
 - add support for new 20.18 attributes in NGFW security policy (`sdwan_embedded_security_ngfw_policy`): `is_rule_set`, `sequence_comment`, `sequence_ip_type`, and IPv6 match entries (`source_data_ipv6_prefix_lists`, `source_data_ipv6_prefixes`, `source_data_ipv6_prefixes_variable`, `destination_data_ipv6_prefix_lists`, `destination_data_ipv6_prefixes`, `destination_data_ipv6_prefixes_variable`)
 - add support for Security Data IPv6 Prefix List policy object (`sdwan_policy_object_security_data_ipv6_prefix_list`, 20.18.2+) via `policy_object_profile.security_data_ipv6_prefix_lists`, referenced by NGFW `source_data_ipv6_prefix_lists` / `destination_data_ipv6_prefix_lists`

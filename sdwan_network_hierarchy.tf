@@ -101,6 +101,13 @@ locals {
   # sdwan_features_topology.tf). Null when nothing needs resolving.
   nh_ds = try(data.sdwan_network_hierarchy_nodes.topology_unmanaged[0], null)
 
+  # Same for the sites and groups Application Priority traffic policies match on (see
+  # data.sdwan_network_hierarchy_nodes.application_priority_unmanaged in
+  # sdwan_features_application_priority.tf). Kept out of nh_site_names on purpose: that set
+  # decides whether topology sends hierarchy UUIDs, and a model must not switch topology to
+  # UUIDs only because an Application Priority sequence names a site the model does not declare.
+  nh_ds_application_priority = try(data.sdwan_network_hierarchy_nodes.application_priority_unmanaged[0], null)
+
   # The "declared" locals feed the data source's names, so the merged locals
   # below must be separate ones; reading the merged set there would be a cycle.
   nh_site_names_declared = toset([for s in local.nh_sites_flat : s.name])
@@ -112,6 +119,7 @@ locals {
   nh_site_name_to_id = merge(
     { for k, v in sdwan_network_hierarchy_node.network_hierarchy_site : v.name => v.id },
     { for s in try(local.nh_ds.resolved_sites, []) : s.name => s.id },
+    { for s in try(local.nh_ds_application_priority.resolved_sites, []) : s.name => s.id },
   )
 
   # The data source is only ever asked for names the model does not declare, so
@@ -119,6 +127,7 @@ locals {
   nh_container_sites = merge(
     local.nh_container_sites_declared,
     try(local.nh_ds.container_sites, {}),
+    try(local.nh_ds_application_priority.container_sites, {}),
   )
 
   # Unset manager_version means 20.18+: site targeting is sent as hierarchy

@@ -323,19 +323,19 @@ locals {
 
   security_object_group_child_versions = {
     for object_group in try(local.feature_profiles.policy_object_profile.security_object_groups, []) : object_group.name => compact(flatten([
-      [for name in coalesce(try(object_group.data_ipv4_prefix_lists, null), []) :
+      [for name in try(object_group.data_ipv4_prefix_lists, []) :
         try(sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[name].version, null)
       ],
-      [for name in coalesce(try(object_group.data_ipv6_prefix_lists, null), []) :
+      [for name in try(object_group.data_ipv6_prefix_lists, []) :
         try(sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].version, null)
       ],
-      [for name in coalesce(try(object_group.fqdn_lists, null), []) :
+      [for name in try(object_group.fqdn_lists, []) :
         try(sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].version, null)
       ],
-      [for name in coalesce(try(object_group.geo_location_lists, null), []) :
+      [for name in try(object_group.geo_location_lists, []) :
         try(sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[name].version, null)
       ],
-      [for name in coalesce(try(object_group.port_lists, null), []) :
+      [for name in try(object_group.port_lists, []) :
         try(sdwan_policy_object_security_port_list.policy_object_security_port_list[name].version, null)
       ],
     ]))
@@ -356,7 +356,7 @@ locals {
           ]))) :
           try(sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[name].version, null)
         ],
-        [for name in coalesce(try(rule.destination_fqdn_lists, null), []) :
+        [for name in try(rule.destination_fqdn_lists, []) :
           try(sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[name].version, null)
         ],
         [for name in distinct(compact(flatten([
@@ -371,7 +371,7 @@ locals {
           ]))) :
           try(sdwan_policy_object_security_port_list.policy_object_security_port_list[name].version, null)
         ],
-        [for name in coalesce(try(rule.protocol_name_lists, null), []) :
+        [for name in try(rule.protocol_name_lists, []) :
           try(sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[name].version, null)
         ],
         [for name in distinct(compact([

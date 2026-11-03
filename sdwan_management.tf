@@ -9,6 +9,6 @@ resource "sdwan_wan_edge_certificate_validate" "wan_edge_certificate_validate" {
 }
 
 resource "sdwan_send_wan_edge_list_to_controllers" "send_wan_edge_list_to_controllers" {
-  for_each = local.sdwan.send_to_controllers && length(sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate) > 0 ? toset(["send_to_controllers"]) : toset([])
+  for_each = try(local.sdwan.send_to_controllers, false) && length(sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate) > 0 ? toset(["send_to_controllers"]) : toset([])
   version  = sum([for certificate in sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate : certificate.version])
 }

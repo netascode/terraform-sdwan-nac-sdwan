@@ -64,6 +64,9 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         try(seq.match_entries.destination_geo_locations_variable, null) != null ? [{
           destination_geo_locations_variable = "{{${seq.match_entries.destination_geo_locations_variable}}}"
         }] : [],
+        try(seq.match_entries.destination_object_group, null) != null ? [{
+          destination_object_group_list_ids = [sdwan_policy_object_security_object_group.policy_object_security_object_group[seq.match_entries.destination_object_group].id]
+        }] : [],
         try(seq.match_entries.destination_port_lists, null) != null ? [{
           destination_port_list_ids = [for n in seq.match_entries.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[n].id]
         }] : [],
@@ -84,6 +87,9 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         }] : [],
         try(seq.match_entries.protocols, null) != null ? [{
           protocols = [for p in seq.match_entries.protocols : tostring(p)]
+        }] : [],
+        try(seq.match_entries.rule_set_lists, null) != null ? [{
+          rule_set_list_ids = [for n in seq.match_entries.rule_set_lists : sdwan_policy_object_security_rule_set.policy_object_security_rule_set[n].id]
         }] : [],
         try(seq.match_entries.source_data_ipv4_prefix_lists, null) != null ? [{
           source_data_prefix_list_ids = [for n in seq.match_entries.source_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[n].id]
@@ -121,6 +127,9 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         try(seq.match_entries.source_identity_users, null) != null ? [{
           source_identity_users = seq.match_entries.source_identity_users
         }] : [],
+        try(seq.match_entries.source_object_group, null) != null ? [{
+          source_object_group_list_ids = [sdwan_policy_object_security_object_group.policy_object_security_object_group[seq.match_entries.source_object_group].id]
+        }] : [],
         try(seq.match_entries.source_port_lists, null) != null ? [{
           source_port_list_ids = [for n in seq.match_entries.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[n].id]
         }] : [],
@@ -133,7 +142,6 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
         try(seq.match_entries.source_scalable_group_tag_lists, null) != null ? [{
           source_scalable_group_tag_list_ids = seq.match_entries.source_scalable_group_tag_lists
         }] : [],
-        # TODO 20.18: rule_set_list_ids and source/destination_object_group_list_ids — require sdwan_policy_object_security_rule_set / sdwan_policy_object_security_object_group support in policy_object_profile
       ])
       # Scenario 1 — pass/drop + log: true    → [{type=log, parameter="true"}]
       # Scenario 2 — inspect + no log + AIP   → [{type=advancedInspectionProfile, parameter_id=<uuid>}]

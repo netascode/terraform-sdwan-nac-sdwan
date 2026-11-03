@@ -37,6 +37,65 @@ resource "sdwan_application_priority_qos_policy" "application_priority_qos_polic
   }]
 }
 
+locals {
+  # Site, group and region names traffic policy sequences match on. A region or group here
+  # stands for the sites under it, never for the node itself.
+  nh_app_priority_match_refs = distinct(flatten([
+    for profile in try(local.feature_profiles.application_priority_profiles, []) : [
+      for traffic_policy in try(profile.traffic_policies, []) : [
+        for seq in try(traffic_policy.sequences, []) : concat(
+          try(seq.match_entries.sites, []),
+          try(seq.match_entries.site_groups, []),
+        )
+      ]
+    ]
+  ]))
+
+  # Names the model does not declare under network_hierarchy. Sequences always send hierarchy
+  # UUIDs, so unlike topology a literal site the model does not declare is read from the Manager
+  # too. Built from configuration only, so it is known at plan time. A name that does not exist
+  # on the Manager fails the read, naming it.
+  nh_app_priority_unmanaged_refs = setsubtract(
+    toset(local.nh_app_priority_match_refs),
+    setunion(local.nh_site_names_declared, toset(keys(local.nh_container_keys))),
+  )
+
+  # Names Application Priority sequences can resolve: declared sites plus the ones read from the
+  # Manager. Not nh_site_names, which also drives the topology wire format.
+  nh_app_priority_site_names = setunion(
+    local.nh_site_names_declared,
+    toset([for s in try(local.nh_ds_application_priority.resolved_sites, []) : s.name]),
+  )
+
+  # Per traffic policy and sequence: names of the network hierarchy sites a sequence matches on,
+  # `site_groups` expanded to their member sites and unioned with `sites`. Sequences without
+  # either are left out.
+  application_priority_match_site_names = {
+    for tp_item in flatten([
+      for profile in try(local.feature_profiles.application_priority_profiles, []) : [
+        for traffic_policy in try(profile.traffic_policies, []) : {
+          key            = "${profile.name}-${traffic_policy.name}"
+          traffic_policy = traffic_policy
+        }
+      ]
+      ]) : tp_item.key => {
+      for seq in try(tp_item.traffic_policy.sequences, []) : seq.sequence_id => distinct(concat(
+        try(seq.match_entries.sites, []),
+        flatten([for g in try(seq.match_entries.site_groups, []) : try(local.nh_container_sites[g], [])]),
+      ))
+      if try(seq.match_entries.sites, null) != null || try(seq.match_entries.site_groups, null) != null
+    }
+  }
+}
+
+# Sites, groups and regions that sequences match on but the model does not declare under
+# network_hierarchy, read from the Manager in one call and only when a sequence references one.
+# A name that does not exist on the Manager fails the read.
+data "sdwan_network_hierarchy_nodes" "application_priority_unmanaged" {
+  count = length(local.nh_app_priority_unmanaged_refs) > 0 ? 1 : 0
+  names = sort(tolist(local.nh_app_priority_unmanaged_refs))
+}
+
 # Application Priority Traffic Policy
 resource "sdwan_application_priority_traffic_policy_policy" "application_priority_traffic_policy" {
   for_each = {
@@ -154,6 +213,10 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       }] : [],
       try(seq.match_entries.traffic_to, null) != null ? [{
         traffic_to = seq.match_entries.traffic_to
+      }] : [],
+      # Network hierarchy sites (20.18+), sent as hierarchy UUIDs
+      try(local.application_priority_match_site_names["${each.value.profile.name}-${each.value.traffic_policy.name}"][tostring(seq.sequence_id)], null) != null ? [{
+        hierarchy_ids = [for s in local.application_priority_match_site_names["${each.value.profile.name}-${each.value.traffic_policy.name}"][tostring(seq.sequence_id)] : local.nh_site_name_to_id[s]]
       }] : []
     ])
     actions = try(seq.actions, null) == null ? null : flatten([
@@ -162,6 +225,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
           try(seq.actions.sla_class.sla_class_list, null) != null ? [{ sla_class_list_id = sdwan_policy_object_sla_class_list.policy_object_sla_class_list[seq.actions.sla_class.sla_class_list].id }] : [],
           try(seq.actions.sla_class.preferred_colors, null) != null ? [{ preferred_colors = seq.actions.sla_class.preferred_colors }] : [],
           try(seq.actions.sla_class.preferred_color_group, null) != null ? [{ preferred_color_group_list_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.sla_class.preferred_color_group].id }] : [],
+          try(seq.actions.sla_class.preferred_color_group_restrict, null) != null ? [{ preferred_color_group_restrict = seq.actions.sla_class.preferred_color_group_restrict }] : [],
           try(seq.actions.sla_class.strict, null) != null ? [{ strict = seq.actions.sla_class.strict }] : [],
           try(seq.actions.sla_class.fallback_to_best_path, null) != null ? [{ fallback_to_best_path = seq.actions.sla_class.fallback_to_best_path }] : [],
           try(seq.actions.sla_class.preferred_remote_colors, null) != null ? [{ preferred_remote_colors = seq.actions.sla_class.preferred_remote_colors }] : [],
@@ -231,6 +295,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
         try(seq.actions.next_hop_loose, null) != null,
         try(seq.actions.policer_list, null) != null,
         try(seq.actions.preferred_color_group, null) != null,
+        try(seq.actions.preferred_color_group_restrict, null) != null,
         try(seq.actions.preferred_remote_colors, null) != null,
         try(seq.actions.preferred_remote_color_restrict, null) != null,
         try(seq.actions.service, null) != null,
@@ -265,6 +330,10 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
           }] : [],
           try(seq.actions.preferred_color_group, null) != null ? [{
             preferred_color_group_id = sdwan_policy_object_preferred_color_group.policy_object_preferred_color_group[seq.actions.preferred_color_group].id
+          }] : [],
+          # No data_path → separate object, MUST be separate from preferred_color_group_id
+          try(seq.actions.preferred_color_group_restrict, null) != null ? [{
+            preferred_color_group_restrict = seq.actions.preferred_color_group_restrict
           }] : [],
           try(seq.actions.preferred_remote_colors, null) != null || try(seq.actions.preferred_remote_color_restrict, null) != null ? [{
             preferred_remote_colors         = try(seq.actions.preferred_remote_colors, null)
@@ -303,4 +372,24 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       }] : []
     ])
   }]
+
+  lifecycle {
+    precondition {
+      condition = alltrue(flatten([
+        for seq_id, names in local.application_priority_match_site_names["${each.value.profile.name}-${each.value.traffic_policy.name}"] : concat(
+          [length(names) > 0],
+          [for n in names : contains(local.nh_app_priority_site_names, n)],
+        )
+      ]))
+      error_message = format(
+        "Traffic policy '%s' in application priority profile '%s' has sequence(s) whose sites/site_groups resolve to no site: %v. A group or region without sites would drop the match from the sequence; check the names against the network hierarchy on the Manager.",
+        each.value.traffic_policy.name,
+        each.value.profile.name,
+        [
+          for seq_id, names in local.application_priority_match_site_names["${each.value.profile.name}-${each.value.traffic_policy.name}"] : seq_id
+          if length(names) == 0 || !alltrue([for n in names : contains(local.nh_app_priority_site_names, n)])
+        ],
+      )
+    }
+  }
 }

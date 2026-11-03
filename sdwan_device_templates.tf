@@ -272,6 +272,7 @@ locals {
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
         chassis_id                 = router.chassis_id
+        certificate_validate_state = try(router.certificate_validate_state, null)
         configuration_group        = try(router.configuration_group, null)
         configuration_group_deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
         policy_group               = try(router.policy_group, null)

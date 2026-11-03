@@ -1,6 +1,6 @@
 resource "sdwan_wan_edge_certificate_validate" "wan_edge_certificate_validate" {
   for_each = {
-    for router in flatten([for site in local.sites : site.routers]) :
+    for router in local.routers :
     router.chassis_id => router
     if try(router.certificate_validate_state, null) != null
   }

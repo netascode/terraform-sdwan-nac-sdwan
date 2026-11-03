@@ -1,4 +1,4 @@
-## 1.5.1 (unreleased)
+## 1.5.1
 
 - add support for service AppQoE feature (`sdwan_service_appqoe_feature`)
 - add support for `scopes` (`sdwan_scope`)

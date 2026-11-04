@@ -5,7 +5,6 @@ locals {
   localized_policies     = try(local.model.sdwan.localized_policies, {})
   security_policies      = try(local.model.sdwan.security_policies, {})
   policy_objects         = try(local.model.sdwan.policy_objects, {})
-  sdwan                  = try(local.model.sdwan, {})
   sites                  = try(local.model.sdwan.sites, {})
   centralized_policies   = try(local.model.sdwan.centralized_policies, {})
   configuration_groups   = try(local.model.sdwan.configuration_groups, {})

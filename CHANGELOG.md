@@ -1,5 +1,6 @@
 ## 1.5.1
 
+- add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 - add support for service AppQoE feature (`sdwan_service_appqoe_feature`)
 - add support for `scopes` (`sdwan_scope`)
 - add support for referencing sites, groups and regions that exist on SD-WAN Manager but are not declared under `sdwan.network_hierarchy` in `scopes` (`network_hierarchy_nodes`, which may also reference the built-in `Global` root), topology policies (a region stands for the sites under it) and Application Priority traffic policy match entries: they are read with the `sdwan_network_hierarchy_nodes` data source in a single call, made only when a model references one, and a name that does not exist on the Manager fails the plan; models that declare every referenced node never call the data source. In topology policies the member sites are sent as hierarchy UUIDs, which needs Manager 20.18 or higher; an unset `sdwan.manager_version` is read as 20.18, so set it to `20.15` for a 20.15 Manager

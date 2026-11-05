@@ -1,3 +1,10 @@
+## 1.6.0 (unreleased)
+
+- **BREAKING CHANGE**: device association, variables and deploy move from `sdwan_configuration_group` / `sdwan_policy_group` to `sdwan_configuration_group_devices` / `sdwan_policy_group_devices` (one per group with routers), which needs the provider release that adds them; an existing state upgrades in place: the new resources adopt the devices already on their groups and deploy only devices that are out of date or whose variables changed
+- config groups track the versions of the policy objects their system, transport and service profiles reference, instead of every policy object, so a change to an object redeploys only the groups that use it
+- add the transport OSPF feature and its WAN VPN association to the transport profile versions, so a change to them deploys in the same apply
+- add `handover_sites` input: the routers of the listed sites leave the configuration and policy group device resources without being released from their groups (`retain_devices`), to hand them over to another state with no disassociation and no redeploy
+
 ## 1.5.1
 
 - add support for service AppQoE feature (`sdwan_service_appqoe_feature`)

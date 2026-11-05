@@ -271,6 +271,8 @@ locals {
   routers = flatten([
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
+        site_id                    = site.id
+        handover                   = contains(var.handover_sites, site.id)
         chassis_id                 = router.chassis_id
         configuration_group        = try(router.configuration_group, null)
         configuration_group_deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)

@@ -94,7 +94,12 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
         value      = try(tostring(value), null)
         list_value = try(tolist(value), null)
       }]
-    } if router.configuration_group == each.key
+    } if router.configuration_group == each.key && !router.handover
+  ]
+  # Routers of handover_sites leave this state without a release. The instance stays (with no devices)
+  # while they were its last routers, so the hand-over is an Update, not a Delete that releases them.
+  retain_devices = length([for router in local.routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
+    for router in local.routers : router.chassis_id if router.configuration_group == each.key && router.handover
   ]
   depends_on = [sdwan_tag.tag]
 }

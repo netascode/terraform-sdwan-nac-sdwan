@@ -47,6 +47,7 @@ module "sdwan" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_handover_sites"></a> [handover\_sites](#input\_handover\_sites) | IDs of the sites whose routers this state hands over to another state. Their routers leave the configuration and policy group device resources without being released from their groups (`retain_devices`), so they stay associated and deployed. Set it for the apply that hands them over; in the next change, remove the sites from this state's data and clear the list. | `list(number)` | `[]` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
@@ -118,6 +119,7 @@ module "sdwan" {
 | [sdwan_cloud_provider_settings.cloud_provider_settings](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cloud_provider_settings) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_configuration_group.configuration_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/configuration_group) | resource |
+| [sdwan_configuration_group_devices.configuration_group_devices](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/configuration_group_devices) | resource |
 | [sdwan_custom_application.custom_application](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_application) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
 | [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource |
@@ -156,6 +158,7 @@ module "sdwan" {
 | [sdwan_other_ucse_feature.other_ucse_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_ucse_feature) | resource |
 | [sdwan_policer_policy_object.policer_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policer_policy_object) | resource |
 | [sdwan_policy_group.policy_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group) | resource |
+| [sdwan_policy_group_devices.policy_group_devices](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group_devices) | resource |
 | [sdwan_policy_object_app_probe_class.policy_object_app_probe_class](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_app_probe_class) | resource |
 | [sdwan_policy_object_application_list.policy_object_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_application_list) | resource |
 | [sdwan_policy_object_as_path_list.policy_object_as_path_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_as_path_list) | resource |

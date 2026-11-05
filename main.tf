@@ -28,3 +28,10 @@ locals {
     "C8200L-1N-4T" : "vedge-C8200L-1N-4T"
   }
 }
+
+check "handover_sites" {
+  assert {
+    condition     = alltrue([for id in var.handover_sites : contains([for site in try(local.sites, []) : site.id], id)])
+    error_message = "handover_sites lists sites that are not in the data: ${join(", ", [for id in var.handover_sites : tostring(id) if !contains([for site in try(local.sites, []) : site.id], id)])}. Their routers are not handed over."
+  }
+}

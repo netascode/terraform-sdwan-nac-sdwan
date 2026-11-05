@@ -47,7 +47,11 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
         }], []),
         try(router.cor_saas_entries, []),
       )
-    } if router.policy_group == each.key
+    } if router.policy_group == each.key && !router.handover
+  ]
+  # As for config groups: routers of handover_sites leave this state without a release.
+  retain_devices = length([for router in local.routers : router if router.policy_group == each.key && router.handover]) == 0 ? null : [
+    for router in local.routers : router.chassis_id if router.policy_group == each.key && router.handover
   ]
   # A policy group deploy needs the device's config group deployed first.
   depends_on = [sdwan_configuration_group_devices.configuration_group_devices]

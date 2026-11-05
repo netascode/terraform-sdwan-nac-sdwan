@@ -18,7 +18,21 @@ resource "sdwan_policy_group" "policy_group" {
     try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
     try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
   )
-  devices = length([for router in local.routers : router if router.policy_group == each.value.name]) == 0 ? null : [
+  depends_on = [
+    sdwan_tag.tag,
+    sdwan_configuration_group.configuration_group,
+  ]
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "sdwan_policy_group_devices" "policy_group_devices" {
+  for_each             = { for p in local.policy_groups : p.name => p if length([for router in local.routers : router if router.policy_group == p.name]) > 0 }
+  policy_group_id      = sdwan_policy_group.policy_group[each.key].id
+  policy_group_version = sdwan_policy_group.policy_group[each.key].version
+  solution             = "sdwan"
+  devices = [
     for router in local.routers : {
       id     = router.chassis_id
       deploy = try(router.policy_group_deploy, local.defaults.sdwan.sites.routers.policy_group_deploy)
@@ -33,15 +47,10 @@ resource "sdwan_policy_group" "policy_group" {
         }], []),
         try(router.cor_saas_entries, []),
       )
-    } if router.policy_group == each.value.name
+    } if router.policy_group == each.key
   ]
-  depends_on = [
-    sdwan_tag.tag,
-    sdwan_configuration_group.configuration_group,
-  ]
-  lifecycle {
-    create_before_destroy = true
-  }
+  # A policy group deploy needs the device's config group deployed first.
+  depends_on = [sdwan_configuration_group_devices.configuration_group_devices]
 }
 
 locals {

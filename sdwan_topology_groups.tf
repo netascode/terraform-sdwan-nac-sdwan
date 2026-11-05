@@ -99,6 +99,7 @@ resource "sdwan_activate_topology_group" "activate_topology_group" {
   depends_on = [
     sdwan_attach_feature_device_template.attach_feature_device_template,
     sdwan_policy_group.policy_group,
+    sdwan_policy_group_devices.policy_group_devices,
   ]
   lifecycle {
     precondition {

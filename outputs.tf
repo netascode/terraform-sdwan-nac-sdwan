@@ -64,3 +64,21 @@ output "ownership" {
     error_message = "Scopes are global, so a group or profile a scope lists must be managed by the global state; remove the claim or the scope entry: ${join("; ", local.ownership_scope_refs)}."
   }
 }
+
+output "nac_test_scope" {
+  description = "What this state manages, for running nac-test per state: whether it manages the global blocks (settings, hierarchy, topology, tags, scopes, classic), and the names of the configuration groups, policy groups, feature profiles and policy objects it manages, plus the sites and routers its device resources deploy. Written to a data file under the key `nac_test_scope`, it lets the test templates render only this state's objects."
+  value = {
+    manage_global         = local.manage_global
+    policy_object_profile = local.manage_global && local.policy_object_profile_in_data
+    configuration_groups  = sort([for g in local.configuration_groups : g.name])
+    policy_groups         = sort([for g in local.policy_groups : g.name])
+    feature_profiles      = { for type, profiles in local.feature_profiles : type => sort([for p in profiles : p.name]) if type != "policy_object_profile" && length(profiles) > 0 }
+    policy_objects = {
+      for type, objects in try(local.feature_profiles.policy_object_profile, {}) : type => sort([for o in objects : o.name])
+      if !contains(local.policy_object_profile_fields, type) && length(objects) > 0
+    }
+    scopes  = sort([for s in local.scopes : s.name])
+    sites   = sort(distinct([for router in local.device_routers : tostring(router.site_id) if !router.handover]))
+    routers = sort([for router in local.device_routers : router.chassis_id if !router.handover])
+  }
+}

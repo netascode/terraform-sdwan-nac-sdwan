@@ -62,6 +62,7 @@ module "sdwan" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
+| <a name="output_nac_test_scope"></a> [nac\_test\_scope](#output\_nac\_test\_scope) | What this state manages, for running nac-test per state: whether it manages the global blocks (settings, hierarchy, topology, tags, scopes, classic), and the names of the configuration groups, policy groups, feature profiles and policy objects it manages, plus the sites and routers its device resources deploy. Written to a data file under the key `nac_test_scope`, it lets the test templates render only this state's objects. |
 | <a name="output_ownership"></a> [ownership](#output\_ownership) | What this state manages: manage\_global, its local\_set, the site IDs whose routers its device resources hold, and the groups, feature profiles and policy objects its entry claims. |
 | <a name="output_topology_site_resolution"></a> [topology\_site\_resolution](#output\_topology\_site\_resolution) | Named failure for an unresolvable site name, instead of a bare "Invalid index" from local.nh\_site\_name\_to\_id further down.  An output precondition rather than a resource: it fails the plan the same way, and also propagates when this module is used as a child module. |
 

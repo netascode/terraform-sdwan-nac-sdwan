@@ -5,6 +5,7 @@
 - add the transport OSPF feature and its WAN VPN association to the transport profile versions, so a change to them deploys in the same apply
 - add `manage_global`, `local_set` and `ownership` inputs to split a deployment into one global state and site/region states that load the same data: `ownership.local_definitions` names, per site/region state, its sites (IDs and `from-to` ranges) and the configuration groups, policy groups, feature profiles and policy objects it manages (a list, `exclusive` or `none`); a claimed group brings its routers, and a router can belong to one entry only; the global state manages everything not claimed, including scopes and classic; a state reads what it references from the global state by name (feature profiles, configuration and policy groups, the policy object profile, policy objects in one call); claims that would make a global item, a scope or another entry use a claimed one fail the plan
 - add `ownership` output: what a state manages (sites, and the groups, profiles and objects its entry claims)
+- add `nac_test_scope` output: the names of the groups, feature profiles, policy objects and scopes a state manages, whether it manages the global blocks, and the sites and routers it deploys, to run nac-test per state
 - add `handover_sites` input: the routers of the listed sites leave the configuration and policy group device resources without being released from their groups (`retain_devices`), to hand them over to another state with no disassociation and no redeploy
 
 ## 1.5.1

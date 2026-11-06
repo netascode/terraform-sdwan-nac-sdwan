@@ -5,27 +5,27 @@ resource "sdwan_configuration_group" "configuration_group" {
   description = try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
-    try(each.value.cli_profile, null) == null ? [] : [sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id],
-    try(each.value.other_profile, null) == null ? [] : [sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id],
-    try(each.value.policy_object_profile, null) == null ? [] : [sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id],
-    try(each.value.service_profile, null) == null ? [] : [sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id],
-    try(each.value.system_profile, null) == null ? [] : [sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id],
-    try(each.value.transport_profile, null) == null ? [] : [sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id],
+    try(each.value.cli_profile, null) == null ? [] : [local.profile_ids.cli_profiles[each.value.cli_profile]],
+    try(each.value.other_profile, null) == null ? [] : [local.profile_ids.other_profiles[each.value.other_profile]],
+    try(each.value.policy_object_profile, null) == null ? [] : [local.policy_object_profile_id],
+    try(each.value.service_profile, null) == null ? [] : [local.profile_ids.service_profiles[each.value.service_profile]],
+    try(each.value.system_profile, null) == null ? [] : [local.profile_ids.system_profiles[each.value.system_profile]],
+    try(each.value.transport_profile, null) == null ? [] : [local.profile_ids.transport_profiles[each.value.transport_profile]],
   ])
   feature_versions = length(flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    try(each.value.cli_profile, null) == null ? [] : lookup(local.cli_profile_features_versions, each.value.cli_profile, []),
+    try(each.value.other_profile, null) == null ? [] : lookup(local.other_profile_features_versions, each.value.other_profile, []),
     local.configuration_group_policy_object_versions[each.key],
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.service_profile, null) == null ? [] : lookup(local.service_profile_features_versions, each.value.service_profile, []),
+    try(each.value.system_profile, null) == null ? [] : lookup(local.system_profile_features_versions, each.value.system_profile, []),
+    try(each.value.transport_profile, null) == null ? [] : lookup(local.transport_profile_features_versions, each.value.transport_profile, [])
     ])) == 0 ? null : flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    try(each.value.cli_profile, null) == null ? [] : lookup(local.cli_profile_features_versions, each.value.cli_profile, []),
+    try(each.value.other_profile, null) == null ? [] : lookup(local.other_profile_features_versions, each.value.other_profile, []),
     local.configuration_group_policy_object_versions[each.key],
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.service_profile, null) == null ? [] : lookup(local.service_profile_features_versions, each.value.service_profile, []),
+    try(each.value.system_profile, null) == null ? [] : lookup(local.system_profile_features_versions, each.value.system_profile, []),
+    try(each.value.transport_profile, null) == null ? [] : lookup(local.transport_profile_features_versions, each.value.transport_profile, [])
   ])
   topology_devices = try(each.value.device_tags, null) == null ? null : [for index, device_tag in try(each.value.device_tags, []) : {
     criteria_attribute = "tag"
@@ -76,16 +76,28 @@ resource "sdwan_configuration_group" "configuration_group" {
   ]
   lifecycle {
     create_before_destroy = true
+    # Features per device tag (unsupported_features) need the feature IDs of the group's transport and
+    # service profiles, which only a state managing those profiles has.
+    precondition {
+      condition = length(flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])])) == 0 || alltrue([
+        for type, key in { transport_profiles = "transport_profile", service_profiles = "service_profile" } :
+        try(each.value[key], null) == null || contains([for p in try(local.feature_profiles[type], []) : p.name], try(each.value[key], ""))
+      ])
+      error_message = "Configuration group ${each.key} lists features per device tag; manage it in the same state as its transport and service profiles (groups and feature_profiles in manage)."
+    }
   }
 }
 
 resource "sdwan_configuration_group_devices" "configuration_group_devices" {
-  for_each                    = { for g in local.configuration_groups : g.name => g if length([for router in local.routers : router if router.configuration_group == g.name]) > 0 }
-  configuration_group_id      = sdwan_configuration_group.configuration_group[each.key].id
-  configuration_group_version = sdwan_configuration_group.configuration_group[each.key].version
+  # One per group the routers of this state use, whichever state manages the group. The version is
+  # only known when this state manages the group; otherwise a group change reaches the devices through
+  # the Manager's out-of-date flag (deploy_on_out_of_date).
+  for_each                    = toset([for router in local.device_routers : router.configuration_group if router.configuration_group != null])
+  configuration_group_id      = local.configuration_group_ids[each.key]
+  configuration_group_version = try(sdwan_configuration_group.configuration_group[each.key].version, null)
   solution                    = "sdwan"
   devices = [
-    for router in local.routers : {
+    for router in local.device_routers : {
       id             = router.chassis_id
       topology_label = try(router.topology_label, null)
       deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
@@ -98,8 +110,8 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
   ]
   # Routers of handover_sites leave this state without a release. The instance stays (with no devices)
   # while they were its last routers, so the hand-over is an Update, not a Delete that releases them.
-  retain_devices = length([for router in local.routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
-    for router in local.routers : router.chassis_id if router.configuration_group == each.key && router.handover
+  retain_devices = length([for router in local.device_routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
+    for router in local.device_routers : router.chassis_id if router.configuration_group == each.key && router.handover
   ]
   depends_on = [sdwan_tag.tag]
 }

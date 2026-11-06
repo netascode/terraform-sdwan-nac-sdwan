@@ -53,7 +53,9 @@ resource "sdwan_transport_feature_profile" "transport_feature_profile" {
 }
 
 resource "sdwan_policy_object_feature_profile" "policy_object_feature_profile" {
-  count       = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
+  # The tenant's single profile, managed by the global state; claimed objects are created in it by
+  # other states, which read its ID (sdwan_lookups.tf).
+  count       = local.manage_global && contains(keys(local.model_feature_profiles), "policy_object_profile") ? 1 : 0
   name        = try(local.feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
   description = try(local.feature_profiles.policy_object_profile.description, "")
 }

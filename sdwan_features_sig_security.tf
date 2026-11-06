@@ -6,7 +6,7 @@ locals {
   }
 }
 
-resource "sdwan_sig_security_sig_feature" "sig_security_sig_feature" {
+resource "sdwan_sig_feature" "sig_feature" {
   for_each = {
     for sig_item in flatten([
       for profile in try(local.feature_profiles.sig_security_profiles, []) :
@@ -95,12 +95,12 @@ resource "sdwan_sig_security_sig_feature" "sig_security_sig_feature" {
   location_name                           = null # not supported in the UI
   location_name_variable                  = try("{{${each.value.sig.location_name_variable}}}", null)
   ofw_enabled                             = try(each.value.sig.firewall_enabled, null)
-  primary_data_center                     = try(each.value.sig.primary_data_center, null)
-  primary_data_center_variable            = try("{{${each.value.sig.primary_data_center_variable}}}", null)
+  zscaler_primary_data_center             = try(each.value.sig.primary_data_center, null)
+  zscaler_primary_data_center_variable    = try("{{${each.value.sig.primary_data_center_variable}}}", null)
   refresh_time                            = try(each.value.sig.refresh_time, null)
   refresh_time_unit                       = try(each.value.sig.refresh_time_unit, null)
-  secondary_data_center                   = try(each.value.sig.secondary_data_center, null)
-  secondary_data_center_variable          = try("{{${each.value.sig.secondary_data_center_variable}}}", null)
+  zscaler_secondary_data_center           = try(each.value.sig.secondary_data_center, null)
+  zscaler_secondary_data_center_variable  = try("{{${each.value.sig.secondary_data_center_variable}}}", null)
   src_vpn                                 = try(each.value.sig.src_vpn, null)
   surrogate_ip                            = try(each.value.sig.surrogate_ip, null)
   tracker_source_ip                       = try(each.value.sig.tracker_source_ip, null)

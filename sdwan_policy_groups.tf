@@ -44,6 +44,10 @@ resource "sdwan_policy_group" "policy_group" {
   ]
   lifecycle {
     create_before_destroy = true
+    precondition {
+      condition     = try(each.value.sse, null) == null || try(each.value.sig_security, null) == null
+      error_message = "Policy group '${each.value.name}': sse and sig_security cannot be used together in one policy group (not supported by SD-WAN Manager)."
+    }
   }
 }
 
@@ -409,7 +413,7 @@ locals {
 
   sig_security_profile_policy_versions = {
     for profile in try(local.feature_profiles.sig_security_profiles, []) : profile.name => (
-      try(profile.sig, null) == null ? [] : [sdwan_sig_security_sig_feature.sig_security_sig_feature["${profile.name}-sig"].version]
+      try(profile.sig, null) == null ? [] : [sdwan_sig_feature.sig_feature["${profile.name}-sig"].version]
     )
   }
 }

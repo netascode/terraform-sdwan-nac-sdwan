@@ -17,18 +17,13 @@ resource "sdwan_sig_feature" "sig_feature" {
     ])
     : "${sig_item.profile.name}-sig" => sig_item
   }
-  name                          = each.value.sig.name
-  description                   = try(each.value.sig.description, null)
-  feature_profile_id            = sdwan_sig_security_feature_profile.sig_security_feature_profile[each.value.profile.name].id
-  sig_provider                  = local.sig_security_providers[each.value.sig.provider]
-  aup_enabled                   = try(each.value.sig.aup_enabled, null)
-  aup_timeout                   = try(each.value.sig.aup_timeout, null)
-  auth_required                 = try(each.value.sig.auth_required, null)
-  block_internet_until_accepted = try(each.value.sig.block_internet_until_accepted, null)
-  caution_enabled               = try(each.value.sig.caution_enabled, null)
-  display_time_unit             = try(each.value.sig.display_time_unit, null)
-  force_ssl_inspection          = try(each.value.sig.force_ssl_inspection, null)
-  idle_time                     = try(each.value.sig.idle_time, null)
+  name               = each.value.sig.name
+  description        = try(each.value.sig.description, null)
+  feature_profile_id = sdwan_sig_security_feature_profile.sig_security_feature_profile[each.value.profile.name].id
+  sig_provider       = local.sig_security_providers[each.value.sig.provider]
+  aup_enabled        = try(each.value.sig.aup_enabled, null)
+  auth_required      = try(each.value.sig.auth_required, null)
+  caution_enabled    = try(each.value.sig.caution_enabled, null)
   interface_pairs = try(length(each.value.sig.interface_pairs) == 0, true) ? null : [for item in each.value.sig.interface_pairs : {
     active_interface        = try(item.active_interface, null)
     active_interface_weight = try(item.active_interface_weight, null)
@@ -36,7 +31,6 @@ resource "sdwan_sig_feature" "sig_feature" {
     backup_interface_weight = try(item.backup_interface_weight, null)
   }]
   interfaces = [for item in each.value.sig.interfaces : {
-    auto                             = try(item.auto, null)
     dpd_interval                     = try(item.dpd_interval, null)
     dpd_interval_variable            = try("{{${item.dpd_interval_variable}}}", null)
     dpd_retries                      = try(item.dpd_retries, null)
@@ -51,8 +45,6 @@ resource "sdwan_sig_feature" "sig_feature" {
     ike_rekey_interval_variable      = try("{{${item.ike_rekey_interval_variable}}}", null)
     ike_remote_id                    = try(item.ike_remote_id, null)
     ike_remote_id_variable           = try("{{${item.ike_remote_id_variable}}}", null)
-    ike_version                      = try(item.ike_version, null)
-    ike_version_variable             = try("{{${item.ike_version_variable}}}", null)
     interface_description            = try(item.interface_description, null)
     interface_description_variable   = try("{{${item.interface_description_variable}}}", null)
     interface_name                   = item.interface_name
@@ -62,8 +54,6 @@ resource "sdwan_sig_feature" "sig_feature" {
     ipsec_rekey_interval_variable    = try("{{${item.ipsec_rekey_interval_variable}}}", null)
     ipsec_replay_window              = try(item.ipsec_replay_window, null)
     ipsec_replay_window_variable     = try("{{${item.ipsec_replay_window_variable}}}", null)
-    ipv4_address                     = try(item.ipv4_address, null)
-    ipv4_address_variable            = try("{{${item.ipv4_address_variable}}}", null)
     mtu                              = try(item.mtu, null)
     mtu_variable                     = try("{{${item.mtu_variable}}}", null)
     perfect_forward_secrecy          = try(item.perfect_forward_secrecy, null)
@@ -84,25 +74,18 @@ resource "sdwan_sig_feature" "sig_feature" {
     tunnel_route_via                 = try(item.tunnel_route_via, null)
     tunnel_route_via_variable        = try("{{${item.tunnel_route_via_variable}}}", null)
     tunnel_set                       = try(item.tunnel_set, null)
-    tunnel_source                    = try(item.tunnel_source, null)
-    tunnel_source_variable           = try("{{${item.tunnel_source_variable}}}", null)
     tunnel_source_interface          = try(item.tunnel_source_interface, null)
     tunnel_source_interface_variable = try("{{${item.tunnel_source_interface_variable}}}", null)
-    unnumbered                       = try(item.unnumbered, null)
   }]
-  ip_enforced_for_known_browsers          = try(each.value.sig.ip_enforced_for_known_browsers, null)
   ips_control                             = try(each.value.sig.ips_control, null)
   location_name                           = null # not supported in the UI
   location_name_variable                  = try("{{${each.value.sig.location_name_variable}}}", null)
   ofw_enabled                             = try(each.value.sig.firewall_enabled, null)
   zscaler_primary_data_center             = try(each.value.sig.primary_data_center, null)
   zscaler_primary_data_center_variable    = try("{{${each.value.sig.primary_data_center_variable}}}", null)
-  refresh_time                            = try(each.value.sig.refresh_time, null)
-  refresh_time_unit                       = try(each.value.sig.refresh_time_unit, null)
   zscaler_secondary_data_center           = try(each.value.sig.secondary_data_center, null)
   zscaler_secondary_data_center_variable  = try("{{${each.value.sig.secondary_data_center_variable}}}", null)
   src_vpn                                 = try(each.value.sig.src_vpn, null)
-  surrogate_ip                            = try(each.value.sig.surrogate_ip, null)
   tracker_source_ip                       = try(each.value.sig.tracker_source_ip, null)
   tracker_source_ip_variable              = try("{{${each.value.sig.tracker_source_ip_variable}}}", null)
   umbrella_primary_data_center            = try(each.value.sig.umbrella_primary_data_center, null)

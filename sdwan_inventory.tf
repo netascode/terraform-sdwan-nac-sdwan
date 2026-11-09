@@ -11,10 +11,10 @@ resource "sdwan_wan_edge_certificate_validate" "wan_edge_certificate_validate" {
   for_each = {
     for router in local.routers :
     router.chassis_id => router
-    if try(router.certificate_validate_state, null) != null
+    if try(router.certificate_validity, null) != null
   }
   chassis_number = each.value.chassis_id
-  validity       = each.value.certificate_validate_state
+  validity       = each.value.certificate_validity
 }
 
 resource "sdwan_send_wan_edge_list_to_controllers" "send_wan_edge_list_to_controllers" {

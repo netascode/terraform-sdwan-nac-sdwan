@@ -296,6 +296,8 @@ locals {
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
+  depends_on = [sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
+
   for_each = {
     for device_template in try(local.edge_device_templates, {}) :
     device_template.name => device_template

@@ -3,10 +3,8 @@ terraform {
 
   required_providers {
     sdwan = {
-      source = "CiscoDevNet/sdwan"
-      # sig_security_profiles (sdwan_sig_feature) needs the provider release that ships that resource
-      # (0.11.8 or later); raise the floor here when it is published
-      version = "~> 0.11.5"
+      source  = "CiscoDevNet/sdwan"
+      version = "~> 0.11.7"
     }
     utils = {
       source  = "netascode/utils"

@@ -20,7 +20,7 @@ resource "sdwan_sig_feature" "sig_feature" {
   name               = each.value.sig.name
   description        = try(each.value.sig.description, null)
   feature_profile_id = sdwan_sig_security_feature_profile.sig_security_feature_profile[each.value.profile.name].id
-  sig_provider       = local.sig_security_providers[each.value.sig.provider]
+  sig_provider       = lookup(local.sig_security_providers, each.value.sig.provider, each.value.sig.provider)
   aup_enabled        = try(each.value.sig.aup_enabled, null)
   auth_required      = try(each.value.sig.auth_required, null)
   caution_enabled    = try(each.value.sig.caution_enabled, null)
@@ -77,21 +77,13 @@ resource "sdwan_sig_feature" "sig_feature" {
     tunnel_source_interface          = try(item.tunnel_source_interface, null)
     tunnel_source_interface_variable = try("{{${item.tunnel_source_interface_variable}}}", null)
   }]
-  ips_control                             = try(each.value.sig.ips_control, null)
-  location_name                           = null # not supported in the UI
-  location_name_variable                  = try("{{${each.value.sig.location_name_variable}}}", null)
-  ofw_enabled                             = try(each.value.sig.firewall_enabled, null)
-  zscaler_primary_data_center             = try(each.value.sig.primary_data_center, null)
-  zscaler_primary_data_center_variable    = try("{{${each.value.sig.primary_data_center_variable}}}", null)
-  zscaler_secondary_data_center           = try(each.value.sig.secondary_data_center, null)
-  zscaler_secondary_data_center_variable  = try("{{${each.value.sig.secondary_data_center_variable}}}", null)
-  src_vpn                                 = try(each.value.sig.src_vpn, null)
-  tracker_source_ip                       = try(each.value.sig.tracker_source_ip, null)
-  tracker_source_ip_variable              = try("{{${each.value.sig.tracker_source_ip_variable}}}", null)
-  umbrella_primary_data_center            = try(each.value.sig.umbrella_primary_data_center, null)
-  umbrella_primary_data_center_variable   = try("{{${each.value.sig.umbrella_primary_data_center_variable}}}", null)
-  umbrella_secondary_data_center          = try(each.value.sig.umbrella_secondary_data_center, null)
-  umbrella_secondary_data_center_variable = try("{{${each.value.sig.umbrella_secondary_data_center_variable}}}", null)
+  ips_control                = try(each.value.sig.ips_control, null)
+  location_name              = null # not supported in the UI
+  location_name_variable     = try("{{${each.value.sig.location_name_variable}}}", null)
+  ofw_enabled                = try(each.value.sig.firewall_enabled, null)
+  src_vpn                    = try(each.value.sig.src_vpn, null)
+  tracker_source_ip          = try(each.value.sig.tracker_source_ip, null)
+  tracker_source_ip_variable = try("{{${each.value.sig.tracker_source_ip_variable}}}", null)
   trackers = try(length(each.value.sig.trackers) == 0, true) ? null : [for item in each.value.sig.trackers : {
     name                      = try(item.name, null)
     endpoint_api_url          = try(item.endpoint_api_url, null)
@@ -103,5 +95,13 @@ resource "sdwan_sig_feature" "sig_feature" {
     threshold                 = try(item.threshold, null)
     threshold_variable        = try("{{${item.threshold_variable}}}", null)
   }]
-  xff_forward_enabled = try(each.value.sig.xff_forward_enabled, null)
+  umbrella_primary_data_center            = try(each.value.sig.umbrella_primary_data_center, null)
+  umbrella_primary_data_center_variable   = try("{{${each.value.sig.umbrella_primary_data_center_variable}}}", null)
+  umbrella_secondary_data_center          = try(each.value.sig.umbrella_secondary_data_center, null)
+  umbrella_secondary_data_center_variable = try("{{${each.value.sig.umbrella_secondary_data_center_variable}}}", null)
+  xff_forward_enabled                     = try(each.value.sig.xff_forward_enabled, null)
+  zscaler_primary_data_center             = try(each.value.sig.zscaler_primary_data_center, null)
+  zscaler_primary_data_center_variable    = try("{{${each.value.sig.zscaler_primary_data_center_variable}}}", null)
+  zscaler_secondary_data_center           = try(each.value.sig.zscaler_secondary_data_center, null)
+  zscaler_secondary_data_center_variable  = try("{{${each.value.sig.zscaler_secondary_data_center_variable}}}", null)
 }

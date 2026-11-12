@@ -1,3 +1,7 @@
+## 1.6.0 (unreleased)
+
+- add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
+
 ## 1.5.1
 
 - add support for service AppQoE feature (`sdwan_service_appqoe_feature`)

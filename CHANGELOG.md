@@ -1,6 +1,6 @@
 ## 1.5.2 (unreleased)
 
-- add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`) via `feature_profiles.sig_security_profiles`, attached to policy groups with `policy_groups[].sig_security` (Generic, Zscaler and Umbrella providers, GRE/IPsec tunnels, interface pairs, trackers); a policy group cannot reference both `sse` and `sig_security` (plan-time precondition); needs a provider release with `sdwan_sig_feature`
+- add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`)
 
 ## 1.5.1
 

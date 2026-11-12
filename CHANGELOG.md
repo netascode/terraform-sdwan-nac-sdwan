@@ -1,4 +1,4 @@
-## 1.5.2 (unreleased)
+## 1.6.0 (unreleased)
 
 - add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`)
 

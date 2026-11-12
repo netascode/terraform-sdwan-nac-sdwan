@@ -1,5 +1,8 @@
 ## 1.6.0 (unreleased)
 
+- **BREAKING CHANGE**: network hierarchy sites are keyed by `site_id` and nested groups and regions by their `key` (defaults to `name`), so existing network hierarchy resources must be moved in the Terraform state (`moved` blocks) before the first apply; `site_id` is now required on network hierarchy sites
+- add optional `key` to network hierarchy groups and regions, to rename them in place
+- fix renaming network hierarchy sites, groups and regions, or moving them under another parent at the same level, failing on apply
 - add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 
 ## 1.5.1

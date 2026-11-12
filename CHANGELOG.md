@@ -1,6 +1,7 @@
 ## 1.6.0 (unreleased)
 
 - add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`)
+- add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 
 ## 1.5.1
 

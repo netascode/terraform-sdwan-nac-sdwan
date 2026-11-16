@@ -575,6 +575,10 @@ defaults:
           cellular_interfaces:
             tunnel_interface:
               ipsec_encapsulation: true
+          dsl_ipoe_interfaces:
+            ipv4_address_type: dynamic
+            tunnel_interface:
+              ipsec_encapsulation: true
           ethernet_interfaces:
             tunnel_interface:
               ipsec_encapsulation: true

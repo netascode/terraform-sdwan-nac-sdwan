@@ -114,6 +114,14 @@ locals {
   owns_local_definitions = local.local_set_key != "" && contains(concat(
     values(local.configuration_group_owner), values(local.policy_group_owner), values(local.profile_owner), values(local.policy_object_owner),
   ), local.local_set_key)
+  # Whether this state manages claimed feature profiles: only they reference policy objects.
+  owns_local_profiles = local.local_set_key != "" && contains(values(local.profile_owner), local.local_set_key)
+  # Policy objects this state's profiles use but another state manages: the only parcels it looks up
+  # (same name match as the claims; a false match only adds a lookup).
+  policy_object_lookup_names = local.manage_global || !local.owns_local_profiles ? [] : distinct([
+    for o in local.policy_objects_all : o.name
+    if lookup(local.policy_object_owner, o.id, "") != local.local_set_key && contains(local.policy_object_user_owners[o.id], local.local_set_key)
+  ])
 
   # Which entry each router belongs to: the entries that select its site, and the entries that claim
   # its configuration or policy group (a claimed group takes its routers along). One entry, or ""

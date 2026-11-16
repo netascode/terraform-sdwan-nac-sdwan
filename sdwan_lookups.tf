@@ -128,9 +128,10 @@ data "sdwan_policy_object_feature_profile" "lookup" {
 locals {
   policy_object_profile_id = try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, data.sdwan_policy_object_feature_profile.lookup[0].id, null)
 
-  # Policy objects: a state that has features but not the objects reads every parcel of the policy
-  # object profile in one call, and matches them by type and name.
-  policy_object_lookup = local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions
+  # Policy objects: a state whose own profiles use objects it doesn't manage reads the parcels of the
+  # policy object profile in one call, and matches them by type and name. A state whose profiles use
+  # only its own objects, or no objects, reads none.
+  policy_object_lookup = local.policy_object_profile_in_data && length(local.policy_object_lookup_names) > 0
   policy_object_parcel_types = {
     app_probe_class                     = "app-probe"
     application_list                    = "app-list"

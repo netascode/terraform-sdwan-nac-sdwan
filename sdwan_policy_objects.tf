@@ -1,13 +1,13 @@
-# System-created policy object lookups
+# System-created policy object lookups: only features of the profiles this state manages use them.
 data "sdwan_policy_object_feature_profile_parcels" "system_data_prefix" {
-  count              = local.policy_object_profile_in_data && (local.manage_global || local.owns_local_definitions) ? 1 : 0
+  count              = local.policy_object_profile_in_data && (local.manage_global || local.owns_local_profiles) ? 1 : 0
   feature_profile_id = local.policy_object_profile_id
   created_by         = "system"
   parcel_type        = "data-prefix"
 }
 
 data "sdwan_policy_object_feature_profile_parcels" "system_app_list" {
-  count              = local.policy_object_profile_in_data && (local.manage_global || local.owns_local_definitions) ? 1 : 0
+  count              = local.policy_object_profile_in_data && (local.manage_global || local.owns_local_profiles) ? 1 : 0
   feature_profile_id = local.policy_object_profile_id
   created_by         = "system"
   parcel_type        = "app-list"

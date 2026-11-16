@@ -76,14 +76,18 @@ resource "sdwan_configuration_group" "configuration_group" {
   ]
   lifecycle {
     create_before_destroy = true
-    # Features per device tag (unsupported_features) need the feature IDs of the group's transport and
-    # service profiles, which only a state managing those profiles has.
+    # Features per device tag (unsupported_features) need the feature IDs, which only the state that
+    # manages the feature's profile has. A feature that isn't found while the group's transport or
+    # service profile is managed elsewhere fails the plan instead of being dropped.
     precondition {
-      condition = length(flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])])) == 0 || alltrue([
+      condition = length([
+        for feature in flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])]) : feature
+        if try(local.unsupported_features[each.value.transport_profile][feature], local.unsupported_features[each.value.service_profile][feature], null) == null
+        ]) == 0 || alltrue([
         for type, key in { transport_profiles = "transport_profile", service_profiles = "service_profile" } :
         try(each.value[key], null) == null || contains([for p in try(local.feature_profiles[type], []) : p.name], try(each.value[key], ""))
       ])
-      error_message = "Configuration group ${each.key} lists features per device tag; manage it in the same state as its transport and service profiles (groups and feature_profiles in manage)."
+      error_message = "Configuration group ${each.key} lists features per device tag that aren't in a transport or service profile this state manages: ${join(", ", [for feature in flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])]) : feature if try(local.unsupported_features[each.value.transport_profile][feature], local.unsupported_features[each.value.service_profile][feature], null) == null])}. Claim the profile that holds them with the group (ownership)."
     }
   }
 }

@@ -7,6 +7,7 @@
 - add `ownership` output: what a state manages (sites, and the groups, profiles and objects its entry claims)
 - add `nac_test_scope` output: the names of the groups, feature profiles, policy objects and scopes a state manages, whether it manages the global blocks, and the sites and routers it deploys, to run nac-test per state
 - add `handover_sites` input: the routers of the listed sites leave the configuration and policy group device resources without being released from their groups (`retain_devices`), to hand them over to another state with no disassociation and no redeploy
+- add support for WAN edge certificate validity (`sites[].routers[].certificate_validity`, `sdwan_wan_edge_certificate_validate`) and for sending the WAN edge list to the controllers (`settings.wan_edge_list.send_to_controllers`, `sdwan_send_wan_edge_list_to_controllers`); validity is set by the state that deploys the router, and only the global state pushes: when the validity it manages changes, and whenever SD-WAN Manager reports the controllers out of sync, e.g. after a site/region state changed a validity
 - fix route policies (service and transport), BGP neighbour prefix lists and system IPv6 device access policies planning a policy object reference as null when the named object can't be resolved: the plan now fails, naming the object
 
 ## 1.5.1

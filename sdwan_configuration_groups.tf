@@ -117,7 +117,9 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
   retain_devices = length([for router in local.device_routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
     for router in local.device_routers : router.chassis_id if router.configuration_group == each.key && router.handover
   ]
-  depends_on = [sdwan_tag.tag]
+  # Routers get their certificate validity, and in the global state the controllers the WAN edge
+  # list, before they are deployed. The policy group devices follow these.
+  depends_on = [sdwan_tag.tag, sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate, sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
 }
 
 locals {

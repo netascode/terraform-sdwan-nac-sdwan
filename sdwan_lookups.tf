@@ -221,4 +221,6 @@ locals {
 data "sdwan_policy_object_feature_profile_parcels" "lookup" {
   count              = local.policy_object_lookup ? 1 : 0
   feature_profile_id = local.policy_object_profile_id
+  # Only the parcels this state's profiles use, so the state doesn't hold every object of the tenant.
+  parcel_names = local.policy_object_lookup_names
 }

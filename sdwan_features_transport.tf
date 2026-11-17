@@ -448,20 +448,20 @@ resource "sdwan_transport_route_policy_feature" "transport_route_policy_feature"
     base_action = s.base_action
     id          = s.id
     match_entries = try(length(s.match_entries) == 0, true) ? null : [for m in [s.match_entries] : {
-      as_path_list_id                  = try(local.policy_object_ids.as_path_list[m.as_path_list], null)
+      as_path_list_id                  = try(m.as_path_list, null) == null ? null : local.policy_object_ids.as_path_list[m.as_path_list]
       bgp_local_preference             = try(m.bgp_local_preference, null)
-      expanded_community_list_id       = try(local.policy_object_ids.expanded_community_list[m.expanded_community_list], null)
-      extended_community_list_id       = try(local.policy_object_ids.extended_community_list[m.extended_community_list], null)
-      ipv4_address_prefix_list_id      = try(local.policy_object_ids.ipv4_prefix_list[m.ipv4_address_prefix_list], null)
-      ipv4_next_hop_prefix_list_id     = try(local.policy_object_ids.ipv4_prefix_list[m.ipv4_next_hop_prefix_list], null)
-      ipv6_address_prefix_list_id      = try(local.policy_object_ids.ipv6_prefix_list[m.ipv6_address_prefix_list], null)
-      ipv6_next_hop_prefix_list_id     = try(local.policy_object_ids.ipv6_prefix_list[m.ipv6_next_hop_prefix_list], null)
+      expanded_community_list_id       = try(m.expanded_community_list, null) == null ? null : local.policy_object_ids.expanded_community_list[m.expanded_community_list]
+      extended_community_list_id       = try(m.extended_community_list, null) == null ? null : local.policy_object_ids.extended_community_list[m.extended_community_list]
+      ipv4_address_prefix_list_id      = try(m.ipv4_address_prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[m.ipv4_address_prefix_list]
+      ipv4_next_hop_prefix_list_id     = try(m.ipv4_next_hop_prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[m.ipv4_next_hop_prefix_list]
+      ipv6_address_prefix_list_id      = try(m.ipv6_address_prefix_list, null) == null ? null : local.policy_object_ids.ipv6_prefix_list[m.ipv6_address_prefix_list]
+      ipv6_next_hop_prefix_list_id     = try(m.ipv6_next_hop_prefix_list, null) == null ? null : local.policy_object_ids.ipv6_prefix_list[m.ipv6_next_hop_prefix_list]
       metric                           = try(m.metric, null)
       omp_tag                          = try(m.omp_tag, null)
       ospf_tag                         = try(m.ospf_tag, null)
       standard_community_list_criteria = try(upper(m.standard_community_lists_criteria), null)
       standard_community_lists = try(length(m.standard_community_lists) == 0, true) ? null : [for c in m.standard_community_lists : {
-        id = try(local.policy_object_ids.standard_community_list[c], null)
+        id = local.policy_object_ids.standard_community_list[c]
       }]
     }]
     name     = try(s.name, local.defaults.sdwan.feature_profiles.transport_profiles.route_policies.sequences.name)

@@ -359,12 +359,12 @@ resource "sdwan_system_ipv6_device_access_feature" "system_ipv6_device_access_fe
   sequences = try(length(each.value.ipv6_device_access_policy.sequences) == 0, true) ? null : [for s in each.value.ipv6_device_access_policy.sequences : {
     base_action                     = s.base_action
     destination_ip_prefix_list      = try(s.match_entries.destination_data_prefixes, null)
-    destination_data_prefix_list_id = try(local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list], null)
+    destination_data_prefix_list_id = try(s.match_entries.destination_data_prefix_list, null) == null ? null : local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list]
     device_access_port              = s.match_entries.destination_port
     id                              = s.id
     name                            = try(s.name, local.defaults.sdwan.feature_profiles.system_profiles.ipv6_device_access_policy.sequences.name)
     source_ip_prefix_list           = try(s.match_entries.source_data_prefixes, null)
-    source_data_prefix_list_id      = try(local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.source_data_prefix_list], null)
+    source_data_prefix_list_id      = try(s.match_entries.source_data_prefix_list, null) == null ? null : local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.source_data_prefix_list]
     source_ports                    = try(s.match_entries.source_ports, null)
   }]
 }

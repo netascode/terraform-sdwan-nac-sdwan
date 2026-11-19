@@ -40,10 +40,11 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
         try(length(router.policy_variables) == 0, true) &&
         try(length(router.cor_saas_entries) == 0, true)
         ) ? null : merge(
-        { for name, value in try(router.policy_variables, {}) : name => {
+        # try() around the whole for: policy_variables is null when only CoR SaaS variables are set.
+        try({ for name, value in router.policy_variables : name => {
           value      = try(tostring(value), null)
           list_value = try(tolist(value), null)
-        } },
+        } }, {}),
         { for entry in try(router.cor_saas_entries, []) : entry.name => {
           value      = entry.value
           list_value = entry.list_value

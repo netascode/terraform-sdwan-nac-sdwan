@@ -116,8 +116,13 @@ locals {
 # that use it read it by name.
 locals {
   policy_object_profile_in_data = contains(keys(local.model_feature_profiles), "policy_object_profile")
-  policy_object_profile_name    = try(local.model_feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
-  policy_object_profile_lookup  = local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions
+  # Configuration groups name the policy object profile. Data model validation requires the name to
+  # be the profile in the data; a state whose data has no profile (it is in another repository)
+  # reads that one from SD-WAN Manager, with all its objects.
+  policy_object_profile_refs     = distinct(compact([for g in local.configuration_groups : try(g.policy_object_profile, null)]))
+  policy_object_profile_external = !local.policy_object_profile_in_data && length(local.policy_object_profile_refs) > 0
+  policy_object_profile_name     = local.policy_object_profile_external ? one(local.policy_object_profile_refs) : try(local.model_feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
+  policy_object_profile_lookup   = local.policy_object_profile_external || (local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions)
 }
 
 data "sdwan_policy_object_feature_profile" "lookup" {
@@ -131,7 +136,7 @@ locals {
   # Policy objects: a state whose own profiles use objects it doesn't manage reads the parcels of the
   # policy object profile in one call, and matches them by type and name. A state whose profiles use
   # only its own objects, or no objects, reads none.
-  policy_object_lookup = local.policy_object_profile_in_data && length(local.policy_object_lookup_names) > 0
+  policy_object_lookup = local.policy_object_profile_external || (local.policy_object_profile_in_data && length(local.policy_object_lookup_names) > 0)
   policy_object_parcel_types = {
     app_probe_class                     = "app-probe"
     application_list                    = "app-list"
@@ -222,5 +227,7 @@ data "sdwan_policy_object_feature_profile_parcels" "lookup" {
   count              = local.policy_object_lookup ? 1 : 0
   feature_profile_id = local.policy_object_profile_id
   # Only the parcels this state's profiles use, so the state doesn't hold every object of the tenant.
-  parcel_names = local.policy_object_lookup_names
+  # With the profile in another repository the data has no objects, so the referenced names aren't
+  # known by type: read all of them.
+  parcel_names = local.policy_object_profile_external ? null : local.policy_object_lookup_names
 }

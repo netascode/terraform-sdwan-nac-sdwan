@@ -33,9 +33,8 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
   policy_group_id      = local.policy_group_ids[each.key]
   policy_group_version = try(sdwan_policy_group.policy_group[each.key].version, null)
   solution             = "sdwan"
-  devices = [
-    for router in local.device_routers : {
-      id     = router.chassis_id
+  devices = {
+    for router in local.device_routers : router.chassis_id => {
       deploy = try(router.policy_group_deploy, local.defaults.sdwan.sites.routers.policy_group_deploy)
       variables = (
         try(length(router.policy_variables) == 0, true) &&
@@ -49,7 +48,7 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
         try(router.cor_saas_entries, []),
       )
     } if router.policy_group == each.key && !router.handover
-  ]
+  }
   # As for config groups: routers of handover_sites leave this state without a release.
   retain_devices = length([for router in local.device_routers : router if router.policy_group == each.key && router.handover]) == 0 ? null : [
     for router in local.device_routers : router.chassis_id if router.policy_group == each.key && router.handover

@@ -100,9 +100,10 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
   configuration_group_id      = local.configuration_group_ids[each.key]
   configuration_group_version = try(sdwan_configuration_group.configuration_group[each.key].version, null)
   solution                    = "sdwan"
-  devices = [
-    for router in local.device_routers : {
-      id             = router.chassis_id
+  # Keyed by chassis ID: Terraform matches each device by its ID, so a router added, removed or moved
+  # in the data shows only that router in the plan.
+  devices = {
+    for router in local.device_routers : router.chassis_id => {
       topology_label = try(router.topology_label, null)
       deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
       variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
@@ -111,7 +112,7 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
         list_value = try(tolist(value), null)
       }]
     } if router.configuration_group == each.key && !router.handover
-  ]
+  }
   # Routers of handover_sites leave this state without a release. The instance stays (with no devices)
   # while they were its last routers, so the hand-over is an Update, not a Delete that releases them.
   retain_devices = length([for router in local.device_routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [

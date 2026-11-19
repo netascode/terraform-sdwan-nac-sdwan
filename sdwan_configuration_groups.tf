@@ -106,11 +106,13 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
     for router in local.device_routers : router.chassis_id => {
       topology_label = try(router.topology_label, null)
       deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
-      variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
-        name       = name == "region_id" ? "region-id" : name
-        value      = try(tostring(value), null)
-        list_value = try(tolist(value), null)
-      }]
+      # Keyed by variable name: a changed value shows as a change of that variable only.
+      variables = try(length(router.device_variables) == 0, true) ? null : {
+        for name, value in router.device_variables : (name == "region_id" ? "region-id" : name) => {
+          value      = try(tostring(value), null)
+          list_value = try(tolist(value), null)
+        }
+      }
     } if router.configuration_group == each.key && !router.handover
   }
   # Routers of handover_sites leave this state without a release. The instance stays (with no devices)

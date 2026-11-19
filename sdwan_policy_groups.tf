@@ -39,13 +39,15 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
       variables = (
         try(length(router.policy_variables) == 0, true) &&
         try(length(router.cor_saas_entries) == 0, true)
-        ) ? null : concat(
-        try([for name, value in router.policy_variables : {
-          name       = name
+        ) ? null : merge(
+        { for name, value in try(router.policy_variables, {}) : name => {
           value      = try(tostring(value), null)
           list_value = try(tolist(value), null)
-        }], []),
-        try(router.cor_saas_entries, []),
+        } },
+        { for entry in try(router.cor_saas_entries, []) : entry.name => {
+          value      = entry.value
+          list_value = entry.list_value
+        } },
       )
     } if router.policy_group == each.key && !router.handover
   }

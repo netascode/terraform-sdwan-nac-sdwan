@@ -1,5 +1,6 @@
 ## 1.6.0 (unreleased)
 
+- `sdwan_attach_feature_device_template`: devices keyed by chassis ID, so adding, removing or changing one router shows only that router in the plan (requires the provider version with `devices` as a map)
 - add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 
 ## 1.5.1

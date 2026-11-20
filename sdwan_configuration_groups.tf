@@ -61,6 +61,7 @@ resource "sdwan_configuration_group" "configuration_group" {
   topology_site_devices = try(each.value.device_tags, null) == null ? null : 2
   depends_on = [
     sdwan_tag.tag,
+    sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers,
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
     sdwan_policy_object_color_list.policy_object_color_list,

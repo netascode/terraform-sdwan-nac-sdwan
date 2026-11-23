@@ -326,6 +326,7 @@ module "sdwan" {
 | [sdwan_network_hierarchy_nodes.topology_unmanaged](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/network_hierarchy_nodes) | data source |
 | [sdwan_other_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/other_feature_profile) | data source |
 | [sdwan_policy_group.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_group) | data source |
+| [sdwan_policy_object_class_map.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_class_map) | data source |
 | [sdwan_policy_object_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile) | data source |
 | [sdwan_policy_object_feature_profile_parcels.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_app_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |

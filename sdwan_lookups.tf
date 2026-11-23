@@ -122,7 +122,10 @@ locals {
   policy_object_profile_refs     = distinct(compact([for g in local.configuration_groups : try(g.policy_object_profile, null)]))
   policy_object_profile_external = !local.policy_object_profile_in_data && length(local.policy_object_profile_refs) > 0
   policy_object_profile_name     = local.policy_object_profile_external ? one(local.policy_object_profile_refs) : try(local.model_feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
-  policy_object_profile_lookup   = local.policy_object_profile_external || (local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions)
+  # A state whose data has no profile and whose groups don't name it, but whose QoS policies use
+  # classes defined elsewhere, reads it by the default name (set the tenant's profile name with
+  # defaults.sdwan.feature_profiles.policy_object_profile.name in the data).
+  policy_object_profile_lookup = local.policy_object_profile_external || (local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions) || (!local.policy_object_profile_in_data && length(local.forwarding_class_lookups) > 0)
 }
 
 data "sdwan_policy_object_feature_profile" "lookup" {
@@ -212,15 +215,40 @@ locals {
     unified_intrusion_prevention        = { for name, object in sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention : name => object.id }
   }
   policy_object_lookup_parcels = try(data.sdwan_policy_object_feature_profile_parcels.lookup[0].parcels, [])
-  policy_object_ids = {
+  policy_object_ids_found = {
     for type, parcel_type in local.policy_object_parcel_types : type => merge(
       { for p in local.policy_object_lookup_parcels : p.parcel_name => p.parcel_id if p.parcel_type == parcel_type },
       local.policy_object_resource_ids[type],
     )
   }
+  policy_object_ids = merge(local.policy_object_ids_found, {
+    class_map = merge({ for name, c in data.sdwan_policy_object_class_map.lookup : name => c.id }, local.policy_object_ids_found.class_map)
+  })
 
-  # Forwarding class queues, read from the data so that a state without the objects has them too.
-  forwarding_class_queues = { for c in try(local.model_feature_profiles.policy_object_profile.forwarding_classes, []) : c.name => tostring(c.queue) }
+  # Forwarding classes the QoS policies of this state's application priority profiles use but the
+  # data doesn't define (the classes, or the whole policy object profile, are defined elsewhere, e.g.
+  # in the global state's repository): read from SD-WAN Manager by name, for their ID and queue.
+  forwarding_class_names_in_data = [for c in try(local.model_feature_profiles.policy_object_profile.forwarding_classes, []) : c.name]
+  forwarding_class_lookups = toset([
+    for name in distinct(compact(flatten([
+      for profile in try(local.feature_profiles.application_priority_profiles, []) : [
+        for qos_policy in try(profile.qos_policies, []) : [for s in try(qos_policy.qos_schedulers, []) : try(s.forwarding_class, null)]
+      ]
+    ]))) : name if !contains(local.forwarding_class_names_in_data, name)
+  ])
+
+  # Forwarding class queues: from the data, so that a state that doesn't manage the classes has them
+  # too, and from SD-WAN Manager for the classes the data doesn't define.
+  forwarding_class_queues = merge(
+    { for name, c in data.sdwan_policy_object_class_map.lookup : name => tostring(c.entries[0].queue) },
+    { for c in try(local.model_feature_profiles.policy_object_profile.forwarding_classes, []) : c.name => tostring(c.queue) },
+  )
+}
+
+data "sdwan_policy_object_class_map" "lookup" {
+  for_each           = local.forwarding_class_lookups
+  feature_profile_id = local.policy_object_profile_id
+  name               = each.key
 }
 
 data "sdwan_policy_object_feature_profile_parcels" "lookup" {

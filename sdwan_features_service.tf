@@ -366,8 +366,8 @@ resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
       accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
       accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? local.policy_object_ids.mirror[s.actions.mirror] : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? local.policy_object_ids.policer[s.actions.policer] : null
       accept_set_dscp                            = s.base_action == "accept" ? try(s.actions.dscp, null) : null
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv4_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
@@ -383,7 +383,7 @@ resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
       destination_data_prefix = try(s.match_entries.destination_data_prefix, null)
       destination_data_prefix_list_id = can(s.match_entries.destination_data_prefix_list) ? try(
-        sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id,
+        local.policy_object_ids.data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list],
         local.system_ipv4_prefix_map[s.match_entries.destination_data_prefix_list]
       ) : null
       destination_data_prefix_variable = try("{{${s.match_entries.destination_data_prefix_variable}}}", null)
@@ -396,7 +396,7 @@ resource "sdwan_service_ipv4_acl_feature" "service_ipv4_acl_feature" {
       protocols          = try(s.match_entries.protocols, null)
       source_data_prefix = try(s.match_entries.source_data_prefix, null)
       source_data_prefix_list_id = can(s.match_entries.source_data_prefix_list) ? try(
-        sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id,
+        local.policy_object_ids.data_ipv4_prefix_list[s.match_entries.source_data_prefix_list],
         local.system_ipv4_prefix_map[s.match_entries.source_data_prefix_list]
       ) : null
       source_data_prefix_variable = try("{{${s.match_entries.source_data_prefix_variable}}}", null)
@@ -1574,7 +1574,7 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
       peer_authentication_password_variable = try("{{${peer.peer_authentication_password_variable}}}", null)
       peer_ip                               = try(peer.peer_ip, null)
       peer_ip_variable                      = try("{{${peer.peer_ip_variable}}}", null)
-      prefix_list_id                        = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[peer.prefix_list].id, null)
+      prefix_list_id                        = try(peer.prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[peer.prefix_list]
       remote_as                             = try(peer.remote_as, null)
       remote_as_variable                    = try("{{${peer.remote_as_variable}}}", null)
       sa_limit                              = try(peer.sa_limit, null)
@@ -2074,20 +2074,20 @@ resource "sdwan_service_route_policy_feature" "service_route_policy_feature" {
     base_action = s.base_action
     id          = s.id
     match_entries = try(length(s.match_entries) == 0, true) ? null : [for m in [s.match_entries] : {
-      as_path_list_id                  = try(sdwan_policy_object_as_path_list.policy_object_as_path_list[m.as_path_list].id, null)
+      as_path_list_id                  = try(m.as_path_list, null) == null ? null : local.policy_object_ids.as_path_list[m.as_path_list]
       bgp_local_preference             = try(m.bgp_local_preference, null)
-      expanded_community_list_id       = try(sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[m.expanded_community_list].id, null)
-      extended_community_list_id       = try(sdwan_policy_object_extended_community_list.policy_object_extended_community_list[m.extended_community_list].id, null)
-      ipv4_address_prefix_list_id      = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_address_prefix_list].id, null)
-      ipv4_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[m.ipv4_next_hop_prefix_list].id, null)
-      ipv6_address_prefix_list_id      = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_address_prefix_list].id, null)
-      ipv6_next_hop_prefix_list_id     = try(sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[m.ipv6_next_hop_prefix_list].id, null)
+      expanded_community_list_id       = try(m.expanded_community_list, null) == null ? null : local.policy_object_ids.expanded_community_list[m.expanded_community_list]
+      extended_community_list_id       = try(m.extended_community_list, null) == null ? null : local.policy_object_ids.extended_community_list[m.extended_community_list]
+      ipv4_address_prefix_list_id      = try(m.ipv4_address_prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[m.ipv4_address_prefix_list]
+      ipv4_next_hop_prefix_list_id     = try(m.ipv4_next_hop_prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[m.ipv4_next_hop_prefix_list]
+      ipv6_address_prefix_list_id      = try(m.ipv6_address_prefix_list, null) == null ? null : local.policy_object_ids.ipv6_prefix_list[m.ipv6_address_prefix_list]
+      ipv6_next_hop_prefix_list_id     = try(m.ipv6_next_hop_prefix_list, null) == null ? null : local.policy_object_ids.ipv6_prefix_list[m.ipv6_next_hop_prefix_list]
       metric                           = try(m.metric, null)
       omp_tag                          = try(m.omp_tag, null)
       ospf_tag                         = try(m.ospf_tag, null)
       standard_community_list_criteria = try(upper(m.standard_community_lists_criteria), null)
       standard_community_lists = try(length(m.standard_community_lists) == 0, true) ? null : [for c in m.standard_community_lists : {
-        id = try(sdwan_policy_object_standard_community_list.policy_object_standard_community_list[c].id, null)
+        id = local.policy_object_ids.standard_community_list[c]
       }]
     }]
     name     = try(s.name, local.defaults.sdwan.feature_profiles.service_profiles.route_policies.sequences.name)
@@ -2186,8 +2186,8 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
     actions = length(keys(try(s.actions, {}))) > 0 ? [{
       accept_counter_name                        = s.base_action == "accept" ? try(s.actions.counter_name, null) : null
       accept_log                                 = s.base_action == "accept" ? try(s.actions.log, null) : null
-      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? sdwan_policy_object_mirror.policy_object_mirror[s.actions.mirror].id : null
-      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? sdwan_policy_object_policer.policy_object_policer[s.actions.policer].id : null
+      accept_mirror_list_id                      = s.base_action == "accept" && can(s.actions.mirror) ? local.policy_object_ids.mirror[s.actions.mirror] : null
+      accept_policer_id                          = s.base_action == "accept" && can(s.actions.policer) ? local.policy_object_ids.policer[s.actions.policer] : null
       accept_traffic_class                       = s.base_action == "accept" ? try(s.actions.traffic_class, null) : null
       accept_set_next_hop                        = s.base_action == "accept" ? try(s.actions.ipv6_next_hop, null) : null
       accept_set_service_chain_fallback          = s.base_action == "accept" ? try(s.actions.service_chain_fallback, null) : null
@@ -2202,7 +2202,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
       destination_data_prefix         = try(s.match_entries.destination_data_prefix, null)
-      destination_data_prefix_list_id = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_data_prefix_list_id = can(s.match_entries.destination_data_prefix_list) ? local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.destination_data_prefix_list] : null
       destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
         port = p
       }]
@@ -2210,7 +2210,7 @@ resource "sdwan_service_ipv6_acl_feature" "service_ipv6_acl_feature" {
       icmp_messages              = try(s.match_entries.icmpv6_messages, null)
       packet_length              = try(s.match_entries.packet_length, null)
       source_data_prefix         = try(s.match_entries.source_data_prefix, null)
-      source_data_prefix_list_id = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_data_prefix_list_id = can(s.match_entries.source_data_prefix_list) ? local.policy_object_ids.data_ipv6_prefix_list[s.match_entries.source_data_prefix_list] : null
       source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
         port = p
       }]

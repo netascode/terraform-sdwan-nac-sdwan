@@ -1,6 +1,16 @@
 ## 1.6.0 (unreleased)
 
 - add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
+- **BREAKING CHANGE**: device association, variables and deploy move from `sdwan_configuration_group` / `sdwan_policy_group` to `sdwan_configuration_group_devices` / `sdwan_policy_group_devices` (one per group with routers; provider 0.12.0). An existing state upgrades in place: the new resources adopt the devices already on their groups and deploy only devices that are out of date or whose variables changed
+- configuration groups track only the policy objects their system, transport and service profiles reference, so a change to an object redeploys only the groups that use it
+- add the transport OSPF feature and its WAN VPN association to the configuration group versions, so a change to them deploys in the same apply
+- add `manage_global`, `local_set` and `ownership` inputs to split a deployment into one global state and site/region states that load the same data. `ownership.local_definitions` lists, per site/region state, its sites and the groups, feature profiles and policy objects it manages; the global state manages the rest. A state reads what it references but doesn't manage from SD-WAN Manager by name, and the plan fails on claims that a global item, a scope or another entry would use
+- add `handover_sites` input: hand the routers of the listed sites over to another state without releasing them from their groups (`retain_devices`), so they are not redeployed
+- add `ownership` and `nac_test_scope` outputs: what a state manages, and the scope for running nac-test per state
+- read the policy object profile and its objects from SD-WAN Manager when configuration groups name a profile that the data doesn't define (shared definitions kept in another repository)
+- read QoS forwarding classes that the data doesn't define from SD-WAN Manager by name
+- WAN edge certificate validity is set by the state that deploys the router; only the global state pushes the WAN edge list, also when SD-WAN Manager reports the controllers out of sync
+- fix route policies (service and transport), BGP neighbour prefix lists and system IPv6 device access policies planning a policy object reference as null when the named object can't be resolved: the plan now fails, naming the object
 
 ## 1.5.1
 

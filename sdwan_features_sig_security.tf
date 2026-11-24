@@ -25,7 +25,7 @@ resource "sdwan_sig_feature" "sig_feature" {
   name                          = each.value.sig.name
   description                   = try(each.value.sig.description, null)
   feature_profile_id            = sdwan_sig_security_feature_profile.sig_security_feature_profile[each.value.profile.name].id
-  sig_provider                  = lookup(local.sig_security_providers, each.value.sig.provider, each.value.sig.provider)
+  sig_provider                  = local.sig_security_providers[try(each.value.sig.provider, local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.provider)]
   aup_enabled                   = try(each.value.sig.aup_enabled, null)
   aup_timeout                   = try(each.value.sig.aup_timeout, null)
   auth_required                 = try(each.value.sig.auth_required, null)
@@ -36,9 +36,9 @@ resource "sdwan_sig_feature" "sig_feature" {
   idle_time                     = try(each.value.sig.idle_time, null)
   interface_pairs = try(length(each.value.sig.interface_pairs) == 0, true) ? null : [for item in each.value.sig.interface_pairs : {
     active_interface        = try(item.active_interface, null)
-    active_interface_weight = try(item.active_interface_weight, null)
+    active_interface_weight = try(item.active_interface_weight, local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.interface_pairs.active_interface_weight)
     backup_interface        = try(item.backup_interface, null)
-    backup_interface_weight = try(item.backup_interface_weight, null)
+    backup_interface_weight = try(item.backup_interface_weight, local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.interface_pairs.backup_interface_weight)
   }]
   interfaces = [for item in each.value.sig.interfaces : {
     dpd_interval                     = try(item.dpd_interval, null)
@@ -64,7 +64,7 @@ resource "sdwan_sig_feature" "sig_feature" {
     ipsec_rekey_interval_variable    = try("{{${item.ipsec_rekey_interval_variable}}}", null)
     ipsec_replay_window              = try(item.ipsec_replay_window, null)
     ipsec_replay_window_variable     = try("{{${item.ipsec_replay_window_variable}}}", null)
-    mtu                              = try(item.mtu, null)
+    mtu                              = try(item.mtu, try(item.mtu_variable, null) == null ? local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.interfaces.mtu : null)
     mtu_variable                     = try("{{${item.mtu_variable}}}", null)
     perfect_forward_secrecy          = try(item.perfect_forward_secrecy, null)
     perfect_forward_secrecy_variable = try("{{${item.perfect_forward_secrecy_variable}}}", null)
@@ -76,14 +76,14 @@ resource "sdwan_sig_feature" "sig_feature" {
     tcp_mss_adjust_variable          = try("{{${item.tcp_mss_adjust_variable}}}", null)
     track_enable                     = try(item.track_enable, null)
     tracker                          = try(item.tracker, null)
-    tunnel_dc_preference             = try(item.tunnel_dc_preference, null)
+    tunnel_dc_preference             = try(item.tunnel_dc_preference, local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.interfaces.tunnel_dc_preference)
     tunnel_destination               = try(item.tunnel_destination, null)
     tunnel_destination_variable      = try("{{${item.tunnel_destination_variable}}}", null)
     tunnel_public_ip                 = try(item.tunnel_public_ip, null)
     tunnel_public_ip_variable        = try("{{${item.tunnel_public_ip_variable}}}", null)
     tunnel_route_via                 = try(item.tunnel_route_via, null)
     tunnel_route_via_variable        = try("{{${item.tunnel_route_via_variable}}}", null)
-    tunnel_set                       = lookup(local.sig_security_tunnel_sets, each.value.sig.provider, null)
+    tunnel_set                       = local.sig_security_tunnel_sets[try(each.value.sig.provider, local.defaults.sdwan.feature_profiles.sig_security_profiles.sig.provider)]
     tunnel_source_interface          = try(item.tunnel_source_interface, null)
     tunnel_source_interface_variable = try("{{${item.tunnel_source_interface_variable}}}", null)
   }]

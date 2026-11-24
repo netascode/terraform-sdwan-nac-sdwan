@@ -4,6 +4,11 @@ locals {
     zscaler  = "Zscaler"
     umbrella = "Umbrella"
   }
+  sig_security_tunnel_sets = {
+    generic  = "secure-internet-gateway-other"
+    zscaler  = "secure-internet-gateway-zscaler"
+    umbrella = "secure-internet-gateway-umbrella"
+  }
 }
 
 resource "sdwan_sig_feature" "sig_feature" {
@@ -78,7 +83,7 @@ resource "sdwan_sig_feature" "sig_feature" {
     tunnel_public_ip_variable        = try("{{${item.tunnel_public_ip_variable}}}", null)
     tunnel_route_via                 = try(item.tunnel_route_via, null)
     tunnel_route_via_variable        = try("{{${item.tunnel_route_via_variable}}}", null)
-    tunnel_set                       = try(item.tunnel_set, null)
+    tunnel_set                       = lookup(local.sig_security_tunnel_sets, each.value.sig.provider, null)
     tunnel_source_interface          = try(item.tunnel_source_interface, null)
     tunnel_source_interface_variable = try("{{${item.tunnel_source_interface_variable}}}", null)
   }]

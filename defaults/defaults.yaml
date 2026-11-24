@@ -578,6 +578,7 @@ defaults:
           dsl_ipoe_interfaces:
             ipv4_address_type: dynamic
             tunnel_interface:
+              per_tunnel_qos_mode: spoke
               ipsec_encapsulation: true
           ethernet_interfaces:
             tunnel_interface:

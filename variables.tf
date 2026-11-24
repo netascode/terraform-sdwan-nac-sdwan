@@ -36,7 +36,7 @@ variable "ownership" {
 }
 
 variable "handover_sites" {
-  description = "IDs of the sites whose routers this state hands over to another state. Their routers leave the configuration and policy group device resources without being released from their groups (`retain_devices`), so they stay associated and deployed. Set it for the apply that hands them over; in the next change, remove the sites from this state's data and clear the list."
+  description = "IDs of the sites whose routers this state hands over to another state. Their routers leave the configuration and policy group device resources without being released from their groups (`retain_devices`), so they stay associated and deployed. Set it in the change that moves the sites to another state, and clear it in the next change."
   type        = list(number)
   default     = []
   nullable    = false

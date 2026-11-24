@@ -28,7 +28,7 @@ resource "sdwan_policy_group" "policy_group" {
 }
 
 resource "sdwan_policy_group_devices" "policy_group_devices" {
-  # As for configuration groups: one per group the routers of this state use.
+  # One per group the routers of this state use, as for configuration groups.
   for_each             = toset([for router in local.device_routers : router.policy_group if router.policy_group != null])
   policy_group_id      = local.policy_group_ids[each.key]
   policy_group_version = try(sdwan_policy_group.policy_group[each.key].version, null)
@@ -52,11 +52,11 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
       )
     } if router.policy_group == each.key && !router.handover
   }
-  # As for config groups: routers of handover_sites leave this state without a release.
+  # Routers of handover_sites leave this state without a release, as for configuration groups.
   retain_devices = length([for router in local.device_routers : router if router.policy_group == each.key && router.handover]) == 0 ? null : [
     for router in local.device_routers : router.chassis_id if router.policy_group == each.key && router.handover
   ]
-  # A policy group deploy needs the device's config group deployed first.
+  # A policy group deploy needs the device's configuration group deployed first.
   depends_on = [sdwan_configuration_group_devices.configuration_group_devices]
 }
 

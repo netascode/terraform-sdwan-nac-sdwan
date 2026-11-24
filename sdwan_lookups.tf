@@ -1,7 +1,6 @@
-# References to things this state doesn't manage (manage_global, ownership) are read from SD-WAN
-# Manager by name. Each map below holds an ID per name: from the resource when this state manages
-# it, otherwise from a data source. Data sources are only read for names that are referenced and not
-# managed here, so a single state reads none of them. A name that exists in neither fails the plan.
+# What this state references but doesn't manage is read from SD-WAN Manager by name. Each ID map
+# merges the managed resources with data sources, which are read only for names referenced and not
+# managed here, so a single state reads none. A name found in neither fails the plan.
 
 locals {
   # Group attribute => feature profile type it references.
@@ -112,19 +111,16 @@ locals {
   policy_group_ids        = merge({ for k, v in data.sdwan_policy_group.lookup : k => v.id }, { for k, v in sdwan_policy_group.policy_group : k => v.id })
 }
 
-# The policy object profile is the tenant's single one, managed by the global state; other states
-# that use it read it by name.
+# The tenant's one policy object profile: managed by the global state, read by name elsewhere.
 locals {
   policy_object_profile_in_data = contains(keys(local.model_feature_profiles), "policy_object_profile")
-  # Configuration groups name the policy object profile. Data model validation requires the name to
-  # be the profile in the data; a state whose data has no profile (it is in another repository)
-  # reads that one from SD-WAN Manager, with all its objects.
+  # A state whose data has no profile (kept in another repository) reads the one its configuration
+  # groups name, with all its objects.
   policy_object_profile_refs     = distinct(compact([for g in local.configuration_groups : try(g.policy_object_profile, null)]))
   policy_object_profile_external = !local.policy_object_profile_in_data && length(local.policy_object_profile_refs) > 0
   policy_object_profile_name     = local.policy_object_profile_external ? one(local.policy_object_profile_refs) : try(local.model_feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
-  # A state whose data has no profile and whose groups don't name it, but whose QoS policies use
-  # classes defined elsewhere, reads it by the default name (set the tenant's profile name with
-  # defaults.sdwan.feature_profiles.policy_object_profile.name in the data).
+  # With no profile in the data and none named by a group, forwarding classes defined elsewhere are
+  # read from the profile named by defaults.sdwan.feature_profiles.policy_object_profile.name.
   policy_object_profile_lookup = local.policy_object_profile_external || (local.policy_object_profile_in_data && !local.manage_global && local.owns_local_definitions) || (!local.policy_object_profile_in_data && length(local.forwarding_class_lookups) > 0)
 }
 
@@ -136,9 +132,8 @@ data "sdwan_policy_object_feature_profile" "lookup" {
 locals {
   policy_object_profile_id = try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, data.sdwan_policy_object_feature_profile.lookup[0].id, null)
 
-  # Policy objects: a state whose own profiles use objects it doesn't manage reads the parcels of the
-  # policy object profile in one call, and matches them by type and name. A state whose profiles use
-  # only its own objects, or no objects, reads none.
+  # Policy objects this state's profiles use but don't manage: read in one call, matched by type and
+  # name.
   policy_object_lookup = local.policy_object_profile_external || (local.policy_object_profile_in_data && length(local.policy_object_lookup_names) > 0)
   policy_object_parcel_types = {
     app_probe_class                     = "app-probe"
@@ -225,9 +220,8 @@ locals {
     class_map = merge({ for name, c in data.sdwan_policy_object_class_map.lookup : name => c.id }, local.policy_object_ids_found.class_map)
   })
 
-  # Forwarding classes the QoS policies of this state's application priority profiles use but the
-  # data doesn't define (the classes, or the whole policy object profile, are defined elsewhere, e.g.
-  # in the global state's repository): read from SD-WAN Manager by name, for their ID and queue.
+  # Forwarding classes the QoS policies use but the data doesn't define: read by name, for their ID
+  # and queue.
   forwarding_class_names_in_data = [for c in try(local.model_feature_profiles.policy_object_profile.forwarding_classes, []) : c.name]
   forwarding_class_lookups = toset([
     for name in distinct(compact(flatten([
@@ -237,8 +231,7 @@ locals {
     ]))) : name if !contains(local.forwarding_class_names_in_data, name)
   ])
 
-  # Forwarding class queues: from the data, so that a state that doesn't manage the classes has them
-  # too, and from SD-WAN Manager for the classes the data doesn't define.
+  # Queues from the data (also when another state manages the classes), else from SD-WAN Manager.
   forwarding_class_queues = merge(
     { for name, c in data.sdwan_policy_object_class_map.lookup : name => tostring(c.entries[0].queue) },
     { for c in try(local.model_feature_profiles.policy_object_profile.forwarding_classes, []) : c.name => tostring(c.queue) },
@@ -254,8 +247,7 @@ data "sdwan_policy_object_class_map" "lookup" {
 data "sdwan_policy_object_feature_profile_parcels" "lookup" {
   count              = local.policy_object_lookup ? 1 : 0
   feature_profile_id = local.policy_object_profile_id
-  # Only the parcels this state's profiles use, so the state doesn't hold every object of the tenant.
-  # With the profile in another repository the data has no objects, so the referenced names aren't
-  # known by type: read all of them.
+  # Only the objects this state's profiles use. With the profile in another repository the names
+  # aren't known, so all are read.
   parcel_names = local.policy_object_profile_external ? null : local.policy_object_lookup_names
 }

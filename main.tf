@@ -1,5 +1,5 @@
 locals {
-  # Each block is emptied when this state doesn't manage it (manage_global, ownership, sdwan_ownership.tf).
+  # A block this state doesn't manage is empty (sdwan_ownership.tf).
   application_catalog    = { for k, v in try(local.model.sdwan.application_catalog, {}) : k => v if local.manage_global }
   edge_feature_templates = { for k, v in try(local.model.sdwan.edge_feature_templates, {}) : k => v if local.manage_global }
   edge_device_templates  = [for t in try(local.model.sdwan.edge_device_templates, []) : t if local.manage_global]

@@ -76,9 +76,8 @@ resource "sdwan_configuration_group" "configuration_group" {
   ]
   lifecycle {
     create_before_destroy = true
-    # Features per device tag (unsupported_features) need the feature IDs, which only the state that
-    # manages the feature's profile has. A feature that isn't found while the group's transport or
-    # service profile is managed elsewhere fails the plan instead of being dropped.
+    # Features per device tag need the feature IDs, which only the state that manages the profile
+    # has: fail the plan instead of dropping a feature that isn't found.
     precondition {
       condition = length([
         for feature in flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])]) : feature
@@ -94,19 +93,18 @@ resource "sdwan_configuration_group" "configuration_group" {
 
 resource "sdwan_configuration_group_devices" "configuration_group_devices" {
   # One per group the routers of this state use, whichever state manages the group. The version is
-  # only known when this state manages the group; otherwise a group change reaches the devices through
-  # the Manager's out-of-date flag (deploy_on_out_of_date).
+  # known only when this state manages the group; otherwise a group change reaches the devices through
+  # SD-WAN Manager's out-of-date flag.
   for_each                    = toset([for router in local.device_routers : router.configuration_group if router.configuration_group != null])
   configuration_group_id      = local.configuration_group_ids[each.key]
   configuration_group_version = try(sdwan_configuration_group.configuration_group[each.key].version, null)
   solution                    = "sdwan"
-  # Keyed by chassis ID: Terraform matches each device by its ID, so a router added, removed or moved
-  # in the data shows only that router in the plan.
+  # Keyed by chassis ID: adding, removing or changing one router shows only that router in the plan.
   devices = {
     for router in local.device_routers : router.chassis_id => {
       topology_label = try(router.topology_label, null)
       deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
-      # Keyed by variable name: a changed value shows as a change of that variable only.
+      # Keyed by name: a changed value shows only that variable in the plan.
       variables = try(length(router.device_variables) == 0, true) ? null : {
         for name, value in router.device_variables : (name == "region_id" ? "region-id" : name) => {
           value      = try(tostring(value), null)
@@ -115,13 +113,12 @@ resource "sdwan_configuration_group_devices" "configuration_group_devices" {
       }
     } if router.configuration_group == each.key && !router.handover
   }
-  # Routers of handover_sites leave this state without a release. The instance stays (with no devices)
-  # while they were its last routers, so the hand-over is an Update, not a Delete that releases them.
+  # Routers of handover_sites leave this state without a release. The instance stays, with no devices,
+  # when they were its last routers, so the handover is an update, not a delete that releases them.
   retain_devices = length([for router in local.device_routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
     for router in local.device_routers : router.chassis_id if router.configuration_group == each.key && router.handover
   ]
-  # Routers get their certificate validity, and in the global state the controllers the WAN edge
-  # list, before they are deployed. The policy group devices follow these.
+  # Certificate validity and the WAN edge list push come before the deploy.
   depends_on = [sdwan_tag.tag, sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate, sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
 }
 
@@ -138,8 +135,8 @@ locals {
       try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
     ])
   }
-  # Name and version of the policy objects a config-group parcel can reference (system, transport and
-  # service parcels; the other object types are used by policy and topology groups only).
+  # Policy objects that system, transport and service features can reference (the other types are
+  # used by policy and topology groups only).
   configuration_group_policy_objects = flatten([
     for objects in [
       sdwan_policy_object_as_path_list.policy_object_as_path_list,
@@ -154,11 +151,9 @@ locals {
       sdwan_policy_object_standard_community_list.policy_object_standard_community_list,
     ] : [for name, object in objects : { name = name, version = object.version }]
   ])
-  # Versions of the policy objects each system, transport and service profile references, so that a
-  # change to an object moves only the groups that use it (policy groups track their referenced
-  # objects the same way). An object counts as referenced when its name appears as a string value
-  # in the profile's data: every reference field is covered, and a name that also occurs as another
-  # value only adds a version.
+  # Versions of the policy objects each profile references, so that a change to an object redeploys
+  # only the groups that use it. An object is referenced when its name appears as a string value in
+  # the profile's data; a false match only adds a version.
   profile_policy_object_versions = {
     for type in ["service_profiles", "system_profiles", "transport_profiles"] : type => {
       for profile in try(local.feature_profiles[type], []) : profile.name => [

@@ -298,7 +298,7 @@ locals {
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
-  # Routers get their certificate validity, and the controllers the WAN edge list, before they are attached.
+  # Certificate validity and the WAN edge list push come before the attachment.
   depends_on = [sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate, sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
 
   for_each = {

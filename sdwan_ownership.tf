@@ -1,10 +1,8 @@
-# What this state manages. Every state of a split deployment loads the same data; what a state
-# doesn't manage is emptied here, so its resources have nothing to iterate over, and references to
-# it are read from SD-WAN Manager by name (sdwan_lookups.tf).
-# - The global state (manage_global) manages everything that no entry of var.ownership claims.
-# - A site/region state (local_set) manages what its entry claims, and the routers of its sites.
-# References only go from a site/region state to the global state; the checks in outputs.tf reject
-# claims that would make a global item, or another entry, use a claimed one.
+# What this state manages. Every state of a split deployment loads the same data: the global state
+# (manage_global) manages everything no entry of var.ownership claims, a site/region state
+# (local_set) what its entry claims and the routers of its sites. The rest is emptied here and read
+# by name where referenced (sdwan_lookups.tf). References only go from a site/region state to the
+# global state; the checks below (outputs.tf) reject claims that would break this.
 locals {
   manage_global                = var.manage_global
   model_feature_profiles       = try(local.model.sdwan.feature_profiles, {})
@@ -13,9 +11,8 @@ locals {
   model_policy_object_profile  = try(local.model_feature_profiles.policy_object_profile, {})
   policy_object_profile_fields = ["name", "description"]
 
-  # The entries of var.ownership with every field set. sites holds site IDs and "from-to" ranges,
-  # each as { raw, from, to } (from and to are null when the item is malformed); feature_profiles
-  # and policy_objects are a list of names (mode "list"), "exclusive" or "none".
+  # The entries with every field set. A site item is { raw, from, to } (from and to are null when
+  # malformed); the modes are "list" (a list of names), "exclusive" or "none".
   local_definitions = { for key, entry in try(var.ownership.local_definitions, {}) : key => {
     sites = [for item in try(tolist(entry.sites), []) : {
       raw  = tostring(item)
@@ -62,9 +59,8 @@ locals {
   profile_claim_keys = { for c in local.profile_claims : c.id => c.key... }
   profile_owner      = { for id, keys in local.profile_claim_keys : id => keys[0] }
 
-  # Every policy object as { id, name, json }, and every profile that can use one, with its owner. A
-  # profile uses an object when the object's name appears as a string value in the profile's data; a
-  # false match only keeps an object global.
+  # A profile uses an object when the object's name appears as a string value in the profile's data;
+  # a false match only keeps an object global.
   policy_objects_all = flatten([
     for type, objects in local.model_policy_object_profile : [
       for o in objects : { id = "${type}/${o.name}", name = o.name, json = jsonencode(o) }
@@ -110,22 +106,21 @@ locals {
     }) } : k => v if contains(keys(local.model_feature_profiles), "policy_object_profile") && (local.manage_global || length(local.owned_local_policy_objects) > 0) },
   )
   owned_local_policy_objects = [for id, owner in local.policy_object_owner : id if owner == local.local_set_key]
-  # Whether this state manages claimed groups, profiles or objects (it then also needs what they use).
+  # Whether this state manages claimed groups, profiles or objects.
   owns_local_definitions = local.local_set_key != "" && contains(concat(
     values(local.configuration_group_owner), values(local.policy_group_owner), values(local.profile_owner), values(local.policy_object_owner),
   ), local.local_set_key)
   # Whether this state manages claimed feature profiles: only they reference policy objects.
   owns_local_profiles = local.local_set_key != "" && contains(values(local.profile_owner), local.local_set_key)
-  # Policy objects this state's profiles use but another state manages: the only parcels it looks up
-  # (same name match as the claims; a false match only adds a lookup).
+  # Policy objects this state's profiles use but another state manages (a false match only adds a
+  # lookup).
   policy_object_lookup_names = local.manage_global || !local.owns_local_profiles ? [] : distinct([
     for o in local.policy_objects_all : o.name
     if lookup(local.policy_object_owner, o.id, "") != local.local_set_key && contains(local.policy_object_user_owners[o.id], local.local_set_key)
   ])
 
-  # Which entry each router belongs to: the entries that select its site, and the entries that claim
-  # its configuration or policy group (a claimed group takes its routers along). One entry, or ""
-  # for none (the router is then outside the entries); more than one fails the plan (outputs.tf).
+  # The entry of each router: through its site, or a claimed configuration or policy group. "" for
+  # none; more than one fails the plan.
   site_ids = [for site in local.sites : site.id]
   entry_selected_sites = { for key, e in local.local_definitions : key => [
     for id in local.site_ids : id if anytrue([for s in e.sites : try(id >= s.from && id <= s.to, false)])
@@ -137,9 +132,9 @@ locals {
   ))) }
   router_entry = { for id, keys in local.router_entries : id => length(keys) == 1 ? keys[0] : "" }
 
-  # Routers of the configuration and policy group device resources: those of this state's entry, or,
-  # in the global state, every router outside the entries; plus the routers being handed over
-  # (handover_sites), which go to retain_devices. Classic attachments always follow the global state.
+  # Routers of the group device resources: those of this state's entry, or in the global state those
+  # outside the entries, plus the routers of handover_sites (retain_devices). Classic attachments
+  # stay in the global state.
   device_routers = [
     for router in local.routers : router
     if(local.router_entry[router.chassis_id] == "" ? local.manage_global : local.router_entry[router.chassis_id] == local.local_set_key) || router.handover
@@ -147,8 +142,7 @@ locals {
   device_site_ids = distinct([for router in local.device_routers : router.site_id])
 }
 
-# Ownership checks (outputs.tf), computed from the whole data so that every state gets the same
-# answer. Each list holds the offending items.
+# Ownership checks (outputs.tf): computed from the whole data, so every state gives the same answer.
 locals {
   profile_user_owners = merge([for type, users in local.profile_users : { for name, owners in users : "${type}/${name}" => owners }]...)
   ownership_bad_modes = [for key, e in local.local_definitions : key if !contains(["list", "exclusive", "none"], e.profiles_mode) || !contains(["list", "exclusive", "none"], e.objects_mode)]

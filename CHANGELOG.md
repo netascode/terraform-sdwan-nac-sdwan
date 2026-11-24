@@ -1,5 +1,6 @@
 ## 1.6.0 (unreleased)
 
+- `sdwan_attach_feature_device_template`: devices keyed by chassis ID, so adding, removing or changing one router shows only that router in the plan (requires the provider version with `devices` as a map)
 - add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 - **BREAKING CHANGE**: device association, variables and deploy move from `sdwan_configuration_group` / `sdwan_policy_group` to `sdwan_configuration_group_devices` / `sdwan_policy_group_devices` (one per group with routers; provider 0.12.0). An existing state upgrades in place: the new resources adopt the devices already on their groups and deploy only devices that are out of date or whose variables changed
 - configuration groups track only the policy objects their system, transport and service profiles reference, so a change to an object redeploys only the groups that use it

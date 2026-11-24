@@ -311,11 +311,11 @@ resource "sdwan_attach_feature_device_template" "attach_feature_device_template"
   }
   id      = sdwan_feature_device_template.feature_device_template[each.value.name].id
   version = sdwan_feature_device_template.feature_device_template[each.value.name].version
-  devices = [
-    for r in local.routers : {
-      id        = r.chassis_id
+  # Keyed by chassis ID: adding, removing or changing one router shows only that router in the plan.
+  devices = {
+    for r in local.routers : r.chassis_id => {
       variables = r.device_variables
     }
     if r.device_template == each.value.name
-  ]
+  }
 }

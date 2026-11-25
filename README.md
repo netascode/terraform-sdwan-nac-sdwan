@@ -40,14 +40,18 @@ module "sdwan" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
-| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | ~> 0.11.7 |
+| <a name="requirement_sdwan"></a> [sdwan](#requirement\_sdwan) | ~> 0.12.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.1, < 3.0.0 |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_handover_sites"></a> [handover\_sites](#input\_handover\_sites) | IDs of the sites whose routers this state hands over to another state. Their routers leave the configuration and policy group device resources without being released from their groups (`retain_devices`), so they stay associated and deployed. Set it in the change that moves the sites to another state, and clear it in the next change. | `list(number)` | `[]` | no |
+| <a name="input_local_set"></a> [local\_set](#input\_local\_set) | Key of this state's entry in `ownership.local_definitions`, for a site/region state (`manage_global = false`). The state manages the routers of the entry's `sites` and the groups, feature profiles and policy objects the entry claims. | `string` | `null` | no |
+| <a name="input_manage_global"></a> [manage\_global](#input\_manage\_global) | Manage everything that no entry of `ownership` claims: settings, network hierarchy, custom applications, the policy object profile and its objects, feature profiles and their features, configuration and policy groups, tags, topology, scopes and classic (feature and device templates, their attachments and classic policies), and deploy every router that belongs to no entry. `true` for a single state and for the global state of a split deployment; `false` for a site/region state, which manages only what its `local_set` entry claims and reads the rest from SD-WAN Manager by name. | `bool` | `true` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
+| <a name="input_ownership"></a> [ownership](#input\_ownership) | Which site/region state manages what, for a deployment split across several states that load the same data. Pass the same value to every state (e.g. `yamldecode(file("../ownership.yaml"))`). `local_definitions` maps an entry key to `sites` (site IDs and `from-to` ranges, matched against the sites in the data), `configuration_groups` and `policy_groups` (names), `feature_profiles` and `policy_objects` (a list of names, `exclusive` for those only the entry uses, or `none`, the default). A claimed configuration or policy group brings its routers to the entry; a router can belong to one entry only. Anything not claimed, and every router outside the entries, is managed by the global state. A scope can't list a claimed item. `null` for a single state. | `any` | `null` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
@@ -58,6 +62,8 @@ module "sdwan" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
+| <a name="output_nac_test_scope"></a> [nac\_test\_scope](#output\_nac\_test\_scope) | What this state manages, for running nac-test per state: whether it manages the global blocks (settings, hierarchy, topology, tags, scopes, classic), and the names of the configuration groups, policy groups, feature profiles and policy objects it manages, plus the sites and routers its device resources deploy. Written to a data file under the key `nac_test_scope`, it lets the test templates render only this state's objects. |
+| <a name="output_ownership"></a> [ownership](#output\_ownership) | What this state manages: manage\_global, its local\_set, the site IDs whose routers its device resources hold, and the groups, feature profiles and policy objects its entry claims. |
 | <a name="output_topology_site_resolution"></a> [topology\_site\_resolution](#output\_topology\_site\_resolution) | Named failure for an unresolvable site name, instead of a bare "Invalid index" from local.nh\_site\_name\_to\_id further down.  An output precondition rather than a resource: it fails the plan the same way, and also propagates when this module is used as a child module. |
 
 ## Providers
@@ -65,7 +71,7 @@ module "sdwan" {
 | Name | Version |
 |------|---------|
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
-| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | ~> 0.11.7 |
+| <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | ~> 0.12.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Resources
@@ -118,6 +124,7 @@ module "sdwan" {
 | [sdwan_cloud_provider_settings.cloud_provider_settings](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/cloud_provider_settings) | resource |
 | [sdwan_color_list_policy_object.color_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/color_list_policy_object) | resource |
 | [sdwan_configuration_group.configuration_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/configuration_group) | resource |
+| [sdwan_configuration_group_devices.configuration_group_devices](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/configuration_group_devices) | resource |
 | [sdwan_custom_application.custom_application](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_application) | resource |
 | [sdwan_custom_control_topology_policy_definition.custom_control_topology_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/custom_control_topology_policy_definition) | resource |
 | [sdwan_data_fqdn_prefix_list_policy_object.fqdn_prefix_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/data_fqdn_prefix_list_policy_object) | resource |
@@ -156,6 +163,7 @@ module "sdwan" {
 | [sdwan_other_ucse_feature.other_ucse_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/other_ucse_feature) | resource |
 | [sdwan_policer_policy_object.policer_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policer_policy_object) | resource |
 | [sdwan_policy_group.policy_group](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group) | resource |
+| [sdwan_policy_group_devices.policy_group_devices](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_group_devices) | resource |
 | [sdwan_policy_object_app_probe_class.policy_object_app_probe_class](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_app_probe_class) | resource |
 | [sdwan_policy_object_application_list.policy_object_application_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_application_list) | resource |
 | [sdwan_policy_object_as_path_list.policy_object_as_path_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/policy_object_as_path_list) | resource |
@@ -311,11 +319,24 @@ module "sdwan" {
 | [sdwan_zone_based_firewall_policy_definition.zone_based_firewall_policy_definition](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_based_firewall_policy_definition) | resource |
 | [sdwan_zone_list_policy_object.zone_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/zone_list_policy_object) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [sdwan_application_priority_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/application_priority_feature_profile) | data source |
+| [sdwan_cli_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/cli_feature_profile) | data source |
+| [sdwan_configuration_group.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/configuration_group) | data source |
+| [sdwan_embedded_security_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/embedded_security_feature_profile) | data source |
 | [sdwan_network_hierarchy_nodes.application_priority_unmanaged](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/network_hierarchy_nodes) | data source |
 | [sdwan_network_hierarchy_nodes.scope_unmanaged](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/network_hierarchy_nodes) | data source |
 | [sdwan_network_hierarchy_nodes.topology_unmanaged](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/network_hierarchy_nodes) | data source |
+| [sdwan_other_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/other_feature_profile) | data source |
+| [sdwan_policy_group.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_group) | data source |
+| [sdwan_policy_object_class_map.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_class_map) | data source |
+| [sdwan_policy_object_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile) | data source |
+| [sdwan_policy_object_feature_profile_parcels.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_app_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_data_prefix](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
+| [sdwan_service_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/service_feature_profile) | data source |
+| [sdwan_sse_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/sse_feature_profile) | data source |
+| [sdwan_system_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/system_feature_profile) | data source |
+| [sdwan_transport_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/transport_feature_profile) | data source |
 
 ## Modules
 

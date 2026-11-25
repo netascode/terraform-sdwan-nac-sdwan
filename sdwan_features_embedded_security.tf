@@ -26,10 +26,10 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
       sequence_type    = try(seq.sequence_type, local.defaults.sdwan.feature_profiles.ngfw_security_profiles.policies.sequences.sequence_type)
       match_entries = try(seq.match_entries, null) == null ? null : flatten([
         try(seq.match_entries.application_list, null) != null ? [{
-          app_list_ids = [sdwan_policy_object_security_local_application_list.policy_object_security_local_application_list[seq.match_entries.application_list].id]
+          app_list_ids = [local.policy_object_ids.security_local_application_list[seq.match_entries.application_list]]
         }] : [],
         try(seq.match_entries.destination_data_ipv4_prefix_lists, null) != null ? [{
-          destination_data_prefix_list_ids = [for n in seq.match_entries.destination_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[n].id]
+          destination_data_prefix_list_ids = [for n in seq.match_entries.destination_data_ipv4_prefix_lists : local.policy_object_ids.security_data_ipv4_prefix_list[n]]
         }] : [],
         try(seq.match_entries.destination_data_ipv4_prefixes, null) != null ? [{
           destination_data_prefixes = seq.match_entries.destination_data_ipv4_prefixes
@@ -38,7 +38,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           destination_data_prefixes_variable = "{{${seq.match_entries.destination_data_ipv4_prefixes_variable}}}"
         }] : [],
         try(seq.match_entries.destination_data_ipv6_prefix_lists, null) != null ? [{
-          destination_data_ipv6_prefix_list_ids = [for n in seq.match_entries.destination_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[n].id]
+          destination_data_ipv6_prefix_list_ids = [for n in seq.match_entries.destination_data_ipv6_prefix_lists : local.policy_object_ids.security_data_ipv6_prefix_list[n]]
         }] : [],
         try(seq.match_entries.destination_data_ipv6_prefixes, null) != null ? [{
           destination_ipv6_data_prefixes = seq.match_entries.destination_data_ipv6_prefixes
@@ -47,7 +47,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           destination_ipv6_data_prefixes_variable = "{{${seq.match_entries.destination_data_ipv6_prefixes_variable}}}"
         }] : [],
         try(seq.match_entries.destination_fqdn_lists, null) != null ? [{
-          destination_fqdn_list_ids = [for n in seq.match_entries.destination_fqdn_lists : sdwan_policy_object_security_fqdn_list.policy_object_security_fqdn_list[n].id]
+          destination_fqdn_list_ids = [for n in seq.match_entries.destination_fqdn_lists : local.policy_object_ids.security_fqdn_list[n]]
         }] : [],
         try(seq.match_entries.destination_fqdns, null) != null ? [{
           destination_fqdns = seq.match_entries.destination_fqdns
@@ -56,7 +56,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           destination_fqdns_variable = "{{${seq.match_entries.destination_fqdns_variable}}}"
         }] : [],
         try(seq.match_entries.destination_geo_location_lists, null) != null ? [{
-          destination_geo_location_list_ids = [for n in seq.match_entries.destination_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[n].id]
+          destination_geo_location_list_ids = [for n in seq.match_entries.destination_geo_location_lists : local.policy_object_ids.security_geolocation_list[n]]
         }] : [],
         try(seq.match_entries.destination_geo_locations, null) != null ? [{
           destination_geo_locations = seq.match_entries.destination_geo_locations
@@ -65,10 +65,10 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           destination_geo_locations_variable = "{{${seq.match_entries.destination_geo_locations_variable}}}"
         }] : [],
         try(seq.match_entries.destination_object_group, null) != null ? [{
-          destination_object_group_list_ids = [sdwan_policy_object_security_object_group.policy_object_security_object_group[seq.match_entries.destination_object_group].id]
+          destination_object_group_list_ids = [local.policy_object_ids.security_object_group[seq.match_entries.destination_object_group]]
         }] : [],
         try(seq.match_entries.destination_port_lists, null) != null ? [{
-          destination_port_list_ids = [for n in seq.match_entries.destination_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[n].id]
+          destination_port_list_ids = [for n in seq.match_entries.destination_port_lists : local.policy_object_ids.security_port_list[n]]
         }] : [],
         try(seq.match_entries.destination_ports, null) != null ? [{
           destination_ports = [for p in seq.match_entries.destination_ports : tostring(p)]
@@ -80,7 +80,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           destination_scalable_group_tag_list_ids = seq.match_entries.destination_scalable_group_tag_lists
         }] : [],
         try(seq.match_entries.protocol_name_lists, null) != null ? [{
-          protocol_name_list_ids = [for n in seq.match_entries.protocol_name_lists : sdwan_policy_object_security_protocol_list.policy_object_security_protocol_list[n].id]
+          protocol_name_list_ids = [for n in seq.match_entries.protocol_name_lists : local.policy_object_ids.security_protocol_list[n]]
         }] : [],
         try(seq.match_entries.protocol_names, null) != null ? [{
           protocol_names = seq.match_entries.protocol_names
@@ -89,10 +89,10 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           protocols = [for p in seq.match_entries.protocols : tostring(p)]
         }] : [],
         try(seq.match_entries.rule_set_lists, null) != null ? [{
-          rule_set_list_ids = [for n in seq.match_entries.rule_set_lists : sdwan_policy_object_security_rule_set.policy_object_security_rule_set[n].id]
+          rule_set_list_ids = [for n in seq.match_entries.rule_set_lists : local.policy_object_ids.security_rule_set[n]]
         }] : [],
         try(seq.match_entries.source_data_ipv4_prefix_lists, null) != null ? [{
-          source_data_prefix_list_ids = [for n in seq.match_entries.source_data_ipv4_prefix_lists : sdwan_policy_object_security_data_ipv4_prefix_list.policy_object_security_data_ipv4_prefix_list[n].id]
+          source_data_prefix_list_ids = [for n in seq.match_entries.source_data_ipv4_prefix_lists : local.policy_object_ids.security_data_ipv4_prefix_list[n]]
         }] : [],
         try(seq.match_entries.source_data_ipv4_prefixes, null) != null ? [{
           source_data_prefixes = seq.match_entries.source_data_ipv4_prefixes
@@ -101,7 +101,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           source_data_prefixes_variable = "{{${seq.match_entries.source_data_ipv4_prefixes_variable}}}"
         }] : [],
         try(seq.match_entries.source_data_ipv6_prefix_lists, null) != null ? [{
-          source_data_ipv6_prefix_list_ids = [for n in seq.match_entries.source_data_ipv6_prefix_lists : sdwan_policy_object_security_data_ipv6_prefix_list.policy_object_security_data_ipv6_prefix_list[n].id]
+          source_data_ipv6_prefix_list_ids = [for n in seq.match_entries.source_data_ipv6_prefix_lists : local.policy_object_ids.security_data_ipv6_prefix_list[n]]
         }] : [],
         try(seq.match_entries.source_data_ipv6_prefixes, null) != null ? [{
           source_ipv6_data_prefixes = seq.match_entries.source_data_ipv6_prefixes
@@ -110,7 +110,7 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           source_ipv6_data_prefixes_variable = "{{${seq.match_entries.source_data_ipv6_prefixes_variable}}}"
         }] : [],
         try(seq.match_entries.source_geo_location_lists, null) != null ? [{
-          source_geo_location_list_ids = [for n in seq.match_entries.source_geo_location_lists : sdwan_policy_object_security_geolocation_list.policy_object_security_geolocation_list[n].id]
+          source_geo_location_list_ids = [for n in seq.match_entries.source_geo_location_lists : local.policy_object_ids.security_geolocation_list[n]]
         }] : [],
         try(seq.match_entries.source_geo_locations, null) != null ? [{
           source_geo_locations = seq.match_entries.source_geo_locations
@@ -128,10 +128,10 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           source_identity_users = seq.match_entries.source_identity_users
         }] : [],
         try(seq.match_entries.source_object_group, null) != null ? [{
-          source_object_group_list_ids = [sdwan_policy_object_security_object_group.policy_object_security_object_group[seq.match_entries.source_object_group].id]
+          source_object_group_list_ids = [local.policy_object_ids.security_object_group[seq.match_entries.source_object_group]]
         }] : [],
         try(seq.match_entries.source_port_lists, null) != null ? [{
-          source_port_list_ids = [for n in seq.match_entries.source_port_lists : sdwan_policy_object_security_port_list.policy_object_security_port_list[n].id]
+          source_port_list_ids = [for n in seq.match_entries.source_port_lists : local.policy_object_ids.security_port_list[n]]
         }] : [],
         try(seq.match_entries.source_ports, null) != null ? [{
           source_ports = [for p in seq.match_entries.source_ports : tostring(p)]
@@ -160,12 +160,12 @@ resource "sdwan_embedded_security_ngfw_policy" "embedded_security_ngfw_policy" {
           ? concat(
             [{ type = "connectionEvents", parameter = "true", parameter_id = null }],
             try(seq.actions.advanced_inspection_profile, null) != null
-            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }]
+            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = local.policy_object_ids.unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile] }]
             : []
           )
           : (
             try(seq.actions.advanced_inspection_profile, null) != null
-            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile].id }]
+            ? [{ type = "advancedInspectionProfile", parameter = null, parameter_id = local.policy_object_ids.unified_advanced_inspection_profile[seq.actions.advanced_inspection_profile] }]
             : null
           )
         )
@@ -216,15 +216,15 @@ resource "sdwan_embedded_security_policy" "embedded_security_policy" {
         entries = try(length(policy.destination_zones) == 0, true) ? null : [
           for dst in policy.destination_zones : {
             source_zone              = contains(["self", "no_zone", "untrusted"], try(policy.source_zone, "")) ? (policy.source_zone == "no_zone" ? "default" : policy.source_zone) : null
-            source_zone_list_id      = contains(["self", "no_zone", "untrusted"], try(policy.source_zone, "")) ? null : sdwan_policy_object_security_zone.policy_object_security_zone[policy.source_zone].id
+            source_zone_list_id      = contains(["self", "no_zone", "untrusted"], try(policy.source_zone, "")) ? null : local.policy_object_ids.security_zone[policy.source_zone]
             destination_zone         = contains(["self", "no_zone", "untrusted"], dst) ? (dst == "no_zone" ? "default" : dst) : null
-            destination_zone_list_id = contains(["self", "no_zone", "untrusted"], dst) ? null : sdwan_policy_object_security_zone.policy_object_security_zone[dst].id
+            destination_zone_list_id = contains(["self", "no_zone", "untrusted"], dst) ? null : local.policy_object_ids.security_zone[dst]
           }
         ]
       }
     ],
     try(each.value.settings.advanced_inspection_profile, null) != null ? [{
-      advanced_inspection_profile_policy_id = sdwan_policy_object_unified_advanced_inspection_profile.policy_object_unified_advanced_inspection_profile[each.value.settings.advanced_inspection_profile].id
+      advanced_inspection_profile_policy_id = local.policy_object_ids.unified_advanced_inspection_profile[each.value.settings.advanced_inspection_profile]
     }] : []
     # ssl_decryption_profile_id not yet implemented
   )

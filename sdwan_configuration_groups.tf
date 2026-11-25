@@ -5,39 +5,27 @@ resource "sdwan_configuration_group" "configuration_group" {
   description = try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
-    try(each.value.cli_profile, null) == null ? [] : [sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id],
-    try(each.value.other_profile, null) == null ? [] : [sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id],
-    try(each.value.policy_object_profile, null) == null ? [] : [sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id],
-    try(each.value.service_profile, null) == null ? [] : [sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id],
-    try(each.value.system_profile, null) == null ? [] : [sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id],
-    try(each.value.transport_profile, null) == null ? [] : [sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id],
+    try(each.value.cli_profile, null) == null ? [] : [local.profile_ids.cli_profiles[each.value.cli_profile]],
+    try(each.value.other_profile, null) == null ? [] : [local.profile_ids.other_profiles[each.value.other_profile]],
+    try(each.value.policy_object_profile, null) == null ? [] : [local.policy_object_profile_id],
+    try(each.value.service_profile, null) == null ? [] : [local.profile_ids.service_profiles[each.value.service_profile]],
+    try(each.value.system_profile, null) == null ? [] : [local.profile_ids.system_profiles[each.value.system_profile]],
+    try(each.value.transport_profile, null) == null ? [] : [local.profile_ids.transport_profiles[each.value.transport_profile]],
   ])
-  devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
-    for router in local.routers : {
-      id             = router.chassis_id
-      topology_label = try(router.topology_label, null)
-      deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
-      variables = try(length(router.device_variables) == 0, true) ? null : [for name, value in router.device_variables : {
-        name       = name == "region_id" ? "region-id" : name
-        value      = try(tostring(value), null)
-        list_value = try(tolist(value), null)
-      }]
-    } if router.configuration_group == each.value.name
-  ]
   feature_versions = length(flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
-    try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.cli_profile, null) == null ? [] : lookup(local.cli_profile_features_versions, each.value.cli_profile, []),
+    try(each.value.other_profile, null) == null ? [] : lookup(local.other_profile_features_versions, each.value.other_profile, []),
+    local.configuration_group_policy_object_versions[each.key],
+    try(each.value.service_profile, null) == null ? [] : lookup(local.service_profile_features_versions, each.value.service_profile, []),
+    try(each.value.system_profile, null) == null ? [] : lookup(local.system_profile_features_versions, each.value.system_profile, []),
+    try(each.value.transport_profile, null) == null ? [] : lookup(local.transport_profile_features_versions, each.value.transport_profile, [])
     ])) == 0 ? null : flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
-    try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.cli_profile, null) == null ? [] : lookup(local.cli_profile_features_versions, each.value.cli_profile, []),
+    try(each.value.other_profile, null) == null ? [] : lookup(local.other_profile_features_versions, each.value.other_profile, []),
+    local.configuration_group_policy_object_versions[each.key],
+    try(each.value.service_profile, null) == null ? [] : lookup(local.service_profile_features_versions, each.value.service_profile, []),
+    try(each.value.system_profile, null) == null ? [] : lookup(local.system_profile_features_versions, each.value.system_profile, []),
+    try(each.value.transport_profile, null) == null ? [] : lookup(local.transport_profile_features_versions, each.value.transport_profile, [])
   ])
   topology_devices = try(each.value.device_tags, null) == null ? null : [for index, device_tag in try(each.value.device_tags, []) : {
     criteria_attribute = "tag"
@@ -61,7 +49,6 @@ resource "sdwan_configuration_group" "configuration_group" {
   topology_site_devices = try(each.value.device_tags, null) == null ? null : 2
   depends_on = [
     sdwan_tag.tag,
-    sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers,
     sdwan_policy_object_app_probe_class.policy_object_app_probe_class,
     sdwan_policy_object_application_list.policy_object_application_list,
     sdwan_policy_object_color_list.policy_object_color_list,
@@ -89,7 +76,50 @@ resource "sdwan_configuration_group" "configuration_group" {
   ]
   lifecycle {
     create_before_destroy = true
+    # Features per device tag need the feature IDs, which only the state that manages the profile
+    # has: fail the plan instead of dropping a feature that isn't found.
+    precondition {
+      condition = length([
+        for feature in flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])]) : feature
+        if try(local.unsupported_features[each.value.transport_profile][feature], local.unsupported_features[each.value.service_profile][feature], null) == null
+        ]) == 0 || alltrue([
+        for type, key in { transport_profiles = "transport_profile", service_profiles = "service_profile" } :
+        try(each.value[key], null) == null || contains([for p in try(local.feature_profiles[type], []) : p.name], try(each.value[key], ""))
+      ])
+      error_message = "Configuration group ${each.key} lists features per device tag that aren't in a transport or service profile this state manages: ${join(", ", [for feature in flatten([for tag in try(each.value.device_tags, []) : try(tag.features, [])]) : feature if try(local.unsupported_features[each.value.transport_profile][feature], local.unsupported_features[each.value.service_profile][feature], null) == null])}. Claim the profile that holds them with the group (ownership)."
+    }
   }
+}
+
+resource "sdwan_configuration_group_devices" "configuration_group_devices" {
+  # One per group the routers of this state use, whichever state manages the group. The version is
+  # known only when this state manages the group; otherwise a group change reaches the devices through
+  # SD-WAN Manager's out-of-date flag.
+  for_each                    = toset([for router in local.device_routers : router.configuration_group if router.configuration_group != null])
+  configuration_group_id      = local.configuration_group_ids[each.key]
+  configuration_group_version = try(sdwan_configuration_group.configuration_group[each.key].version, null)
+  solution                    = "sdwan"
+  # Keyed by chassis ID: adding, removing or changing one router shows only that router in the plan.
+  devices = {
+    for router in local.device_routers : router.chassis_id => {
+      topology_label = try(router.topology_label, null)
+      deploy         = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
+      # Keyed by name: a changed value shows only that variable in the plan.
+      variables = try(length(router.device_variables) == 0, true) ? null : {
+        for name, value in router.device_variables : (name == "region_id" ? "region-id" : name) => {
+          value      = try(tostring(value), null)
+          list_value = try(tolist(value), null)
+        }
+      }
+    } if router.configuration_group == each.key && !router.handover
+  }
+  # Routers of handover_sites leave this state without a release. The instance stays, with no devices,
+  # when they were its last routers, so the handover is an update, not a delete that releases them.
+  retain_devices = length([for router in local.device_routers : router if router.configuration_group == each.key && router.handover]) == 0 ? null : [
+    for router in local.device_routers : router.chassis_id if router.configuration_group == each.key && router.handover
+  ]
+  # Certificate validity and the WAN edge list push come before the deploy.
+  depends_on = [sdwan_tag.tag, sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate, sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
 }
 
 locals {
@@ -105,41 +135,38 @@ locals {
       try(profile.ucse, null) == null ? [] : [sdwan_other_ucse_feature.other_ucse_feature["${profile.name}-ucse"].version],
     ])
   }
-  policy_object_profile_features_versions = flatten([
-    try(local.feature_profiles.policy_object_profile.as_path_lists, null) == null ? [] : [for as_path_list in try(local.feature_profiles.policy_object_profile.as_path_lists, []) : [
-      sdwan_policy_object_as_path_list.policy_object_as_path_list[as_path_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.class_maps, null) == null ? [] : [for class_map in try(local.feature_profiles.policy_object_profile.class_maps, []) : [
-      sdwan_policy_object_class_map.policy_object_class_map[class_map.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, null) == null ? [] : [for ipv4_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, []) : [
-      sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[ipv4_data_prefix_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, null) == null ? [] : [for ipv6_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, []) : [
-      sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[ipv6_data_prefix_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.expanded_community_lists, null) == null ? [] : [for expanded_community_list in try(local.feature_profiles.policy_object_profile.expanded_community_lists, []) : [
-      sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[expanded_community_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.extended_community_lists, null) == null ? [] : [for extended_community_list in try(local.feature_profiles.policy_object_profile.extended_community_lists, []) : [
-      sdwan_policy_object_extended_community_list.policy_object_extended_community_list[extended_community_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, null) == null ? [] : [for ipv4_prefix_list in try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, []) : [
-      sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[ipv4_prefix_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, null) == null ? [] : [for ipv6_prefix_list in try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, []) : [
-      sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[ipv6_prefix_list.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.mirrors, null) == null ? [] : [for mirror in try(local.feature_profiles.policy_object_profile.mirrors, []) : [
-      sdwan_policy_object_mirror.policy_object_mirror[mirror.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.policers, null) == null ? [] : [for policer in try(local.feature_profiles.policy_object_profile.policers, []) : [
-      sdwan_policy_object_policer.policy_object_policer[policer.name].version,
-    ]],
-    try(local.feature_profiles.policy_object_profile.standard_community_lists, null) == null ? [] : [for standard_community_list in try(local.feature_profiles.policy_object_profile.standard_community_lists, []) : [
-      sdwan_policy_object_standard_community_list.policy_object_standard_community_list[standard_community_list.name].version,
-    ]],
+  # Policy objects that system, transport and service features can reference (the other types are
+  # used by policy and topology groups only).
+  configuration_group_policy_objects = flatten([
+    for objects in [
+      sdwan_policy_object_as_path_list.policy_object_as_path_list,
+      sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list,
+      sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list,
+      sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list,
+      sdwan_policy_object_extended_community_list.policy_object_extended_community_list,
+      sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list,
+      sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list,
+      sdwan_policy_object_mirror.policy_object_mirror,
+      sdwan_policy_object_policer.policy_object_policer,
+      sdwan_policy_object_standard_community_list.policy_object_standard_community_list,
+    ] : [for name, object in objects : { name = name, version = object.version }]
   ])
+  # Versions of the policy objects each profile references, so that a change to an object redeploys
+  # only the groups that use it. An object is referenced when its name appears as a string value in
+  # the profile's data; a false match only adds a version.
+  profile_policy_object_versions = {
+    for type in ["service_profiles", "system_profiles", "transport_profiles"] : type => {
+      for profile in try(local.feature_profiles[type], []) : profile.name => [
+        for object in local.configuration_group_policy_objects : object.version if strcontains(jsonencode(profile), jsonencode(object.name))
+      ]
+    }
+  }
+  configuration_group_policy_object_versions = {
+    for g in local.configuration_groups : g.name => flatten([
+      for type, key in { service_profiles = "service_profile", system_profiles = "system_profile", transport_profiles = "transport_profile" } :
+      try(local.profile_policy_object_versions[type][g[key]], [])
+    ])
+  }
   service_profile_features_versions = {
     for profile in try(local.feature_profiles.service_profiles, []) : profile.name => flatten([
       try(profile.appqoe_features, null) == null ? [] : [for appqoe_feature in try(profile.appqoe_features, []) : [
@@ -279,11 +306,15 @@ locals {
       try(profile.management_vpn.ethernet_interfaces, null) == null ? [] : [for interface in try(profile.management_vpn.ethernet_interfaces, []) : [
         sdwan_transport_management_vpn_interface_ethernet_feature.transport_management_vpn_interface_ethernet_feature["${profile.name}-management_vpn-${interface.name}"].version
       ]],
+      try(profile.ospf_features, null) == null ? [] : [for ospf_feature in try(profile.ospf_features, []) : [
+        sdwan_transport_routing_ospf_feature.transport_routing_ospf_feature["${profile.name}-${ospf_feature.name}"].version
+      ]],
       try(profile.route_policies, null) == null ? [] : [for route_policy in try(profile.route_policies, []) : [
         sdwan_transport_route_policy_feature.transport_route_policy_feature["${profile.name}-${route_policy.name}"].version
       ]],
       try(profile.wan_vpn, null) == null ? [] : [sdwan_transport_wan_vpn_feature.transport_wan_vpn_feature["${profile.name}-wan_vpn"].version],
       try(profile.wan_vpn.bgp, null) == null ? [] : [sdwan_transport_wan_vpn_feature_associate_routing_bgp_feature.transport_wan_vpn_feature_associate_routing_bgp_feature["${profile.name}-wan_vpn-routing_bgp"].version],
+      try(profile.wan_vpn.ospf, null) == null ? [] : [sdwan_transport_wan_vpn_feature_associate_routing_ospf_feature.transport_wan_vpn_feature_associate_routing_ospf_feature["${profile.name}-wan_vpn-routing_ospf"].version],
       try(profile.wan_vpn.cellular_interfaces, null) == null ? [] : [for interface in try(profile.wan_vpn.cellular_interfaces, []) : [
         sdwan_transport_wan_vpn_interface_cellular_feature.transport_wan_vpn_interface_cellular_feature["${profile.name}-wan_vpn-${interface.name}"].version,
         try(interface.ipv4_tracker, null) == null ? [] : [sdwan_transport_wan_vpn_interface_cellular_feature_associate_tracker_feature.transport_wan_vpn_interface_cellular_feature_associate_tracker_feature["${profile.name}-wan_vpn-${interface.name}-tracker"].version],

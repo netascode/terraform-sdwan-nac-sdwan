@@ -20,21 +20,51 @@ resource "sdwan_policy_group" "policy_group" {
     try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
     try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
     try(each.value.sig_security, null) == null ? [] : local.sig_security_profile_policy_versions[each.value.sig_security],
+    compact([local.policy_object_profile_id]),
+    try(each.value.application_priority, null) == null ? [] : [local.profile_ids.application_priority_profiles[each.value.application_priority]],
+    try(each.value.ngfw_security, null) == null ? [] : [local.profile_ids.ngfw_security_profiles[each.value.ngfw_security]],
+    try(each.value.sse, null) == null ? [] : [local.profile_ids.sse_profiles[each.value.sse]],
+  ])
+  policy_versions = length(concat(
+    try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
+    try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
+    try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
+    )) == 0 ? null : concat(
+    try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
+    try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
+    try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
   )
-  devices = length([for router in local.routers : router if router.policy_group == each.value.name]) == 0 ? null : [
-    for router in local.routers : {
-      id     = router.chassis_id
+  depends_on = [
+    sdwan_tag.tag,
+    sdwan_configuration_group.configuration_group,
+  ]
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "sdwan_policy_group_devices" "policy_group_devices" {
+  # One per group the routers of this state use, as for configuration groups.
+  for_each             = toset([for router in local.device_routers : router.policy_group if router.policy_group != null])
+  policy_group_id      = local.policy_group_ids[each.key]
+  policy_group_version = try(sdwan_policy_group.policy_group[each.key].version, null)
+  solution             = "sdwan"
+  devices = {
+    for router in local.device_routers : router.chassis_id => {
       deploy = try(router.policy_group_deploy, local.defaults.sdwan.sites.routers.policy_group_deploy)
       variables = (
         try(length(router.policy_variables) == 0, true) &&
         try(length(router.cor_saas_entries) == 0, true)
-        ) ? null : concat(
-        try([for name, value in router.policy_variables : {
-          name       = name
+        ) ? null : merge(
+        # try() around the whole for: policy_variables is null when only CoR SaaS variables are set.
+        try({ for name, value in router.policy_variables : name => {
           value      = try(tostring(value), null)
           list_value = try(tolist(value), null)
-        }], []),
-        try(router.cor_saas_entries, []),
+        } }, {}),
+        { for entry in try(router.cor_saas_entries, []) : entry.name => {
+          value      = entry.value
+          list_value = entry.list_value
+        } },
       )
     } if router.policy_group == each.value.name
   ]
@@ -48,7 +78,14 @@ resource "sdwan_policy_group" "policy_group" {
       condition     = try(each.value.sse, null) == null || try(each.value.sig_security, null) == null
       error_message = "Policy group '${each.value.name}': sse and sig_security cannot be used together in one policy group (not supported by SD-WAN Manager)."
     }
+    } if router.policy_group == each.key && !router.handover
   }
+  # Routers of handover_sites leave this state without a release, as for configuration groups.
+  retain_devices = length([for router in local.device_routers : router if router.policy_group == each.key && router.handover]) == 0 ? null : [
+    for router in local.device_routers : router.chassis_id if router.policy_group == each.key && router.handover
+  ]
+  # A policy group deploy needs the device's configuration group deployed first.
+  depends_on = [sdwan_configuration_group_devices.configuration_group_devices]
 }
 
 locals {

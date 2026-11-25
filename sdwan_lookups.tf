@@ -15,6 +15,7 @@ locals {
     application_priority = "application_priority_profiles"
     ngfw_security        = "ngfw_security_profiles"
     sse                  = "sse_profiles"
+    sig_security         = "sig_security_profiles"
   }
   group_profile_refs = concat(
     flatten([for g in local.configuration_groups : [
@@ -73,6 +74,11 @@ data "sdwan_sse_feature_profile" "lookup" {
   name     = each.key
 }
 
+data "sdwan_sig_security_feature_profile" "lookup" {
+  for_each = local.profile_lookups.sig_security_profiles
+  name     = each.key
+}
+
 locals {
   profile_ids = {
     cli_profiles                  = merge({ for k, v in data.sdwan_cli_feature_profile.lookup : k => v.id }, { for k, v in sdwan_cli_feature_profile.cli_feature_profile : k => v.id })
@@ -83,6 +89,7 @@ locals {
     application_priority_profiles = merge({ for k, v in data.sdwan_application_priority_feature_profile.lookup : k => v.id }, { for k, v in sdwan_application_priority_feature_profile.application_priority_feature_profile : k => v.id })
     ngfw_security_profiles        = merge({ for k, v in data.sdwan_embedded_security_feature_profile.lookup : k => v.id }, { for k, v in sdwan_embedded_security_feature_profile.embedded_security_feature_profile : k => v.id })
     sse_profiles                  = merge({ for k, v in data.sdwan_sse_feature_profile.lookup : k => v.id }, { for k, v in sdwan_sse_feature_profile.sse_feature_profile : k => v.id })
+    sig_security_profiles         = merge({ for k, v in data.sdwan_sig_security_feature_profile.lookup : k => v.id }, { for k, v in sdwan_sig_security_feature_profile.sig_security_feature_profile : k => v.id })
   }
 
   # Groups the device resources of this state use (device_routers) but this state doesn't manage.

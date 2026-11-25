@@ -1,50 +1,140 @@
-class Rule:
+from nac_validate import RuleBase, Violation
+
+
+class Rule(RuleBase):
     id = "413"
     description = "Validate access lists"
     severity = "HIGH"
 
+    title = "INVALID ACCESS LIST SEQUENCE"
+    affected_items_label = "ACL sequences"
+    explanation = """\
+The match entries and actions of an IPv4/IPv6 ACL sequence must be
+consistent. ICMP message matches require protocol 1 only, a sequence
+dropping traffic cannot also set, redirect, mirror, police or service
+chain it, and a service chain needs both its name and its VPN (a fallback
+needs at least one of them). SD-WAN Manager rejects such sequences."""
+    recommendation = """\
+Fix the ACL sequence so that its match entries and actions agree:
+
+  sdwan:
+    feature_profiles:
+      service_profiles:
+        - name: SERVICE
+          ipv4_acls:
+            - name: ACL1
+              default_action: drop
+              sequences:
+                - id: 1
+                  base_action: accept
+                  match_entries:
+                    protocols: [1]
+                    icmp_messages: [echo]
+                  actions:
+                    service_chain_name: SC1
+                    service_chain_vpn: 10
+                    service_chain_fallback: true"""
+
+    # Actions not allowed on an IPv4 sequence with base_action drop.
+    IPV4_DROP_INVALID_ACTIONS = [
+        "dscp",
+        "ipv4_next_hop",
+        "mirror",
+        "policer",
+        "service_chain_fallback",
+        "service_chain_fallback_variable",
+        "service_chain_name",
+        "service_chain_name_variable",
+        "service_chain_vpn",
+        "service_chain_vpn_variable",
+    ]
+    # The only actions allowed on an IPv6 sequence with base_action drop.
+    IPV6_DROP_VALID_ACTIONS = ["log", "counter_name"]
+    SERVICE_CHAIN_NAME = ["service_chain_name", "service_chain_name_variable"]
+    SERVICE_CHAIN_VPN = ["service_chain_vpn", "service_chain_vpn_variable"]
+    SERVICE_CHAIN_FALLBACK = ["service_chain_fallback", "service_chain_fallback_variable"]
+
+    @classmethod
+    def _icmp(cls, sequence, path, details):
+        match_entries = sequence.get("match_entries") or {}
+        if not match_entries.get("icmp_messages"):
+            return
+        protocols = match_entries.get("protocols")
+        if not protocols:
+            yield Violation(
+                message="ICMP messages are matched but protocol 1 is not matched",
+                path=f"{path}.match_entries.protocols",
+                details={**details, "protocols": protocols},
+            )
+        elif protocols != [1]:
+            yield Violation(
+                message=f"ICMP messages are matched but protocols is {protocols} instead of [1]",
+                path=f"{path}.match_entries.protocols",
+                details={**details, "protocols": protocols},
+            )
+
+    @classmethod
+    def _drop_actions(cls, sequence, acl_type, path, details):
+        if sequence.get("base_action") != "drop":
+            return
+        actions = sequence.get("actions") or {}
+        if acl_type == "ipv4_acls":
+            invalid = [action for action in cls.IPV4_DROP_INVALID_ACTIONS if action in actions]
+        else:
+            invalid = [action for action in actions if action not in cls.IPV6_DROP_VALID_ACTIONS]
+        if invalid:
+            yield Violation(
+                message=f"Base action is drop but the sequence also has actions: {', '.join(invalid)}",
+                path=f"{path}.actions",
+                details={**details, "actions": invalid},
+            )
+
+    @classmethod
+    def _service_chain(cls, sequence, path, details):
+        actions = sequence.get("actions") or {}
+        has_name_key = any(key in actions for key in cls.SERVICE_CHAIN_NAME)
+        has_vpn_key = any(key in actions for key in cls.SERVICE_CHAIN_VPN)
+        has_name = any(actions.get(key) for key in cls.SERVICE_CHAIN_NAME)
+        has_vpn = any(actions.get(key) for key in cls.SERVICE_CHAIN_VPN)
+        has_fallback = any(actions.get(key) for key in cls.SERVICE_CHAIN_FALLBACK)
+        if has_name_key and not has_vpn:
+            yield Violation(
+                message="Service chain name is defined but service_chain_vpn is missing",
+                path=f"{path}.actions.service_chain_vpn",
+                details=details,
+            )
+        if has_vpn_key and not has_name:
+            yield Violation(
+                message="Service chain VPN is defined but service_chain_name is missing",
+                path=f"{path}.actions.service_chain_name",
+                details=details,
+            )
+        if has_fallback and not has_name and not has_vpn:
+            yield Violation(
+                message="Service chain fallback is defined but both service_chain_name and service_chain_vpn are missing",
+                path=f"{path}.actions.service_chain_fallback",
+                details=details,
+            )
+
     @classmethod
     def match(cls, inventory):
-        results = []
-        for feature_profile_type in ["transport_profiles", "service_profiles"]:
-            for feature_profile in inventory.get("sdwan", {}).get("feature_profiles", {}).get(feature_profile_type, []):
-                # For IPv4 ACLS
-                for acl in feature_profile.get("ipv4_acls", []):
-                    for sequence in acl.get("sequences"):
-                        if sequence.get("match_entries", {}).get("icmp_messages"):
-                            # If icmp_messages is defined, protocol should be 1 and only 1
-                            if not sequence.get("match_entries").get("protocols"):
-                                results.append(f"icmp_messages is defined in the sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'], but protocol 1 is not included in match criterias")
-                            else:
-                                if sequence.get("match_entries").get("protocols") != [1]:
-                                    results.append(f"icmp_messages is defined in the sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'], but protocols is not set to 1")
-                        if sequence.get("base_action") == "drop":
-                            # Some actions should not be allowed when base_action is drop
-                            invalid_actions = []
-                            for action in ["dscp", "ipv4_next_hop", "mirror", "policer", "service_chain_fallback", "service_chain_fallback_variable" , "service_chain_name", "service_chain_name_variable", "service_chain_vpn", "service_chain_vpn_variable"]:
-                                if action in sequence.get("actions", {}).keys():
-                                    invalid_actions.append(action)
-                            if invalid_actions:
-                                results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'] has base_action 'drop' but also has actions: {', '.join(invalid_actions)}")
-                        if any(sc_name in sequence.get("actions", {}) for sc_name in ["service_chain_name", "service_chain_name_variable"]) and not any(sequence.get("actions", {}).get(sc_params) for sc_params in ["service_chain_vpn", "service_chain_vpn_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain name or variable defined but is missing service_chain_vpn or service_chain_vpn_variable action")
-                        if any(sc_vpn in sequence.get("actions", {}) for sc_vpn in ["service_chain_vpn", "service_chain_vpn_variable"] ) and not any(sequence.get("actions", {}).get(sc_name) for sc_name in ["service_chain_name", "service_chain_name_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain vpn or vpn variable defined but is missing service_chain_name or service_chain_name_variable action")
-                        if any(sequence.get("actions", {}).get(sc_fbr) for sc_fbr in ["service_chain_fallback", "service_chain_fallback_variable"]) and not any(sequence.get("actions", {}).get(sc_name) for sc_name in ["service_chain_name", "service_chain_name_variable"]) and not any(sequence.get("actions", {}).get(sc_vpn) for sc_vpn in ["service_chain_vpn", "service_chain_vpn_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv4_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain fallback defined but is missing both service_chain_name/service_chain_name_variable and service_chain_vpn/service_chain_vpn_variable actions")
-                # For IPv6 ACLS
-                for acl in feature_profile.get("ipv6_acls", []):
-                    for sequence in acl.get("sequences"):
-                        if sequence.get("base_action") == "drop":
-                            # Some actions should not be allowed when base_action is drop
-                            valid_actions_v6 = ["log", "counter_name"]
-                            for action in sequence.get("actions", {}).keys():
-                                if action not in valid_actions_v6:
-                                    results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv6_acls['{acl['name']}'].sequences['{sequence['id']}'] has base_action 'drop' but also has invalid action: {action}")
-                        if any(sc_name in sequence.get("actions", {}) for sc_name in ["service_chain_name", "service_chain_name_variable"]) and not any(sequence.get("actions", {}).get(sc_params) for sc_params in ["service_chain_vpn", "service_chain_vpn_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv6_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain name or variable defined but is missing service_chain_vpn or service_chain_vpn_variable action")
-                        if any(sc_vpn in sequence.get("actions", {}) for sc_vpn in ["service_chain_vpn", "service_chain_vpn_variable"] ) and not any(sequence.get("actions", {}).get(sc_name) for sc_name in ["service_chain_name", "service_chain_name_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv6_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain vpn or vpn variable defined but is missing service_chain_name or service_chain_name_variable action")
-                        if any(sequence.get("actions", {}).get(sc_fbr) for sc_fbr in ["service_chain_fallback", "service_chain_fallback_variable"]) and not any(sequence.get("actions", {}).get(sc_name) for sc_name in ["service_chain_name", "service_chain_name_variable"]) and not any(sequence.get("actions", {}).get(sc_vpn) for sc_vpn in ["service_chain_vpn", "service_chain_vpn_variable"]):
-                            results.append(f"sdwan.feature_profiles.{feature_profile_type}['{feature_profile['name']}'].ipv6_acls['{acl['name']}'].sequences['{sequence['id']}'] has service chain fallback defined but is missing both service_chain_name/service_chain_name_variable and service_chain_vpn/service_chain_vpn_variable actions")
-        return results
+        violations = []
+        feature_profiles = (inventory.get("sdwan") or {}).get("feature_profiles") or {}
+        for profile_type in ("transport_profiles", "service_profiles"):
+            for profile in feature_profiles.get(profile_type) or []:
+                profile_name = profile.get("name", "")
+                for acl_type in ("ipv4_acls", "ipv6_acls"):
+                    for acl in profile.get(acl_type) or []:
+                        acl_name = acl.get("name", "")
+                        for sequence in acl.get("sequences") or []:
+                            sequence_id = sequence.get("id")
+                            path = (
+                                f"sdwan.feature_profiles.{profile_type}[name={profile_name}]"
+                                f".{acl_type}[name={acl_name}].sequences[id={sequence_id}]"
+                            )
+                            details = {"feature_profile": profile_name, "acl": acl_name, "sequence": sequence_id}
+                            if acl_type == "ipv4_acls":
+                                violations.extend(cls._icmp(sequence, path, details))
+                            violations.extend(cls._drop_actions(sequence, acl_type, path, details))
+                            violations.extend(cls._service_chain(sequence, path, details))
+        return violations

@@ -5385,7 +5385,7 @@ feature_profiles_system_aaa_user:
   privilege_variable: regex('^[./\[\]a-zA-Z0-9_-]{1,128}$', required=False)
   public_key_chains: list(include("feature_profiles_system_aaa_user_public_key_chain"), max=2, required=False)
 feature_profiles_system_aaa_user_public_key_chain:
-  key: regex('^AAAA[0-9A-Za-z+/]+[=]{0,3}$', min=1, max=1024, required=False)
+  key: regex('^AAAA[0-9A-Za-z+/]+[=]{0,3}$', required=False)
   key_variable: regex('^[./\[\]a-zA-Z0-9_-]{1,128}$', required=False)
 feature_profiles_system_banner:
   name: regex('^[^&<>! \"]{1,128}$', required=False)

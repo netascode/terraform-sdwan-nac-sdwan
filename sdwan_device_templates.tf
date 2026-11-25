@@ -271,7 +271,10 @@ locals {
   routers = flatten([
     for site in try(local.sites, []) : [
       for router in try(site.routers, []) : {
+        site_id                    = site.id
+        handover                   = contains(var.handover_sites, site.id)
         chassis_id                 = router.chassis_id
+        certificate_validity       = try(router.certificate_validity, null)
         configuration_group        = try(router.configuration_group, null)
         configuration_group_deploy = try(router.configuration_group_deploy, local.defaults.sdwan.sites.routers.configuration_group_deploy)
         policy_group               = try(router.policy_group, null)
@@ -295,6 +298,9 @@ locals {
 }
 
 resource "sdwan_attach_feature_device_template" "attach_feature_device_template" {
+  # Certificate validity and the WAN edge list push come before the attachment.
+  depends_on = [sdwan_wan_edge_certificate_validate.wan_edge_certificate_validate, sdwan_send_wan_edge_list_to_controllers.send_wan_edge_list_to_controllers]
+
   for_each = {
     for device_template in try(local.edge_device_templates, {}) :
     device_template.name => device_template
@@ -305,11 +311,11 @@ resource "sdwan_attach_feature_device_template" "attach_feature_device_template"
   }
   id      = sdwan_feature_device_template.feature_device_template[each.value.name].id
   version = sdwan_feature_device_template.feature_device_template[each.value.name].version
-  devices = [
-    for r in local.routers : {
-      id        = r.chassis_id
+  # Keyed by chassis ID: adding, removing or changing one router shows only that router in the plan.
+  devices = {
+    for r in local.routers : r.chassis_id => {
       variables = r.device_variables
     }
     if r.device_template == each.value.name
-  ]
+  }
 }

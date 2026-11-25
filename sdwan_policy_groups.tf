@@ -4,35 +4,22 @@ resource "sdwan_policy_group" "policy_group" {
   description = try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
-    try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, []),
-    try(each.value.application_priority, null) == null ? [] : [sdwan_application_priority_feature_profile.application_priority_feature_profile[each.value.application_priority].id],
-    try(each.value.ngfw_security, null) == null ? [] : [sdwan_embedded_security_feature_profile.embedded_security_feature_profile[each.value.ngfw_security].id],
-    try(each.value.sse, null) == null ? [] : [sdwan_sse_feature_profile.sse_feature_profile[each.value.sse].id],
-    try(each.value.sig_security, null) == null ? [] : [sdwan_sig_security_feature_profile.sig_security_feature_profile[each.value.sig_security].id],
-  ])
-  policy_versions = length(concat(
-    try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
-    try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
-    try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
-    try(each.value.sig_security, null) == null ? [] : local.sig_security_profile_policy_versions[each.value.sig_security],
-    )) == 0 ? null : concat(
-    try(each.value.application_priority, null) == null ? [] : local.application_priority_policies_versions[each.value.application_priority],
-    try(each.value.ngfw_security, null) == null ? [] : local.embedded_security_policies_versions[each.value.ngfw_security],
-    try(each.value.sse, null) == null ? [] : local.sse_profile_policy_versions[each.value.sse],
-    try(each.value.sig_security, null) == null ? [] : local.sig_security_profile_policy_versions[each.value.sig_security],
     compact([local.policy_object_profile_id]),
     try(each.value.application_priority, null) == null ? [] : [local.profile_ids.application_priority_profiles[each.value.application_priority]],
     try(each.value.ngfw_security, null) == null ? [] : [local.profile_ids.ngfw_security_profiles[each.value.ngfw_security]],
     try(each.value.sse, null) == null ? [] : [local.profile_ids.sse_profiles[each.value.sse]],
+    try(each.value.sig_security, null) == null ? [] : [local.profile_ids.sig_security_profiles[each.value.sig_security]],
   ])
   policy_versions = length(concat(
     try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
     try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
     try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
+    try(each.value.sig_security, null) == null ? [] : lookup(local.sig_security_profile_policy_versions, each.value.sig_security, []),
     )) == 0 ? null : concat(
     try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
     try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
     try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
+    try(each.value.sig_security, null) == null ? [] : lookup(local.sig_security_profile_policy_versions, each.value.sig_security, []),
   )
   depends_on = [
     sdwan_tag.tag,
@@ -40,6 +27,10 @@ resource "sdwan_policy_group" "policy_group" {
   ]
   lifecycle {
     create_before_destroy = true
+    precondition {
+      condition     = try(each.value.sse, null) == null || try(each.value.sig_security, null) == null
+      error_message = "Policy group '${each.value.name}': sse and sig_security cannot be used together in one policy group."
+    }
   }
 }
 
@@ -66,18 +57,6 @@ resource "sdwan_policy_group_devices" "policy_group_devices" {
           list_value = entry.list_value
         } },
       )
-    } if router.policy_group == each.value.name
-  ]
-  depends_on = [
-    sdwan_tag.tag,
-    sdwan_configuration_group.configuration_group,
-  ]
-  lifecycle {
-    create_before_destroy = true
-    precondition {
-      condition     = try(each.value.sse, null) == null || try(each.value.sig_security, null) == null
-      error_message = "Policy group '${each.value.name}': sse and sig_security cannot be used together in one policy group (not supported by SD-WAN Manager)."
-    }
     } if router.policy_group == each.key && !router.handover
   }
   # Routers of handover_sites leave this state without a release, as for configuration groups.

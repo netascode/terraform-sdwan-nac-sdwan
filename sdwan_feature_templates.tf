@@ -1831,7 +1831,7 @@ resource "sdwan_vpn_interface_ethernet_pppoe_feature_template" "vpn_interface_et
   interface_description_variable   = try(each.value.interface_description_variable, null)
   encap                            = try(each.value.encap, null)
   encap_variable                   = try(each.value.encap_variable, null)
-  dialer_pool_number               = each.value.dialer_pool_number
+  dialer_pool_number               = try(each.value.dialer_pool_number, null)
   dialer_pool_number_variable      = try(each.value.dialer_pool_number_variable, null)
   ppp_maximum_payload              = try(each.value.ppp_maximum_payload, null)
   ppp_maximum_payload_variable     = try(each.value.ppp_maximum_payload_variable, null)
@@ -1841,7 +1841,7 @@ resource "sdwan_vpn_interface_ethernet_pppoe_feature_template" "vpn_interface_et
   ip_directed_broadcast_variable         = try(each.value.ip_directed_broadcast_variable, null)
   unnumbered_loopback_interface          = try(each.value.unnumbered_loopback_interface, null)
   unnumbered_loopback_interface_variable = try(each.value.unnumbered_loopback_interface_variable, null)
-  ppp_authentication_protocol            = each.value.ppp_authentication_protocol
+  ppp_authentication_protocol            = try(each.value.ppp_authentication_protocol, null)
   ppp_authentication_protocol_variable   = try(each.value.ppp_authentication_protocol_variable, null)
   ppp_authentication_protocol_pap        = try(each.value.ppp_authentication_protocol_pap, null)
   chap_hostname                          = try(each.value.chap_hostname, null)
@@ -1989,7 +1989,7 @@ resource "sdwan_vpn_interface_ethernet_pppoe_feature_template" "vpn_interface_et
   write_rule_variable                        = try(each.value.write_rule_variable, null)
   access_lists = try(length(each.value.access_lists) == 0, true) ? null : [for acl in each.value.access_lists : {
     direction         = acl.direction
-    acl_name          = acl.acl_name
+    acl_name          = try(acl.acl_name, null)
     acl_name_variable = try(acl.acl_name_variable, null)
   }]
   policers = try(length(each.value.policers) == 0, true) ? null : [for p in each.value.policers : {

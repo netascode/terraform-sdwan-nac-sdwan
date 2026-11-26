@@ -7,6 +7,7 @@ locals {
     { for k, v in sdwan_service_feature_profile.service_feature_profile : k => v.id },
     { for k, v in sdwan_system_feature_profile.system_feature_profile : k => v.id },
     { for k, v in sdwan_sse_feature_profile.sse_feature_profile : k => v.id },
+    { for k, v in sdwan_sig_security_feature_profile.sig_security_feature_profile : k => v.id },
     { for k, v in sdwan_topology_feature_profile.topology_feature_profile : k => v.id },
     { for k, v in sdwan_transport_feature_profile.transport_feature_profile : k => v.id },
     length(sdwan_policy_object_feature_profile.policy_object_feature_profile) == 0 ? {} : {

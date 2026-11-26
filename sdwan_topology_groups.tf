@@ -99,6 +99,7 @@ resource "sdwan_activate_topology_group" "activate_topology_group" {
   depends_on = [
     sdwan_attach_feature_device_template.attach_feature_device_template,
     sdwan_policy_group.policy_group,
+    sdwan_policy_group_devices.policy_group_devices,
   ]
   lifecycle {
     precondition {
@@ -115,7 +116,7 @@ resource "sdwan_topology_group" "topology_group" {
   solution    = "sdwan"
   feature_profile_ids = flatten([
     sdwan_topology_feature_profile.topology_feature_profile[each.value.topology_profile].id,
-    try(sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id, []),
+    compact([local.policy_object_profile_id]),
   ])
   feature_versions = length(try(local.topology_profile_features_versions[each.value.topology_profile], [])) == 0 ? null : try(local.topology_profile_features_versions[each.value.topology_profile], null)
   lifecycle {

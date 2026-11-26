@@ -40,6 +40,12 @@ resource "sdwan_sse_feature_profile" "sse_feature_profile" {
   description = try(each.value.description, "")
 }
 
+resource "sdwan_sig_security_feature_profile" "sig_security_feature_profile" {
+  for_each    = { for t in try(local.feature_profiles.sig_security_profiles, {}) : t.name => t }
+  name        = each.value.name
+  description = try(each.value.description, "")
+}
+
 resource "sdwan_topology_feature_profile" "topology_feature_profile" {
   for_each    = { for t in try(local.feature_profiles.topology_profiles, {}) : t.name => t }
   name        = each.value.name
@@ -53,7 +59,8 @@ resource "sdwan_transport_feature_profile" "transport_feature_profile" {
 }
 
 resource "sdwan_policy_object_feature_profile" "policy_object_feature_profile" {
-  count       = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
+  # The tenant has one profile, managed by the global state; other states read its ID by name.
+  count       = local.manage_global && contains(keys(local.model_feature_profiles), "policy_object_profile") ? 1 : 0
   name        = try(local.feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
   description = try(local.feature_profiles.policy_object_profile.description, "")
 }

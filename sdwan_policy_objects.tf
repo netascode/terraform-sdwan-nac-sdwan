@@ -1,14 +1,14 @@
-# System-created policy object lookups
+# System-created policy object lookups: only features of the profiles this state manages use them.
 data "sdwan_policy_object_feature_profile_parcels" "system_data_prefix" {
-  count              = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  count              = local.policy_object_profile_external || (local.policy_object_profile_in_data && (local.manage_global || local.owns_local_profiles)) ? 1 : 0
+  feature_profile_id = local.policy_object_profile_id
   created_by         = "system"
   parcel_type        = "data-prefix"
 }
 
 data "sdwan_policy_object_feature_profile_parcels" "system_app_list" {
-  count              = contains(keys(local.feature_profiles), "policy_object_profile") ? 1 : 0
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  count              = local.policy_object_profile_external || (local.policy_object_profile_in_data && (local.manage_global || local.owns_local_profiles)) ? 1 : 0
+  feature_profile_id = local.policy_object_profile_id
   created_by         = "system"
   parcel_type        = "app-list"
 }
@@ -28,7 +28,7 @@ resource "sdwan_policy_object_app_probe_class" "policy_object_app_probe_class" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.app_probe_classes, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     forwarding_class_id = sdwan_policy_object_class_map.policy_object_class_map[each.value.forwarding_class].id
     map = [for m in try(each.value.mappings, []) : {
@@ -42,7 +42,7 @@ resource "sdwan_policy_object_application_list" "policy_object_application_list"
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.application_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
     # Resolve custom application names through the resource to create an implicit dependency
     application        = try(sdwan_custom_application.custom_application[e.application].app_name, e.application, null)
@@ -54,7 +54,7 @@ resource "sdwan_policy_object_as_path_list" "policy_object_as_path_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.as_path_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   as_path_list_id    = each.value.id
   entries = [for a in each.value.as_paths : {
     as_path_list = a
@@ -65,7 +65,7 @@ resource "sdwan_policy_object_class_map" "policy_object_class_map" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.forwarding_classes, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     queue = each.value.queue
   }]
@@ -75,7 +75,7 @@ resource "sdwan_policy_object_color_list" "policy_object_color_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.color_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.colors, []) : {
     color = e
   }]
@@ -85,7 +85,7 @@ resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_pr
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv4_address       = split("/", e)[0]
     ipv4_prefix_length = split("/", e)[1]
@@ -96,7 +96,7 @@ resource "sdwan_policy_object_data_ipv6_prefix_list" "policy_object_data_ipv6_pr
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv6_address       = split("/", e)[0]
     ipv6_prefix_length = split("/", e)[1]
@@ -107,7 +107,7 @@ resource "sdwan_policy_object_expanded_community_list" "policy_object_expanded_c
   for_each                 = { for p in try(local.feature_profiles.policy_object_profile.expanded_community_lists, {}) : p.name => p }
   name                     = each.value.name
   description              = try(each.value.description, null)
-  feature_profile_id       = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id       = local.policy_object_profile_id
   expanded_community_lists = each.value.expanded_communities
 }
 
@@ -115,7 +115,7 @@ resource "sdwan_policy_object_extended_community_list" "policy_object_extended_c
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.extended_community_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.extended_communities, []) : {
     extended_community = e
   }]
@@ -125,7 +125,7 @@ resource "sdwan_policy_object_ipv4_prefix_list" "policy_object_ipv4_prefix_list"
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.entries, []) : {
     ipv4_address       = split("/", e.prefix)[0]
     ipv4_prefix_length = split("/", e.prefix)[1]
@@ -138,7 +138,7 @@ resource "sdwan_policy_object_ipv6_prefix_list" "policy_object_ipv6_prefix_list"
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv6_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.entries, []) : {
     ipv6_address       = split("/", e.prefix)[0]
     ipv6_prefix_length = split("/", e.prefix)[1]
@@ -151,7 +151,7 @@ resource "sdwan_policy_object_mirror" "policy_object_mirror" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.mirrors, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     remote_destination_ip = each.value.remote_destination_ip
     source_ip             = each.value.source_ip
@@ -162,7 +162,7 @@ resource "sdwan_policy_object_policer" "policy_object_policer" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.policers, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     burst_bytes   = each.value.burst_bytes
     exceed_action = each.value.exceed_action
@@ -174,7 +174,7 @@ resource "sdwan_policy_object_preferred_color_group" "policy_object_preferred_co
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.preferred_color_groups, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     primary_color_preference   = each.value.primary_colors
     primary_path_preference    = try(each.value.primary_path_preference, null)
@@ -189,7 +189,7 @@ resource "sdwan_policy_object_security_data_ipv4_prefix_list" "policy_object_sec
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_data_ipv4_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.prefixes, []) : {
     ip_prefix          = try(e, null)
     ip_prefix_variable = null # not supported in the UI
@@ -200,7 +200,7 @@ resource "sdwan_policy_object_security_data_ipv6_prefix_list" "policy_object_sec
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_data_ipv6_prefix_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.prefixes, []) : {
     ipv6_prefix          = try(e, null)
     ipv6_prefix_variable = null # not supported in the UI
@@ -210,7 +210,7 @@ resource "sdwan_policy_object_security_data_ipv6_prefix_list" "policy_object_sec
 resource "sdwan_policy_object_security_fqdn_list" "policy_object_security_fqdn_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_fqdn_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.fqdns, []) : {
     pattern = try(e, null)
   }]
@@ -220,7 +220,7 @@ resource "sdwan_policy_object_security_geolocation_list" "policy_object_security
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_geo_location_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = flatten([
     [for continent_code in try(each.value.continent_codes, []) : {
       continent = continent_code
@@ -234,7 +234,7 @@ resource "sdwan_policy_object_security_geolocation_list" "policy_object_security
 resource "sdwan_policy_object_security_ips_signature" "policy_object_security_ips_signature" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_ips_signature_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.entries, []) : {
     generator_id = tostring(e.generator_id)
     signature_id = tostring(e.signature_id)
@@ -244,7 +244,7 @@ resource "sdwan_policy_object_security_ips_signature" "policy_object_security_ip
 resource "sdwan_policy_object_security_local_application_list" "policy_object_security_local_application_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_local_application_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in concat([for app in try(each.value.applications, []) : { "application" : app }], [for fam in try(each.value.application_families, []) : { "application_family" : fam }]) : {
     app        = try(e.application, null)
     app_family = try(e.application_family, null)
@@ -254,7 +254,7 @@ resource "sdwan_policy_object_security_local_application_list" "policy_object_se
 resource "sdwan_policy_object_security_local_domain_list" "policy_object_security_local_domain_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_local_domain_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.local_domains, []) : {
     local_domain = try(e, null)
   }]
@@ -264,7 +264,7 @@ resource "sdwan_policy_object_security_object_group" "policy_object_security_obj
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_object_groups, []) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   sequence_ip_type   = try(each.value.ip_type, local.defaults.sdwan.feature_profiles.policy_object_profile.security_object_groups.ip_type)
   entries = [{
     data_ipv4_prefixes          = try(each.value.data_ipv4_prefixes, null)
@@ -289,7 +289,7 @@ resource "sdwan_policy_object_security_rule_set" "policy_object_security_rule_se
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_rule_sets, []) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   sequences = [for rule_index, rule in each.value.rules : {
     name                                  = "Rule${rule_index + 1}"
     name_variable                         = null
@@ -338,7 +338,7 @@ resource "sdwan_policy_object_security_port_list" "policy_object_security_port_l
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_port_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for port_value in try(each.value.ports, []) : {
     port = port_value
   }]
@@ -348,7 +348,7 @@ resource "sdwan_policy_object_security_protocol_list" "policy_object_security_pr
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_protocol_lists, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for protocol in try(each.value.protocols, []) : {
     protocol_name = protocol
   }]
@@ -357,7 +357,7 @@ resource "sdwan_policy_object_security_protocol_list" "policy_object_security_pr
 resource "sdwan_policy_object_security_url_allow_list" "policy_object_security_url_allow_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_url_allow_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.urls, []) : {
     pattern = e
   }]
@@ -366,7 +366,7 @@ resource "sdwan_policy_object_security_url_allow_list" "policy_object_security_u
 resource "sdwan_policy_object_security_url_block_list" "policy_object_security_url_block_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_url_block_lists, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.urls, []) : {
     pattern = e
   }]
@@ -375,7 +375,7 @@ resource "sdwan_policy_object_security_url_block_list" "policy_object_security_u
 resource "sdwan_policy_object_security_zone" "policy_object_security_zone" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.security_zones, {}) : p.name => p }
   name               = each.value.name
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in concat([for v in try(each.value.vpns, []) : { "vpn" : v }], [for intf in try(each.value.interfaces, []) : { "interface" : intf }]) : {
     vpn       = try(e.vpn, null)
     interface = try(e.interface, null)
@@ -385,7 +385,7 @@ resource "sdwan_policy_object_security_zone" "policy_object_security_zone" {
 resource "sdwan_policy_object_unified_url_filtering" "policy_object_unified_url_filtering" {
   for_each              = { for p in try(local.feature_profiles.policy_object_profile.security_url_filtering_profiles, {}) : p.name => p }
   name                  = each.value.name
-  feature_profile_id    = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id    = local.policy_object_profile_id
   alerts                = try(each.value.alerts, null)
   block_page_action     = each.value.block_page_action
   block_page_contents   = each.value.block_page_action == "text" ? try(each.value.block_page_content_body, null) != null ? "Access to the requested page has been denied. ${each.value.block_page_content_body}" : "Access to the requested page has been denied. ${local.defaults.sdwan.feature_profiles.policy_object_profile.security_url_filtering_profiles.block_page_content_body}" : null
@@ -402,7 +402,7 @@ resource "sdwan_policy_object_sla_class_list" "policy_object_sla_class_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.sla_classes, {}) : p.name => p }
   name               = each.value.name
   description        = null # not supported in the UI
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [{
     app_probe_class_list_id               = try(sdwan_policy_object_app_probe_class.policy_object_app_probe_class[each.value.app_probe_class].id, null)
     jitter                                = try(each.value.jitter_ms, null)
@@ -419,7 +419,7 @@ resource "sdwan_policy_object_standard_community_list" "policy_object_standard_c
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.standard_community_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.standard_communities, []) : {
     standard_community = e
   }]
@@ -429,7 +429,7 @@ resource "sdwan_policy_object_tloc_list" "policy_object_tloc_list" {
   for_each           = { for p in try(local.feature_profiles.policy_object_profile.tloc_lists, {}) : p.name => p }
   name               = each.value.name
   description        = try(each.value.description, null)
-  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id = local.policy_object_profile_id
   entries = [for e in try(each.value.tlocs, []) : {
     color         = e.color
     encapsulation = e.encapsulation
@@ -442,7 +442,7 @@ resource "sdwan_policy_object_unified_advanced_inspection_profile" "policy_objec
   for_each                            = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_inspection_profiles, {}) : p.name => p }
   name                                = each.value.name
   description                         = try(each.value.description, null)
-  feature_profile_id                  = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id                  = local.policy_object_profile_id
   tls_decryption_action               = lookup({ "never_decrypt" = "neverDecrypt", "skip_decrypt" = "skipDecrypt" }, each.value.tls_action, each.value.tls_action)
   intrusion_prevention_list_id        = try(sdwan_policy_object_unified_intrusion_prevention.policy_object_unified_intrusion_prevention[each.value.intrusion_prevention].id, null)
   url_filtering_list_id               = try(sdwan_policy_object_unified_url_filtering.policy_object_unified_url_filtering[each.value.url_filtering].id, null)
@@ -454,7 +454,7 @@ resource "sdwan_policy_object_unified_advanced_malware_protection" "policy_objec
   for_each                      = { for p in try(local.feature_profiles.policy_object_profile.security_advanced_malware_protection_profiles, {}) : p.name => p }
   name                          = each.value.name
   description                   = null # not supported in the UI
-  feature_profile_id            = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id            = local.policy_object_profile_id
   alert_log_level               = each.value.alert_log_level
   amp_cloud_region              = each.value.amp_cloud_region
   amp_cloud_region_est_server   = each.value.amp_cloud_region
@@ -468,7 +468,7 @@ resource "sdwan_policy_object_unified_intrusion_prevention" "policy_object_unifi
   for_each                    = { for p in try(local.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles, {}) : p.name => p }
   name                        = each.value.name
   description                 = null # not supported in the UI
-  feature_profile_id          = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+  feature_profile_id          = local.policy_object_profile_id
   custom_signature            = try(each.value.custom_signature_set, local.defaults.sdwan.feature_profiles.policy_object_profile.security_intrusion_prevention_profiles.custom_signature_set)
   inspection_mode             = each.value.inspection_mode
   ips_signature_allow_list_id = try(sdwan_policy_object_security_ips_signature.policy_object_security_ips_signature[each.value.signature_allow_list].id, null)

@@ -3,8 +3,13 @@ locals {
   nh_l0_all = flatten([
     for t in ["group", "region"] : [
       for c in try(local.network_hierarchy[t == "group" ? "groups" : "regions"], []) : merge(c, {
-        key  = c.name
-        type = t
+        # res_key is the resource key: the data model `key` (kept when the node is renamed),
+        # else the name. It is not the name path, so moving the node under another parent at
+        # the same level keeps its resource address. `key` below is the internal name path
+        # used for lookups; it replaces the data model `key` in these merged objects.
+        res_key = try(c.key, c.name)
+        key     = c.name
+        type    = t
       })
     ]
   ])
@@ -15,9 +20,11 @@ locals {
     for c in local.nh_l0_all : flatten([
       for t in ["group", "region"] : [
         for child in try(c[t == "group" ? "groups" : "regions"], []) : merge(child, {
-          key        = "${c.key}/${child.name}"
-          parent_key = c.key
-          type       = t
+          key            = "${c.key}/${child.name}"
+          parent_key     = c.key
+          res_key        = try(child.key, child.name)
+          parent_res_key = c.res_key
+          type           = t
         })
       ]
     ])
@@ -30,9 +37,11 @@ locals {
     for c in local.nh_l1_all : flatten([
       for t in ["group", "region"] : [
         for child in try(c[t == "group" ? "groups" : "regions"], []) : merge(child, {
-          key        = "${c.key}/${child.name}"
-          parent_key = c.key
-          type       = t
+          key            = "${c.key}/${child.name}"
+          parent_key     = c.key
+          res_key        = try(child.key, child.name)
+          parent_res_key = c.res_key
+          type           = t
         })
       ]
     ])
@@ -64,13 +73,15 @@ locals {
   # Sites: declared directly under Global, or nested under a container at any level.
   nh_sites_flat = concat(
     [for s in try(local.network_hierarchy.sites, []) : merge(s, {
-      key        = s.name
-      parent_key = null
+      key            = s.name
+      parent_key     = null
+      parent_res_key = null
     })],
     flatten([
       for c in local.nh_all_containers : [for s in try(c.sites, []) : merge(s, {
-        key        = "${c.key}/${s.name}"
-        parent_key = c.key
+        key            = "${c.key}/${s.name}"
+        parent_key     = c.key
+        parent_res_key = c.res_key
       })]
     ]),
   )
@@ -145,7 +156,7 @@ locals {
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_group_l0" {
-  for_each     = { for c in local.nh_l0_groups : c.key => c }
+  for_each     = { for c in local.nh_l0_groups : c.res_key => c }
   name         = each.value.name
   type         = "group"
   description  = try(each.value.description, null)
@@ -153,7 +164,7 @@ resource "sdwan_network_hierarchy_node" "network_hierarchy_group_l0" {
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_region_l0" {
-  for_each = { for c in local.nh_l0_regions : c.key => c }
+  for_each = { for c in local.nh_l0_regions : c.res_key => c }
   name     = each.value.name
   type     = "region"
   # Default false, not null: the API always returns a concrete false even when
@@ -165,41 +176,43 @@ resource "sdwan_network_hierarchy_node" "network_hierarchy_region_l0" {
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_group_l1" {
-  for_each     = { for c in local.nh_l1_groups : c.key => c }
+  for_each     = { for c in local.nh_l1_groups : c.res_key => c }
   name         = each.value.name
   type         = "group"
   description  = try(each.value.description, null)
-  parent_group = local.nh_l0_names[each.value.parent_key]
+  parent_group = local.nh_l0_names[each.value.parent_res_key]
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_region_l1" {
-  for_each     = { for c in local.nh_l1_regions : c.key => c }
+  for_each     = { for c in local.nh_l1_regions : c.res_key => c }
   name         = each.value.name
   type         = "region"
   is_secondary = try(each.value.is_secondary, false)
   description  = try(each.value.description, null)
-  parent_group = local.nh_l0_names[each.value.parent_key]
+  parent_group = local.nh_l0_names[each.value.parent_res_key]
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_group_l2" {
-  for_each     = { for c in local.nh_l2_groups : c.key => c }
+  for_each     = { for c in local.nh_l2_groups : c.res_key => c }
   name         = each.value.name
   type         = "group"
   description  = try(each.value.description, null)
-  parent_group = local.nh_l1_names[each.value.parent_key]
+  parent_group = local.nh_l1_names[each.value.parent_res_key]
 }
 
 resource "sdwan_network_hierarchy_node" "network_hierarchy_region_l2" {
-  for_each     = { for c in local.nh_l2_regions : c.key => c }
+  for_each     = { for c in local.nh_l2_regions : c.res_key => c }
   name         = each.value.name
   type         = "region"
   is_secondary = try(each.value.is_secondary, false)
   description  = try(each.value.description, null)
-  parent_group = local.nh_l1_names[each.value.parent_key]
+  parent_group = local.nh_l1_names[each.value.parent_res_key]
 }
 
+# Keyed by site_id, which cannot change on the Manager: renaming a site or moving it under
+# another group/region is an in-place update instead of a delete and create of the same site_id.
 resource "sdwan_network_hierarchy_node" "network_hierarchy_site" {
-  for_each     = { for s in local.nh_sites_flat : s.key => s }
+  for_each     = { for s in local.nh_sites_flat : tostring(s.site_id) => s }
   name         = each.value.name
   type         = "site"
   site_id      = each.value.site_id
@@ -208,7 +221,7 @@ resource "sdwan_network_hierarchy_node" "network_hierarchy_site" {
   location     = try(each.value.location, null)
   latitude     = try(each.value.latitude, null)
   longitude    = try(each.value.longitude, null)
-  parent_group = each.value.parent_key == null ? "Global" : local.nh_all_names[each.value.parent_key]
+  parent_group = each.value.parent_key == null ? "Global" : local.nh_all_names[each.value.parent_res_key]
 }
 
 # Global-node settings, independent of the group/region/site hierarchy

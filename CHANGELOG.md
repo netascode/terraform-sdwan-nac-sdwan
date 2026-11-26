@@ -2,6 +2,9 @@
 
 - add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`)
 - `sdwan_attach_feature_device_template`: devices keyed by chassis ID, so adding, removing or changing one router shows only that router in the plan (requires the provider version with `devices` as a map)
+- **BREAKING CHANGE**: network hierarchy sites are keyed by `site_id` and nested groups and regions by their `key` (defaults to `name`), so existing network hierarchy resources must be moved in the Terraform state (`moved` blocks) before the first apply; `site_id` is now required on network hierarchy sites
+- add optional `key` to network hierarchy groups and regions, to rename them in place
+- fix renaming network hierarchy sites, groups and regions, or moving them under another parent at the same level, failing on apply
 - add support for WAN Edge certificate management (`sdwan_wan_edge_certificate_validate` and `sdwan_send_wan_edge_list_to_controllers`)
 - fix `sdwan_cisco_vpn_feature_template` failing to plan with `Inconsistent conditional result types` when `ipv4_dns_hosts` or `ipv6_dns_hosts` mix hosts defined with `hostname` and with `hostname_variable`
 - **BREAKING CHANGE**: device association, variables and deploy move from `sdwan_configuration_group` / `sdwan_policy_group` to `sdwan_configuration_group_devices` / `sdwan_policy_group_devices` (one per group with routers; provider 0.12.0). An existing state upgrades in place: the new resources adopt the devices already on their groups and deploy only devices that are out of date or whose variables changed

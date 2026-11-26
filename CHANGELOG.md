@@ -12,7 +12,8 @@
 - read the policy object profile and its objects from SD-WAN Manager when configuration groups name a profile that the data doesn't define (shared definitions kept in another repository)
 - read QoS forwarding classes that the data doesn't define from SD-WAN Manager by name
 - WAN edge certificate validity is set by the state that deploys the router; only the global state pushes the WAN edge list, also when SD-WAN Manager reports the controllers out of sync
-- fix route policies (service and transport), BGP neighbour prefix lists and system IPv6 device access policies planning a policy object reference as null when the named object can't be resolved: the plan now fails, naming the object
+- fix route policies (service and transport), BGP neighbour prefix lists and system IPv6 device access policies planning a policy object reference as null when the named object can't be resolved: the plan now fails, naming the object.
+- Add support for UX1 VPN ethernet PPOE Interface in transport side (`sdwan_vpn_interface_ethernet_pppoe_feature_template`)
 
 ## 1.5.1
 

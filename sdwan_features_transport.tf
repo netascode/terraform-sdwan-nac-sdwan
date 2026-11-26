@@ -78,9 +78,9 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
     local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
     next_hop_self                    = try(neighbor.next_hop_self, null)
     next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
-    password                         = local.write_only_secrets || try(neighbor.password_version, null) != null ? null : try(neighbor.password, null)
-    password_wo                      = (local.write_only_secrets || try(neighbor.password_version, null) != null) && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
-    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, local.write_only_secrets ? 1 : null)
+    password                         = try(neighbor.password_version, null) == null ? try(neighbor.password, null) : null
+    password_wo                      = try(neighbor.password_version, null) != null && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
+    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, null)
     password_variable                = try("{{${neighbor.password_variable}}}", null)
     remote_as                        = try(neighbor.remote_as, null)
     remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
@@ -161,9 +161,9 @@ resource "sdwan_transport_routing_bgp_feature" "transport_routing_bgp_feature" {
     local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
     next_hop_self                    = try(neighbor.next_hop_self, null)
     next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
-    password                         = local.write_only_secrets || try(neighbor.password_version, null) != null ? null : try(neighbor.password, null)
-    password_wo                      = (local.write_only_secrets || try(neighbor.password_version, null) != null) && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
-    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, local.write_only_secrets ? 1 : null)
+    password                         = try(neighbor.password_version, null) == null ? try(neighbor.password, null) : null
+    password_wo                      = try(neighbor.password_version, null) != null && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
+    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, null)
     password_variable                = try("{{${neighbor.password_variable}}}", null)
     remote_as                        = try(neighbor.remote_as, null)
     remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
@@ -304,9 +304,9 @@ resource "sdwan_transport_cellular_profile_feature" "transport_cellular_profile_
   profile_id_variable               = try("{{${each.value.cellular.profile_id_variable}}}", null)
   profile_username                  = try(each.value.cellular.profile_username, null)
   profile_username_variable         = try("{{${each.value.cellular.profile_username_variable}}}", null)
-  profile_password                  = local.write_only_secrets || try(each.value.cellular.profile_password_version, null) != null ? null : try(each.value.cellular.profile_password, null)
-  profile_password_wo               = (local.write_only_secrets || try(each.value.cellular.profile_password_version, null) != null) && try(each.value.cellular.profile_password_variable, null) == null ? try(each.value.cellular.profile_password, null) : null
-  profile_password_wo_version       = try(each.value.cellular.profile_password, null) == null || try(each.value.cellular.profile_password_variable, null) != null ? null : try(each.value.cellular.profile_password_version, local.write_only_secrets ? 1 : null)
+  profile_password                  = try(each.value.cellular.profile_password_version, null) == null ? try(each.value.cellular.profile_password, null) : null
+  profile_password_wo               = try(each.value.cellular.profile_password_version, null) != null && try(each.value.cellular.profile_password_variable, null) == null ? try(each.value.cellular.profile_password, null) : null
+  profile_password_wo_version       = try(each.value.cellular.profile_password, null) == null || try(each.value.cellular.profile_password_variable, null) != null ? null : try(each.value.cellular.profile_password_version, null)
   profile_password_variable         = try("{{${each.value.cellular.profile_password_variable}}}", null)
   packet_data_network_type          = try(each.value.cellular.packet_data_network_type, null)
   packet_data_network_type_variable = try("{{${each.value.cellular.packet_data_network_type_variable}}}", null)
@@ -811,9 +811,9 @@ resource "sdwan_transport_routing_ospf_feature" "transport_routing_ospf_feature"
       authentication_type_variable        = try("{{${interface.authentication_type_variable}}}", null)
       message_digest_key_id               = try(interface.authentication_message_digest_key_id, null)
       message_digest_key_id_variable      = try("{{${interface.authentication_message_digest_key_id_variable}}}", null)
-      message_digest_key                  = local.write_only_secrets || try(interface.authentication_message_digest_key_version, null) != null ? null : try(interface.authentication_message_digest_key, null)
-      message_digest_key_wo               = (local.write_only_secrets || try(interface.authentication_message_digest_key_version, null) != null) && try(interface.authentication_message_digest_key_variable, null) == null ? try(interface.authentication_message_digest_key, null) : null
-      message_digest_key_wo_version       = try(interface.authentication_message_digest_key, null) == null || try(interface.authentication_message_digest_key_variable, null) != null ? null : try(interface.authentication_message_digest_key_version, local.write_only_secrets ? 1 : null)
+      message_digest_key                  = try(interface.authentication_message_digest_key_version, null) == null ? try(interface.authentication_message_digest_key, null) : null
+      message_digest_key_wo               = try(interface.authentication_message_digest_key_version, null) != null && try(interface.authentication_message_digest_key_variable, null) == null ? try(interface.authentication_message_digest_key, null) : null
+      message_digest_key_wo_version       = try(interface.authentication_message_digest_key, null) == null || try(interface.authentication_message_digest_key_variable, null) != null ? null : try(interface.authentication_message_digest_key_version, null)
       message_digest_key_variable         = try("{{${interface.authentication_message_digest_key_variable}}}", null)
     }]
     ranges = try(length(area.ranges) == 0, true) ? null : [for range in area.ranges : {
@@ -1678,9 +1678,9 @@ resource "sdwan_transport_wan_vpn_interface_gre_feature" "transport_wan_vpn_inte
   multiplexing_variable                     = try("{{${each.value.interface.multiplexing_variable}}}", null)
   perfect_forward_secrecy                   = try(each.value.interface.perfect_forward_secrecy, null)
   perfect_forward_secrecy_variable          = try("{{${each.value.interface.perfect_forward_secrecy_variable}}}", null)
-  pre_shared_secret                         = local.write_only_secrets || try(each.value.interface.preshared_key_for_ike_version, null) != null ? null : try(each.value.interface.preshared_key_for_ike, null)
-  pre_shared_secret_wo                      = (local.write_only_secrets || try(each.value.interface.preshared_key_for_ike_version, null) != null) && try(each.value.interface.preshared_key_for_ike_variable, null) == null ? try(each.value.interface.preshared_key_for_ike, null) : null
-  pre_shared_secret_wo_version              = try(each.value.interface.preshared_key_for_ike, null) == null || try(each.value.interface.preshared_key_for_ike_variable, null) != null ? null : try(each.value.interface.preshared_key_for_ike_version, local.write_only_secrets ? 1 : null)
+  pre_shared_secret                         = try(each.value.interface.preshared_key_for_ike_version, null) == null ? try(each.value.interface.preshared_key_for_ike, null) : null
+  pre_shared_secret_wo                      = try(each.value.interface.preshared_key_for_ike_version, null) != null && try(each.value.interface.preshared_key_for_ike_variable, null) == null ? try(each.value.interface.preshared_key_for_ike, null) : null
+  pre_shared_secret_wo_version              = try(each.value.interface.preshared_key_for_ike, null) == null || try(each.value.interface.preshared_key_for_ike_variable, null) != null ? null : try(each.value.interface.preshared_key_for_ike_version, null)
   pre_shared_secret_variable                = try("{{${each.value.interface.preshared_key_for_ike_variable}}}", null)
   shutdown                                  = try(each.value.interface.shutdown, null)
   shutdown_variable                         = try("{{${each.value.interface.shutdown_variable}}}", null)
@@ -1759,9 +1759,9 @@ resource "sdwan_transport_wan_vpn_interface_ipsec_feature" "transport_wan_vpn_in
   ike_integrity_protocol_variable          = try("{{${each.value.interface.ike_integrity_protocol_variable}}}", null)
   ike_id_local_end_point                   = try(each.value.interface.ike_local_endpoint_id, null)
   ike_id_local_end_point_variable          = try("{{${each.value.interface.ike_local_endpoint_id_variable}}}", null)
-  ike_preshared_key                        = local.write_only_secrets || try(each.value.interface.ike_preshared_key_version, null) != null ? null : try(each.value.interface.ike_preshared_key, null)
-  ike_preshared_key_wo                     = (local.write_only_secrets || try(each.value.interface.ike_preshared_key_version, null) != null) && try(each.value.interface.ike_preshared_key_variable, null) == null ? try(each.value.interface.ike_preshared_key, null) : null
-  ike_preshared_key_wo_version             = try(each.value.interface.ike_preshared_key, null) == null || try(each.value.interface.ike_preshared_key_variable, null) != null ? null : try(each.value.interface.ike_preshared_key_version, local.write_only_secrets ? 1 : null)
+  ike_preshared_key                        = try(each.value.interface.ike_preshared_key_version, null) == null ? try(each.value.interface.ike_preshared_key, null) : null
+  ike_preshared_key_wo                     = try(each.value.interface.ike_preshared_key_version, null) != null && try(each.value.interface.ike_preshared_key_variable, null) == null ? try(each.value.interface.ike_preshared_key, null) : null
+  ike_preshared_key_wo_version             = try(each.value.interface.ike_preshared_key, null) == null || try(each.value.interface.ike_preshared_key_variable, null) != null ? null : try(each.value.interface.ike_preshared_key_version, null)
   ike_preshared_key_variable               = try("{{${each.value.interface.ike_preshared_key_variable}}}", null)
   ike_rekey_interval                       = try(each.value.interface.ike_rekey_interval, null)
   ike_rekey_interval_variable              = try("{{${each.value.interface.ike_rekey_interval_variable}}}", null)

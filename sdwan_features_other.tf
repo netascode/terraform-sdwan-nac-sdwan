@@ -8,9 +8,9 @@ resource "sdwan_other_thousandeyes_feature" "other_thousandeyes_feature" {
   description        = try(each.value.thousandeyes.description, "")
   feature_profile_id = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
   virtual_application = [{
-    account_group_token             = local.write_only_secrets || try(each.value.thousandeyes.account_group_token_version, null) != null ? null : try(each.value.thousandeyes.account_group_token, null)
-    account_group_token_wo          = (local.write_only_secrets || try(each.value.thousandeyes.account_group_token_version, null) != null) && try(each.value.thousandeyes.account_group_token_variable, null) == null ? try(each.value.thousandeyes.account_group_token, null) : null
-    account_group_token_wo_version  = try(each.value.thousandeyes.account_group_token, null) == null || try(each.value.thousandeyes.account_group_token_variable, null) != null ? null : try(each.value.thousandeyes.account_group_token_version, local.write_only_secrets ? 1 : null)
+    account_group_token             = try(each.value.thousandeyes.account_group_token_version, null) == null ? try(each.value.thousandeyes.account_group_token, null) : null
+    account_group_token_wo          = try(each.value.thousandeyes.account_group_token_version, null) != null && try(each.value.thousandeyes.account_group_token_variable, null) == null ? try(each.value.thousandeyes.account_group_token, null) : null
+    account_group_token_wo_version  = try(each.value.thousandeyes.account_group_token, null) == null || try(each.value.thousandeyes.account_group_token_variable, null) != null ? null : try(each.value.thousandeyes.account_group_token_version, null)
     account_group_token_variable    = try("{{${each.value.thousandeyes.account_group_token_variable}}}", null)
     agent_default_gateway           = try(each.value.thousandeyes.agent_default_gateway, null)
     agent_default_gateway_variable  = try("{{${each.value.thousandeyes.agent_default_gateway_variable}}}", null)
@@ -45,9 +45,9 @@ resource "sdwan_other_trustsec_feature" "other_trustsec_feature" {
   feature_profile_id              = sdwan_other_feature_profile.other_feature_profile[each.value.name].id
   device_id                       = try(each.value.trustsec.device_id, null)
   device_id_variable              = try("{{${each.value.trustsec.device_id_variable}}}", null)
-  device_password                 = local.write_only_secrets || try(each.value.trustsec.device_password_version, null) != null ? null : try(each.value.trustsec.device_password, null)
-  device_password_wo              = (local.write_only_secrets || try(each.value.trustsec.device_password_version, null) != null) && try(each.value.trustsec.device_password_variable, null) == null ? try(each.value.trustsec.device_password, null) : null
-  device_password_wo_version      = try(each.value.trustsec.device_password, null) == null || try(each.value.trustsec.device_password_variable, null) != null ? null : try(each.value.trustsec.device_password_version, local.write_only_secrets ? 1 : null)
+  device_password                 = try(each.value.trustsec.device_password_version, null) == null ? try(each.value.trustsec.device_password, null) : null
+  device_password_wo              = try(each.value.trustsec.device_password_version, null) != null && try(each.value.trustsec.device_password_variable, null) == null ? try(each.value.trustsec.device_password, null) : null
+  device_password_wo_version      = try(each.value.trustsec.device_password, null) == null || try(each.value.trustsec.device_password_variable, null) != null ? null : try(each.value.trustsec.device_password_version, null)
   device_password_variable        = try("{{${each.value.trustsec.device_password_variable}}}", null)
   device_sgt                      = try(each.value.trustsec.device_sgt, null)
   device_sgt_variable             = try("{{${each.value.trustsec.device_sgt_variable}}}", null)
@@ -75,9 +75,9 @@ resource "sdwan_other_trustsec_feature" "other_trustsec_feature" {
     vpn_id                 = try(c.vpn_id, null)
     vpn_id_variable        = try("{{${c.vpn_id_variable}}}", null)
   }]
-  sxp_default_password               = local.write_only_secrets || try(each.value.trustsec.sxp_default_password_version, null) != null ? null : try(each.value.trustsec.sxp_default_password, null)
-  sxp_default_password_wo            = (local.write_only_secrets || try(each.value.trustsec.sxp_default_password_version, null) != null) && try(each.value.trustsec.sxp_default_password_variable, null) == null ? try(each.value.trustsec.sxp_default_password, null) : null
-  sxp_default_password_wo_version    = try(each.value.trustsec.sxp_default_password, null) == null || try(each.value.trustsec.sxp_default_password_variable, null) != null ? null : try(each.value.trustsec.sxp_default_password_version, local.write_only_secrets ? 1 : null)
+  sxp_default_password               = try(each.value.trustsec.sxp_default_password_version, null) == null ? try(each.value.trustsec.sxp_default_password, null) : null
+  sxp_default_password_wo            = try(each.value.trustsec.sxp_default_password_version, null) != null && try(each.value.trustsec.sxp_default_password_variable, null) == null ? try(each.value.trustsec.sxp_default_password, null) : null
+  sxp_default_password_wo_version    = try(each.value.trustsec.sxp_default_password, null) == null || try(each.value.trustsec.sxp_default_password_variable, null) != null ? null : try(each.value.trustsec.sxp_default_password_version, null)
   sxp_default_password_variable      = try("{{${each.value.trustsec.sxp_default_password_variable}}}", null)
   sxp_key_chain                      = try(each.value.trustsec.sxp_key_chain, null)
   sxp_key_chain_variable             = try("{{${each.value.trustsec.sxp_key_chain_variable}}}", null)

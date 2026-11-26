@@ -53,7 +53,6 @@ module "sdwan" {
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_ownership"></a> [ownership](#input\_ownership) | Which site/region state manages what, for a deployment split across several states that load the same data. Pass the same value to every state (e.g. `yamldecode(file("../ownership.yaml"))`). `local_definitions` maps an entry key to `sites` (site IDs and `from-to` ranges, matched against the sites in the data), `configuration_groups` and `policy_groups` (names), `feature_profiles` and `policy_objects` (a list of names, `exclusive` for those only the entry uses, or `none`, the default). A claimed configuration or policy group brings its routers to the entry; a router can belong to one entry only. Anything not claimed, and every router outside the entries, is managed by the global state. A scope can't list a claimed item. `null` for a single state. | `any` | `null` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
-| <a name="input_write_only_secrets"></a> [write\_only\_secrets](#input\_write\_only\_secrets) | Send every supported secret through the provider's write-only `<attr>_wo` / `<attr>_wo_version` attributes so it is never stored in Terraform state. Each secret's version defaults to 1; set `<key>_version` next to a secret in the data model and increment it to rotate that secret. When false, only secrets with a `<key>_version` are write-only. Requires Terraform >= 1.11. | `bool` | `false` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
 
@@ -71,7 +70,7 @@ module "sdwan" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.1 |
 | <a name="provider_sdwan"></a> [sdwan](#provider\_sdwan) | ~> 0.12.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 

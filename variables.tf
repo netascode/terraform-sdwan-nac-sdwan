@@ -42,12 +42,6 @@ variable "handover_sites" {
   nullable    = false
 }
 
-variable "write_only_secrets" {
-  description = "Send every supported secret through the provider's write-only `<attr>_wo` / `<attr>_wo_version` attributes so it is never stored in Terraform state. Each secret's version defaults to 1; set `<key>_version` next to a secret in the data model and increment it to rotate that secret. When false, only secrets with a `<key>_version` are write-only. Requires Terraform >= 1.11."
-  type        = bool
-  default     = false
-}
-
 variable "write_default_values_file" {
   description = "Write all default values to a YAML file. Value is a path pointing to the file to be created."
   type        = string

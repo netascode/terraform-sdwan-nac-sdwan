@@ -13,12 +13,11 @@
 - read QoS forwarding classes that the data doesn't define from SD-WAN Manager by name
 - WAN edge certificate validity is set by the state that deploys the router; only the global state pushes the WAN edge list, also when SD-WAN Manager reports the controllers out of sync
 - fix route policies (service and transport), BGP neighbour prefix lists and system IPv6 device access policies planning a policy object reference as null when the named object can't be resolved: the plan now fails, naming the object
-- add write-only support for secrets of UX 2.0 features and cloud provider settings (provider 0.12.0, Terraform 1.11+): a write-only secret is sent through the provider's `<attr>_wo` / `<attr>_wo_version` pair and is never stored in Terraform state. Write-only can be enabled in two ways:
-  - for all secrets: set the module variable `write_only_secrets = true`. Every supported secret becomes write-only with version 1, without any data model change
-  - per secret: add `<key>_version: 1` next to the secret in the data model, e.g. `password_version: 1` next to `password`. Only that secret becomes write-only; secrets without it keep the existing behavior
-  - to rotate a write-only secret (both ways), change its value and set or increment `<key>_version` next to it (e.g. `password_version: 2`, then `3` on the next rotation). A changed value without a new version is not sent
-  - incrementing `<key>_version` always re-sends the feature and redeploys its configuration group, even if the value is unchanged; only increment it when the secret changes
-  - enabling write-only for a secret with an unchanged value sends nothing to SD-WAN Manager and does not redeploy; moving a secret back from write-only to state-stored re-sends the feature
+- add write-only support for secrets of UX 2.0 features and cloud provider settings (provider 0.12.0, Terraform 1.11+): a write-only secret is sent through the provider's `<attr>_wo` / `<attr>_wo_version` pair and is never stored in Terraform state
+  - opt in per secret by adding `<key>_version` next to the secret in the data model, e.g. `password_version: 1` next to `password`; secrets without it keep the existing behavior (stored in state)
+  - to rotate, change the value and increment `<key>_version` (e.g. `password_version: 2`). A changed value without a new version is not sent
+  - changing `<key>_version` (up or down) always re-sends the feature and redeploys its configuration group, even if the value is unchanged
+  - adding `<key>_version` to an already deployed secret with an unchanged value sends nothing (no redeploy); removing it re-sends the feature and stores the secret in state again
   - a secret that also sets `<key>_variable` keeps using the variable
 - **BREAKING CHANGE**: raise minimum Terraform version to 1.11.0 (required by write-only attributes)
 

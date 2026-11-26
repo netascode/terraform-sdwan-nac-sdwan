@@ -244,6 +244,8 @@ module "sdwan" {
 | [sdwan_service_switchport_feature.service_switchport_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_switchport_feature) | resource |
 | [sdwan_service_tracker_feature.service_tracker_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_feature) | resource |
 | [sdwan_service_tracker_group_feature.service_tracker_group_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/service_tracker_group_feature) | resource |
+| [sdwan_sig_feature.sig_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sig_feature) | resource |
+| [sdwan_sig_security_feature_profile.sig_security_feature_profile](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sig_security_feature_profile) | resource |
 | [sdwan_site_list_policy_object.site_list_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/site_list_policy_object) | resource |
 | [sdwan_sla_class_policy_object.sla_class_policy_object](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sla_class_policy_object) | resource |
 | [sdwan_sse_cisco_feature.sse_cisco_feature](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/resources/sse_cisco_feature) | resource |
@@ -332,6 +334,7 @@ module "sdwan" {
 | [sdwan_policy_object_feature_profile_parcels.system_app_list](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_policy_object_feature_profile_parcels.system_data_prefix](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/policy_object_feature_profile_parcels) | data source |
 | [sdwan_service_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/service_feature_profile) | data source |
+| [sdwan_sig_security_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/sig_security_feature_profile) | data source |
 | [sdwan_sse_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/sse_feature_profile) | data source |
 | [sdwan_system_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/system_feature_profile) | data source |
 | [sdwan_transport_feature_profile.lookup](https://registry.terraform.io/providers/CiscoDevNet/sdwan/latest/docs/data-sources/transport_feature_profile) | data source |

@@ -173,13 +173,13 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
     ip_type     = lookup({ "both" = "all" }, try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol), try(seq.protocol, local.defaults.sdwan.feature_profiles.topology_profiles.custom_policies.sequences.protocol))
     match_entries = try(seq.match_entries, null) == null ? null : flatten([
       try(seq.match_entries.color_list, null) != null ? [{
-        color_list_id = sdwan_policy_object_color_list.policy_object_color_list[seq.match_entries.color_list].id
+        color_list_id = local.policy_object_ids.color_list[seq.match_entries.color_list]
       }] : [],
       try(seq.match_entries.community_list, null) != null ? [{
-        community_list_id = sdwan_policy_object_standard_community_list.policy_object_standard_community_list[seq.match_entries.community_list].id
+        community_list_id = local.policy_object_ids.standard_community_list[seq.match_entries.community_list]
       }] : [],
       try(seq.match_entries.expanded_community_list, null) != null ? [{
-        expanded_community_list_id = sdwan_policy_object_expanded_community_list.policy_object_expanded_community_list[seq.match_entries.expanded_community_list].id
+        expanded_community_list_id = local.policy_object_ids.expanded_community_list[seq.match_entries.expanded_community_list]
       }] : [],
       try(seq.match_entries.omp_tag, null) != null ? [{
         omp_tag = seq.match_entries.omp_tag
@@ -209,16 +209,16 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
         path_type = seq.match_entries.path_type
       }] : [],
       try(seq.match_entries.tloc.list, null) != null ? [{
-        tloc_list_id = sdwan_policy_object_tloc_list.policy_object_tloc_list[seq.match_entries.tloc.list].id
+        tloc_list_id = local.policy_object_ids.tloc_list[seq.match_entries.tloc.list]
       }] : [],
       try(seq.match_entries.lan_vpn_names, null) != null ? [{
         vpn = seq.match_entries.lan_vpn_names
       }] : [],
       try(seq.match_entries.ipv4_prefix_list, null) != null ? [{
-        prefix_list_id = sdwan_policy_object_ipv4_prefix_list.policy_object_ipv4_prefix_list[seq.match_entries.ipv4_prefix_list].id
+        prefix_list_id = local.policy_object_ids.ipv4_prefix_list[seq.match_entries.ipv4_prefix_list]
       }] : [],
       try(seq.match_entries.ipv6_prefix_list, null) != null ? [{
-        ipv6_prefix_list_id = sdwan_policy_object_ipv6_prefix_list.policy_object_ipv6_prefix_list[seq.match_entries.ipv6_prefix_list].id
+        ipv6_prefix_list_id = local.policy_object_ids.ipv6_prefix_list[seq.match_entries.ipv6_prefix_list]
       }] : [],
       try(seq.match_entries.carrier, null) != null ? [{
         carrier = seq.match_entries.carrier
@@ -275,7 +275,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
             service_tloc_ip            = try(seq.action_entries.service.tloc_ip, null)
             service_tloc_color         = try(seq.action_entries.service.tloc_color, null)
             service_tloc_encapsulation = try(seq.action_entries.service.tloc_encapsulation, null)
-            service_tloc_list_id       = try(seq.action_entries.service.tloc_list, null) != null ? sdwan_policy_object_tloc_list.policy_object_tloc_list[seq.action_entries.service.tloc_list].id : null
+            service_tloc_list_id       = try(seq.action_entries.service.tloc_list, null) != null ? local.policy_object_ids.tloc_list[seq.action_entries.service.tloc_list] : null
           }] : [],
           try(seq.action_entries.service_chain, null) != null ? [{
             service_chain_type               = try(seq.action_entries.service_chain.name, null)
@@ -283,7 +283,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
             service_chain_tloc_ip            = try(seq.action_entries.service_chain.tloc_ip, null)
             service_chain_tloc_color         = try(seq.action_entries.service_chain.tloc_color, null)
             service_chain_tloc_encapsulation = try(seq.action_entries.service_chain.tloc_encapsulation, null)
-            service_chain_tloc_list_id       = try(seq.action_entries.service_chain.tloc_list, null) != null ? sdwan_policy_object_tloc_list.policy_object_tloc_list[seq.action_entries.service_chain.tloc_list].id : null
+            service_chain_tloc_list_id       = try(seq.action_entries.service_chain.tloc_list, null) != null ? local.policy_object_ids.tloc_list[seq.action_entries.service_chain.tloc_list] : null
           }] : [],
           try(seq.action_entries.tloc_action, null) != null ? [{
             tloc_action = seq.action_entries.tloc_action
@@ -294,7 +294,7 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
             tloc_encapsulation = try(seq.action_entries.tloc.encapsulation, null)
           }] : [],
           try(seq.action_entries.tloc.list, null) != null ? [{
-            tloc_list_id = sdwan_policy_object_tloc_list.policy_object_tloc_list[seq.action_entries.tloc.list].id
+            tloc_list_id = local.policy_object_ids.tloc_list[seq.action_entries.tloc.list]
           }] : [],
         ])
       }] : [],

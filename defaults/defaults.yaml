@@ -510,6 +510,15 @@ defaults:
           sequences:
             name: route
             protocol: ipv4
+      sig_security_profiles:
+        sig:
+          provider: umbrella
+          interface_pairs:
+            active_interface_weight: 1
+            backup_interface_weight: 1
+          interfaces:
+            mtu: 1400
+            tunnel_dc_preference: primary-dc
       system_profiles:
         aaa:
           name: aaa

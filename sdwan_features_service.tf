@@ -76,7 +76,9 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
     next_hop_self                    = try(neighbor.next_hop_self, null)
     next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
-    password                         = try(neighbor.password, null)
+    password                         = try(neighbor.password_version, null) == null ? try(neighbor.password, null) : null
+    password_wo                      = try(neighbor.password_version, null) != null && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
+    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, null)
     password_variable                = try("{{${neighbor.password_variable}}}", null)
     remote_as                        = try(neighbor.remote_as, null)
     remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
@@ -159,7 +161,9 @@ resource "sdwan_service_routing_bgp_feature" "service_routing_bgp_feature" {
     local_as_variable                = try("{{${neighbor.local_as_variable}}}", null)
     next_hop_self                    = try(neighbor.next_hop_self, null)
     next_hop_self_variable           = try("{{${neighbor.next_hop_self_variable}}}", null)
-    password                         = try(neighbor.password, null)
+    password                         = try(neighbor.password_version, null) == null ? try(neighbor.password, null) : null
+    password_wo                      = try(neighbor.password_version, null) != null && try(neighbor.password_variable, null) == null ? try(neighbor.password, null) : null
+    password_wo_version              = try(neighbor.password, null) == null || try(neighbor.password_variable, null) != null ? null : try(neighbor.password_version, null)
     password_variable                = try("{{${neighbor.password_variable}}}", null)
     remote_as                        = try(neighbor.remote_as, null)
     remote_as_variable               = try("{{${neighbor.remote_as_variable}}}", null)
@@ -310,16 +314,18 @@ resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
     mask                = try(network.subnet_mask, null)
     mask_variable       = try("{{${network.subnet_mask_variable}}}", null)
   }]
-  authentication_type              = try(each.value.eigrp.authentication_type, null)
-  authentication_type_variable     = try("{{${each.value.eigrp.authentication_type_variable}}}", null)
-  filter                           = try(each.value.eigrp.filter, null)
-  filter_variable                  = try("{{${each.value.eigrp.filter_variable}}}", null)
-  hello_interval                   = try(each.value.eigrp.hello_interval, null)
-  hello_interval_variable          = try("{{${each.value.eigrp.hello_interval_variable}}}", null)
-  hmac_authentication_key          = try(each.value.eigrp.hmac_authentication_key, null)
-  hmac_authentication_key_variable = try("{{${each.value.eigrp.hmac_authentication_key_variable}}}", null)
-  hold_time                        = try(each.value.eigrp.hold_time, null)
-  hold_time_variable               = try("{{${each.value.eigrp.hold_time_variable}}}", null)
+  authentication_type                = try(each.value.eigrp.authentication_type, null)
+  authentication_type_variable       = try("{{${each.value.eigrp.authentication_type_variable}}}", null)
+  filter                             = try(each.value.eigrp.filter, null)
+  filter_variable                    = try("{{${each.value.eigrp.filter_variable}}}", null)
+  hello_interval                     = try(each.value.eigrp.hello_interval, null)
+  hello_interval_variable            = try("{{${each.value.eigrp.hello_interval_variable}}}", null)
+  hmac_authentication_key            = try(each.value.eigrp.hmac_authentication_key_version, null) == null ? try(each.value.eigrp.hmac_authentication_key, null) : null
+  hmac_authentication_key_wo         = try(each.value.eigrp.hmac_authentication_key_version, null) != null && try(each.value.eigrp.hmac_authentication_key_variable, null) == null ? try(each.value.eigrp.hmac_authentication_key, null) : null
+  hmac_authentication_key_wo_version = try(each.value.eigrp.hmac_authentication_key, null) == null || try(each.value.eigrp.hmac_authentication_key_variable, null) != null ? null : try(each.value.eigrp.hmac_authentication_key_version, null)
+  hmac_authentication_key_variable   = try("{{${each.value.eigrp.hmac_authentication_key_variable}}}", null)
+  hold_time                          = try(each.value.eigrp.hold_time, null)
+  hold_time_variable                 = try("{{${each.value.eigrp.hold_time_variable}}}", null)
   interfaces = try(length(each.value.eigrp.interfaces) == 0, true) ? null : [for interface in each.value.eigrp.interfaces : {
     name              = try(interface.name, null)
     name_variable     = try("{{${interface.name_variable}}}", null)
@@ -333,10 +339,12 @@ resource "sdwan_service_routing_eigrp_feature" "service_routing_eigrp_feature" {
     }]
   }]
   md5_keys = try(length(each.value.eigrp.md5_keys) == 0, true) ? null : [for key in each.value.eigrp.md5_keys : {
-    key_id              = try(key.key_id, null)
-    key_id_variable     = try("{{${key.key_id_variable}}}", null)
-    key_string          = try(key.key_string, null)
-    key_string_variable = try("{{${key.key_string_variable}}}", null)
+    key_id                = try(key.key_id, null)
+    key_id_variable       = try("{{${key.key_id_variable}}}", null)
+    key_string            = try(key.key_string_version, null) == null ? try(key.key_string, null) : null
+    key_string_wo         = try(key.key_string_version, null) != null && try(key.key_string_variable, null) == null ? try(key.key_string, null) : null
+    key_string_wo_version = try(key.key_string, null) == null || try(key.key_string_variable, null) != null ? null : try(key.key_string_version, null)
+    key_string_variable   = try("{{${key.key_string_variable}}}", null)
   }]
   redistributes = try(length(each.value.eigrp.redistributes) == 0, true) ? null : [for redistribute in each.value.eigrp.redistributes : {
     protocol          = try(redistribute.protocol, null)
@@ -1249,7 +1257,9 @@ resource "sdwan_service_lan_vpn_interface_gre_feature" "service_lan_vpn_interfac
   ipsec_replay_window_variable              = try("{{${each.value.interface.ipsec_replay_window_variable}}}", null)
   perfect_forward_secrecy                   = try(each.value.interface.perfect_forward_secrecy, null)
   perfect_forward_secrecy_variable          = try("{{${each.value.interface.perfect_forward_secrecy_variable}}}", null)
-  pre_shared_secret                         = try(each.value.interface.preshared_key_for_ike, null)
+  pre_shared_secret                         = try(each.value.interface.preshared_key_for_ike_version, null) == null ? try(each.value.interface.preshared_key_for_ike, null) : null
+  pre_shared_secret_wo                      = try(each.value.interface.preshared_key_for_ike_version, null) != null && try(each.value.interface.preshared_key_for_ike_variable, null) == null ? try(each.value.interface.preshared_key_for_ike, null) : null
+  pre_shared_secret_wo_version              = try(each.value.interface.preshared_key_for_ike, null) == null || try(each.value.interface.preshared_key_for_ike_variable, null) != null ? null : try(each.value.interface.preshared_key_for_ike_version, null)
   pre_shared_secret_variable                = try("{{${each.value.interface.preshared_key_for_ike_variable}}}", null)
   shutdown                                  = try(each.value.interface.shutdown, null)
   shutdown_variable                         = try("{{${each.value.interface.shutdown_variable}}}", null)
@@ -1306,7 +1316,9 @@ resource "sdwan_service_lan_vpn_interface_ipsec_feature" "service_lan_vpn_interf
   ike_integrity_protocol_variable          = try("{{${each.value.interface.ike_integrity_protocol_variable}}}", null)
   ike_id_local_end_point                   = try(each.value.interface.ike_local_endpoint_id, null)
   ike_id_local_end_point_variable          = try("{{${each.value.interface.ike_local_endpoint_id_variable}}}", null)
-  ike_preshared_key                        = try(each.value.interface.ike_preshared_key, null)
+  ike_preshared_key                        = try(each.value.interface.ike_preshared_key_version, null) == null ? try(each.value.interface.ike_preshared_key, null) : null
+  ike_preshared_key_wo                     = try(each.value.interface.ike_preshared_key_version, null) != null && try(each.value.interface.ike_preshared_key_variable, null) == null ? try(each.value.interface.ike_preshared_key, null) : null
+  ike_preshared_key_wo_version             = try(each.value.interface.ike_preshared_key, null) == null || try(each.value.interface.ike_preshared_key_variable, null) != null ? null : try(each.value.interface.ike_preshared_key_version, null)
   ike_preshared_key_variable               = try("{{${each.value.interface.ike_preshared_key_variable}}}", null)
   ike_rekey_interval                       = try(each.value.interface.ike_rekey_interval, null)
   ike_rekey_interval_variable              = try("{{${each.value.interface.ike_rekey_interval_variable}}}", null)
@@ -1563,22 +1575,24 @@ resource "sdwan_service_multicast_feature" "service_multicast_feature" {
     mesh_group_name          = try(msdp_group.name, null)
     mesh_group_name_variable = try("{{${msdp_group.name_variable}}}", null)
     peers = try(length(msdp_group.peers) == 0, true) ? null : [for peer in msdp_group.peers : {
-      connection_source_interface           = try(peer.connection_source_interface, null)
-      connection_source_interface_variable  = try("{{${peer.connection_source_interface_variable}}}", null)
-      default_peer                          = try(peer.default_peer, null)
-      keepalive_hold_time                   = try(peer.keepalive_hold_time, null)
-      keepalive_hold_time_variable          = try("{{${peer.keepalive_hold_time_variable}}}", null)
-      keepalive_interval                    = try(peer.keepalive_interval, null)
-      keepalive_interval_variable           = try("{{${peer.keepalive_interval_variable}}}", null)
-      peer_authentication_password          = try(peer.peer_authentication_password, null)
-      peer_authentication_password_variable = try("{{${peer.peer_authentication_password_variable}}}", null)
-      peer_ip                               = try(peer.peer_ip, null)
-      peer_ip_variable                      = try("{{${peer.peer_ip_variable}}}", null)
-      prefix_list_id                        = try(peer.prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[peer.prefix_list]
-      remote_as                             = try(peer.remote_as, null)
-      remote_as_variable                    = try("{{${peer.remote_as_variable}}}", null)
-      sa_limit                              = try(peer.sa_limit, null)
-      sa_limit_variable                     = try("{{${peer.sa_limit_variable}}}", null)
+      connection_source_interface             = try(peer.connection_source_interface, null)
+      connection_source_interface_variable    = try("{{${peer.connection_source_interface_variable}}}", null)
+      default_peer                            = try(peer.default_peer, null)
+      keepalive_hold_time                     = try(peer.keepalive_hold_time, null)
+      keepalive_hold_time_variable            = try("{{${peer.keepalive_hold_time_variable}}}", null)
+      keepalive_interval                      = try(peer.keepalive_interval, null)
+      keepalive_interval_variable             = try("{{${peer.keepalive_interval_variable}}}", null)
+      peer_authentication_password            = try(peer.peer_authentication_password_version, null) == null ? try(peer.peer_authentication_password, null) : null
+      peer_authentication_password_wo         = try(peer.peer_authentication_password_version, null) != null && try(peer.peer_authentication_password_variable, null) == null ? try(peer.peer_authentication_password, null) : null
+      peer_authentication_password_wo_version = try(peer.peer_authentication_password, null) == null || try(peer.peer_authentication_password_variable, null) != null ? null : try(peer.peer_authentication_password_version, null)
+      peer_authentication_password_variable   = try("{{${peer.peer_authentication_password_variable}}}", null)
+      peer_ip                                 = try(peer.peer_ip, null)
+      peer_ip_variable                        = try("{{${peer.peer_ip_variable}}}", null)
+      prefix_list_id                          = try(peer.prefix_list, null) == null ? null : local.policy_object_ids.ipv4_prefix_list[peer.prefix_list]
+      remote_as                               = try(peer.remote_as, null)
+      remote_as_variable                      = try("{{${peer.remote_as_variable}}}", null)
+      sa_limit                                = try(peer.sa_limit, null)
+      sa_limit_variable                       = try("{{${peer.sa_limit_variable}}}", null)
     }]
   }]
   msdp_originator_id          = try(each.value.multicast.msdp_originator_id, null)
@@ -1820,7 +1834,9 @@ resource "sdwan_service_routing_ospf_feature" "service_routing_ospf_feature" {
       authentication_type_variable        = try("{{${interface.authentication_type_variable}}}", null)
       message_digest_key_id               = try(interface.authentication_message_digest_key_id, null)
       message_digest_key_id_variable      = try("{{${interface.authentication_message_digest_key_id_variable}}}", null)
-      message_digest_key                  = try(interface.authentication_message_digest_key, null)
+      message_digest_key                  = try(interface.authentication_message_digest_key_version, null) == null ? try(interface.authentication_message_digest_key, null) : null
+      message_digest_key_wo               = try(interface.authentication_message_digest_key_version, null) != null && try(interface.authentication_message_digest_key_variable, null) == null ? try(interface.authentication_message_digest_key, null) : null
+      message_digest_key_wo_version       = try(interface.authentication_message_digest_key, null) == null || try(interface.authentication_message_digest_key_variable, null) != null ? null : try(interface.authentication_message_digest_key_version, null)
       message_digest_key_variable         = try("{{${interface.authentication_message_digest_key_variable}}}", null)
     }]
     ranges = try(length(area.ranges) == 0, true) ? null : [for range in area.ranges : {
@@ -1908,7 +1924,9 @@ resource "sdwan_service_routing_ospfv3_ipv4_feature" "service_routing_ospfv3_ipv
       authentication_type_variable     = try("{{${interface.authentication_type_variable}}}", null)
       authentication_spi               = try(interface.authentication_ipsec_spi, null)
       authentication_spi_variable      = try("{{${interface.authentication_ipsec_spi_variable}}}", null)
-      authentication_key               = try(interface.authentication_ipsec_key, null)
+      authentication_key               = try(interface.authentication_ipsec_key_version, null) == null ? try(interface.authentication_ipsec_key, null) : null
+      authentication_key_wo            = try(interface.authentication_ipsec_key_version, null) != null && try(interface.authentication_ipsec_key_variable, null) == null ? try(interface.authentication_ipsec_key, null) : null
+      authentication_key_wo_version    = try(interface.authentication_ipsec_key, null) == null || try(interface.authentication_ipsec_key_variable, null) != null ? null : try(interface.authentication_ipsec_key_version, null)
       authentication_key_variable      = try("{{${interface.authentication_ipsec_key_variable}}}", null)
       cost                             = try(interface.cost, null)
       cost_variable                    = try("{{${interface.cost_variable}}}", null)
@@ -2006,7 +2024,9 @@ resource "sdwan_service_routing_ospfv3_ipv6_feature" "service_routing_ospfv3_ipv
       authentication_type_variable     = try("{{${interface.authentication_type_variable}}}", null)
       authentication_spi               = try(interface.authentication_ipsec_spi, null)
       authentication_spi_variable      = try("{{${interface.authentication_ipsec_spi_variable}}}", null)
-      authentication_key               = try(interface.authentication_ipsec_key, null)
+      authentication_key               = try(interface.authentication_ipsec_key_version, null) == null ? try(interface.authentication_ipsec_key, null) : null
+      authentication_key_wo            = try(interface.authentication_ipsec_key_version, null) != null && try(interface.authentication_ipsec_key_variable, null) == null ? try(interface.authentication_ipsec_key, null) : null
+      authentication_key_wo_version    = try(interface.authentication_ipsec_key, null) == null || try(interface.authentication_ipsec_key_variable, null) != null ? null : try(interface.authentication_ipsec_key_version, null)
       authentication_key_variable      = try("{{${interface.authentication_ipsec_key_variable}}}", null)
       cost                             = try(interface.cost, null)
       cost_variable                    = try("{{${interface.cost_variable}}}", null)

@@ -38,7 +38,9 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
       address             = server.address
       auth_port           = try(server.authentication_port, null)
       auth_port_variable  = try("{{${server.authentication_port_variable}}}", null)
-      key                 = try(server.key, null)
+      key                 = local.write_only_secrets || try(server.key_version, null) != null ? null : try(server.key, null)
+      key_wo              = (local.write_only_secrets || try(server.key_version, null) != null) && try(server.key_variable, null) == null ? try(server.key, null) : null
+      key_wo_version      = try(server.key, null) == null || try(server.key_variable, null) != null ? null : try(server.key_version, local.write_only_secrets ? 1 : null)
       key_variable        = try("{{${server.key_variable}}}", null)
       key_type            = try(server.key_type, null)
       key_type_variable   = try("{{${server.key_type_variable}}}", null)
@@ -57,7 +59,9 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
     group_name = try(group.group_name, "tacacs-${index}-${group.vpn}", "tacacs-${index}-${index}")
     servers = !can(group.servers) ? null : [for server in group.servers : {
       address          = server.address
-      key              = try(server.key, null)
+      key              = local.write_only_secrets || try(server.key_version, null) != null ? null : try(server.key, null)
+      key_wo           = (local.write_only_secrets || try(server.key_version, null) != null) && try(server.key_variable, null) == null ? try(server.key, null) : null
+      key_wo_version   = try(server.key, null) == null || try(server.key_variable, null) != null ? null : try(server.key_version, local.write_only_secrets ? 1 : null)
       key_variable     = try("{{${server.key_variable}}}", null)
       port             = try(server.port, null)
       port_variable    = try("{{${server.port_variable}}}", null)
@@ -73,12 +77,14 @@ resource "sdwan_system_aaa_feature" "system_aaa_feature" {
   trustsec_cts_auth_list_variable = try("{{${each.value.aaa.trustsec_cts_auth_list_variable}}}", null)
   trustsec_radius_group           = try(each.value.aaa.trustsec_radius_group, null)
   users = try(length(each.value.aaa.users) == 0, true) ? null : [for user in each.value.aaa.users : {
-    name               = try(user.name, null)
-    name_variable      = try("{{${user.name_variable}}}", null)
-    password           = try(user.password, null)
-    password_variable  = try("{{${user.password_variable}}}", null)
-    privilege          = try(user.privilege, null)
-    privilege_variable = try("{{${user.privilege_variable}}}", null)
+    name                = try(user.name, null)
+    name_variable       = try("{{${user.name_variable}}}", null)
+    password            = local.write_only_secrets || try(user.password_version, null) != null ? null : try(user.password, null)
+    password_wo         = (local.write_only_secrets || try(user.password_version, null) != null) && try(user.password_variable, null) == null ? try(user.password, null) : null
+    password_wo_version = try(user.password, null) == null || try(user.password_variable, null) != null ? null : try(user.password_version, local.write_only_secrets ? 1 : null)
+    password_variable   = try("{{${user.password_variable}}}", null)
+    privilege           = try(user.privilege, null)
+    privilege_variable  = try("{{${user.privilege_variable}}}", null)
     public_keys = try(length(user.public_key_chains) == 0, true) ? null : [for public_key in user.public_key_chains : {
       key_type            = "ssh-rsa"
       key_string          = try(public_key.key, null)
@@ -451,14 +457,20 @@ resource "sdwan_system_ntp_feature" "system_ntp_feature" {
   description        = try(each.value.ntp.description, null)
   feature_profile_id = sdwan_system_feature_profile.system_feature_profile[each.value.name].id
   authentication_keys = try(length(each.value.ntp.authentication_keys) == 0, true) ? null : [for key in each.value.ntp.authentication_keys : {
-    key_id                     = try(key.id, null)
-    key_id_variable            = try("{{${key.id_variable}}}", null)
-    md5_value                  = try(key.md5_value, null)
-    md5_value_variable         = try("{{${key.md5_value_variable}}}", null)
-    hmac_sha2_value            = try(key.hmac_sha2_value, null)
-    hmac_sha2_value_variable   = try("{{${key.hmac_sha2_value_variable}}}", null)
-    cmac_aes128_value          = try(key.cmac_aes128_value, null)
-    cmac_aes128_value_variable = try("{{${key.cmac_aes128_value_variable}}}", null)
+    key_id                       = try(key.id, null)
+    key_id_variable              = try("{{${key.id_variable}}}", null)
+    md5_value                    = local.write_only_secrets || try(key.md5_value_version, null) != null ? null : try(key.md5_value, null)
+    md5_value_wo                 = (local.write_only_secrets || try(key.md5_value_version, null) != null) && try(key.md5_value_variable, null) == null ? try(key.md5_value, null) : null
+    md5_value_wo_version         = try(key.md5_value, null) == null || try(key.md5_value_variable, null) != null ? null : try(key.md5_value_version, local.write_only_secrets ? 1 : null)
+    md5_value_variable           = try("{{${key.md5_value_variable}}}", null)
+    hmac_sha2_value              = local.write_only_secrets || try(key.hmac_sha2_value_version, null) != null ? null : try(key.hmac_sha2_value, null)
+    hmac_sha2_value_wo           = (local.write_only_secrets || try(key.hmac_sha2_value_version, null) != null) && try(key.hmac_sha2_value_variable, null) == null ? try(key.hmac_sha2_value, null) : null
+    hmac_sha2_value_wo_version   = try(key.hmac_sha2_value, null) == null || try(key.hmac_sha2_value_variable, null) != null ? null : try(key.hmac_sha2_value_version, local.write_only_secrets ? 1 : null)
+    hmac_sha2_value_variable     = try("{{${key.hmac_sha2_value_variable}}}", null)
+    cmac_aes128_value            = local.write_only_secrets || try(key.cmac_aes128_value_version, null) != null ? null : try(key.cmac_aes128_value, null)
+    cmac_aes128_value_wo         = (local.write_only_secrets || try(key.cmac_aes128_value_version, null) != null) && try(key.cmac_aes128_value_variable, null) == null ? try(key.cmac_aes128_value, null) : null
+    cmac_aes128_value_wo_version = try(key.cmac_aes128_value, null) == null || try(key.cmac_aes128_value_variable, null) != null ? null : try(key.cmac_aes128_value_version, local.write_only_secrets ? 1 : null)
+    cmac_aes128_value_variable   = try("{{${key.cmac_aes128_value_variable}}}", null)
   }]
   authoritative_ntp_server          = try(each.value.ntp.authoritative_ntp_server, null)
   authoritative_ntp_server_variable = try("{{${each.value.ntp.authoritative_ntp_server_variable}}}", null)
@@ -606,7 +618,9 @@ resource "sdwan_system_security_feature" "system_security_feature" {
     id                              = key.id
     include_tcp_options             = try(key.include_tcp_options, null)
     include_tcp_options_variable    = try("{{${key.include_tcp_options_variable}}}", null)
-    key_string                      = try(key.key_string, null)
+    key_string                      = local.write_only_secrets || try(key.key_string_version, null) != null ? null : try(key.key_string, null)
+    key_string_wo                   = (local.write_only_secrets || try(key.key_string_version, null) != null) && try(key.key_string_variable, null) == null ? try(key.key_string, null) : null
+    key_string_wo_version           = try(key.key_string, null) == null || try(key.key_string_variable, null) != null ? null : try(key.key_string_version, local.write_only_secrets ? 1 : null)
     key_string_variable             = try("{{${key.key_string_variable}}}", null)
     name                            = key.key_chain_name
     receiver_id                     = try(key.receiver_id, null)
@@ -636,7 +650,9 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
   communities = try(length(each.value.snmp.communities) == 0, true) ? null : [for c in each.value.snmp.communities : {
     authorization          = try(c.authorization, null)
     authorization_variable = try("{{${c.authorization_variable}}}", null)
-    name                   = try(c.name, null)
+    name                   = local.write_only_secrets || try(c.name_version, null) != null ? null : try(c.name, null)
+    name_wo                = (local.write_only_secrets || try(c.name_version, null) != null) && try(c.name_variable, null) == null ? try(c.name, null) : null
+    name_wo_version        = try(c.name, null) == null || try(c.name_variable, null) != null ? null : try(c.name_version, local.write_only_secrets ? 1 : null)
     name_variable          = try("{{${c.name_variable}}}", null)
     user_label             = c.user_label
     view                   = try(c.view, null)
@@ -668,17 +684,21 @@ resource "sdwan_system_snmp_feature" "system_snmp_feature" {
     vpn_id_variable           = try("{{${server.vpn_id_variable}}}", null)
   }]
   users = try(length(each.value.snmp.users) == 0, true) ? null : [for user in each.value.snmp.users : {
-    authentication_password          = try(user.authentication_password, null)
-    authentication_password_variable = try("{{${user.authentication_password_variable}}}", null)
-    authentication_protocol          = try(user.authentication_protocol, null)
-    authentication_protocol_variable = try("{{${user.authentication_protocol_variable}}}", null)
-    group                            = try(user.group, null)
-    group_variable                   = try("{{${user.group_variable}}}", null)
-    name                             = user.name
-    privacy_password                 = try(user.privacy_password, null)
-    privacy_password_variable        = try("{{${user.privacy_password_variable}}}", null)
-    privacy_protocol                 = try(user.privacy_protocol, null)
-    privacy_protocol_variable        = try("{{${user.privacy_protocol_variable}}}", null)
+    authentication_password            = local.write_only_secrets || try(user.authentication_password_version, null) != null ? null : try(user.authentication_password, null)
+    authentication_password_wo         = (local.write_only_secrets || try(user.authentication_password_version, null) != null) && try(user.authentication_password_variable, null) == null ? try(user.authentication_password, null) : null
+    authentication_password_wo_version = try(user.authentication_password, null) == null || try(user.authentication_password_variable, null) != null ? null : try(user.authentication_password_version, local.write_only_secrets ? 1 : null)
+    authentication_password_variable   = try("{{${user.authentication_password_variable}}}", null)
+    authentication_protocol            = try(user.authentication_protocol, null)
+    authentication_protocol_variable   = try("{{${user.authentication_protocol_variable}}}", null)
+    group                              = try(user.group, null)
+    group_variable                     = try("{{${user.group_variable}}}", null)
+    name                               = user.name
+    privacy_password                   = local.write_only_secrets || try(user.privacy_password_version, null) != null ? null : try(user.privacy_password, null)
+    privacy_password_wo                = (local.write_only_secrets || try(user.privacy_password_version, null) != null) && try(user.privacy_password_variable, null) == null ? try(user.privacy_password, null) : null
+    privacy_password_wo_version        = try(user.privacy_password, null) == null || try(user.privacy_password_variable, null) != null ? null : try(user.privacy_password_version, local.write_only_secrets ? 1 : null)
+    privacy_password_variable          = try("{{${user.privacy_password_variable}}}", null)
+    privacy_protocol                   = try(user.privacy_protocol, null)
+    privacy_protocol_variable          = try("{{${user.privacy_protocol_variable}}}", null)
   }]
   views = try(length(each.value.snmp.views) == 0, true) ? null : [for view in each.value.snmp.views : {
     name = view.name

@@ -15,6 +15,7 @@ locals {
   scopes                 = [for s in try(local.model.sdwan.scopes, []) : s if local.manage_global]
   settings               = { for k, v in try(local.model.sdwan.settings, {}) : k => v if local.manage_global }
   topology_groups        = [for g in try(local.model.sdwan.topology_groups, []) : g if local.manage_global]
+  write_only_secrets     = var.write_only_secrets
   device_type_map = {
     "C8000V" : "vedge-C8000V"
     "C8300-1N1S-4T2X" : "vedge-C8300-1N1S-4T2X"

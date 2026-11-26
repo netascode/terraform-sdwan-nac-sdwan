@@ -8,15 +8,18 @@ resource "sdwan_policy_group" "policy_group" {
     try(each.value.application_priority, null) == null ? [] : [local.profile_ids.application_priority_profiles[each.value.application_priority]],
     try(each.value.ngfw_security, null) == null ? [] : [local.profile_ids.ngfw_security_profiles[each.value.ngfw_security]],
     try(each.value.sse, null) == null ? [] : [local.profile_ids.sse_profiles[each.value.sse]],
+    try(each.value.sig_security, null) == null ? [] : [local.profile_ids.sig_security_profiles[each.value.sig_security]],
   ])
   policy_versions = length(concat(
     try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
     try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
     try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
+    try(each.value.sig_security, null) == null ? [] : lookup(local.sig_security_profile_policy_versions, each.value.sig_security, []),
     )) == 0 ? null : concat(
     try(each.value.application_priority, null) == null ? [] : lookup(local.application_priority_policies_versions, each.value.application_priority, []),
     try(each.value.ngfw_security, null) == null ? [] : lookup(local.embedded_security_policies_versions, each.value.ngfw_security, []),
     try(each.value.sse, null) == null ? [] : lookup(local.sse_profile_policy_versions, each.value.sse, []),
+    try(each.value.sig_security, null) == null ? [] : lookup(local.sig_security_profile_policy_versions, each.value.sig_security, []),
   )
   depends_on = [
     sdwan_tag.tag,
@@ -24,6 +27,10 @@ resource "sdwan_policy_group" "policy_group" {
   ]
   lifecycle {
     create_before_destroy = true
+    precondition {
+      condition     = try(each.value.sse, null) == null || try(each.value.sig_security, null) == null
+      error_message = "Policy group '${each.value.name}': sse and sig_security cannot be used together in one policy group."
+    }
   }
 }
 
@@ -508,5 +515,15 @@ locals {
       # SSE Cisco
       try(profile.cisco, null) == null ? [] : [sdwan_sse_cisco_feature.sse_cisco_feature["${profile.name}-cisco"].version]
     ])
+  }
+
+  # ============================================================================
+  # Secure Internet Gateway (SIG Security) - Policy Versions
+  # ============================================================================
+
+  sig_security_profile_policy_versions = {
+    for profile in try(local.feature_profiles.sig_security_profiles, []) : profile.name => (
+      try(profile.sig, null) == null ? [] : [sdwan_sig_feature.sig_feature["${profile.name}-sig"].version]
+    )
   }
 }

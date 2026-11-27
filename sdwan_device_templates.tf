@@ -94,6 +94,7 @@ resource "sdwan_feature_device_template" "feature_device_template" {
       sub_templates = !(can(each.value.vpn_0_template.ospf_template) ||
         can(each.value.vpn_0_template.bgp_template) ||
         can(each.value.vpn_0_template.ethernet_interface_templates) ||
+        can(each.value.vpn_0_template.ethernet_pppoe_interface_templates) ||
         can(each.value.vpn_0_template.ipsec_interface_templates) ||
         can(each.value.vpn_0_template.svi_interface_templates) ||
         can(each.value.vpn_0_template.secure_internet_gateway_template)) ? null : flatten([
@@ -111,6 +112,11 @@ resource "sdwan_feature_device_template" "feature_device_template" {
             id      = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].id
             version = sdwan_cisco_vpn_interface_feature_template.cisco_vpn_interface_feature_template[eit.name].version
             type    = "cisco_vpn_interface"
+          }],
+          try(each.value.vpn_0_template.ethernet_pppoe_interface_templates, null) == null ? [] : [for pit in try(each.value.vpn_0_template.ethernet_pppoe_interface_templates, []) : {
+            id      = sdwan_vpn_interface_ethernet_pppoe_feature_template.vpn_interface_ethernet_pppoe_feature_template[pit.name].id
+            version = sdwan_vpn_interface_ethernet_pppoe_feature_template.vpn_interface_ethernet_pppoe_feature_template[pit.name].version
+            type    = "vpn-interface-ethpppoe"
           }],
           try(each.value.vpn_0_template.ipsec_interface_templates, null) == null ? [] : [for iit in try(each.value.vpn_0_template.ipsec_interface_templates, []) : {
             id      = sdwan_cisco_vpn_interface_ipsec_feature_template.cisco_vpn_interface_ipsec_feature_template[iit.name].id

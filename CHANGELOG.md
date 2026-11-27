@@ -1,5 +1,7 @@
 ## 1.6.0 (unreleased)
 
+- **BREAKING CHANGE**: fix typo in service LAN VPN ethernet interface TrustSec attributes: `trustsec_enable_enforced_propogation` → `trustsec_enable_enforced_propagation`, `trustsec_enable_sgt_propogation` → `trustsec_enable_sgt_propagation`, `trustsec_propogate` → `trustsec_propagate`
+
 - add support for SIG security feature profile (`sdwan_sig_security_feature_profile`) and SIG feature (`sdwan_sig_feature`)
 - `sdwan_attach_feature_device_template`: devices keyed by chassis ID, so adding, removing or changing one router shows only that router in the plan (requires the provider version with `devices` as a map)
 - **BREAKING CHANGE**: network hierarchy sites are keyed by `site_id` and nested groups and regions by their `key` (defaults to `name`), so existing network hierarchy resources must be moved in the Terraform state (`moved` blocks) before the first apply; `site_id` is now required on network hierarchy sites
